@@ -1,0 +1,108 @@
+﻿name: CI
+
+on: [push]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Audit
+        run: |
+          cargo audit -D warnings
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run clippy
+        run: |
+          cargo clippy --workspace --all-targets
+
+      - name: Run default features unit tests
+        run: |
+          cargo test --workspace --all-targets
+
+  docs:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Generate Docs
+        run: |
+          rustup install nightly
+          cargo +nightly doc --no-deps --workspace --all-features
+
+      - name: Deploy Docs
+        uses: JamesIves/github-pages-deploy-action@releases/v4
+        with:
+          branch: gh-pages
+          folder: target/doc/
+          git-config-name: kl-botsu
+          git-config-email: botsu@khonsulabs.com
+          target-folder: /main/
+          clean: true
+
+  coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install code coverage requirements
+        run: |
+          rustup component add llvm-tools-preview
+          rustup install nightly
+          # Current versions are causing "[ERROR] Execution count overflow detected."
+          # https://github.com/mozilla/grcov/issues/555
+          # curl -L https://github.com/mozilla/grcov/releases/latest/download/grcov-linux-x86_64.tar.bz2 | tar jxf -
+          curl -L https://github.com/mozilla/grcov/releases/download/v0.6.1/grcov-linux-x86_64.tar.bz2 | tar jxf -
+
+      - name: Run code coverage
+        run: |
+          LLVM_PROFILE_FILE="%m.profraw" cargo +nightly test --workspace --all-targets
+
+          ./grcov . --binary-path ./target/debug/ -s . -t lcov --branch --ignore-not-existing -o lcov.info;
+          bash <(curl -s https://codecov.io/bash) -f lcov.info;
+          ./grcov . --binary-path ./target/debug/ -s . -t html --branch --ignore-not-existing -o coverage/;
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          CARGO_INCREMENTAL: 0
+          RUSTFLAGS: "-Zinstrument-coverage"
+          RUSTDOCFLAGS: "-Cpanic=abort"
+
+      - name: Deploy Coverage
+        if: github.ref == 'refs/heads/main'
+        uses: JamesIves/github-pages-deploy-action@releases/v4
+        with:
+          branch: gh-pages
+          folder: coverage/
+          git-config-name: kl-botsu
+          git-config-email: botsu@khonsulabs.com
+          target-folder: /coverage/
+          clean: true
+
+  format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Rust Formatting
+        run: |
+          cargo fmt -- --check
+
+      - name: Prettier
+        run: |
+          sudo npm install -g prettier prettier-plugin-toml
+          npx prettier -l .
