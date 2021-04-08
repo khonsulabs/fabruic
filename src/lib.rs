@@ -50,5 +50,24 @@
 	warn(rustdoc::all),
 	allow(rustdoc::missing_doc_code_examples, rustdoc::private_doc_tests)
 )]
+#![cfg_attr(
+	test,
+	allow(
+		clippy::expect_used,
+		clippy::integer_arithmetic,
+		clippy::panic,
+		clippy::panic_in_result_fn
+	)
+)]
 
 //! TODO
+
+mod certificate;
+pub mod error;
+mod quic;
+
+#[cfg(feature = "certificate")]
+pub use certificate::generate_self_signed;
+pub use certificate::{Certificate, Dangerous, PrivateKey};
+pub use error::{Error, Result};
+pub use quic::{Builder, Connection, Endpoint, Incoming, Receiver, Sender};

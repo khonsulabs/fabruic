@@ -5,3 +5,41 @@ description = "reserved crate"
 license = "MIT OR Apache-2.0"
 edition = "2018"
 resolver = "2"
+
+[features]
+default = []
+certificate = ["rcgen", "x509-parser"]
+dns = ["trust-dns-resolver"]
+test = []
+
+[dependencies]
+bincode = "1"
+bytes = "1"
+allochronic-util = { git = "https://github.com/khonsulabs/allochronic" }
+flume = "0.10"
+futures-channel = "0.3"
+futures-util = "0.3"
+if_chain = "1"
+parking_lot = { version = "0.11", features = ["send_guard"] }
+pin-project = "1"
+quinn = { version = "0.7", default-features = false, features = ["tls-rustls"] }
+rcgen = { version = "0.8", default-features = false, optional = true }
+ring = "0.16"
+rustls = { version = "0.19", features = ["dangerous_configuration"] }
+serde = "1"
+thiserror = "1"
+tokio = { version = "1", features = ["rt-multi-thread"] }
+trust-dns-resolver = { version = "0.20", default-features = false, features = [
+    "dns-over-https-rustls",
+    "dnssec-ring",
+    "tokio-runtime",
+], optional = true }
+webpki = "0.21"
+x509-parser = { version = "0.9", optional = true }
+zeroize = { version = "1", features = ["zeroize_derive"] }
+
+[dev-dependencies]
+anyhow = "1"
+fabruic = { path = "", features = ["certificate", "test"] }
+quinn-proto = { version = "0.7", default-features = false }
+tokio = { version = "1", features = ["macros"] }
