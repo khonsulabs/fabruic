@@ -9,11 +9,11 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../index.html">top level</a> - <a href="index.html">examples</a> - basic.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-08 23:13:42</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-08 23:49:33</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">1</span><span class="linesTotal">94</span><span class="linesPercentage lineLow">1.1 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">1</span><span class="linesTotal">93</span><span class="linesPercentage lineLow">1.1 %</span></div>
 <div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">1</span><span class="funsTotal">6</span><span class="funsPercentage funLow">16.7 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
@@ -25,7 +25,7 @@
 <div class="line"><span id="4" class="lineNum"><a href="#4">4</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="5" class="lineNum"><a href="#5">5</a></span><span class="counterUnCov"></span><span class="lineUnCov">const SERVER_NAME: &amp;str = &quot;test&quot;;</span></div>
 <div class="line"><span id="6" class="lineNum"><a href="#6">6</a></span><span class="counterUnCov"></span><span class="lineUnCov">const SERVER_PORT: u16 = 5000;</span></div>
-<div class="line"><span id="7" class="lineNum"><a href="#7">7</a></span><span class="counterUnCov"></span><span class="lineUnCov">const CLIENTS: usize = 1;</span></div>
+<div class="line"><span id="7" class="lineNum"><a href="#7">7</a></span><span class="counterUnCov"></span><span class="lineUnCov">const CLIENTS: usize = 100;</span></div>
 <div class="line"><span id="8" class="lineNum"><a href="#8">8</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="9" class="lineNum"><a href="#9">9</a></span><span class="counterNoCov">0</span><span class="lineNoCov">#[tokio::main]</span></div>
 <div class="line"><span id="10" class="lineNum"><a href="#10">10</a></span><span class="counterNoCov">0</span><span class="lineNoCov">async fn main() -&gt; Result&lt;()&gt; {</span></div>
@@ -60,7 +60,7 @@
 <div class="line"><span id="39" class="lineNum"><a href="#39">39</a></span><span class="counterUnCov"></span><span class="lineUnCov">					// start listening to new incoming streams</span></div>
 <div class="line"><span id="40" class="lineNum"><a href="#40">40</a></span><span class="counterUnCov"></span><span class="lineUnCov">					// in this example we know there is only 1 incoming stream, so we will not wait</span></div>
 <div class="line"><span id="41" class="lineNum"><a href="#41">41</a></span><span class="counterUnCov"></span><span class="lineUnCov">					// for more</span></div>
-<div class="line"><span id="42" class="lineNum"><a href="#42">42</a></span><span class="counterNoCov">0</span><span class="lineNoCov">					let incoming = connection.next().await.expect(&quot;no stream found&quot;)?;</span></div>
+<div class="line"><span id="42" class="lineNum"><a href="#42">42</a></span><span class="counterNoCov">0</span><span class="lineNoCov">					let incoming = connection.next().await.expect(&quot;no stream found&quot;);</span></div>
 <div class="line"><span id="43" class="lineNum"><a href="#43">43</a></span><span class="counterNoCov">0</span><span class="lineNoCov">					println!(</span></div>
 <div class="line"><span id="44" class="lineNum"><a href="#44">44</a></span><span class="counterNoCov">0</span><span class="lineNoCov">						&quot;[server] New incoming stream from: {}&quot;,</span></div>
 <div class="line"><span id="45" class="lineNum"><a href="#45">45</a></span><span class="counterNoCov">0</span><span class="lineNoCov">						connection.remote_address()</span></div>
@@ -154,29 +154,28 @@
 <div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			receiver.finish().await?;</span></div>
 <div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			connection.close_incoming().await?;</span></div>
-<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			println!(&quot;finish&quot;);</span></div>
-<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			client.close_incoming().await?;</span></div>
-<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// wait for client to finish cleanly</span></div>
-<div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			client.wait_idle().await;</span></div>
-<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterUnCov"></span><span class="lineUnCov">			println!(</span></div>
-<div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				&quot;[client:{}] Successfully finished {}&quot;,</span></div>
-<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				index,</span></div>
-<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				client.local_address()?</span></div>
-<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterUnCov"></span><span class="lineUnCov">			);</span></div>
-<div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Result::&lt;_, Error&gt;::Ok(())</span></div>
-<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		}));</span></div>
-<div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
-<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	server.await??;</span></div>
-<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	for client in clients {</span></div>
-<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		client.await??;</span></div>
-<div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterUnCov"></span><span class="lineUnCov">	}</span></div>
-<div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	Ok(())</span></div>
-<div class="line"><span id="158" class="lineNum"><a href="#158">158</a></span><span class="counterNoCov">0</span><span class="lineNoCov">}</span></div>
+<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			client.close_incoming().await?;</span></div>
+<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// wait for client to finish cleanly</span></div>
+<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			client.wait_idle().await;</span></div>
+<div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterUnCov"></span><span class="lineUnCov">			println!(</span></div>
+<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				&quot;[client:{}] Successfully finished {}&quot;,</span></div>
+<div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				index,</span></div>
+<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				client.local_address()?</span></div>
+<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterUnCov"></span><span class="lineUnCov">			);</span></div>
+<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Result::&lt;_, Error&gt;::Ok(())</span></div>
+<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		}));</span></div>
+<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
+<div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	server.await??;</span></div>
+<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	for client in clients {</span></div>
+<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		client.await??;</span></div>
+<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterUnCov"></span><span class="lineUnCov">	}</span></div>
+<div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	Ok(())</span></div>
+<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterNoCov">0</span><span class="lineNoCov">}</span></div>
 </div>
 </body>
 </html>
