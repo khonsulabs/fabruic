@@ -4,7 +4,7 @@ use futures_util::StreamExt;
 
 const SERVER_NAME: &str = "test";
 const SERVER_PORT: u16 = 5000;
-const CLIENTS: usize = 1;
+const CLIENTS: usize = 100;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -39,7 +39,7 @@ async fn main() -> Result<()> {
 					// start listening to new incoming streams
 					// in this example we know there is only 1 incoming stream, so we will not wait
 					// for more
-					let incoming = connection.next().await.expect("no stream found")?;
+					let incoming = connection.next().await.expect("no stream found");
 					println!(
 						"[server] New incoming stream from: {}",
 						connection.remote_address()
@@ -133,7 +133,6 @@ async fn main() -> Result<()> {
 			receiver.finish().await?;
 
 			connection.close_incoming().await?;
-			println!("finish");
 			client.close_incoming().await?;
 
 			// wait for client to finish cleanly

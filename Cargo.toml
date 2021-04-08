@@ -15,7 +15,7 @@ test = []
 [dependencies]
 bincode = "1"
 bytes = "1"
-allochronic-util = { git = "https://github.com/khonsulabs/allochronic" }
+allochronic-util = { git = "https://github.com/khonsulabs/allochronic", branch = "main" }
 flume = "0.10"
 futures-channel = "0.3"
 futures-util = "0.3"

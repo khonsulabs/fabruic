@@ -41,9 +41,9 @@ pub struct Connection {
 	/// Initiate new connections or close socket.
 	connection: quinn::Connection,
 	/// Receive incoming streams.
-	receiver: RecvStream<'static, Result<Incoming>>,
+	receiver: RecvStream<'static, Incoming>,
 	/// [`Task`] handling new incoming streams.
-	task: Task<()>,
+	task: Task<Result<()>>,
 }
 
 impl Debug for Connection {
@@ -71,15 +71,22 @@ impl Connection {
 					connecting: &mut bi_streams => connecting,
 					_: &mut shutdown_receiver => None,
 				} {
-					let incoming = result
-						.map(|(sender, receiver)| Incoming::new(sender, receiver))
-						.map_err(Error::ReceiveStream);
+					match result {
+						Ok((incoming_sender, incoming_receiver)) =>
+							if sender
+								.send(Incoming::new(incoming_sender, incoming_receiver))
+								.is_err()
+							{
+								// if there is no receiver, it means that we dropped the last
+								// `Connection`
+								break;
+							},
 
-					// if there is no receiver, it means that we dropped the last `Connection`
-					if sender.send(incoming).is_err() {
-						break;
+						Err(error) => return Err(Error::ReceiveStream(error)),
 					}
 				}
+
+				Ok(())
 			},
 			shutdown_sender,
 		);
@@ -126,9 +133,10 @@ impl Connection {
 	/// finish first.
 	///
 	/// # Errors
-	/// [`Error::AlreadyClosed`] if it was already closed.
+	/// - [`Error::ReceiveStream`] if the connection was lost
+	/// - [`Error::AlreadyClosed`] if it was already closed
 	pub async fn close_incoming(&self) -> Result<()> {
-		self.task.close(()).await
+		self.task.close(()).await?
 	}
 
 	/// Close the [`Connection`] immediately.
@@ -137,15 +145,16 @@ impl Connection {
 	/// [`Receiver`] can't be gracefull closed from the receiving end.
 	///
 	/// # Errors
-	/// [`Error::AlreadyClosed`] if it was already closed.
+	/// - [`Error::ReceiveStream`] if the connection was lost
+	/// - [`Error::AlreadyClosed`] if it was already closed
 	pub async fn close(&self) -> Result<()> {
 		self.connection.close(VarInt::from_u32(0), &[]);
-		(&self.task).await
+		(&self.task).await?
 	}
 }
 
 impl Stream for Connection {
-	type Item = Result<Incoming>;
+	type Item = Incoming;
 
 	fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
 		if self.receiver.is_terminated() {

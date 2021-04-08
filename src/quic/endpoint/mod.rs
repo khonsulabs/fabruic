@@ -420,7 +420,7 @@ async fn close_incoming() -> Result<()> {
 		let _server_stream = server_connection
 			.next()
 			.await
-			.expect("client dropped")?
+			.expect("client dropped")
 			.accept_stream::<()>();
 	}
 
