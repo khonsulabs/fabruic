@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../index.html">top level</a> - <a href="index.html">src</a> - lib.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-04 17:51:58</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-08 23:13:42</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -71,8 +71,27 @@
 <div class="line"><span id="50" class="lineNum"><a href="#50">50</a></span><span class="counterUnCov"></span><span class="lineUnCov">	warn(rustdoc::all),</span></div>
 <div class="line"><span id="51" class="lineNum"><a href="#51">51</a></span><span class="counterUnCov"></span><span class="lineUnCov">	allow(rustdoc::missing_doc_code_examples, rustdoc::private_doc_tests)</span></div>
 <div class="line"><span id="52" class="lineNum"><a href="#52">52</a></span><span class="counterUnCov"></span><span class="lineUnCov">)]</span></div>
-<div class="line"><span id="53" class="lineNum"><a href="#53">53</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterUnCov"></span><span class="lineUnCov">//! TODO</span></div>
+<div class="line"><span id="53" class="lineNum"><a href="#53">53</a></span><span class="counterUnCov"></span><span class="lineUnCov">#![cfg_attr(</span></div>
+<div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterUnCov"></span><span class="lineUnCov">	test,</span></div>
+<div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterUnCov"></span><span class="lineUnCov">	allow(</span></div>
+<div class="line"><span id="56" class="lineNum"><a href="#56">56</a></span><span class="counterUnCov"></span><span class="lineUnCov">		clippy::expect_used,</span></div>
+<div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterUnCov"></span><span class="lineUnCov">		clippy::integer_arithmetic,</span></div>
+<div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterUnCov"></span><span class="lineUnCov">		clippy::panic,</span></div>
+<div class="line"><span id="59" class="lineNum"><a href="#59">59</a></span><span class="counterUnCov"></span><span class="lineUnCov">		clippy::panic_in_result_fn</span></div>
+<div class="line"><span id="60" class="lineNum"><a href="#60">60</a></span><span class="counterUnCov"></span><span class="lineUnCov">	)</span></div>
+<div class="line"><span id="61" class="lineNum"><a href="#61">61</a></span><span class="counterUnCov"></span><span class="lineUnCov">)]</span></div>
+<div class="line"><span id="62" class="lineNum"><a href="#62">62</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="63" class="lineNum"><a href="#63">63</a></span><span class="counterUnCov"></span><span class="lineUnCov">//! TODO</span></div>
+<div class="line"><span id="64" class="lineNum"><a href="#64">64</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="65" class="lineNum"><a href="#65">65</a></span><span class="counterUnCov"></span><span class="lineUnCov">mod certificate;</span></div>
+<div class="line"><span id="66" class="lineNum"><a href="#66">66</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub mod error;</span></div>
+<div class="line"><span id="67" class="lineNum"><a href="#67">67</a></span><span class="counterUnCov"></span><span class="lineUnCov">mod quic;</span></div>
+<div class="line"><span id="68" class="lineNum"><a href="#68">68</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="69" class="lineNum"><a href="#69">69</a></span><span class="counterUnCov"></span><span class="lineUnCov">#[cfg(feature = &quot;certificate&quot;)]</span></div>
+<div class="line"><span id="70" class="lineNum"><a href="#70">70</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub use certificate::generate_self_signed;</span></div>
+<div class="line"><span id="71" class="lineNum"><a href="#71">71</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub use certificate::{Certificate, Dangerous, PrivateKey};</span></div>
+<div class="line"><span id="72" class="lineNum"><a href="#72">72</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub use error::{Error, Result};</span></div>
+<div class="line"><span id="73" class="lineNum"><a href="#73">73</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub use quic::{Builder, Connection, Endpoint, Incoming, Receiver, Sender};</span></div>
 </div>
 </body>
 </html>
