@@ -39,7 +39,7 @@ jobs:
 
       - name: Generate Docs
         run: |
-          rustup toolchain install nightly --profile minimal --force --allow-downgrade
+          rustup install nightly --profile minimal
           cargo +nightly doc --no-deps --workspace --all-features
 
       - name: Deploy Docs
@@ -60,7 +60,7 @@ jobs:
 
       - name: Install code coverage requirements
         run: |
-          rustup toolchain install nightly --profile minimal --component llvm-tools-preview --force --allow-downgrade
+          rustup toolchain install nightly --profile minimal --component llvm-tools-preview --allow-downgrade
           # grcov uses "llvm-tools-preview" of the current default toolchain
           rustup default nightly
           # Current versions are causing "[ERROR] Execution count overflow detected."
@@ -97,7 +97,7 @@ jobs:
 
       - name: Rust Formatting
         run: |
-          rustup toolchain install nightly --profile minimal --component rustfmt --force --allow-downgrade
+          rustup toolchain install nightly --profile minimal --component rustfmt --allow-downgrade
           cargo +nightly fmt -- --check
 
       - name: Prettier
