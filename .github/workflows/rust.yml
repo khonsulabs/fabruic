@@ -69,8 +69,8 @@ jobs:
 
       - name: Run code coverage
         run: |
-          LLVM_PROFILE_FILE="%m.profraw" cargo +nightly test --workspace --all-targets
-          ./grcov . --binary-path ./target/debug/ -s . -t html --branch --ignore-not-existing -o coverage/
+          LLVM_PROFILE_FILE="profraw/%m.profraw" cargo +nightly test --workspace
+          ./grcov profraw -b target/debug -s . -t html --branch --ignore-not-existing -o coverage
         env:
           CARGO_INCREMENTAL: 0
           RUSTFLAGS: "-Zinstrument-coverage"
