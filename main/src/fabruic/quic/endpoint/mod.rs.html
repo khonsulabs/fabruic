@@ -475,6 +475,7 @@
 <span id="472">472</span>
 <span id="473">473</span>
 <span id="474">474</span>
+<span id="475">475</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Starting point to create a QUIC enabled network socket.</span>
 
@@ -716,6 +717,7 @@
 	<span class="doccomment">///   established</span>
 	<span class="doccomment">/// - [`Error::Connecting`] if the connection to the given `address` failed</span>
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;dns&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">doc</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;dns&quot;</span>)))]</span>
 	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">connect_with</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">port</span>: <span class="ident">u16</span>, <span class="ident">domain</span>: <span class="ident">S</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Connection</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">ResolverConfig::cloudflare_https</span>();
 		<span class="comment">// `validate` enforces DNSSEC</span>

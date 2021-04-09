@@ -266,6 +266,8 @@
 <span id="263">263</span>
 <span id="264">264</span>
 <span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Creating [`Certificate`]s.</span>
 
@@ -310,6 +312,7 @@
 	<span class="doccomment">/// - [`Error::DomainCertificate`] if the certificate doesn&#39;t contain a</span>
 	<span class="doccomment">///   domain name</span>
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;certificate&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">doc</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;certificate&quot;</span>)))]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_der</span>(<span class="ident">certificate</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
 		<span class="kw">use</span> <span class="ident">x509_parser::certificate::X509Certificate</span>;
 
@@ -470,6 +473,7 @@
 
 <span class="doccomment">/// Generate a self signed certificate.</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;certificate&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">doc</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;certificate&quot;</span>)))]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">generate_self_signed</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">domain</span>: <span class="ident">S</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">Certificate</span>, <span class="ident">PrivateKey</span>) {
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::expect_used</span>)]</span>
 	<span class="kw">let</span> <span class="ident">key_pair</span> <span class="op">=</span> <span class="ident">rcgen::generate_simple_self_signed</span>(<span class="macro">vec!</span>[<span class="ident">domain</span>.<span class="ident">into</span>()])
