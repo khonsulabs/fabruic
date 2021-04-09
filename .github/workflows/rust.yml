@@ -60,7 +60,7 @@ jobs:
 
       - name: Install code coverage requirements
         run: |
-          rustup toolchain install nightly --profile minimal --component llvm-tools-preview
+          rustup toolchain install nightly --component llvm-tools-preview
           # Current versions are causing "[ERROR] Execution count overflow detected."
           # https://github.com/mozilla/grcov/issues/555
           # curl -L https://github.com/mozilla/grcov/releases/latest/download/grcov-linux-x86_64.tar.bz2 | tar jxf -
@@ -69,7 +69,7 @@ jobs:
       - name: Run code coverage
         run: |
           LLVM_PROFILE_FILE="profraw/%m.profraw" cargo +nightly test --workspace
-          ./grcov profraw -b target/debug -s . -t html --ignore target/debug/examples --branch --ignore-not-existing -o coverage
+          ./grcov profraw -b target/debug -s . -t html --branch --ignore-not-existing -o coverage
         env:
           CARGO_INCREMENTAL: 0
           RUSTFLAGS: "-Zinstrument-coverage"
