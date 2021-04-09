@@ -181,7 +181,6 @@
 <span id="178">178</span>
 <span id="179">179</span>
 <span id="180">180</span>
-<span id="181">181</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! [`Receiver`] part of a stream.</span>
 
@@ -256,7 +255,6 @@
 
 				<span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">message</span>) <span class="op">=</span> <span class="macro">allochronic_util::select!</span> {
 					<span class="ident">message</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">reader</span> <span class="op">=</span><span class="op">&gt;</span> {
-						<span class="ident">reader</span> <span class="op">=</span> <span class="ident">stream</span>.<span class="ident">read_chunk</span>(<span class="ident">usize::MAX</span>, <span class="bool-val">true</span>);
 						<span class="ident">message</span>
 							.<span class="ident">map_err</span>(<span class="ident">Error::Read</span>)<span class="question-mark">?</span>
 							.<span class="ident">map</span>(<span class="op">|</span><span class="ident">Chunk</span> { <span class="ident">bytes</span>, .. }<span class="op">|</span> <span class="ident">Message::Data</span>(<span class="ident">bytes</span>))
