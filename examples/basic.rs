@@ -94,7 +94,6 @@ async fn main() -> Result<()> {
 		clients.push(tokio::spawn(async move {
 			// build a client
 			let client = Endpoint::new_client(&certificate)?;
-			client.close_incoming().await?;
 			println!("[client:{}] Bound to {}", index, client.local_address()?);
 
 			let connection = client

@@ -72,14 +72,18 @@ impl Endpoint {
 	/// [`Runtime`](tokio::runtime::Runtime).
 	fn new(
 		address: SocketAddr,
-		client_config: ClientConfig,
-		server_config: ServerConfig,
+		client: ClientConfig,
+		server: Option<ServerConfig>,
 	) -> Result<Self> {
 		// configure endpoint for server and client
 		let mut endpoint_builder = quinn::Endpoint::builder();
-		let _ = endpoint_builder
-			.default_client_config(client_config)
-			.listen(server_config);
+		let _ = endpoint_builder.default_client_config(client);
+
+		// client don't need a server configuration
+		let server = server.map_or(false, |server| {
+			let _ = endpoint_builder.listen(server);
+			true
+		});
 
 		// build endpoint
 		let (endpoint, incoming) = endpoint_builder.bind(&address).map_err(Error::BindSocket)?;
@@ -88,12 +92,17 @@ impl Endpoint {
 		let (sender, receiver) = flume::unbounded();
 		let receiver = receiver.into_stream();
 
-		// spawn task handling incoming `Connection`s
-		let (shutdown_sender, shutdown_receiver) = oneshot::channel();
-		let task = Task::new(
-			Self::incoming(incoming, sender, shutdown_receiver),
-			shutdown_sender,
-		);
+		// only servers will have a running task
+		let task = if server {
+			// spawn task handling incoming `Connection`s
+			let (shutdown_sender, shutdown_receiver) = oneshot::channel();
+			Task::new(
+				Self::incoming(incoming, sender, shutdown_receiver),
+				shutdown_sender,
+			)
+		} else {
+			Task::empty()
+		};
 
 		Ok(Self {
 			endpoint,
@@ -277,7 +286,8 @@ impl Endpoint {
 	}
 
 	/// Prevents any new incoming connections. Already incoming connections will
-	/// finish first.
+	/// finish first. This will always fail if the [`Endpoint`] wasn't started
+	/// with a listener.
 	///
 	/// # Errors
 	/// [`Error::AlreadyClosed`] if it was already closed.

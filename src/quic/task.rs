@@ -47,6 +47,12 @@ impl<R> Task<R> {
 
 		Task(Arc::new(Mutex::new(Some(Inner { handle, close }))))
 	}
+
+	/// Builds a new empty [`Task`] that is already closed. This is useful to
+	/// not have to wrap [`Task`] in another [`Option`].
+	pub(super) fn empty() -> Self {
+		Self(Arc::new(Mutex::new(None)))
+	}
 }
 
 impl<R, S> Task<R, S> {

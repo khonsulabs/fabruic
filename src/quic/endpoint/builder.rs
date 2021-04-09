@@ -18,15 +18,22 @@ pub struct Builder {
 	/// [`ClientConfig`] for [`Endpoint`](quinn::Endpoint).
 	client: ClientConfigBuilder,
 	/// [`ServerConfig`](quinn::ServerConfig) for [`Endpoint`](quinn::Endpoint).
-	server: ServerConfigBuilder,
+	server: Option<ServerConfigBuilder>,
 }
 
 impl Debug for Builder {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		f.debug_struct("Builder")
 			.field("address", &self.address)
-			.field("client", &String::from("ClientConfigBuilder"))
-			.field("server", &String::from("ServerConfigBuilder"))
+			.field("client", &"ClientConfigBuilder")
+			.field(
+				"server",
+				&if self.server.is_some() {
+					String::from("Some(ServerConfigBuilder)")
+				} else {
+					String::from("None")
+				},
+			)
 			.finish()
 	}
 }
@@ -57,7 +64,7 @@ impl Builder {
 			#[cfg(feature = "test")]
 			address: ([0, 0, 0, 0, 0, 0, 0, 1], 0).into(),
 			client: ClientConfigBuilder::new(client),
-			server: ServerConfigBuilder::default(),
+			server: None,
 		}
 	}
 
@@ -94,7 +101,8 @@ impl Builder {
 		Ok(self)
 	}
 
-	/// Add a [`Certificate`] and [`PrivateKey`] for the server.
+	/// Add a [`Certificate`] and [`PrivateKey`] for the server. This will add a
+	/// listener to incoming [`Connection`](crate::Connection)s.
 	///
 	/// # Errors
 	/// - [`Error::Certificate`] if the [`Certificate`] couldn't be parsed
@@ -116,6 +124,7 @@ impl Builder {
 		// add keypair
 		let _ = self
 			.server
+			.get_or_insert(ServerConfigBuilder::default())
 			.certificate(chain, private_key)
 			.map_err(Error::InvalidKeyPair)?;
 
@@ -154,8 +163,11 @@ impl Builder {
 			let mut client = self.client.clone().build();
 			client.transport = Arc::clone(&transport);
 
-			let mut server = self.server.clone().build();
-			server.transport = transport;
+			let server = self.server.as_ref().map(|server| {
+				let mut server = server.clone().build();
+				server.transport = transport;
+				server
+			});
 
 			Endpoint::new(self.address, client, server)
 		} {
