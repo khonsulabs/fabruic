@@ -47,6 +47,7 @@
 #![allow(clippy::cargo_common_metadata)]
 #![cfg_attr(
 	doc,
+	feature(doc_cfg),
 	warn(rustdoc::all),
 	allow(rustdoc::missing_doc_code_examples, rustdoc::private_doc_tests)
 )]

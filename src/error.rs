@@ -11,9 +11,11 @@ pub use ring::error::KeyRejected;
 pub use rustls::TLSError;
 use thiserror::Error;
 #[cfg(feature = "dns")]
+#[cfg_attr(doc, doc(cfg(feature = "dns")))]
 pub use trust_dns_resolver::error::ResolveError;
 pub use webpki::Error as WebPkiError;
 #[cfg(feature = "certificate")]
+#[cfg_attr(doc, doc(cfg(feature = "certificate")))]
 pub use x509_parser::{error::X509Error, nom::Err};
 
 /// [`Result`](std::result::Result) type for this [`crate`].
@@ -24,6 +26,7 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 pub enum Error {
 	/// Failed to parse the given certificate.
 	#[cfg(feature = "certificate")]
+	#[cfg_attr(doc, doc(cfg(feature = "certificate")))]
 	#[error("Failed parsing certificate: {error}")]
 	ParseCertificate {
 		/// The certificate passed to
@@ -36,6 +39,7 @@ pub enum Error {
 	/// [`from_der`](crate::Certificate::from_der) found to contain
 	/// uncorrelated bytes.
 	#[cfg(feature = "certificate")]
+	#[cfg_attr(doc, doc(cfg(feature = "certificate")))]
 	#[error("Found dangling bytes in `Certificate`")]
 	DanglingCertificate {
 		/// The certificate passed to
@@ -46,10 +50,12 @@ pub enum Error {
 	},
 	/// [`Certificate`](crate::Certificate) has expired.
 	#[cfg(feature = "certificate")]
+	#[cfg_attr(doc, doc(cfg(feature = "certificate")))]
 	#[error("`Certificate` has expired")]
 	ExpiredCertificate(Vec<u8>),
 	/// [`Certificate`](crate::Certificate) is missing a domain name.
 	#[cfg(feature = "certificate")]
+	#[cfg_attr(doc, doc(cfg(feature = "certificate")))]
 	#[error("`Certificate` is missing a domain name")]
 	DomainCertificate(Vec<u8>),
 	/// Failed to parse the given private key.
@@ -81,10 +87,12 @@ pub enum Error {
 	BindSocket(EndpointError),
 	/// Failed to resolve domain to IP address.
 	#[cfg(feature = "dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "dns")))]
 	#[error("Error resolving domain: {0}")]
 	Resolve(Box<ResolveError>),
 	/// Found no IP address for that domain.
 	#[cfg(feature = "dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "dns")))]
 	#[error("Found no IP address for that domain")]
 	NoIp,
 	/// Returned by [`Endpoint`](crate::Endpoint)

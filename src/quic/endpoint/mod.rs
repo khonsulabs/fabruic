@@ -238,6 +238,7 @@ impl Endpoint {
 	///   established
 	/// - [`Error::Connecting`] if the connection to the given `address` failed
 	#[cfg(feature = "dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "dns")))]
 	pub async fn connect_with<S: AsRef<str>>(&self, port: u16, domain: S) -> Result<Connection> {
 		let config = ResolverConfig::cloudflare_https();
 		// `validate` enforces DNSSEC

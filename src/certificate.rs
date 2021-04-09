@@ -41,6 +41,7 @@ impl Certificate {
 	/// - [`Error::DomainCertificate`] if the certificate doesn't contain a
 	///   domain name
 	#[cfg(feature = "certificate")]
+	#[cfg_attr(doc, doc(cfg(feature = "certificate")))]
 	pub fn from_der(certificate: Vec<u8>) -> Result<Self> {
 		use x509_parser::certificate::X509Certificate;
 
@@ -201,6 +202,7 @@ impl Dangerous for PrivateKey {
 
 /// Generate a self signed certificate.
 #[cfg(feature = "certificate")]
+#[cfg_attr(doc, doc(cfg(feature = "certificate")))]
 pub fn generate_self_signed<S: Into<String>>(domain: S) -> (Certificate, PrivateKey) {
 	#[allow(clippy::expect_used)]
 	let key_pair = rcgen::generate_simple_self_signed(vec![domain.into()])
