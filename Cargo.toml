@@ -25,14 +25,16 @@ pin-project = "1"
 quinn = { version = "0.7", default-features = false, features = ["tls-rustls"] }
 rcgen = { version = "0.8", default-features = false, optional = true }
 ring = "0.16"
-rustls = { version = "0.19", default-features = false, features = ["dangerous_configuration"] }
+rustls = { version = "0.19", default-features = false, features = [
+	"dangerous_configuration"
+] }
 serde = "1"
 thiserror = "1"
 tokio = { version = "1", features = ["rt-multi-thread"] }
 trust-dns-resolver = { version = "0.20", default-features = false, features = [
-    "dns-over-https-rustls",
-    "dnssec-ring",
-    "tokio-runtime",
+	"dns-over-https-rustls",
+	"dnssec-ring",
+	"tokio-runtime",
 ], optional = true }
 webpki = { version = "0.21", default-features = false }
 x509-parser = { version = "0.9", optional = true }
