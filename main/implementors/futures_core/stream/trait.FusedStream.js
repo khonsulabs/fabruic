@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["fabruic"] = [{"text":"impl FusedStream for <a class=\"struct\" href=\"fabruic/struct.Connection.html\" title=\"struct fabruic::Connection\">Connection</a>","synthetic":false,"types":["fabruic::quic::connection::Connection"]},{"text":"impl FusedStream for <a class=\"struct\" href=\"fabruic/struct.Endpoint.html\" title=\"struct fabruic::Endpoint\">Endpoint</a>","synthetic":false,"types":["fabruic::quic::endpoint::Endpoint"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
