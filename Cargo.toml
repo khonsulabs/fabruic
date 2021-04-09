@@ -45,3 +45,7 @@ anyhow = "1"
 fabruic = { path = "", features = ["certificate", "test"] }
 quinn-proto = { version = "0.7", default-features = false }
 tokio = { version = "1", features = ["macros"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
