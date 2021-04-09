@@ -39,7 +39,7 @@ jobs:
 
       - name: Generate Docs
         run: |
-          rustup install nightly --profile minimal
+          rustup toolchain install nightly --profile minimal --force --allow-downgrade
           cargo +nightly doc --no-deps --workspace --all-features
 
       - name: Deploy Docs
@@ -60,7 +60,9 @@ jobs:
 
       - name: Install code coverage requirements
         run: |
-          rustup toolchain install nightly --profile minimal --component llvm-tools-preview --allow-downgrade
+          rustup toolchain install nightly --profile minimal --component llvm-tools-preview --force --allow-downgrade
+          # grcov uses "llvm-tools-preview" of the current default toolchain
+          rustup default nightly
           # Current versions are causing "[ERROR] Execution count overflow detected."
           # https://github.com/mozilla/grcov/issues/555
           # curl -L https://github.com/mozilla/grcov/releases/latest/download/grcov-linux-x86_64.tar.bz2 | tar jxf -
@@ -68,7 +70,7 @@ jobs:
 
       - name: Run code coverage
         run: |
-          LLVM_PROFILE_FILE="profraw/%m.profraw" cargo +nightly test --workspace
+          LLVM_PROFILE_FILE="profraw/%m.profraw" cargo test --workspace
           ./grcov profraw -b target/debug -s . -t html --branch --ignore-not-existing -o coverage
         env:
           CARGO_INCREMENTAL: 0
@@ -95,7 +97,7 @@ jobs:
 
       - name: Rust Formatting
         run: |
-          rustup toolchain install nightly --profile minimal --component rustfmt --allow-downgrade
+          rustup toolchain install nightly --profile minimal --component rustfmt --force --allow-downgrade
           cargo +nightly fmt -- --check
 
       - name: Prettier
