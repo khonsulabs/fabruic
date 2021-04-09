@@ -181,6 +181,36 @@
 <span id="178">178</span>
 <span id="179">179</span>
 <span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! [`Receiver`] part of a stream.</span>
 
@@ -246,7 +276,7 @@
 					<span class="ident">Close</span>,
 				}
 
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">reader</span> <span class="op">=</span> <span class="ident">stream</span>.<span class="ident">read_chunk</span>(<span class="ident">usize::MAX</span>, <span class="bool-val">true</span>);
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">reader</span> <span class="op">=</span> <span class="ident">stream</span>.<span class="ident">read_chunk</span>(<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>(), <span class="bool-val">true</span>);
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">shutdown</span> <span class="op">=</span> <span class="ident">shutdown_receiver</span>;
 
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">length</span> <span class="op">=</span> <span class="number">0</span>;
@@ -263,11 +293,17 @@
 				} {
 					<span class="kw">match</span> <span class="ident">message</span> {
 						<span class="ident">Message::Data</span>(<span class="ident">bytes</span>) <span class="op">=</span><span class="op">&gt;</span> {
-							<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">data</span>) <span class="op">=</span> <span class="self">Self</span><span class="ident">::read_internal</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">data</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">length</span>, <span class="ident">bytes</span>) {
+							<span class="kw">let</span> (<span class="ident">data</span>, <span class="ident">length</span>) <span class="op">=</span> <span class="self">Self</span><span class="ident">::read_internal</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">data</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">length</span>, <span class="ident">bytes</span>);
+
+							<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">data</span>) <span class="op">=</span> <span class="ident">data</span> {
+								<span class="comment">// the receiver might have been dropped</span>
 								<span class="kw">if</span> <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">data</span>).<span class="ident">is_err</span>() {
 									<span class="kw">break</span>;
 								}
 							}
+
+							<span class="comment">// `read_internal` calculated how much we need to read next</span>
+							<span class="ident">reader</span> <span class="op">=</span> <span class="ident">stream</span>.<span class="ident">read_chunk</span>(<span class="ident">length</span>, <span class="bool-val">true</span>);
 						}
 						<span class="ident">Message::Close</span> <span class="op">=</span><span class="op">&gt;</span> {
 							<span class="ident">stream</span>
@@ -286,49 +322,73 @@
 		<span class="self">Self</span> { <span class="ident">receiver</span>, <span class="ident">task</span> }
 	}
 
-	<span class="doccomment">/// Receive any data from the stream. To successfully read all data and not</span>
-	<span class="doccomment">/// break future reads, this has to be called until it returns [`Some`].</span>
+	<span class="doccomment">/// Reads messages from the stream. Calculates the amount needed to read for</span>
+	<span class="doccomment">/// the next message. Returns [`Some`] if a message has completed.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">///  # Errors</span>
-	<span class="doccomment">/// [`Error::Deserialize`] if `data` failed to be</span>
+	<span class="doccomment">/// [`Error::Deserialize`] if a message failed to be</span>
 	<span class="doccomment">/// [`Deserialize`](serde::Deserialize)d.</span>
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::unwrap_in_result</span>)]</span>
 	<span class="kw">fn</span> <span class="ident">read_internal</span><span class="op">&lt;</span><span class="ident">A</span>: <span class="ident">DeserializeOwned</span><span class="op">&gt;</span>(
 		<span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">BytesMut</span>,
 		<span class="ident">length</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">usize</span>,
 		<span class="ident">bytes</span>: <span class="ident">Bytes</span>,
-	) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	) <span class="op">-</span><span class="op">&gt;</span> (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">usize</span>) {
 		<span class="comment">// reserves enough space to put in incoming bytes</span>
 		<span class="ident">data</span>.<span class="ident">reserve</span>(<span class="ident">bytes</span>.<span class="ident">len</span>());
 		<span class="ident">data</span>.<span class="ident">put</span>(<span class="ident">bytes</span>);
 
-		<span class="comment">// if we don&#39;t have a length already and there is enough to aquire</span>
-		<span class="comment">// it</span>
-		<span class="kw">if</span> <span class="kw-2">*</span><span class="ident">length</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">data</span>.<span class="ident">len</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>() {
+		<span class="comment">// if we don&#39;t have a length already</span>
+		<span class="kw">if</span> <span class="kw-2">*</span><span class="ident">length</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+			<span class="comment">// and there is enough to aquire it</span>
 			<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::expect_used</span>)]</span>
-			{
+			<span class="kw">if</span> <span class="ident">data</span>.<span class="ident">len</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>() {
 				<span class="comment">// aquire the length by reading the first 8 bytes (u64)</span>
 				<span class="kw-2">*</span><span class="ident">length</span> <span class="op">=</span> <span class="ident">usize::try_from</span>(<span class="ident">data</span>.<span class="ident">get_uint_le</span>(<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>()))
 					.<span class="ident">expect</span>(<span class="string">&quot;not a 64-bit system&quot;</span>);
+				<span class="comment">// demand the amount we need</span>
+				(<span class="prelude-val">None</span>, <span class="kw-2">*</span><span class="ident">length</span>)
+			}
+			<span class="comment">// or we don&#39;t have enough data to complete 8 bytes (u64)</span>
+			<span class="kw">else</span> {
+				<span class="comment">// reduce the next amount to be read to what we need to reach 8</span>
+				<span class="comment">// bytes (u64)</span>
+				(
+					<span class="prelude-val">None</span>,
+					<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>()
+						.<span class="ident">checked_sub</span>(<span class="ident">data</span>.<span class="ident">len</span>())
+						.<span class="ident">expect</span>(<span class="string">&quot;wrong u64 length&quot;</span>),
+				)
 			}
 		}
+		<span class="comment">// if we have a length</span>
+		<span class="kw">else</span> {
+			<span class="comment">// and the data we gathered is enough</span>
+			<span class="kw">if</span> <span class="ident">data</span>.<span class="ident">len</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="kw-2">*</span><span class="ident">length</span> {
+				<span class="comment">// split of the correct amoutn of data from what we have</span>
+				<span class="comment">// gathered until now</span>
+				<span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">split_to</span>(<span class="kw-2">*</span><span class="ident">length</span>).<span class="ident">reader</span>();
+				<span class="comment">// reset the length so the condition above works again</span>
+				<span class="kw-2">*</span><span class="ident">length</span> <span class="op">=</span> <span class="number">0</span>;
 
-		<span class="comment">// if we have a length and the data we gathered fullfills it</span>
-		<span class="kw">if</span> <span class="kw-2">*</span><span class="ident">length</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">data</span>.<span class="ident">len</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="kw-2">*</span><span class="ident">length</span> {
-			<span class="comment">// split of the correct amoutn of data from what we have</span>
-			<span class="comment">// gathered until now</span>
-			<span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">split_to</span>(<span class="kw-2">*</span><span class="ident">length</span>).<span class="ident">reader</span>();
-			<span class="comment">// reset the length so the condition above works again</span>
-			<span class="kw-2">*</span><span class="ident">length</span> <span class="op">=</span> <span class="number">0</span>;
+				<span class="comment">// deserialize data</span>
+				<span class="comment">// TODO: configure bincode, for example make it bounded</span>
+				<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
+				<span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">bincode::deserialize_from</span>(<span class="ident">data</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">error</span><span class="op">|</span> <span class="ident">Error::Deserialize</span>(<span class="kw-2">*</span><span class="ident">error</span>));
 
-			<span class="comment">// deserialize data</span>
-			<span class="comment">// TODO: configure bincode, for example make it bounded</span>
-			<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
-			<span class="prelude-val">Some</span>(
-				<span class="ident">bincode::deserialize_from</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">A</span><span class="op">&gt;</span>(<span class="ident">data</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">error</span><span class="op">|</span> <span class="ident">Error::Deserialize</span>(<span class="kw-2">*</span><span class="ident">error</span>)),
-			)
-		} <span class="kw">else</span> {
-			<span class="prelude-val">None</span>
+				<span class="comment">// we are done reading, let&#39;s get the next length</span>
+				(<span class="prelude-val">Some</span>(<span class="ident">data</span>), <span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>())
+			}
+			<span class="comment">// or the data is not long enough</span>
+			<span class="kw">else</span> {
+				<span class="comment">// reduce the next amount to be read to what we need to the data</span>
+				<span class="comment">// length</span>
+				<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::expect_used</span>)]</span>
+				(
+					<span class="prelude-val">None</span>,
+					<span class="ident">length</span>.<span class="ident">checked_sub</span>(<span class="ident">data</span>.<span class="ident">len</span>()).<span class="ident">expect</span>(<span class="string">&quot;wrong data length&quot;</span>),
+				)
+			}
 		}
 	}
 
