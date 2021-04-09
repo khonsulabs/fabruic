@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<title>Grcov report &mdash;incoming.rs</title>
+<link rel="stylesheet" href="../../../grcov.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+<body>
+<div class="header">
+<div class="view">
+<div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - incoming.rs</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-09 13:43:44</span></div>
+</div>
+<div class="stats">
+<div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">9</span><span class="linesTotal">10</span><span class="linesPercentage lineHi">90.0 %</span></div>
+<div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">2</span><span class="funsTotal">7</span><span class="funsPercentage funLow">28.6 %</span></div>
+<div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
+</div>
+</div>
+<div class="sourceCode">
+<div class="line"><span id="1" class="lineNum"><a href="#1">1</a></span><span class="counterUnCov"></span><span class="lineUnCov">//! [`Incoming`] stream of a [`Connection`](crate::Connection).</span></div>
+<div class="line"><span id="2" class="lineNum"><a href="#2">2</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="3" class="lineNum"><a href="#3">3</a></span><span class="counterUnCov"></span><span class="lineUnCov">use quinn::{RecvStream, SendStream};</span></div>
+<div class="line"><span id="4" class="lineNum"><a href="#4">4</a></span><span class="counterUnCov"></span><span class="lineUnCov">use serde::{de::DeserializeOwned, Serialize};</span></div>
+<div class="line"><span id="5" class="lineNum"><a href="#5">5</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="6" class="lineNum"><a href="#6">6</a></span><span class="counterUnCov"></span><span class="lineUnCov">use crate::{Receiver, Sender};</span></div>
+<div class="line"><span id="7" class="lineNum"><a href="#7">7</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="8" class="lineNum"><a href="#8">8</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// An intermediate state to define which type to accept in this stream. See</span></div>
+<div class="line"><span id="9" class="lineNum"><a href="#9">9</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// [`accept_stream`](Self::accept_stream).</span></div>
+<div class="line"><span id="10" class="lineNum"><a href="#10">10</a></span><span class="counterUnCov"></span><span class="lineUnCov">#[must_use = &quot;`Incoming` does nothing unless accepted with `Incoming::accept_stream`&quot;]</span></div>
+<div class="line"><span id="11" class="lineNum"><a href="#11">11</a></span><span class="counterNoCov">0</span><span class="lineNoCov">#[derive(Debug)]</span></div>
+<div class="line"><span id="12" class="lineNum"><a href="#12">12</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub struct Incoming {</span></div>
+<div class="line"><span id="13" class="lineNum"><a href="#13">13</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`SendStream`] to build [`Sender`].</span></div>
+<div class="line"><span id="14" class="lineNum"><a href="#14">14</a></span><span class="counterUnCov"></span><span class="lineUnCov">	sender: SendStream,</span></div>
+<div class="line"><span id="15" class="lineNum"><a href="#15">15</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`RecvStream`] to build [`Receiver`].</span></div>
+<div class="line"><span id="16" class="lineNum"><a href="#16">16</a></span><span class="counterUnCov"></span><span class="lineUnCov">	receiver: RecvStream,</span></div>
+<div class="line"><span id="17" class="lineNum"><a href="#17">17</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="18" class="lineNum"><a href="#18">18</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="19" class="lineNum"><a href="#19">19</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl Incoming {</span></div>
+<div class="line"><span id="20" class="lineNum"><a href="#20">20</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Builds a new [`Incoming`] from raw [`quinn`] types.</span></div>
+<div class="line"><span id="21" class="lineNum"><a href="#21">21</a></span><span class="counterCov">1</span><span class="lineCov">	pub(super) fn new(sender: SendStream, receiver: RecvStream) -&gt; Self {</span></div>
+<div class="line"><span id="22" class="lineNum"><a href="#22">22</a></span><span class="counterCov">1</span><span class="lineCov">		Self { sender, receiver }</span></div>
+<div class="line"><span id="23" class="lineNum"><a href="#23">23</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="24" class="lineNum"><a href="#24">24</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="25" class="lineNum"><a href="#25">25</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Accept</span></div>
+<div class="line"><span id="26" class="lineNum"><a href="#26">26</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="27" class="lineNum"><a href="#27">27</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Use `S` and `R` to define which type this stream is sending and</span></div>
+<div class="line"><span id="28" class="lineNum"><a href="#28">28</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// receiving.</span></div>
+<div class="line"><span id="29" class="lineNum"><a href="#29">29</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[must_use]</span></div>
+<div class="line"><span id="30" class="lineNum"><a href="#30">30</a></span><span class="counterCov">1</span><span class="lineCov">	pub fn accept_stream&lt;T: DeserializeOwned + Serialize + Send&gt;(self) -&gt; (Sender&lt;T&gt;, Receiver&lt;T&gt;) {</span></div>
+<div class="line"><span id="31" class="lineNum"><a href="#31">31</a></span><span class="counterCov">1</span><span class="lineCov">		let sender = Sender::new(self.sender);</span></div>
+<div class="line"><span id="32" class="lineNum"><a href="#32">32</a></span><span class="counterCov">1</span><span class="lineCov">		let receiver = Receiver::new(self.receiver);</span></div>
+<div class="line"><span id="33" class="lineNum"><a href="#33">33</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="34" class="lineNum"><a href="#34">34</a></span><span class="counterCov">1</span><span class="lineCov">		(sender, receiver)</span></div>
+<div class="line"><span id="35" class="lineNum"><a href="#35">35</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="36" class="lineNum"><a href="#36">36</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+</div>
+</body>
+</html>
