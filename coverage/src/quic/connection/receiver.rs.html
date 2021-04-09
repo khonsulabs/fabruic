@@ -9,11 +9,11 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - receiver.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-08 23:49:33</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-09 09:37:30</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">60</span><span class="linesTotal">94</span><span class="linesPercentage lineLow">63.8 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">61</span><span class="linesTotal">95</span><span class="linesPercentage lineLow">64.2 %</span></div>
 <div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">4</span><span class="funsTotal">14</span><span class="funsPercentage funLow">28.6 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
@@ -92,113 +92,114 @@
 <div class="line"><span id="71" class="lineNum"><a href="#71">71</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="72" class="lineNum"><a href="#72">72</a></span><span class="counterCov">2</span><span class="lineCov">				while let Some(message) = allochronic_util::select! {</span></div>
 <div class="line"><span id="73" class="lineNum"><a href="#73">73</a></span><span class="counterCov">2</span><span class="lineCov">					message: &amp;mut reader =&gt; {</span></div>
-<div class="line"><span id="74" class="lineNum"><a href="#74">74</a></span><span class="counterCov">2</span><span class="lineCov">						message</span></div>
-<div class="line"><span id="75" class="lineNum"><a href="#75">75</a></span><span class="counterCov">2</span><span class="lineCov">							.map_err(Error::Read)?</span></div>
-<div class="line"><span id="76" class="lineNum"><a href="#76">76</a></span><span class="counterCov">2</span><span class="lineCov">							.map(|Chunk { bytes, .. }| Message::Data(bytes))</span></div>
-<div class="line"><span id="77" class="lineNum"><a href="#77">77</a></span><span class="counterUnCov"></span><span class="lineUnCov">					},</span></div>
-<div class="line"><span id="78" class="lineNum"><a href="#78">78</a></span><span class="counterCov">4</span><span class="lineCov">					shutdown: &amp;mut shutdown =&gt; shutdown.ok().map(|_| Message::Close),</span></div>
-<div class="line"><span id="79" class="lineNum"><a href="#79">79</a></span><span class="counterUnCov"></span><span class="lineUnCov">				} {</span></div>
-<div class="line"><span id="80" class="lineNum"><a href="#80">80</a></span><span class="counterCov">2</span><span class="lineCov">					match message {</span></div>
-<div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterCov">2</span><span class="lineCov">						Message::Data(bytes) =&gt; {</span></div>
-<div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterCov">2</span><span class="lineCov">							if let Some(data) = Self::read_internal(&amp;mut data, &amp;mut length, bytes) {</span></div>
-<div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterNoCov">0</span><span class="lineNoCov">								if sender.send(data).is_err() {</span></div>
-<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterNoCov">0</span><span class="lineNoCov">									break;</span></div>
-<div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterNoCov">0</span><span class="lineNoCov">								}</span></div>
-<div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterCov">2</span><span class="lineCov">							}</span></div>
-<div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterUnCov"></span><span class="lineUnCov">						}</span></div>
-<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterUnCov"></span><span class="lineUnCov">						Message::Close =&gt; {</span></div>
-<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterNoCov">0</span><span class="lineNoCov">							stream</span></div>
-<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterNoCov">0</span><span class="lineNoCov">								.stop(VarInt::from_u32(0))</span></div>
-<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterNoCov">0</span><span class="lineNoCov">								.map_err(|_error| Error::AlreadyClosed)?;</span></div>
-<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterNoCov">0</span><span class="lineNoCov">							break;</span></div>
-<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterUnCov"></span><span class="lineUnCov">						}</span></div>
-<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterUnCov"></span><span class="lineUnCov">					}</span></div>
-<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterUnCov"></span><span class="lineUnCov">				}</span></div>
-<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">4</span><span class="lineCov">				Ok(())</span></div>
-<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">4</span><span class="lineCov">			},</span></div>
-<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterCov">4</span><span class="lineCov">			shutdown_sender,</span></div>
-<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterCov">4</span><span class="lineCov">		);</span></div>
-<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterCov">4</span><span class="lineCov"></span></div>
-<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterCov">4</span><span class="lineCov">		Self { receiver, task }</span></div>
-<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterCov">4</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Receive any data from the stream. To successfully read all data and not</span></div>
-<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// break future reads, this has to be called until it returns [`Some`].</span></div>
-<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///  # Errors</span></div>
-<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Error::Deserialize`] if `data` failed to be</span></div>
-<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Deserialize`](serde::Deserialize)d.</span></div>
-<div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[allow(clippy::unwrap_in_result)]</span></div>
-<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterCov">2</span><span class="lineCov">	fn read_internal&lt;A: DeserializeOwned&gt;(</span></div>
-<div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterCov">2</span><span class="lineCov">		data: &amp;mut BytesMut,</span></div>
-<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterCov">2</span><span class="lineCov">		length: &amp;mut usize,</span></div>
-<div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterCov">2</span><span class="lineCov">		bytes: Bytes,</span></div>
-<div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterCov">2</span><span class="lineCov">	) -&gt; Option&lt;Result&lt;A&gt;&gt; {</span></div>
-<div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterCov">2</span><span class="lineCov">		// reserves enough space to put in incoming bytes</span></div>
-<div class="line"><span id="118" class="lineNum"><a href="#118">118</a></span><span class="counterCov">2</span><span class="lineCov">		data.reserve(bytes.len());</span></div>
-<div class="line"><span id="119" class="lineNum"><a href="#119">119</a></span><span class="counterCov">2</span><span class="lineCov">		data.put(bytes);</span></div>
-<div class="line"><span id="120" class="lineNum"><a href="#120">120</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="121" class="lineNum"><a href="#121">121</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// if we don&#39;t have a length already and there is enough to aquire</span></div>
-<div class="line"><span id="122" class="lineNum"><a href="#122">122</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// it</span></div>
-<div class="line"><span id="123" class="lineNum"><a href="#123">123</a></span><span class="counterCov">2</span><span class="lineCov">		if *length == 0 &amp;&amp; data.len() &gt;= size_of::&lt;u64&gt;() {</span></div>
-<div class="line"><span id="124" class="lineNum"><a href="#124">124</a></span><span class="counterUnCov"></span><span class="lineUnCov">			#[allow(clippy::expect_used)]</span></div>
-<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterCov">2</span><span class="lineCov">			{</span></div>
-<div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterCov">2</span><span class="lineCov">				// aquire the length by reading the first 8 bytes (u64)</span></div>
-<div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterCov">2</span><span class="lineCov">				*length = usize::try_from(data.get_uint_le(size_of::&lt;u64&gt;()))</span></div>
-<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterCov">2</span><span class="lineCov">					.expect(&quot;not a 64-bit system&quot;);</span></div>
-<div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterCov">2</span><span class="lineCov">			}</span></div>
-<div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		}</span></div>
-<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// if we have a length and the data we gathered fullfills it</span></div>
-<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterCov">2</span><span class="lineCov">		if *length != 0 &amp;&amp; data.len() &gt;= *length {</span></div>
-<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// split of the correct amoutn of data from what we have</span></div>
-<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// gathered until now</span></div>
-<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			let data = data.split_to(*length).reader();</span></div>
-<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			// reset the length so the condition above works again</span></div>
-<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			*length = 0;</span></div>
-<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterNoCov">0</span><span class="lineNoCov"></span></div>
-<div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			// deserialize data</span></div>
-<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			// TODO: configure bincode, for example make it bounded</span></div>
-<div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			#[allow(box_pointers)]</span></div>
-<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Some(</span></div>
-<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				bincode::deserialize_from::&lt;_, A&gt;(data).map_err(|error| Error::Deserialize(*error)),</span></div>
-<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			)</span></div>
-<div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
-<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterCov">2</span><span class="lineCov">			None</span></div>
-<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterCov">2</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Wait for the [`Receiver`] part of the stream to finish gracefully.</span></div>
-<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// This can only be achieved through the peer&#39;s</span></div>
-<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Sender::finish`](crate::Sender::finish) or an error.</span></div>
-<div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
-<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`Error::Read`] if the [`Receiver`] failed to read from the stream</span></div>
-<div class="line"><span id="158" class="lineNum"><a href="#158">158</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`Error::AlreadyClosed`] if it has already been closed</span></div>
-<div class="line"><span id="159" class="lineNum"><a href="#159">159</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub async fn finish(&amp;self) -&gt; Result&lt;()&gt; {</span></div>
-<div class="line"><span id="160" class="lineNum"><a href="#160">160</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		(&amp;self.task).await?</span></div>
-<div class="line"><span id="161" class="lineNum"><a href="#161">161</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
-<div class="line"><span id="162" class="lineNum"><a href="#162">162</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="163" class="lineNum"><a href="#163">163</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Close the [`Receiver`] immediately. To close a [`Receiver`] gracefully</span></div>
-<div class="line"><span id="164" class="lineNum"><a href="#164">164</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// use [`finish`](Self::finish).</span></div>
-<div class="line"><span id="165" class="lineNum"><a href="#165">165</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="166" class="lineNum"><a href="#166">166</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
-<div class="line"><span id="167" class="lineNum"><a href="#167">167</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`Error::Read`] if the [`Receiver`] failed to read from the stream</span></div>
-<div class="line"><span id="168" class="lineNum"><a href="#168">168</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`Error::AlreadyClosed`] if it has already been closed</span></div>
-<div class="line"><span id="169" class="lineNum"><a href="#169">169</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub async fn close(&amp;self) -&gt; Result&lt;()&gt; {</span></div>
-<div class="line"><span id="170" class="lineNum"><a href="#170">170</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.task.close(()).await?</span></div>
-<div class="line"><span id="171" class="lineNum"><a href="#171">171</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
-<div class="line"><span id="172" class="lineNum"><a href="#172">172</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
-<div class="line"><span id="173" class="lineNum"><a href="#173">173</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="174" class="lineNum"><a href="#174">174</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;T&gt; Stream for Receiver&lt;T&gt; {</span></div>
-<div class="line"><span id="175" class="lineNum"><a href="#175">175</a></span><span class="counterUnCov"></span><span class="lineUnCov">	type Item = Result&lt;T&gt;;</span></div>
-<div class="line"><span id="176" class="lineNum"><a href="#176">176</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="177" class="lineNum"><a href="#177">177</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
-<div class="line"><span id="178" class="lineNum"><a href="#178">178</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.receiver.poll_next_unpin(cx)</span></div>
-<div class="line"><span id="179" class="lineNum"><a href="#179">179</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
-<div class="line"><span id="180" class="lineNum"><a href="#180">180</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="74" class="lineNum"><a href="#74">74</a></span><span class="counterCov">2</span><span class="lineCov">						reader = stream.read_chunk(usize::MAX, true);</span></div>
+<div class="line"><span id="75" class="lineNum"><a href="#75">75</a></span><span class="counterCov">2</span><span class="lineCov">						message</span></div>
+<div class="line"><span id="76" class="lineNum"><a href="#76">76</a></span><span class="counterCov">2</span><span class="lineCov">							.map_err(Error::Read)?</span></div>
+<div class="line"><span id="77" class="lineNum"><a href="#77">77</a></span><span class="counterCov">2</span><span class="lineCov">							.map(|Chunk { bytes, .. }| Message::Data(bytes))</span></div>
+<div class="line"><span id="78" class="lineNum"><a href="#78">78</a></span><span class="counterUnCov"></span><span class="lineUnCov">					},</span></div>
+<div class="line"><span id="79" class="lineNum"><a href="#79">79</a></span><span class="counterCov">4</span><span class="lineCov">					shutdown: &amp;mut shutdown =&gt; shutdown.ok().map(|_| Message::Close),</span></div>
+<div class="line"><span id="80" class="lineNum"><a href="#80">80</a></span><span class="counterUnCov"></span><span class="lineUnCov">				} {</span></div>
+<div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterCov">2</span><span class="lineCov">					match message {</span></div>
+<div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterCov">2</span><span class="lineCov">						Message::Data(bytes) =&gt; {</span></div>
+<div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterCov">2</span><span class="lineCov">							if let Some(data) = Self::read_internal(&amp;mut data, &amp;mut length, bytes) {</span></div>
+<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterNoCov">0</span><span class="lineNoCov">								if sender.send(data).is_err() {</span></div>
+<div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterNoCov">0</span><span class="lineNoCov">									break;</span></div>
+<div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterNoCov">0</span><span class="lineNoCov">								}</span></div>
+<div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterCov">2</span><span class="lineCov">							}</span></div>
+<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterUnCov"></span><span class="lineUnCov">						}</span></div>
+<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterUnCov"></span><span class="lineUnCov">						Message::Close =&gt; {</span></div>
+<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterNoCov">0</span><span class="lineNoCov">							stream</span></div>
+<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterNoCov">0</span><span class="lineNoCov">								.stop(VarInt::from_u32(0))</span></div>
+<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterNoCov">0</span><span class="lineNoCov">								.map_err(|_error| Error::AlreadyClosed)?;</span></div>
+<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterNoCov">0</span><span class="lineNoCov">							break;</span></div>
+<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterUnCov"></span><span class="lineUnCov">						}</span></div>
+<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterUnCov"></span><span class="lineUnCov">					}</span></div>
+<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterUnCov"></span><span class="lineUnCov">				}</span></div>
+<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">4</span><span class="lineCov">				Ok(())</span></div>
+<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterCov">4</span><span class="lineCov">			},</span></div>
+<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterCov">4</span><span class="lineCov">			shutdown_sender,</span></div>
+<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterCov">4</span><span class="lineCov">		);</span></div>
+<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterCov">4</span><span class="lineCov"></span></div>
+<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterCov">4</span><span class="lineCov">		Self { receiver, task }</span></div>
+<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterCov">4</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Receive any data from the stream. To successfully read all data and not</span></div>
+<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// break future reads, this has to be called until it returns [`Some`].</span></div>
+<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///  # Errors</span></div>
+<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Error::Deserialize`] if `data` failed to be</span></div>
+<div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Deserialize`](serde::Deserialize)d.</span></div>
+<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[allow(clippy::unwrap_in_result)]</span></div>
+<div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterCov">2</span><span class="lineCov">	fn read_internal&lt;A: DeserializeOwned&gt;(</span></div>
+<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterCov">2</span><span class="lineCov">		data: &amp;mut BytesMut,</span></div>
+<div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterCov">2</span><span class="lineCov">		length: &amp;mut usize,</span></div>
+<div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterCov">2</span><span class="lineCov">		bytes: Bytes,</span></div>
+<div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterCov">2</span><span class="lineCov">	) -&gt; Option&lt;Result&lt;A&gt;&gt; {</span></div>
+<div class="line"><span id="118" class="lineNum"><a href="#118">118</a></span><span class="counterCov">2</span><span class="lineCov">		// reserves enough space to put in incoming bytes</span></div>
+<div class="line"><span id="119" class="lineNum"><a href="#119">119</a></span><span class="counterCov">2</span><span class="lineCov">		data.reserve(bytes.len());</span></div>
+<div class="line"><span id="120" class="lineNum"><a href="#120">120</a></span><span class="counterCov">2</span><span class="lineCov">		data.put(bytes);</span></div>
+<div class="line"><span id="121" class="lineNum"><a href="#121">121</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="122" class="lineNum"><a href="#122">122</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// if we don&#39;t have a length already and there is enough to aquire</span></div>
+<div class="line"><span id="123" class="lineNum"><a href="#123">123</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// it</span></div>
+<div class="line"><span id="124" class="lineNum"><a href="#124">124</a></span><span class="counterCov">2</span><span class="lineCov">		if *length == 0 &amp;&amp; data.len() &gt;= size_of::&lt;u64&gt;() {</span></div>
+<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterUnCov"></span><span class="lineUnCov">			#[allow(clippy::expect_used)]</span></div>
+<div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterCov">2</span><span class="lineCov">			{</span></div>
+<div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterCov">2</span><span class="lineCov">				// aquire the length by reading the first 8 bytes (u64)</span></div>
+<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterCov">2</span><span class="lineCov">				*length = usize::try_from(data.get_uint_le(size_of::&lt;u64&gt;()))</span></div>
+<div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterCov">2</span><span class="lineCov">					.expect(&quot;not a 64-bit system&quot;);</span></div>
+<div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterCov">2</span><span class="lineCov">			}</span></div>
+<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		}</span></div>
+<div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// if we have a length and the data we gathered fullfills it</span></div>
+<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterCov">2</span><span class="lineCov">		if *length != 0 &amp;&amp; data.len() &gt;= *length {</span></div>
+<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// split of the correct amoutn of data from what we have</span></div>
+<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// gathered until now</span></div>
+<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			let data = data.split_to(*length).reader();</span></div>
+<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			// reset the length so the condition above works again</span></div>
+<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			*length = 0;</span></div>
+<div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterNoCov">0</span><span class="lineNoCov"></span></div>
+<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			// deserialize data</span></div>
+<div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			// TODO: configure bincode, for example make it bounded</span></div>
+<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			#[allow(box_pointers)]</span></div>
+<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Some(</span></div>
+<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				bincode::deserialize_from::&lt;_, A&gt;(data).map_err(|error| Error::Deserialize(*error)),</span></div>
+<div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			)</span></div>
+<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
+<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterCov">2</span><span class="lineCov">			None</span></div>
+<div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
+<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterCov">2</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Wait for the [`Receiver`] part of the stream to finish gracefully.</span></div>
+<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// This can only be achieved through the peer&#39;s</span></div>
+<div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Sender::finish`](crate::Sender::finish) or an error.</span></div>
+<div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
+<div class="line"><span id="158" class="lineNum"><a href="#158">158</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`Error::Read`] if the [`Receiver`] failed to read from the stream</span></div>
+<div class="line"><span id="159" class="lineNum"><a href="#159">159</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`Error::AlreadyClosed`] if it has already been closed</span></div>
+<div class="line"><span id="160" class="lineNum"><a href="#160">160</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub async fn finish(&amp;self) -&gt; Result&lt;()&gt; {</span></div>
+<div class="line"><span id="161" class="lineNum"><a href="#161">161</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		(&amp;self.task).await?</span></div>
+<div class="line"><span id="162" class="lineNum"><a href="#162">162</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
+<div class="line"><span id="163" class="lineNum"><a href="#163">163</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="164" class="lineNum"><a href="#164">164</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Close the [`Receiver`] immediately. To close a [`Receiver`] gracefully</span></div>
+<div class="line"><span id="165" class="lineNum"><a href="#165">165</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// use [`finish`](Self::finish).</span></div>
+<div class="line"><span id="166" class="lineNum"><a href="#166">166</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="167" class="lineNum"><a href="#167">167</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
+<div class="line"><span id="168" class="lineNum"><a href="#168">168</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`Error::Read`] if the [`Receiver`] failed to read from the stream</span></div>
+<div class="line"><span id="169" class="lineNum"><a href="#169">169</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`Error::AlreadyClosed`] if it has already been closed</span></div>
+<div class="line"><span id="170" class="lineNum"><a href="#170">170</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub async fn close(&amp;self) -&gt; Result&lt;()&gt; {</span></div>
+<div class="line"><span id="171" class="lineNum"><a href="#171">171</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.task.close(()).await?</span></div>
+<div class="line"><span id="172" class="lineNum"><a href="#172">172</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
+<div class="line"><span id="173" class="lineNum"><a href="#173">173</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="174" class="lineNum"><a href="#174">174</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="175" class="lineNum"><a href="#175">175</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;T&gt; Stream for Receiver&lt;T&gt; {</span></div>
+<div class="line"><span id="176" class="lineNum"><a href="#176">176</a></span><span class="counterUnCov"></span><span class="lineUnCov">	type Item = Result&lt;T&gt;;</span></div>
+<div class="line"><span id="177" class="lineNum"><a href="#177">177</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="178" class="lineNum"><a href="#178">178</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
+<div class="line"><span id="179" class="lineNum"><a href="#179">179</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.receiver.poll_next_unpin(cx)</span></div>
+<div class="line"><span id="180" class="lineNum"><a href="#180">180</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
+<div class="line"><span id="181" class="lineNum"><a href="#181">181</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 </div>
 </body>
 </html>
