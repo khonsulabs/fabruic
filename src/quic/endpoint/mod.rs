@@ -58,10 +58,8 @@ impl Endpoint {
 		Builder::new()
 	}
 
-	/// Encapsulates common construction paths for
-	/// [`new_server`](Endpoint::new_server) and
-	/// [`new_client`](Endpoint::new_client). Must be called from inside the
-	/// Tokio [`Runtime`](tokio::runtime::Runtime).
+	/// Builds a new [`Endpoint`] from raw [`quinn`] types. Must be called from
+	/// inside the Tokio [`Runtime`](tokio::runtime::Runtime).
 	///
 	/// # Errors
 	/// [`Error::BindSocket`] if the socket couldn't be bound to the given
@@ -114,6 +112,12 @@ impl Endpoint {
 	/// Simplified version of creating a client. See [`Builder`] for more
 	/// sophisticated configuration. Must be called from inside the Tokio
 	/// [`Runtime`](tokio::runtime::Runtime).
+	///
+	/// Deviates from default [`Builder`] configuration only by
+	/// `Builder::add_ca`.
+	///
+	/// # Notes
+	/// This configuration will not be able to receive new [`Connection`]s.
 	///
 	/// # Errors
 	/// - [`Error::Certificate`] if the [`Certificate`] couldn't be parsed
