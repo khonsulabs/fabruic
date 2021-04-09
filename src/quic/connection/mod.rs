@@ -50,7 +50,7 @@ impl Debug for Connection {
 	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
 		f.debug_struct("Connection")
 			.field("connection", &self.connection)
-			.field("receiver", &String::from("RecvStream<Result<Incoming>>"))
+			.field("receiver", &"RecvStream<Result<Incoming>>")
 			.field("task", &self.task)
 			.finish()
 	}

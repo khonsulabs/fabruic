@@ -29,9 +29,9 @@ impl Debug for Builder {
 			.field(
 				"server",
 				&if self.server.is_some() {
-					String::from("Some(ServerConfigBuilder)")
+					"Some(ServerConfigBuilder)"
 				} else {
-					String::from("None")
+					"None"
 				},
 			)
 			.finish()
@@ -172,11 +172,7 @@ impl Builder {
 			Endpoint::new(self.address, client, server)
 		} {
 			Ok(endpoint) => Ok(endpoint),
-			Err(error) => Err((error, Self {
-				address: self.address,
-				client: self.client,
-				server: self.server,
-			})),
+			Err(error) => Err((error, self)),
 		}
 	}
 }

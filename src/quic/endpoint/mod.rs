@@ -45,7 +45,7 @@ impl Debug for Endpoint {
 	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
 		f.debug_struct("Server")
 			.field("endpoint", &self.endpoint)
-			.field("receiver", &String::from("RecvStream<Connection>"))
+			.field("receiver", &"RecvStream<Connection>")
 			.field("task", &self.task)
 			.finish()
 	}

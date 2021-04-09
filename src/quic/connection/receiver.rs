@@ -33,7 +33,7 @@ pub struct Receiver<T: 'static> {
 impl<T> Debug for Receiver<T> {
 	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
 		f.debug_struct("Receiver")
-			.field("receiver", &String::from("RecvStream<Result<T>>"))
+			.field("receiver", &"RecvStream<Result<T>>")
 			.field("task", &self.task)
 			.finish()
 	}
