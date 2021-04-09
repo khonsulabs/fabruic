@@ -474,6 +474,7 @@
 <span id="471">471</span>
 <span id="472">472</span>
 <span id="473">473</span>
+<span id="474">474</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Starting point to create a QUIC enabled network socket.</span>
 
@@ -535,10 +536,8 @@
 		<span class="ident">Builder::new</span>()
 	}
 
-	<span class="doccomment">/// Encapsulates common construction paths for</span>
-	<span class="doccomment">/// [`new_server`](Endpoint::new_server) and</span>
-	<span class="doccomment">/// [`new_client`](Endpoint::new_client). Must be called from inside the</span>
-	<span class="doccomment">/// Tokio [`Runtime`](tokio::runtime::Runtime).</span>
+	<span class="doccomment">/// Builds a new [`Endpoint`] from raw [`quinn`] types. Must be called from</span>
+	<span class="doccomment">/// inside the Tokio [`Runtime`](tokio::runtime::Runtime).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
 	<span class="doccomment">/// [`Error::BindSocket`] if the socket couldn&#39;t be bound to the given</span>
@@ -591,6 +590,12 @@
 	<span class="doccomment">/// Simplified version of creating a client. See [`Builder`] for more</span>
 	<span class="doccomment">/// sophisticated configuration. Must be called from inside the Tokio</span>
 	<span class="doccomment">/// [`Runtime`](tokio::runtime::Runtime).</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Deviates from default [`Builder`] configuration only by</span>
+	<span class="doccomment">/// `Builder::add_ca`.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Notes</span>
+	<span class="doccomment">/// This configuration will not be able to receive new [`Connection`]s.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
 	<span class="doccomment">/// - [`Error::Certificate`] if the [`Certificate`] couldn&#39;t be parsed</span>
@@ -754,12 +759,11 @@
 	<span class="doccomment">/// [`close_incoming`](Self::close_incoming),</span>
 	<span class="doccomment">/// [`Sender::finish`](crate::Sender::finish) and</span>
 	<span class="doccomment">/// [`wait_idle`](Self::wait_idle).</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// [`Error::AlreadyClosed`] if it was already closed.</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">close</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">close</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
 		<span class="self">self</span>.<span class="ident">endpoint</span>.<span class="ident">close</span>(<span class="ident">VarInt::from_u32</span>(<span class="number">0</span>), <span class="kw-2">&amp;</span>[]);
-		(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">task</span>).<span class="kw">await</span>
+		<span class="comment">// we only want to wait until it&#39;s actually closed, it might already be closed</span>
+		<span class="comment">// by `close_incoming` or by starting as a client</span>
+		<span class="kw">let</span> <span class="ident">_result</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">task</span>).<span class="kw">await</span>;
 	}
 
 	<span class="doccomment">/// Prevents any new incoming connections. Already incoming connections will</span>
@@ -842,10 +846,8 @@
 		<span class="kw">let</span> <span class="ident">_connection</span> <span class="op">=</span> <span class="ident">server</span>.<span class="ident">next</span>().<span class="kw">await</span>.<span class="ident">expect</span>(<span class="string">&quot;client dropped&quot;</span>)<span class="question-mark">?</span>;
 
 		<span class="comment">// closing the client/server will close all connection immediately</span>
-		<span class="ident">client</span>.<span class="ident">close</span>().<span class="kw">await</span><span class="question-mark">?</span>;
-		<span class="macro">assert!</span>(<span class="macro">matches!</span>(<span class="ident">client</span>.<span class="ident">close</span>().<span class="kw">await</span>, <span class="prelude-val">Err</span>(<span class="ident">Error::AlreadyClosed</span>)));
-		<span class="ident">server</span>.<span class="ident">close</span>().<span class="kw">await</span><span class="question-mark">?</span>;
-		<span class="macro">assert!</span>(<span class="macro">matches!</span>(<span class="ident">server</span>.<span class="ident">close</span>().<span class="kw">await</span>, <span class="prelude-val">Err</span>(<span class="ident">Error::AlreadyClosed</span>)));
+		<span class="ident">client</span>.<span class="ident">close</span>().<span class="kw">await</span>;
+		<span class="ident">server</span>.<span class="ident">close</span>().<span class="kw">await</span>;
 
 		<span class="comment">// connecting to a closed server shouldn&#39;t work</span>
 		<span class="macro">assert!</span>(<span class="macro">matches!</span>(
@@ -880,7 +882,7 @@
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server_connection</span> <span class="op">=</span> <span class="ident">server</span>.<span class="ident">next</span>().<span class="kw">await</span>.<span class="ident">expect</span>(<span class="string">&quot;client dropped&quot;</span>)<span class="question-mark">?</span>;
 
 		<span class="comment">// refuse new incoming connections</span>
-		<span class="ident">client</span>.<span class="ident">close_incoming</span>().<span class="kw">await</span><span class="question-mark">?</span>;
+		<span class="comment">// client never accepts incoming connections</span>
 		<span class="macro">assert!</span>(<span class="macro">matches!</span>(
 			<span class="ident">client</span>.<span class="ident">close_incoming</span>().<span class="kw">await</span>,
 			<span class="prelude-val">Err</span>(<span class="ident">Error::AlreadyClosed</span>)
