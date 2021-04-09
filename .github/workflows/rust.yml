@@ -100,7 +100,8 @@ jobs:
 
       - name: Rust Formatting
         run: |
-          cargo fmt -- --check
+          rustup install nightly
+          cargo +nightly fmt -- --check
 
       - name: Prettier
         run: |

@@ -169,65 +169,72 @@ impl Builder {
 	}
 }
 
-#[tokio::test]
-async fn default() -> Result<()> {
-	let _endpoint = Builder::default().build().map_err(|(error, _)| error)?;
-	Ok(())
-}
+#[cfg(test)]
+mod test {
+	use anyhow::Result;
 
-#[tokio::test]
-async fn new() -> Result<()> {
-	let _endpoint = Builder::new().build().map_err(|(error, _)| error)?;
-	Ok(())
-}
+	use super::*;
 
-#[tokio::test]
-async fn address() -> anyhow::Result<()> {
-	let mut builder = Builder::new();
-	let _ = builder.set_address(([0, 0, 0, 0, 0, 0, 0, 1], 5000).into());
-	let endpoint = builder.build().map_err(|(error, _)| error)?;
+	#[tokio::test]
+	async fn default() -> Result<()> {
+		let _endpoint = Builder::default().build().map_err(|(error, _)| error)?;
+		Ok(())
+	}
 
-	assert_eq!(
-		"[::1]:5000".parse::<SocketAddr>()?,
-		endpoint.local_address()?,
-	);
+	#[tokio::test]
+	async fn new() -> Result<()> {
+		let _endpoint = Builder::new().build().map_err(|(error, _)| error)?;
+		Ok(())
+	}
 
-	Ok(())
-}
+	#[tokio::test]
+	async fn address() -> Result<()> {
+		let mut builder = Builder::new();
+		let _ = builder.set_address(([0, 0, 0, 0, 0, 0, 0, 1], 5000).into());
+		let endpoint = builder.build().map_err(|(error, _)| error)?;
 
-#[tokio::test]
-async fn address_str() -> anyhow::Result<()> {
-	let mut builder = Builder::new();
-	let _ = builder.set_address_str("[::1]:5001")?;
-	let endpoint = builder.build().map_err(|(error, _)| error)?;
+		assert_eq!(
+			"[::1]:5000".parse::<SocketAddr>()?,
+			endpoint.local_address()?,
+		);
 
-	assert_eq!(
-		"[::1]:5001".parse::<SocketAddr>()?,
-		endpoint.local_address()?
-	);
+		Ok(())
+	}
 
-	Ok(())
-}
+	#[tokio::test]
+	async fn address_str() -> Result<()> {
+		let mut builder = Builder::new();
+		let _ = builder.set_address_str("[::1]:5001")?;
+		let endpoint = builder.build().map_err(|(error, _)| error)?;
 
-#[tokio::test]
-async fn ca_key_pair() -> anyhow::Result<()> {
-	use futures_util::StreamExt;
+		assert_eq!(
+			"[::1]:5001".parse::<SocketAddr>()?,
+			endpoint.local_address()?
+		);
 
-	let (certificate, private_key) = crate::generate_self_signed("test");
+		Ok(())
+	}
 
-	// build client
-	let mut builder = Builder::new();
-	let _ = builder.add_ca(&certificate)?;
-	let client = builder.build().map_err(|(error, _)| error)?;
+	#[tokio::test]
+	async fn ca_key_pair() -> Result<()> {
+		use futures_util::StreamExt;
 
-	// build server
-	let mut builder = Builder::new();
-	let _ = builder.add_key_pair(&certificate, &private_key)?;
-	let mut server = builder.build().map_err(|(error, _)| error)?;
+		let (certificate, private_key) = crate::generate_self_signed("test");
 
-	// test connection
-	let _connection = client.connect(server.local_address()?, "test").await?;
-	let _connection = server.next().await.expect("client dropped")?;
+		// build client
+		let mut builder = Builder::new();
+		let _ = builder.add_ca(&certificate)?;
+		let client = builder.build().map_err(|(error, _)| error)?;
 
-	Ok(())
+		// build server
+		let mut builder = Builder::new();
+		let _ = builder.add_key_pair(&certificate, &private_key)?;
+		let mut server = builder.build().map_err(|(error, _)| error)?;
+
+		// test connection
+		let _connection = client.connect(server.local_address()?, "test").await?;
+		let _connection = server.next().await.expect("client dropped")?;
+
+		Ok(())
+	}
 }

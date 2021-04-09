@@ -71,6 +71,7 @@ impl<T> Receiver<T> {
 
 				while let Some(message) = allochronic_util::select! {
 					message: &mut reader => {
+						reader = stream.read_chunk(usize::MAX, true);
 						message
 							.map_err(Error::Read)?
 							.map(|Chunk { bytes, .. }| Message::Data(bytes))

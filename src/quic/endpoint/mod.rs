@@ -312,145 +312,152 @@ impl FusedStream for Endpoint {
 	}
 }
 
-#[test]
-fn builder() {
-	let _builder: Builder = Endpoint::builder();
-}
+#[cfg(test)]
+mod test {
+	use anyhow::Result;
 
-#[tokio::test]
-async fn endpoint() -> anyhow::Result<()> {
-	use futures_util::StreamExt;
+	use super::*;
 
-	let (certificate, private_key) = crate::generate_self_signed("test");
-
-	let client = Endpoint::new_client(&certificate)?;
-	let mut server = Endpoint::new_server(0, &certificate, &private_key)?;
-
-	let _connection = client.connect(server.local_address()?, "test").await?;
-	let _connection = server.next().await.expect("client dropped")?;
-
-	Ok(())
-}
-
-#[tokio::test]
-async fn close() -> Result<()> {
-	use futures_util::StreamExt;
-	use quinn::ConnectionError;
-
-	let (certificate, private_key) = crate::generate_self_signed("test");
-
-	let client = Endpoint::new_client(&certificate)?;
-	let mut server = Endpoint::new_server(0, &certificate, &private_key)?;
-	let address = server.local_address()?;
-
-	// `wait_idle` should never finish unless these `Connection`s are closed, which
-	// they won't unless they are dropped or explicitly closed
-	let _connection = client.connect(address, "test").await?;
-	let _connection = server.next().await.expect("client dropped")?;
-
-	// closing the client/server will close all connection immediately
-	client.close().await?;
-	assert!(matches!(client.close().await, Err(Error::AlreadyClosed)));
-	server.close().await?;
-	assert!(matches!(server.close().await, Err(Error::AlreadyClosed)));
-
-	// connecting to a closed server shouldn't work
-	assert!(matches!(
-		client.connect(address, "test").await,
-		Err(Error::Connecting(ConnectionError::LocallyClosed))
-	));
-
-	// waiting for a new connection on a closed server shouldn't work
-	assert!(matches!(server.next().await, None));
-
-	client.wait_idle().await;
-	server.wait_idle().await;
-
-	Ok(())
-}
-
-#[tokio::test]
-async fn close_incoming() -> Result<()> {
-	use futures_util::StreamExt;
-	use quinn::{ConnectionClose, ConnectionError};
-	use quinn_proto::TransportErrorCode;
-
-	let (certificate, private_key) = crate::generate_self_signed("test");
-
-	let client = Endpoint::new_client(&certificate)?;
-	let mut server = Endpoint::new_server(0, &certificate, &private_key)?;
-	let address = server.local_address()?;
-
-	// these `Connection`s should still work even if new incoming connections are
-	// refused
-	let client_connection = client.connect(address, "test").await?;
-	let mut server_connection = server.next().await.expect("client dropped")?;
-
-	// refuse new incoming connections
-	client.close_incoming().await?;
-	assert!(matches!(
-		client.close_incoming().await,
-		Err(Error::AlreadyClosed)
-	));
-	server.close_incoming().await?;
-	assert!(matches!(
-		server.close_incoming().await,
-		Err(Error::AlreadyClosed)
-	));
-
-	// connecting to a server that refuses new `Connection`s shouldn't work
-	assert!(matches!(
-		client.connect(address, "test").await,
-		Err(Error::Connecting(ConnectionError::ConnectionClosed(
-			ConnectionClose {
-				error_code: TransportErrorCode::CONNECTION_REFUSED,
-				frame_type: None,
-				reason: bytes,
-			}
-		))) if bytes.is_empty()
-	));
-
-	// waiting for a new connection on a server that refuses new `Connection`s
-	// shouldn't work
-	assert!(matches!(server.next().await, None));
-
-	{
-		let (sender, _) = client_connection.open_stream::<(), ()>().await?;
-		sender.send(&())?;
-		let _server_stream = server_connection
-			.next()
-			.await
-			.expect("client dropped")
-			.accept_stream::<()>();
+	#[test]
+	fn builder() {
+		let _builder: Builder = Endpoint::builder();
 	}
 
-	drop(client_connection);
-	drop(server_connection);
+	#[tokio::test]
+	async fn endpoint() -> Result<()> {
+		use futures_util::StreamExt;
 
-	client.wait_idle().await;
-	server.wait_idle().await;
+		let (certificate, private_key) = crate::generate_self_signed("test");
 
-	Ok(())
-}
+		let client = Endpoint::new_client(&certificate)?;
+		let mut server = Endpoint::new_server(0, &certificate, &private_key)?;
 
-#[tokio::test]
-async fn wait_idle() -> Result<()> {
-	use futures_util::StreamExt;
-
-	let (certificate, private_key) = crate::generate_self_signed("test");
-
-	let client = Endpoint::new_client(&certificate)?;
-	let mut server = Endpoint::new_server(0, &certificate, &private_key)?;
-
-	// `wait_idle` will never finish unless the `Connection` closes, which happens
-	// automatically when it's dropped
-	{
 		let _connection = client.connect(server.local_address()?, "test").await?;
 		let _connection = server.next().await.expect("client dropped")?;
+
+		Ok(())
 	}
 
-	client.wait_idle().await;
-	server.wait_idle().await;
+	#[tokio::test]
+	async fn close() -> Result<()> {
+		use futures_util::StreamExt;
+		use quinn::ConnectionError;
 
-	Ok(())
+		let (certificate, private_key) = crate::generate_self_signed("test");
+
+		let client = Endpoint::new_client(&certificate)?;
+		let mut server = Endpoint::new_server(0, &certificate, &private_key)?;
+		let address = server.local_address()?;
+
+		// `wait_idle` should never finish unless these `Connection`s are closed, which
+		// they won't unless they are dropped or explicitly closed
+		let _connection = client.connect(address, "test").await?;
+		let _connection = server.next().await.expect("client dropped")?;
+
+		// closing the client/server will close all connection immediately
+		client.close().await?;
+		assert!(matches!(client.close().await, Err(Error::AlreadyClosed)));
+		server.close().await?;
+		assert!(matches!(server.close().await, Err(Error::AlreadyClosed)));
+
+		// connecting to a closed server shouldn't work
+		assert!(matches!(
+			client.connect(address, "test").await,
+			Err(Error::Connecting(ConnectionError::LocallyClosed))
+		));
+
+		// waiting for a new connection on a closed server shouldn't work
+		assert!(matches!(server.next().await, None));
+
+		client.wait_idle().await;
+		server.wait_idle().await;
+
+		Ok(())
+	}
+
+	#[tokio::test]
+	async fn close_incoming() -> Result<()> {
+		use futures_util::StreamExt;
+		use quinn::{ConnectionClose, ConnectionError};
+		use quinn_proto::TransportErrorCode;
+
+		let (certificate, private_key) = crate::generate_self_signed("test");
+
+		let client = Endpoint::new_client(&certificate)?;
+		let mut server = Endpoint::new_server(0, &certificate, &private_key)?;
+		let address = server.local_address()?;
+
+		// these `Connection`s should still work even if new incoming connections are
+		// refused
+		let client_connection = client.connect(address, "test").await?;
+		let mut server_connection = server.next().await.expect("client dropped")?;
+
+		// refuse new incoming connections
+		client.close_incoming().await?;
+		assert!(matches!(
+			client.close_incoming().await,
+			Err(Error::AlreadyClosed)
+		));
+		server.close_incoming().await?;
+		assert!(matches!(
+			server.close_incoming().await,
+			Err(Error::AlreadyClosed)
+		));
+
+		// connecting to a server that refuses new `Connection`s shouldn't work
+		assert!(matches!(
+			client.connect(address, "test").await,
+			Err(Error::Connecting(ConnectionError::ConnectionClosed(
+				ConnectionClose {
+					error_code: TransportErrorCode::CONNECTION_REFUSED,
+					frame_type: None,
+					reason: bytes,
+				}
+			))) if bytes.is_empty()
+		));
+
+		// waiting for a new connection on a server that refuses new `Connection`s
+		// shouldn't work
+		assert!(matches!(server.next().await, None));
+
+		{
+			let (sender, _) = client_connection.open_stream::<(), ()>().await?;
+			sender.send(&())?;
+			let _server_stream = server_connection
+				.next()
+				.await
+				.expect("client dropped")
+				.accept_stream::<()>();
+		}
+
+		drop(client_connection);
+		drop(server_connection);
+
+		client.wait_idle().await;
+		server.wait_idle().await;
+
+		Ok(())
+	}
+
+	#[tokio::test]
+	async fn wait_idle() -> Result<()> {
+		use futures_util::StreamExt;
+
+		let (certificate, private_key) = crate::generate_self_signed("test");
+
+		let client = Endpoint::new_client(&certificate)?;
+		let mut server = Endpoint::new_server(0, &certificate, &private_key)?;
+
+		// `wait_idle` will never finish unless the `Connection` closes, which happens
+		// automatically when it's dropped
+		{
+			let _connection = client.connect(server.local_address()?, "test").await?;
+			let _connection = server.next().await.expect("client dropped")?;
+		}
+
+		client.wait_idle().await;
+		server.wait_idle().await;
+
+		Ok(())
+	}
 }

@@ -32,7 +32,6 @@ async fn main() -> Result<()> {
 			for _ in 0..CLIENTS {
 				let mut connection = server.next().await.expect("connection failed")?;
 				println!("[server] New Connection: {}", connection.remote_address());
-				let server = server.clone();
 
 				// every new incoming connections is handled in it's own task
 				connections.push(tokio::spawn(async move {
@@ -40,6 +39,7 @@ async fn main() -> Result<()> {
 					// in this example we know there is only 1 incoming stream, so we will not wait
 					// for more
 					let incoming = connection.next().await.expect("no stream found");
+					connection.close_incoming().await?;
 					println!(
 						"[server] New incoming stream from: {}",
 						connection.remote_address()
@@ -65,12 +65,11 @@ async fn main() -> Result<()> {
 					sender.finish().await?;
 					receiver.finish().await?;
 
-					connection.close_incoming().await?;
-					server.close_incoming().await?;
-
 					Result::<_, Error>::Ok(())
 				}));
 			}
+
+			server.close_incoming().await?;
 
 			// wait for all connections to finish
 			for connection in connections {
@@ -95,11 +94,13 @@ async fn main() -> Result<()> {
 		clients.push(tokio::spawn(async move {
 			// build a client
 			let client = Endpoint::new_client(&certificate)?;
+			client.close_incoming().await?;
 			println!("[client:{}] Bound to {}", index, client.local_address()?);
 
 			let connection = client
 				.connect(format!("[::1]:{}", SERVER_PORT).parse()?, SERVER_NAME)
 				.await?;
+			connection.close_incoming().await?;
 			println!(
 				"[client:{}] Successfully connected to {}",
 				index,
@@ -131,9 +132,6 @@ async fn main() -> Result<()> {
 			// wait for stream to finish
 			sender.finish().await?;
 			receiver.finish().await?;
-
-			connection.close_incoming().await?;
-			client.close_incoming().await?;
 
 			// wait for client to finish cleanly
 			client.wait_idle().await;

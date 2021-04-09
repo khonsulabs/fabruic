@@ -67,11 +67,11 @@ impl Connection {
 		let (shutdown_sender, mut shutdown_receiver) = oneshot::channel();
 		let task = Task::new(
 			async move {
-				while let Some(result) = allochronic_util::select! {
+				while let Some(connecting) = allochronic_util::select! {
 					connecting: &mut bi_streams => connecting,
 					_: &mut shutdown_receiver => None,
 				} {
-					match result {
+					match connecting {
 						Ok((incoming_sender, incoming_receiver)) =>
 							if sender
 								.send(Incoming::new(incoming_sender, incoming_receiver))
