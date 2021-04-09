@@ -1,6 +1,6 @@
 use anyhow::{Error, Result};
 use fabruic::Endpoint;
-use futures_util::StreamExt;
+use futures_util::{future, StreamExt};
 
 const SERVER_NAME: &str = "test";
 const SERVER_PORT: u16 = 5000;
@@ -75,8 +75,10 @@ async fn main() -> Result<()> {
 			server.close_incoming().await?;
 
 			// wait for all connections to finish
+			let connections = future::try_join_all(connections).await?;
+
 			for connection in connections {
-				connection.await??;
+				connection?
 			}
 
 			// wait for server to finish cleanly
@@ -144,7 +146,7 @@ async fn main() -> Result<()> {
 		}));
 	}
 
-	let tasks = futures_util::future::try_join_all(tasks).await?;
+	let tasks = future::try_join_all(tasks).await?;
 
 	for task in tasks {
 		task?
