@@ -68,7 +68,7 @@ jobs:
 
       - name: Run code coverage
         run: |
-          LLVM_PROFILE_FILE="%m.profraw" cargo +nightly test --workspace --all-targets
+          LLVM_PROFILE_FILE="%m.profraw" cargo +nightly test --workspace
 
           ./grcov . --binary-path ./target/debug/ -s . -t lcov --branch --ignore-not-existing -o lcov.info;
           bash <(curl -s https://codecov.io/bash) -f lcov.info;
