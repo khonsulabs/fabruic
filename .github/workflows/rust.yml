@@ -68,13 +68,9 @@ jobs:
 
       - name: Run code coverage
         run: |
-          LLVM_PROFILE_FILE="%m.profraw" cargo +nightly test --workspace
-
-          ./grcov . --binary-path ./target/debug/ -s . -t lcov --branch --ignore-not-existing -o lcov.info;
-          bash <(curl -s https://codecov.io/bash) -f lcov.info;
-          ./grcov . --binary-path ./target/debug/ -s . -t html --branch --ignore-not-existing -o coverage/;
+          LLVM_PROFILE_FILE="profraw/%m.profraw" cargo +nightly test --workspace
+          ./grcov profraw -b target/debug -s . -t html --ignore target/debug/examples --branch --ignore-not-existing -o coverage
         env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
           CARGO_INCREMENTAL: 0
           RUSTFLAGS: "-Zinstrument-coverage"
           RUSTDOCFLAGS: "-Cpanic=abort"
