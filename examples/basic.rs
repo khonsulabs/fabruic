@@ -8,11 +8,14 @@ const CLIENTS: usize = 100;
 
 #[tokio::main]
 async fn main() -> Result<()> {
+	// collect all tasks
+	let mut tasks = Vec::with_capacity(CLIENTS + 1);
+
 	// generate a certificate pair
 	let (certificate, private_key) = fabruic::generate_self_signed(SERVER_NAME);
 
 	// start the server
-	let server = {
+	tasks.push({
 		let certificate = certificate.clone();
 
 		// build the server
@@ -82,16 +85,13 @@ async fn main() -> Result<()> {
 
 			Result::<_, Error>::Ok(())
 		})
-	};
-
-	// collect client tasks
-	let mut clients = Vec::with_capacity(CLIENTS);
+	});
 
 	// start 100 clients
 	for index in 0..CLIENTS {
 		let certificate = certificate.clone();
 
-		clients.push(tokio::spawn(async move {
+		tasks.push(tokio::spawn(async move {
 			// build a client
 			let client = Endpoint::new_client(&certificate)?;
 			println!("[client:{}] Bound to {}", index, client.local_address()?);
@@ -144,10 +144,10 @@ async fn main() -> Result<()> {
 		}));
 	}
 
-	server.await??;
+	let tasks = futures_util::future::try_join_all(tasks).await?;
 
-	for client in clients {
-		client.await??;
+	for task in tasks {
+		task?
 	}
 
 	Ok(())
