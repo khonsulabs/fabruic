@@ -62,7 +62,7 @@ impl<T> Receiver<T> {
 					Close,
 				}
 
-				let mut reader = stream.read_chunk(usize::MAX, true);
+				let mut reader = stream.read_chunk(size_of::<u64>(), true);
 				let mut shutdown = shutdown_receiver;
 
 				let mut length = 0;
@@ -79,11 +79,17 @@ impl<T> Receiver<T> {
 				} {
 					match message {
 						Message::Data(bytes) => {
-							if let Some(data) = Self::read_internal(&mut data, &mut length, bytes) {
+							let (data, length) = Self::read_internal(&mut data, &mut length, bytes);
+
+							if let Some(data) = data {
+								// the receiver might have been dropped
 								if sender.send(data).is_err() {
 									break;
 								}
 							}
+
+							// `read_internal` calculated how much we need to read next
+							reader = stream.read_chunk(length, true);
 						}
 						Message::Close => {
 							stream
@@ -102,49 +108,73 @@ impl<T> Receiver<T> {
 		Self { receiver, task }
 	}
 
-	/// Receive any data from the stream. To successfully read all data and not
-	/// break future reads, this has to be called until it returns [`Some`].
+	/// Reads messages from the stream. Calculates the amount needed to read for
+	/// the next message. Returns [`Some`] if a message has completed.
 	///
 	///  # Errors
-	/// [`Error::Deserialize`] if `data` failed to be
+	/// [`Error::Deserialize`] if a message failed to be
 	/// [`Deserialize`](serde::Deserialize)d.
 	#[allow(clippy::unwrap_in_result)]
 	fn read_internal<A: DeserializeOwned>(
 		data: &mut BytesMut,
 		length: &mut usize,
 		bytes: Bytes,
-	) -> Option<Result<A>> {
+	) -> (Option<Result<A>>, usize) {
 		// reserves enough space to put in incoming bytes
 		data.reserve(bytes.len());
 		data.put(bytes);
 
-		// if we don't have a length already and there is enough to aquire
-		// it
-		if *length == 0 && data.len() >= size_of::<u64>() {
+		// if we don't have a length already
+		if *length == 0 {
+			// and there is enough to aquire it
 			#[allow(clippy::expect_used)]
-			{
+			if data.len() >= size_of::<u64>() {
 				// aquire the length by reading the first 8 bytes (u64)
 				*length = usize::try_from(data.get_uint_le(size_of::<u64>()))
 					.expect("not a 64-bit system");
+				// demand the amount we need
+				(None, *length)
+			}
+			// or we don't have enough data to complete 8 bytes (u64)
+			else {
+				// reduce the next amount to be read to what we need to reach 8
+				// bytes (u64)
+				(
+					None,
+					size_of::<u64>()
+						.checked_sub(data.len())
+						.expect("wrong u64 length"),
+				)
 			}
 		}
+		// if we have a length
+		else {
+			// and the data we gathered is enough
+			if data.len() >= *length {
+				// split of the correct amoutn of data from what we have
+				// gathered until now
+				let data = data.split_to(*length).reader();
+				// reset the length so the condition above works again
+				*length = 0;
 
-		// if we have a length and the data we gathered fullfills it
-		if *length != 0 && data.len() >= *length {
-			// split of the correct amoutn of data from what we have
-			// gathered until now
-			let data = data.split_to(*length).reader();
-			// reset the length so the condition above works again
-			*length = 0;
+				// deserialize data
+				// TODO: configure bincode, for example make it bounded
+				#[allow(box_pointers)]
+				let data = bincode::deserialize_from(data).map_err(|error| Error::Deserialize(*error));
 
-			// deserialize data
-			// TODO: configure bincode, for example make it bounded
-			#[allow(box_pointers)]
-			Some(
-				bincode::deserialize_from::<_, A>(data).map_err(|error| Error::Deserialize(*error)),
-			)
-		} else {
-			None
+				// we are done reading, let's get the next length
+				(Some(data), size_of::<u64>())
+			}
+			// or the data is not long enough
+			else {
+				// reduce the next amount to be read to what we need to the data
+				// length
+				#[allow(clippy::expect_used)]
+				(
+					None,
+					length.checked_sub(data.len()).expect("wrong data length"),
+				)
+			}
 		}
 	}
 
