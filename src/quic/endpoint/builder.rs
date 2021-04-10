@@ -149,10 +149,12 @@ impl Builder {
 		// set transport defaults
 		#[allow(clippy::expect_used)]
 		let _ = transport
+			// TODO: research if this is necessary, it improves privacy, but may hurt network
+			// providers?
 			.allow_spin(false)
+			// we don't support unordered for now
 			.datagram_receive_buffer_size(None)
-			.max_concurrent_bidi_streams(1)
-			.expect("can't be bigger then `VarInt`")
+			// TODO: handle uni streams
 			.max_concurrent_uni_streams(0)
 			.expect("can't be bigger then `VarInt`");
 
