@@ -249,6 +249,8 @@
 <span id="246">246</span>
 <span id="247">247</span>
 <span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy::missing_panics_doc</span>)]</span>
 
@@ -401,10 +403,12 @@
 		<span class="comment">// set transport defaults</span>
 		<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::expect_used</span>)]</span>
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">transport</span>
+			<span class="comment">// TODO: research if this is necessary, it improves privacy, but may hurt network</span>
+			<span class="comment">// providers?</span>
 			.<span class="ident">allow_spin</span>(<span class="bool-val">false</span>)
+			<span class="comment">// we don&#39;t support unordered for now</span>
 			.<span class="ident">datagram_receive_buffer_size</span>(<span class="prelude-val">None</span>)
-			.<span class="ident">max_concurrent_bidi_streams</span>(<span class="number">1</span>)
-			.<span class="ident">expect</span>(<span class="string">&quot;can&#39;t be bigger then `VarInt`&quot;</span>)
+			<span class="comment">// TODO: handle uni streams</span>
 			.<span class="ident">max_concurrent_uni_streams</span>(<span class="number">0</span>)
 			.<span class="ident">expect</span>(<span class="string">&quot;can&#39;t be bigger then `VarInt`&quot;</span>);
 
