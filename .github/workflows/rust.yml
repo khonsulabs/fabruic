@@ -29,6 +29,10 @@ jobs:
         run: |
           cargo test --workspace --all-targets
 
+      - name: Run basic example
+        run: |
+          cargo run --example basic
+
   docs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
