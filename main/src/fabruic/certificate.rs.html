@@ -271,13 +271,13 @@
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Creating [`Certificate`]s.</span>
 
-<span class="kw">use</span> <span class="ident">std</span>::{
-	<span class="ident">fmt</span>::{<span class="self">self</span>, <span class="ident">Debug</span>, <span class="ident">Formatter</span>},
-	<span class="ident">time::Duration</span>,
-};
+<span class="kw">use</span> <span class="ident">std::fmt</span>::{<span class="self">self</span>, <span class="ident">Debug</span>, <span class="ident">Formatter</span>};
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;certificate&quot;</span>)]</span>
+<span class="kw">use</span> <span class="ident">std::time::Duration</span>;
 
 <span class="kw">use</span> <span class="ident">rustls::sign</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>, <span class="ident">Serializer</span>};
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;certificate&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">webpki::EndEntityCert</span>;
 <span class="kw">use</span> <span class="ident">zeroize::Zeroize</span>;
 
