@@ -85,7 +85,8 @@ impl<T: Serialize> Sender<T> {
 	/// # Errors
 	/// - [`Error::Serialize`] if `data` failed to be serialized
 	/// - [`Error::Send`] if `data` failed to be sent
-	#[allow(clippy::unwrap_in_result)]
+	// TODO: update Clippy
+	#[allow(clippy::panic_in_result_fn, clippy::unwrap_in_result)]
 	pub fn send(&self, data: &T) -> Result<()> {
 		let mut bytes = BytesMut::new();
 
@@ -111,6 +112,19 @@ impl<T: Serialize> Sender<T> {
 
 		// send data to task
 		let bytes = bytes.into_inner().freeze();
+
+		// make sure that our length is correct
+		#[allow(clippy::expect_used)]
+		{
+			debug_assert_eq!(
+				u64::try_from(bytes.len()).expect("not a 64-bit system"),
+				u64::try_from(size_of::<u64>())
+					.expect("not a 64-bit system")
+					.checked_add(len)
+					.expect("message to long")
+			);
+		}
+
 		self.sender
 			.send(Message::Data(bytes))
 			.map_err(|_bytes| Error::Send)
