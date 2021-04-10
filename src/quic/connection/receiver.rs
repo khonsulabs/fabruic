@@ -126,9 +126,18 @@ impl<T> Receiver<T> {
 
 		// if we don't have a length already
 		if *length == 0 {
+			// TODO: fix Clippy
+			#[allow(clippy::panic)]
+			{
+				debug_assert!(
+					data.len() <= size_of::<u64>(),
+					"received more data then requested"
+				);
+			}
+
 			// and there is enough to aquire it
 			#[allow(clippy::expect_used)]
-			if data.len() >= size_of::<u64>() {
+			if data.len() == size_of::<u64>() {
 				// aquire the length by reading the first 8 bytes (u64)
 				*length = usize::try_from(data.get_uint_le(size_of::<u64>()))
 					.expect("not a 64-bit system");
@@ -149,8 +158,14 @@ impl<T> Receiver<T> {
 		}
 		// if we have a length
 		else {
+			// TODO: fix Clippy
+			#[allow(clippy::panic)]
+			{
+				debug_assert!(data.len() <= *length, "received more data then requested");
+			}
+
 			// and the data we gathered is enough
-			if data.len() >= *length {
+			if data.len() == *length {
 				// split of the correct amoutn of data from what we have
 				// gathered until now
 				let data = data.split_to(*length).reader();
