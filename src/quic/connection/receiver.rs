@@ -25,7 +25,7 @@ use crate::{Error, Result};
 #[derive(Clone)]
 pub struct Receiver<T: 'static> {
 	/// Send [`Deserialize`](serde::Deserialize)d data to the sending task.
-	receiver: flume::r#async::RecvStream<'static, Result<T>>,
+	receiver: flume::r#async::RecvStream<'static, T>,
 	/// [`Task`] handle that does the receiving from the stream.
 	task: Task<Result<()>>,
 }
@@ -33,7 +33,7 @@ pub struct Receiver<T: 'static> {
 impl<T> Debug for Receiver<T> {
 	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
 		f.debug_struct("Receiver")
-			.field("receiver", &"RecvStream<Result<T>>")
+			.field("receiver", &"RecvStream<T>")
 			.field("task", &self.task)
 			.finish()
 	}
@@ -79,7 +79,8 @@ impl<T> Receiver<T> {
 				} {
 					match message {
 						Message::Data(bytes) => {
-							let (data, length) = Self::read_internal(&mut data, &mut length, bytes);
+							let (data, length) =
+								Self::read_internal(&mut data, &mut length, bytes)?;
 
 							if let Some(data) = data {
 								// the receiver might have been dropped
@@ -114,12 +115,13 @@ impl<T> Receiver<T> {
 	///  # Errors
 	/// [`Error::Deserialize`] if a message failed to be
 	/// [`Deserialize`](serde::Deserialize)d.
-	#[allow(clippy::unwrap_in_result)]
+	// TODO: update Clippy
+	#[allow(clippy::clippy::panic_in_result_fn, clippy::unwrap_in_result)]
 	fn read_internal<A: DeserializeOwned>(
 		data: &mut BytesMut,
 		length: &mut usize,
 		bytes: Bytes,
-	) -> (Option<Result<A>>, usize) {
+	) -> Result<(Option<A>, usize)> {
 		// reserves enough space to put in incoming bytes
 		data.reserve(bytes.len());
 		data.put(bytes);
@@ -142,18 +144,18 @@ impl<T> Receiver<T> {
 				*length = usize::try_from(data.get_uint_le(size_of::<u64>()))
 					.expect("not a 64-bit system");
 				// demand the amount we need
-				(None, *length)
+				Ok((None, *length))
 			}
 			// or we don't have enough data to complete 8 bytes (u64)
 			else {
 				// reduce the next amount to be read to what we need to reach 8
 				// bytes (u64)
-				(
+				Ok((
 					None,
 					size_of::<u64>()
 						.checked_sub(data.len())
 						.expect("wrong u64 length"),
-				)
+				))
 			}
 		}
 		// if we have a length
@@ -175,20 +177,20 @@ impl<T> Receiver<T> {
 				// deserialize data
 				// TODO: configure bincode, for example make it bounded
 				#[allow(box_pointers)]
-				let data = bincode::deserialize_from(data).map_err(|error| Error::Deserialize(*error));
+				let data = bincode::deserialize_from(data).map_err(|error| Error::Deserialize(*error))?;
 
 				// we are done reading, let's get the next length
-				(Some(data), size_of::<u64>())
+				Ok((Some(data), size_of::<u64>()))
 			}
 			// or the data is not long enough
 			else {
 				// reduce the next amount to be read to what we need to the data
 				// length
 				#[allow(clippy::expect_used)]
-				(
+				Ok((
 					None,
 					length.checked_sub(data.len()).expect("wrong data length"),
-				)
+				))
 			}
 		}
 	}
@@ -217,7 +219,7 @@ impl<T> Receiver<T> {
 }
 
 impl<T> Stream for Receiver<T> {
-	type Item = Result<T>;
+	type Item = T;
 
 	fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
 		self.receiver.poll_next_unpin(cx)
