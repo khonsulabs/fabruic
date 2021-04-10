@@ -1,12 +1,12 @@
 //! Creating [`Certificate`]s.
 
-use std::{
-	fmt::{self, Debug, Formatter},
-	time::Duration,
-};
+use std::fmt::{self, Debug, Formatter};
+#[cfg(feature = "certificate")]
+use std::time::Duration;
 
 use rustls::sign;
 use serde::{Deserialize, Serialize, Serializer};
+#[cfg(feature = "certificate")]
 use webpki::EndEntityCert;
 use zeroize::Zeroize;
 
