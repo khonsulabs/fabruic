@@ -14,7 +14,7 @@ use crate::{Error, Result};
 #[derive(Clone, Debug)]
 pub struct Sender<T: Serialize> {
 	/// Send [`Serialize`]d data to the sending task.
-	sender: flume::Sender<Message>,
+	sender: flume::Sender<Bytes>,
 	/// Holds the type to [`Serialize`] too.
 	_type: PhantomData<T>,
 	/// [`Task`] handle that does the sending into the stream.
@@ -47,7 +47,7 @@ impl<T: Serialize> Sender<T> {
 				let mut shutdown = shutdown_receiver;
 
 				while let Some(message) = allochronic_util::select! {
-					message: &mut receiver => message,
+					message: &mut receiver => message.map(Message::Data),
 					shutdown: &mut shutdown => shutdown.ok(),
 				} {
 					match message {
@@ -125,9 +125,7 @@ impl<T: Serialize> Sender<T> {
 			);
 		}
 
-		self.sender
-			.send(Message::Data(bytes))
-			.map_err(|_bytes| Error::Send)
+		self.sender.send(bytes).map_err(|_bytes| Error::Send)
 	}
 
 	/// Shut down the [`Send`] part of the stream gracefully.
