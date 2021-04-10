@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../index.html">top level</a> - <a href="index.html">examples</a> - basic.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-10 14:39:19</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-10 22:06:58</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -75,7 +75,7 @@
 <div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterUnCov"></span><span class="lineUnCov">					// start listening to new incoming messages</span></div>
 <div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterUnCov"></span><span class="lineUnCov">					// in this example we know there is only 1 incoming message, so we will not wait</span></div>
 <div class="line"><span id="56" class="lineNum"><a href="#56">56</a></span><span class="counterUnCov"></span><span class="lineUnCov">					// for more</span></div>
-<div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterNoCov">0</span><span class="lineNoCov">					let message = receiver.next().await.expect(&quot;no message found&quot;)?;</span></div>
+<div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterNoCov">0</span><span class="lineNoCov">					let message = receiver.next().await.expect(&quot;no message found&quot;);</span></div>
 <div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterNoCov">0</span><span class="lineNoCov">					println!(</span></div>
 <div class="line"><span id="59" class="lineNum"><a href="#59">59</a></span><span class="counterNoCov">0</span><span class="lineNoCov">						&quot;[server] New message from {}: {}&quot;,</span></div>
 <div class="line"><span id="60" class="lineNum"><a href="#60">60</a></span><span class="counterNoCov">0</span><span class="lineNoCov">						connection.remote_address(),</span></div>
@@ -143,7 +143,7 @@
 <div class="line"><span id="122" class="lineNum"><a href="#122">122</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// start listening to new incoming messages</span></div>
 <div class="line"><span id="123" class="lineNum"><a href="#123">123</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// in this example we know there is only 1 incoming message, so we will not wait</span></div>
 <div class="line"><span id="124" class="lineNum"><a href="#124">124</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// for more</span></div>
-<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			let message = receiver.next().await.expect(&quot;no message found&quot;)?;</span></div>
+<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			let message = receiver.next().await.expect(&quot;no message found&quot;);</span></div>
 <div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			println!(</span></div>
 <div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				&quot;[client:{}] New message from {}: {}&quot;,</span></div>
 <div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				index,</span></div>
