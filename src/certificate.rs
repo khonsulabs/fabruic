@@ -1,13 +1,9 @@
 //! Creating [`Certificate`]s.
 
 use std::fmt::{self, Debug, Formatter};
-#[cfg(feature = "certificate")]
-use std::time::Duration;
 
 use rustls::sign;
 use serde::{Deserialize, Serialize, Serializer};
-#[cfg(feature = "certificate")]
-use webpki::EndEntityCert;
 use zeroize::Zeroize;
 
 use crate::{Error, Result};
@@ -43,6 +39,9 @@ impl Certificate {
 	#[cfg(feature = "certificate")]
 	#[cfg_attr(doc, doc(cfg(feature = "certificate")))]
 	pub fn from_der(certificate: Vec<u8>) -> Result<Self> {
+		use std::time::Duration;
+
+		use webpki::EndEntityCert;
 		use x509_parser::certificate::X509Certificate;
 
 		use crate::error::ParseCertificate;
@@ -205,7 +204,7 @@ impl Dangerous for PrivateKey {
 #[cfg_attr(doc, doc(cfg(feature = "certificate")))]
 pub fn generate_self_signed<S: Into<String>>(domain: S) -> (Certificate, PrivateKey) {
 	#[allow(clippy::expect_used)]
-	let key_pair = rcgen::generate_simple_self_signed(vec![domain.into()])
+	let key_pair = rcgen::generate_simple_self_signed([domain.into()])
 		.expect("`rcgen` failed generating a self-signed certificate");
 
 	(
