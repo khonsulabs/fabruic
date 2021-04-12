@@ -131,6 +131,17 @@ impl Builder {
 		Ok(self)
 	}
 
+	/// Set the application-layer protocols to accept, in order of descending
+	/// preference. When set, clients which don't declare support for at least
+	/// one of the supplied protocols will be rejected.
+	pub fn set_protocols(&mut self, protocols: &[&[u8]]) -> &mut Self {
+		let _ = self
+			.server
+			.get_or_insert(ServerConfigBuilder::default())
+			.protocols(protocols);
+		self
+	}
+
 	/// Consumes [`Builder`] to build [`Endpoint`]. Must be called from inside
 	/// the Tokio [`Runtime`](tokio::runtime::Runtime).
 	///
