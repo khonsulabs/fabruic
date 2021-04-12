@@ -98,13 +98,6 @@ impl Connection {
 		}
 	}
 
-	/// The peer's address. Clients may change addresses at will, e.g. when
-	/// switching to a cellular internet connection.
-	#[must_use]
-	pub fn remote_address(&self) -> SocketAddr {
-		self.connection.remote_address()
-	}
-
 	/// Open a stream on this [`Connection`], allowing to send data back and
 	/// forth.
 	///
@@ -127,6 +120,13 @@ impl Connection {
 		let receiver = Receiver::new(receiver);
 
 		Ok((sender, receiver))
+	}
+
+	/// The peer's address. Clients may change addresses at will, e.g. when
+	/// switching to a cellular internet connection.
+	#[must_use]
+	pub fn remote_address(&self) -> SocketAddr {
+		self.connection.remote_address()
 	}
 
 	/// Prevents any new incoming streams. Already incoming streams will
