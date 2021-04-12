@@ -134,6 +134,8 @@ impl Builder {
 	/// Set the application-layer protocols to accept, in order of descending
 	/// preference. When set, clients which don't declare support for at least
 	/// one of the supplied protocols will be rejected.
+	///
+	/// See [`Connection::protocol`](crate::Connection::protocol).
 	pub fn set_protocols(&mut self, protocols: &[&[u8]]) -> &mut Self {
 		let _ = self
 			.server

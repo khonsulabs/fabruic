@@ -122,6 +122,15 @@ impl Connection {
 		Ok((sender, receiver))
 	}
 
+	/// The negotiated application protocol. See
+	/// [`Builder::set_protocols`](crate::Builder::set_protocols).
+	#[must_use]
+	pub fn protocol(&self) -> Option<Vec<u8>> {
+		self.connection
+			.handshake_data()
+			.and_then(|data| data.protocol)
+	}
+
 	/// The peer's address. Clients may change addresses at will, e.g. when
 	/// switching to a cellular internet connection.
 	#[must_use]
