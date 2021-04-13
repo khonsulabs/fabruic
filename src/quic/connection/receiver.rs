@@ -8,16 +8,15 @@ use std::{
 
 use futures_channel::oneshot;
 use futures_util::{stream::Stream, StreamExt};
-use quinn::VarInt;
 use serde::de::DeserializeOwned;
 
 use super::{ReceiverStream, Task};
-use crate::{Error, Result};
+use crate::Result;
 
 /// Used to receive data from a stream.
 ///
 ///  # Errors
-/// [`Error::Deserialize`] if `data` failed to be
+/// [`Error::Deserialize`](crate::Error) if `data` failed to be
 /// [`Deserialize`](serde::Deserialize)d.
 #[derive(Clone)]
 pub struct Receiver<T: 'static> {
@@ -39,7 +38,7 @@ impl<T> Debug for Receiver<T> {
 impl<T> Receiver<T> {
 	/// Builds a new [`Receiver`] from a raw [`quinn`] type. Spawns a task that
 	/// receives data from the stream.
-	pub(super) fn new(mut stream: quinn::RecvStream) -> Self
+	pub(super) fn new(mut stream: ReceiverStream<T>) -> Self
 	where
 		T: DeserializeOwned + Send,
 	{
@@ -59,11 +58,10 @@ impl<T> Receiver<T> {
 					Close,
 				}
 
-				let mut reader = ReceiverStream::new(&mut stream);
 				let mut shutdown = shutdown_receiver;
 
 				while let Some(message) = allochronic_util::select! {
-					message: &mut reader => message.transpose()?.map(Message::Data),
+					message: &mut stream => message.transpose()?.map(Message::Data),
 					shutdown: &mut shutdown => shutdown.ok().map(|_| Message::Close),
 				} {
 					match message {
@@ -74,9 +72,7 @@ impl<T> Receiver<T> {
 							}
 						}
 						Message::Close => {
-							stream
-								.stop(VarInt::from_u32(0))
-								.map_err(|_error| Error::AlreadyClosed)?;
+							stream.stop()?;
 							break;
 						}
 					}
@@ -96,8 +92,9 @@ impl<T> Receiver<T> {
 	/// [`Sender::finish`](crate::Sender::finish) or an error.
 	///
 	/// # Errors
-	/// - [`Error::Read`] if the [`Receiver`] failed to read from the stream
-	/// - [`Error::AlreadyClosed`] if it has already been closed
+	/// - [`Error::Read`](crate::Error) if the [`Receiver`] failed to read from
+	///   the stream
+	/// - [`Error::AlreadyClosed`](crate::Error) if it has already been closed
 	pub async fn finish(&self) -> Result<()> {
 		(&self.task).await?
 	}
@@ -106,8 +103,9 @@ impl<T> Receiver<T> {
 	/// use [`finish`](Self::finish).
 	///
 	/// # Errors
-	/// - [`Error::Read`] if the [`Receiver`] failed to read from the stream
-	/// - [`Error::AlreadyClosed`] if it has already been closed
+	/// - [`Error::Read`](crate::Error) if the [`Receiver`] failed to read from
+	///   the stream
+	/// - [`Error::AlreadyClosed`](crate::Error) if it has already been closed
 	pub async fn close(&self) -> Result<()> {
 		self.task.close(()).await?
 	}

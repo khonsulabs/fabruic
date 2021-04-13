@@ -30,7 +30,7 @@ use crate::{
 };
 
 /// Represents a socket using the QUIC protocol to communicate with peers.
-/// Receives incoming [`Connection`]s through [`Stream`].
+/// Receives incoming [`Connection`](crate::Connection)s through [`Stream`].
 #[derive(Clone)]
 pub struct Endpoint {
 	/// Initiate new connections or close socket.
@@ -117,7 +117,8 @@ impl Endpoint {
 	/// `Builder::add_ca`.
 	///
 	/// # Notes
-	/// This configuration will not be able to receive new [`Connection`]s.
+	/// This configuration will not be able to receive new
+	/// [`Connection`](crate::Connection)s.
 	///
 	/// # Errors
 	/// - [`Error::Certificate`] if the [`Certificate`] couldn't be parsed
@@ -185,8 +186,8 @@ impl Endpoint {
 		}
 	}
 
-	/// Establish a new [`Connection`] to a client. The `domain` validates
-	/// the certificate.
+	/// Establish a new [`Connection`](crate::Connection) to a client. The
+	/// `domain` validates the certificate.
 	///
 	/// # Errors
 	/// [`Error::ConnectConfig`] if configuration needed to connect to a peer is
@@ -256,8 +257,8 @@ impl Endpoint {
 		self.endpoint.local_addr().map_err(Error::LocalAddress)
 	}
 
-	/// Close all of this [`Endpoint`]'s [`Connection`]s immediately and cease
-	/// accepting new [`Connection`]s.
+	/// Close all of this [`Endpoint`]'s [`Connection`](crate::Connection)s
+	/// immediately and cease accepting new [`Connection`](crate::Connection)s.
 	///
 	/// To close an [`Endpoint`] gracefully use
 	/// [`close_incoming`](Self::close_incoming),
@@ -280,9 +281,9 @@ impl Endpoint {
 		self.task.close(()).await
 	}
 
-	/// Wait for all [`Connection`]s to the [`Endpoint`] to be cleanly shut
-	/// down. Does not close existing connections or cause incoming
-	/// connections to be rejected. See
+	/// Wait for all [`Connection`](crate::Connection)s to the [`Endpoint`] to
+	/// be cleanly shut down. Does not close existing connections or cause
+	/// incoming connections to be rejected. See
 	/// [`close_incoming`](`Self::close_incoming`).
 	pub async fn wait_idle(&self) {
 		self.endpoint.wait_idle().await;

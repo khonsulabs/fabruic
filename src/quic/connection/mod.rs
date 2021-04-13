@@ -128,7 +128,7 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 		let (sender, receiver) = self.connection.open_bi().await.map_err(Error::OpenStream)?;
 
 		let sender = Sender::new(sender);
-		let receiver = Receiver::new(receiver);
+		let receiver = Receiver::new(ReceiverStream::new(receiver));
 
 		sender.send_any(&r#type)?;
 

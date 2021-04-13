@@ -12,34 +12,54 @@ use std::{
 use bytes::{Buf, BufMut, BytesMut};
 use futures_util::{stream::Stream, FutureExt};
 use pin_project::pin_project;
-use quinn::{crypto::rustls::TlsSession, generic::ReadChunk, Chunk, RecvStream};
+use quinn::{Chunk, RecvStream, VarInt};
 use serde::de::DeserializeOwned;
 
 use crate::{Error, Result};
 
 /// Wrapper around [`RecvStream`] providing framing and deserialization.
 #[pin_project]
-pub(super) struct ReceiverStream<'s, T: DeserializeOwned> {
+pub(super) struct ReceiverStream<M: DeserializeOwned> {
 	/// Store length of the currently processing message.
 	length: usize,
 	/// Store incoming chunks.
 	buffer: BytesMut,
 	/// [`Quinn`](quinn)s receiver.
-	reader: ReadChunk<'s, TlsSession>,
+	stream: RecvStream,
 	/// Type to be [`Deserialize`](serde::Deserialize)d
-	_type: PhantomData<T>,
+	_type: PhantomData<M>,
 }
 
-impl<'s, T: DeserializeOwned> ReceiverStream<'s, T> {
+impl<M: DeserializeOwned> ReceiverStream<M> {
 	/// Builds a new [`ReceiverStream`].
-	pub(super) fn new(stream: &'s mut RecvStream) -> Self {
+	pub(super) fn new(stream: RecvStream) -> Self {
 		Self {
 			length: 0,
 			// 1480 bytes is a default MTU size configured by quinn-proto
 			buffer: BytesMut::with_capacity(1480),
-			reader: stream.read_chunk(usize::MAX, true),
+			stream,
 			_type: PhantomData,
 		}
+	}
+
+	/// Transmutes this [`ReceiverStream`] to a different message type.
+	pub(super) fn transmute<T: DeserializeOwned>(self) -> ReceiverStream<T> {
+		ReceiverStream {
+			length: self.length,
+			buffer: self.buffer,
+			stream: self.stream,
+			_type: PhantomData,
+		}
+	}
+
+	/// Calls [`RecvStream::stop`](quinn::generic::RecvStream::stop).
+	///
+	/// # Errors
+	/// [`Error::AlreadyClosed`] if it was already closed.
+	pub(super) fn stop(&mut self) -> Result<()> {
+		self.stream
+			.stop(VarInt::from_u32(0))
+			.map_err(|_error| Error::AlreadyClosed)
 	}
 
 	/// [`Poll`](std::future::Future::poll)s [`RecvStream`] for the next
@@ -47,10 +67,10 @@ impl<'s, T: DeserializeOwned> ReceiverStream<'s, T> {
 	/// [`Stream`] is finished.
 	///
 	/// # Errors
-	/// [`Error::Read`] if the [`Receiver`] failed to read from the
-	/// [`RecvStream`].
+	/// [`Error::Read`] on failure to read from the [`RecvStream`].
 	fn poll(&mut self, cx: &mut Context<'_>) -> Poll<Result<Option<()>>> {
-		self.reader
+		self.stream
+			.read_chunk(usize::MAX, true)
 			.poll_unpin(cx)
 			.map_ok(|option| {
 				option.map(|Chunk { bytes, .. }| {
@@ -90,7 +110,7 @@ impl<'s, T: DeserializeOwned> ReceiverStream<'s, T> {
 	/// # Errors
 	/// [`Error::Deserialize`] if `data` failed to be
 	/// [`Deserialize`](serde::Deserialize)d.
-	fn deserialize(&mut self, length: usize) -> Result<Option<T>> {
+	fn deserialize(&mut self, length: usize) -> Result<Option<M>> {
 		if self.buffer.len() >= length {
 			// split off the correct amount of data
 			let data = self.buffer.split_to(length).reader();
@@ -100,7 +120,7 @@ impl<'s, T: DeserializeOwned> ReceiverStream<'s, T> {
 			// deserialize message
 			// TODO: configure bincode, for example make it bounded
 			#[allow(box_pointers)]
-			bincode::deserialize_from::<_, T>(data)
+			bincode::deserialize_from::<_, M>(data)
 				.map(Some)
 				.map_err(|error| Error::Deserialize(*error))
 		} else {
@@ -109,8 +129,8 @@ impl<'s, T: DeserializeOwned> ReceiverStream<'s, T> {
 	}
 }
 
-impl<T: DeserializeOwned> Stream for ReceiverStream<'_, T> {
-	type Item = Result<T>;
+impl<M: DeserializeOwned> Stream for ReceiverStream<M> {
+	type Item = Result<M>;
 
 	fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
 		use futures_util::ready;

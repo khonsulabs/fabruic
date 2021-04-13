@@ -1,5 +1,7 @@
 //! [`Incoming`] stream of a [`Connection`](crate::Connection).
 
+use std::fmt::{self, Debug, Formatter};
+
 use futures_util::StreamExt;
 use quinn::{RecvStream, SendStream};
 use serde::{de::DeserializeOwned, Serialize};
@@ -8,16 +10,25 @@ use super::ReceiverStream;
 use crate::{Error, Receiver, Result, Sender};
 
 /// An intermediate state to define which type to accept in this stream. See
-/// [`accept_stream`](Self::accept_stream).
+/// [`accept_stream`](Self::accept).
 #[must_use = "`Incoming` does nothing unless accepted with `Incoming::accept`"]
-#[derive(Debug)]
 pub struct Incoming<T: DeserializeOwned> {
 	/// [`SendStream`] to build [`Sender`].
 	sender: SendStream,
 	/// [`RecvStream`] to build [`Receiver`].
-	receiver: RecvStream,
+	receiver: ReceiverStream<T>,
 	/// Requested type.
 	r#type: Option<Result<T>>,
+}
+
+impl<T: DeserializeOwned> Debug for Incoming<T> {
+	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+		f.debug_struct("Incoming")
+			.field("sender", &self.sender)
+			.field("receiver", &"ReceiverStream<T>")
+			.field("type", &"Option<Result<T>>")
+			.finish()
+	}
 }
 
 impl<T: DeserializeOwned> Incoming<T> {
@@ -25,7 +36,7 @@ impl<T: DeserializeOwned> Incoming<T> {
 	pub(super) fn new(sender: SendStream, receiver: RecvStream) -> Self {
 		Self {
 			sender,
-			receiver,
+			receiver: ReceiverStream::new(receiver),
 			r#type: None,
 		}
 	}
@@ -41,10 +52,7 @@ impl<T: DeserializeOwned> Incoming<T> {
 		if let Some(ref r#type) = self.r#type {
 			r#type.as_ref()
 		} else {
-			let r#type = ReceiverStream::<T>::new(&mut self.receiver)
-				.next()
-				.await
-				.unwrap_or(Err(Error::NoType));
+			let r#type = self.receiver.next().await.unwrap_or(Err(Error::NoType));
 			// TODO: replace with `Option::insert`
 			self.r#type = Some(r#type);
 			#[allow(clippy::expect_used)]
@@ -73,15 +81,12 @@ impl<T: DeserializeOwned> Incoming<T> {
 			Some(Ok(_)) => (),
 			Some(Err(error)) => return Err(error),
 			None => {
-				let _type = ReceiverStream::<T>::new(&mut self.receiver)
-					.next()
-					.await
-					.unwrap_or(Err(Error::NoType))?;
+				let _type = self.receiver.next().await.unwrap_or(Err(Error::NoType))?;
 			}
 		}
 
 		let sender = Sender::new(self.sender);
-		let receiver = Receiver::new(self.receiver);
+		let receiver = Receiver::new(self.receiver.transmute());
 
 		Ok((sender, receiver))
 	}

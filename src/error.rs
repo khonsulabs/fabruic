@@ -146,7 +146,7 @@ pub enum Error {
 	/// [`deserialize`](serde::Deserialize) from a stream.
 	#[error("Error deserializing from a stream: {0}")]
 	Deserialize(ErrorKind),
-	/// Returned by [`Incoming::type`](crate::Incoming::r#type) if the peer
+	/// Returned by [`Incoming::type`](crate::Incoming::type) if the peer
 	/// closed the stream before sending the type.
 	#[error("Stream was closed before sending a type")]
 	NoType,
