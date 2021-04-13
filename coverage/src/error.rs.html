@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../index.html">top level</a> - <a href="index.html">src</a> - error.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-12 14:25:03</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-13 11:15:14</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -116,75 +116,74 @@
 <div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[cfg_attr(doc, doc(cfg(feature = &quot;dns&quot;)))]</span></div>
 <div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Found no IP address for that domain&quot;)]</span></div>
 <div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterUnCov"></span><span class="lineUnCov">	NoIp,</span></div>
-<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Endpoint`](crate::Endpoint)</span></div>
-<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Stream`](futures_util::stream::Stream) when receiving a new stream</span></div>
-<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// failed.</span></div>
-<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error on receiving a new connection: {0}&quot;)]</span></div>
-<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterUnCov"></span><span class="lineUnCov">	IncomingConnection(ConnectionError),</span></div>
-<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Endpoint::local_address`](crate::Endpoint::local_address)</span></div>
-<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// when failing to aquire the local address.</span></div>
-<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Failed to aquire local address: {0}&quot;)]</span></div>
-<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterUnCov"></span><span class="lineUnCov">	LocalAddress(IoError),</span></div>
-<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Attempting to close something that is already closed.</span></div>
-<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;This is already closed&quot;)]</span></div>
-<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterUnCov"></span><span class="lineUnCov">	AlreadyClosed,</span></div>
-<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Endpoint::connect`](crate::Endpoint::connect) if</span></div>
-<div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// establishing a connection to the given `address` failed.</span></div>
-<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error on establishing a connection to a remote address: {0}&quot;)]</span></div>
-<div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Connect(ConnectError),</span></div>
-<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Endpoint::connect`](crate::Endpoint::connect) if</span></div>
-<div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// connecting to the remote `address` failed.</span></div>
-<div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error on connecting to a remote address: {0}&quot;)]</span></div>
-<div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Connecting(ConnectionError),</span></div>
-<div class="line"><span id="118" class="lineNum"><a href="#118">118</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Connection`](crate::Connection)</span></div>
-<div class="line"><span id="119" class="lineNum"><a href="#119">119</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Stream`](futures_util::stream::Stream) when receiving a new stream</span></div>
-<div class="line"><span id="120" class="lineNum"><a href="#120">120</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// failed.</span></div>
-<div class="line"><span id="121" class="lineNum"><a href="#121">121</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error on receiving a new stream: {0}&quot;)]</span></div>
-<div class="line"><span id="122" class="lineNum"><a href="#122">122</a></span><span class="counterUnCov"></span><span class="lineUnCov">	ReceiveStream(ConnectionError),</span></div>
-<div class="line"><span id="123" class="lineNum"><a href="#123">123</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Connection::open_stream`](crate::Connection::open_stream)</span></div>
-<div class="line"><span id="124" class="lineNum"><a href="#124">124</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// if opening a stream failed.</span></div>
-<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error on opening a stream: {0}&quot;)]</span></div>
-<div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterUnCov"></span><span class="lineUnCov">	OpenStream(ConnectionError),</span></div>
-<div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Sender::finish`](crate::Sender::finish) if</span></div>
-<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Sender`](crate::Sender) failed to write into the stream.</span></div>
-<div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error writing to a stream: {0}&quot;)]</span></div>
-<div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Write(WriteError),</span></div>
-<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Sender::finish`](crate::Sender::finish) if</span></div>
-<div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Sender`](crate::Sender) failed to finish a stream.</span></div>
-<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error finishing a stream: {0}&quot;)]</span></div>
-<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Finish(WriteError),</span></div>
-<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Sender::send`](crate::Sender::send) if the stream was</span></div>
-<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// closed by [`Sender::finish`](crate::Sender::finish) or the</span></div>
-<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Connection`](crate::Connection) or [`Endpoint`](crate::Endpoint) was</span></div>
-<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// closed or dropped.</span></div>
-<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Stream was closed&quot;)]</span></div>
-<div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Send,</span></div>
-<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Sender::send`](crate::Sender::send) if</span></div>
-<div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`serialization`](serde::Serialize) failed.</span></div>
-<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error serializing to a stream: {0}&quot;)]</span></div>
-<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Serialize(ErrorKind),</span></div>
-<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Receiver::close`](crate::Receiver::close) if</span></div>
-<div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Receiver`](crate::Receiver) failed to read from a stream.</span></div>
-<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error reading from a stream: {0}&quot;)]</span></div>
-<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Read(ReadError),</span></div>
-<div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Receiver::finish`](crate::Receiver::finish) if</span></div>
-<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Receiver`](crate::Receiver) failed to</span></div>
-<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`deserialize`](serde::Deserialize) from a stream.</span></div>
-<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error deserializing from a stream: {0}&quot;)]</span></div>
-<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Deserialize(ErrorKind),</span></div>
-<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
-<div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Possible certificate parsing errors.</span></div>
-<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterUnCov"></span><span class="lineUnCov">#[cfg(feature = &quot;certificate&quot;)]</span></div>
-<div class="line"><span id="158" class="lineNum"><a href="#158">158</a></span><span class="counterNoCov">0</span><span class="lineNoCov">#[derive(Debug, Error)]</span></div>
-<div class="line"><span id="159" class="lineNum"><a href="#159">159</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub enum ParseCertificate {</span></div>
-<div class="line"><span id="160" class="lineNum"><a href="#160">160</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Error`](std::error::Error) returned by [`webpki`].</span></div>
-<div class="line"><span id="161" class="lineNum"><a href="#161">161</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(transparent)]</span></div>
-<div class="line"><span id="162" class="lineNum"><a href="#162">162</a></span><span class="counterUnCov"></span><span class="lineUnCov">	WebPki(WebPkiError),</span></div>
-<div class="line"><span id="163" class="lineNum"><a href="#163">163</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Error`](std::error::Error) returned by [`x509_parser`].</span></div>
-<div class="line"><span id="164" class="lineNum"><a href="#164">164</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(transparent)]</span></div>
-<div class="line"><span id="165" class="lineNum"><a href="#165">165</a></span><span class="counterUnCov"></span><span class="lineUnCov">	X509(Err&lt;X509Error&gt;),</span></div>
-<div class="line"><span id="166" class="lineNum"><a href="#166">166</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Endpoint::local_address`](crate::Endpoint::local_address)</span></div>
+<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// when failing to aquire the local address.</span></div>
+<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Failed to aquire local address: {0}&quot;)]</span></div>
+<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterUnCov"></span><span class="lineUnCov">	LocalAddress(IoError),</span></div>
+<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Attempting to close something that is already closed.</span></div>
+<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;This is already closed&quot;)]</span></div>
+<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterUnCov"></span><span class="lineUnCov">	AlreadyClosed,</span></div>
+<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Endpoint::connect`](crate::Endpoint::connect) if</span></div>
+<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// configuration needed to connect to a peer is faulty.</span></div>
+<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error in configuration to connect to a peer: {0}&quot;)]</span></div>
+<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterUnCov"></span><span class="lineUnCov">	ConnectConfig(ConnectError),</span></div>
+<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Connecting::accept`](crate::Connecting::accept) if</span></div>
+<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// connecting to the peer failed.</span></div>
+<div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error on connecting to a remote address: {0}&quot;)]</span></div>
+<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Connecting(ConnectionError),</span></div>
+<div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Connection`](crate::Connection)</span></div>
+<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Stream`](futures_util::stream::Stream) when receiving a new stream</span></div>
+<div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// failed.</span></div>
+<div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error on receiving a new stream: {0}&quot;)]</span></div>
+<div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterUnCov"></span><span class="lineUnCov">	ReceiveStream(ConnectionError),</span></div>
+<div class="line"><span id="118" class="lineNum"><a href="#118">118</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Connection::open_stream`](crate::Connection::open_stream)</span></div>
+<div class="line"><span id="119" class="lineNum"><a href="#119">119</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// if opening a stream failed.</span></div>
+<div class="line"><span id="120" class="lineNum"><a href="#120">120</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error on opening a stream: {0}&quot;)]</span></div>
+<div class="line"><span id="121" class="lineNum"><a href="#121">121</a></span><span class="counterUnCov"></span><span class="lineUnCov">	OpenStream(ConnectionError),</span></div>
+<div class="line"><span id="122" class="lineNum"><a href="#122">122</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Sender::finish`](crate::Sender::finish) if</span></div>
+<div class="line"><span id="123" class="lineNum"><a href="#123">123</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Sender`](crate::Sender) failed to write into the stream.</span></div>
+<div class="line"><span id="124" class="lineNum"><a href="#124">124</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error writing to a stream: {0}&quot;)]</span></div>
+<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Write(WriteError),</span></div>
+<div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Sender::finish`](crate::Sender::finish) if</span></div>
+<div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Sender`](crate::Sender) failed to finish a stream.</span></div>
+<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error finishing a stream: {0}&quot;)]</span></div>
+<div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Finish(WriteError),</span></div>
+<div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Sender::send`](crate::Sender::send) if the stream was</span></div>
+<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// closed by [`Sender::finish`](crate::Sender::finish) or the</span></div>
+<div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Connection`](crate::Connection) or [`Endpoint`](crate::Endpoint) was</span></div>
+<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// closed or dropped.</span></div>
+<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Stream was closed&quot;)]</span></div>
+<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Send,</span></div>
+<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Sender::send`](crate::Sender::send) if</span></div>
+<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`serialization`](serde::Serialize) failed.</span></div>
+<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error serializing to a stream: {0}&quot;)]</span></div>
+<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Serialize(ErrorKind),</span></div>
+<div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Receiver::close`](crate::Receiver::close) if</span></div>
+<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Receiver`](crate::Receiver) failed to read from a stream.</span></div>
+<div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error reading from a stream: {0}&quot;)]</span></div>
+<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Read(ReadError),</span></div>
+<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Receiver::finish`](crate::Receiver::finish) if</span></div>
+<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Receiver`](crate::Receiver) failed to</span></div>
+<div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`deserialize`](serde::Deserialize) from a stream.</span></div>
+<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error deserializing from a stream: {0}&quot;)]</span></div>
+<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Deserialize(ErrorKind),</span></div>
+<div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returned by [`Incoming::type`](crate::Incoming::r#type) if the peer</span></div>
+<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// closed the stream before sending the type.</span></div>
+<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Stream was closed before sending a type&quot;)]</span></div>
+<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterUnCov"></span><span class="lineUnCov">	NoType,</span></div>
+<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Possible certificate parsing errors.</span></div>
+<div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterUnCov"></span><span class="lineUnCov">#[cfg(feature = &quot;certificate&quot;)]</span></div>
+<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterNoCov">0</span><span class="lineNoCov">#[derive(Debug, Error)]</span></div>
+<div class="line"><span id="158" class="lineNum"><a href="#158">158</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub enum ParseCertificate {</span></div>
+<div class="line"><span id="159" class="lineNum"><a href="#159">159</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Error`](std::error::Error) returned by [`webpki`].</span></div>
+<div class="line"><span id="160" class="lineNum"><a href="#160">160</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(transparent)]</span></div>
+<div class="line"><span id="161" class="lineNum"><a href="#161">161</a></span><span class="counterUnCov"></span><span class="lineUnCov">	WebPki(WebPkiError),</span></div>
+<div class="line"><span id="162" class="lineNum"><a href="#162">162</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Error`](std::error::Error) returned by [`x509_parser`].</span></div>
+<div class="line"><span id="163" class="lineNum"><a href="#163">163</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(transparent)]</span></div>
+<div class="line"><span id="164" class="lineNum"><a href="#164">164</a></span><span class="counterUnCov"></span><span class="lineUnCov">	X509(Err&lt;X509Error&gt;),</span></div>
+<div class="line"><span id="165" class="lineNum"><a href="#165">165</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 </div>
 </body>
 </html>
