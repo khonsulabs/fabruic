@@ -257,11 +257,14 @@ impl Endpoint {
 	/// [`close_incoming`](Self::close_incoming),
 	/// [`Sender::finish`](crate::Sender::finish) and
 	/// [`wait_idle`](Self::wait_idle).
-	pub async fn close(&self) {
+	///
+	/// # Errors
+	/// [`Error::AlreadyClosed`] if it was already closed.
+	pub async fn close(&self) -> Result<()> {
 		self.endpoint.close(VarInt::from_u32(0), &[]);
 		// we only want to wait until it's actually closed, it might already be closed
 		// by `close_incoming` or by starting as a client
-		let _result = (&self.task).await;
+		(&self.task).await
 	}
 
 	/// Prevents any new incoming connections. Already incoming connections will
@@ -357,8 +360,8 @@ mod test {
 			.await?;
 
 		// closing the client/server will close all connection immediately
-		client.close().await;
-		server.close().await;
+		assert!(matches!(client.close().await, Err(Error::AlreadyClosed)));
+		server.close().await?;
 
 		// connecting to a closed server shouldn't work
 		assert!(matches!(
