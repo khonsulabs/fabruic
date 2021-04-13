@@ -10,6 +10,7 @@ use std::{
 };
 
 pub use builder::Builder;
+use builder::Config;
 use flume::{r#async::RecvStream, Sender};
 use futures_channel::oneshot::{self, Receiver};
 use futures_util::{
@@ -39,6 +40,8 @@ pub struct Endpoint {
 	receiver: RecvStream<'static, Connecting>,
 	/// Task handle handling new incoming connections.
 	task: Task<()>,
+	/// Persistent configuration to build new [`ClientConfig`]
+	config: Config,
 }
 
 impl Debug for Endpoint {
@@ -72,6 +75,7 @@ impl Endpoint {
 		address: SocketAddr,
 		client: ClientConfig,
 		server: Option<ServerConfig>,
+		config: Config,
 	) -> Result<Self> {
 		// configure endpoint for server and client
 		let mut endpoint_builder = quinn::Endpoint::builder();
@@ -106,6 +110,7 @@ impl Endpoint {
 			endpoint,
 			receiver,
 			task,
+			config,
 		})
 	}
 

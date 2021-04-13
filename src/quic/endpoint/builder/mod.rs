@@ -2,8 +2,11 @@
 
 //! [`Endpoint`] builder.
 
+mod config;
+
 use std::{fmt::Debug, net::SocketAddr, str::FromStr, sync::Arc};
 
+pub(super) use config::Config;
 use quinn::{
 	CertificateChain, ClientConfig, ClientConfigBuilder, ServerConfigBuilder, TransportConfig,
 };
@@ -19,6 +22,8 @@ pub struct Builder {
 	client: ClientConfigBuilder,
 	/// [`ServerConfig`](quinn::ServerConfig) for [`Endpoint`](quinn::Endpoint).
 	server: Option<ServerConfigBuilder>,
+	/// Persistent configuration passed to the [`Endpoint`]
+	config: Config,
 }
 
 impl Debug for Builder {
@@ -65,6 +70,7 @@ impl Builder {
 			address: ([0, 0, 0, 0, 0, 0, 0, 1], 0).into(),
 			client: ClientConfigBuilder::new(client),
 			server: None,
+			config: Config::default(),
 		}
 	}
 
@@ -137,10 +143,14 @@ impl Builder {
 	///
 	/// See [`Connection::protocol`](crate::Connection::protocol).
 	pub fn set_protocols(&mut self, protocols: &[&[u8]]) -> &mut Self {
+		let _ = self.client.protocols(protocols);
 		let _ = self
 			.server
 			.get_or_insert(ServerConfigBuilder::default())
 			.protocols(protocols);
+
+		self.config.set_protocols(protocols);
+
 		self
 	}
 
@@ -184,7 +194,7 @@ impl Builder {
 				server
 			});
 
-			Endpoint::new(self.address, client, server)
+			Endpoint::new(self.address, client, server, self.config.clone())
 		} {
 			Ok(endpoint) => Ok(endpoint),
 			Err(error) => Err((error, self)),
