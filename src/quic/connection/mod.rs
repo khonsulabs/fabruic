@@ -164,7 +164,7 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 	/// Close the [`Connection`] immediately.
 	///
 	/// To close a [`Connection`] gracefully use [`Sender::finish`], the
-	/// [`Receiver`] can't be gracefull closed from the receiving end.
+	/// [`Receiver`] can't be gracefully closed from the receiving end.
 	///
 	/// # Errors
 	/// - [`Error::ReceiveStream`] if the connection was lost
