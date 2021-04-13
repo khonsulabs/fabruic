@@ -326,7 +326,7 @@
 		<span class="kw">let</span> (<span class="ident">sender</span>, <span class="ident">receiver</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">connection</span>.<span class="ident">open_bi</span>().<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="ident">Error::OpenStream</span>)<span class="question-mark">?</span>;
 
 		<span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">Sender::new</span>(<span class="ident">sender</span>);
-		<span class="kw">let</span> <span class="ident">receiver</span> <span class="op">=</span> <span class="ident">Receiver::new</span>(<span class="ident">receiver</span>);
+		<span class="kw">let</span> <span class="ident">receiver</span> <span class="op">=</span> <span class="ident">Receiver::new</span>(<span class="ident">ReceiverStream::new</span>(<span class="ident">receiver</span>));
 
 		<span class="ident">sender</span>.<span class="ident">send_any</span>(<span class="kw-2">&amp;</span><span class="ident">r#type</span>)<span class="question-mark">?</span>;
 

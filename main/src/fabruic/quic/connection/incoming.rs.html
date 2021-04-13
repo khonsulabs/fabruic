@@ -89,8 +89,15 @@
 <span id="86">86</span>
 <span id="87">87</span>
 <span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! [`Incoming`] stream of a [`Connection`](crate::Connection).</span>
+
+<span class="kw">use</span> <span class="ident">std::fmt</span>::{<span class="self">self</span>, <span class="ident">Debug</span>, <span class="ident">Formatter</span>};
 
 <span class="kw">use</span> <span class="ident">futures_util::StreamExt</span>;
 <span class="kw">use</span> <span class="ident">quinn</span>::{<span class="ident">RecvStream</span>, <span class="ident">SendStream</span>};
@@ -100,16 +107,25 @@
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Error</span>, <span class="ident">Receiver</span>, <span class="prelude-ty">Result</span>, <span class="ident">Sender</span>};
 
 <span class="doccomment">/// An intermediate state to define which type to accept in this stream. See</span>
-<span class="doccomment">/// [`accept_stream`](Self::accept_stream).</span>
+<span class="doccomment">/// [`accept_stream`](Self::accept).</span>
 <span class="attribute">#[<span class="ident">must_use</span> <span class="op">=</span> <span class="string">&quot;`Incoming` does nothing unless accepted with `Incoming::accept`&quot;</span>]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Incoming</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">DeserializeOwned</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// [`SendStream`] to build [`Sender`].</span>
 	<span class="ident">sender</span>: <span class="ident">SendStream</span>,
 	<span class="doccomment">/// [`RecvStream`] to build [`Receiver`].</span>
-	<span class="ident">receiver</span>: <span class="ident">RecvStream</span>,
+	<span class="ident">receiver</span>: <span class="ident">ReceiverStream</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Requested type.</span>
 	<span class="ident">r#type</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">DeserializeOwned</span><span class="op">&gt;</span> <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">Incoming</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
+		<span class="ident">f</span>.<span class="ident">debug_struct</span>(<span class="string">&quot;Incoming&quot;</span>)
+			.<span class="ident">field</span>(<span class="string">&quot;sender&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">sender</span>)
+			.<span class="ident">field</span>(<span class="string">&quot;receiver&quot;</span>, <span class="kw-2">&amp;</span><span class="string">&quot;ReceiverStream&lt;T&gt;&quot;</span>)
+			.<span class="ident">field</span>(<span class="string">&quot;type&quot;</span>, <span class="kw-2">&amp;</span><span class="string">&quot;Option&lt;Result&lt;T&gt;&gt;&quot;</span>)
+			.<span class="ident">finish</span>()
+	}
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">DeserializeOwned</span><span class="op">&gt;</span> <span class="ident">Incoming</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
@@ -117,7 +133,7 @@
 	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">sender</span>: <span class="ident">SendStream</span>, <span class="ident">receiver</span>: <span class="ident">RecvStream</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span> {
 			<span class="ident">sender</span>,
-			<span class="ident">receiver</span>,
+			<span class="ident">receiver</span>: <span class="ident">ReceiverStream::new</span>(<span class="ident">receiver</span>),
 			<span class="ident">r#type</span>: <span class="prelude-val">None</span>,
 		}
 	}
@@ -133,10 +149,7 @@
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">r#type</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">r#type</span> {
 			<span class="ident">r#type</span>.<span class="ident">as_ref</span>()
 		} <span class="kw">else</span> {
-			<span class="kw">let</span> <span class="ident">r#type</span> <span class="op">=</span> <span class="ident">ReceiverStream</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">receiver</span>)
-				.<span class="ident">next</span>()
-				.<span class="kw">await</span>
-				.<span class="ident">unwrap_or</span>(<span class="prelude-val">Err</span>(<span class="ident">Error::NoType</span>));
+			<span class="kw">let</span> <span class="ident">r#type</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">receiver</span>.<span class="ident">next</span>().<span class="kw">await</span>.<span class="ident">unwrap_or</span>(<span class="prelude-val">Err</span>(<span class="ident">Error::NoType</span>));
 			<span class="comment">// TODO: replace with `Option::insert`</span>
 			<span class="self">self</span>.<span class="ident">r#type</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">r#type</span>);
 			<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::expect_used</span>)]</span>
@@ -165,15 +178,12 @@
 			<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> (),
 			<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="ident">error</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">error</span>),
 			<span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="ident">_type</span> <span class="op">=</span> <span class="ident">ReceiverStream</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">receiver</span>)
-					.<span class="ident">next</span>()
-					.<span class="kw">await</span>
-					.<span class="ident">unwrap_or</span>(<span class="prelude-val">Err</span>(<span class="ident">Error::NoType</span>))<span class="question-mark">?</span>;
+				<span class="kw">let</span> <span class="ident">_type</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">receiver</span>.<span class="ident">next</span>().<span class="kw">await</span>.<span class="ident">unwrap_or</span>(<span class="prelude-val">Err</span>(<span class="ident">Error::NoType</span>))<span class="question-mark">?</span>;
 			}
 		}
 
 		<span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">Sender::new</span>(<span class="self">self</span>.<span class="ident">sender</span>);
-		<span class="kw">let</span> <span class="ident">receiver</span> <span class="op">=</span> <span class="ident">Receiver::new</span>(<span class="self">self</span>.<span class="ident">receiver</span>);
+		<span class="kw">let</span> <span class="ident">receiver</span> <span class="op">=</span> <span class="ident">Receiver::new</span>(<span class="self">self</span>.<span class="ident">receiver</span>.<span class="ident">transmute</span>());
 
 		<span class="prelude-val">Ok</span>((<span class="ident">sender</span>, <span class="ident">receiver</span>))
 	}

@@ -493,6 +493,7 @@
 <span id="490">490</span>
 <span id="491">491</span>
 <span id="492">492</span>
+<span id="493">493</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Starting point to create a QUIC enabled network socket.</span>
 
@@ -526,7 +527,7 @@
 };
 
 <span class="doccomment">/// Represents a socket using the QUIC protocol to communicate with peers.</span>
-<span class="doccomment">/// Receives incoming [`Connection`]s through [`Stream`].</span>
+<span class="doccomment">/// Receives incoming [`Connection`](crate::Connection)s through [`Stream`].</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Endpoint</span> {
 	<span class="doccomment">/// Initiate new connections or close socket.</span>
@@ -613,7 +614,8 @@
 	<span class="doccomment">/// `Builder::add_ca`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Notes</span>
-	<span class="doccomment">/// This configuration will not be able to receive new [`Connection`]s.</span>
+	<span class="doccomment">/// This configuration will not be able to receive new</span>
+	<span class="doccomment">/// [`Connection`](crate::Connection)s.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
 	<span class="doccomment">/// - [`Error::Certificate`] if the [`Certificate`] couldn&#39;t be parsed</span>
@@ -681,8 +683,8 @@
 		}
 	}
 
-	<span class="doccomment">/// Establish a new [`Connection`] to a client. The `domain` validates</span>
-	<span class="doccomment">/// the certificate.</span>
+	<span class="doccomment">/// Establish a new [`Connection`](crate::Connection) to a client. The</span>
+	<span class="doccomment">/// `domain` validates the certificate.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
 	<span class="doccomment">/// [`Error::ConnectConfig`] if configuration needed to connect to a peer is</span>
@@ -752,8 +754,8 @@
 		<span class="self">self</span>.<span class="ident">endpoint</span>.<span class="ident">local_addr</span>().<span class="ident">map_err</span>(<span class="ident">Error::LocalAddress</span>)
 	}
 
-	<span class="doccomment">/// Close all of this [`Endpoint`]&#39;s [`Connection`]s immediately and cease</span>
-	<span class="doccomment">/// accepting new [`Connection`]s.</span>
+	<span class="doccomment">/// Close all of this [`Endpoint`]&#39;s [`Connection`](crate::Connection)s</span>
+	<span class="doccomment">/// immediately and cease accepting new [`Connection`](crate::Connection)s.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// To close an [`Endpoint`] gracefully use</span>
 	<span class="doccomment">/// [`close_incoming`](Self::close_incoming),</span>
@@ -776,9 +778,9 @@
 		<span class="self">self</span>.<span class="ident">task</span>.<span class="ident">close</span>(()).<span class="kw">await</span>
 	}
 
-	<span class="doccomment">/// Wait for all [`Connection`]s to the [`Endpoint`] to be cleanly shut</span>
-	<span class="doccomment">/// down. Does not close existing connections or cause incoming</span>
-	<span class="doccomment">/// connections to be rejected. See</span>
+	<span class="doccomment">/// Wait for all [`Connection`](crate::Connection)s to the [`Endpoint`] to</span>
+	<span class="doccomment">/// be cleanly shut down. Does not close existing connections or cause</span>
+	<span class="doccomment">/// incoming connections to be rejected. See</span>
 	<span class="doccomment">/// [`close_incoming`](`Self::close_incoming`).</span>
 	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">wait_idle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
 		<span class="self">self</span>.<span class="ident">endpoint</span>.<span class="ident">wait_idle</span>().<span class="kw">await</span>;

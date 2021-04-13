@@ -121,8 +121,6 @@
 <span id="118">118</span>
 <span id="119">119</span>
 <span id="120">120</span>
-<span id="121">121</span>
-<span id="122">122</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! [`Receiver`] part of a stream.</span>
 
@@ -134,16 +132,15 @@
 
 <span class="kw">use</span> <span class="ident">futures_channel::oneshot</span>;
 <span class="kw">use</span> <span class="ident">futures_util</span>::{<span class="ident">stream::Stream</span>, <span class="ident">StreamExt</span>};
-<span class="kw">use</span> <span class="ident">quinn::VarInt</span>;
 <span class="kw">use</span> <span class="ident">serde::de::DeserializeOwned</span>;
 
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">ReceiverStream</span>, <span class="ident">Task</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Error</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::Result</span>;
 
 <span class="doccomment">/// Used to receive data from a stream.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">///  # Errors</span>
-<span class="doccomment">/// [`Error::Deserialize`] if `data` failed to be</span>
+<span class="doccomment">/// [`Error::Deserialize`](crate::Error) if `data` failed to be</span>
 <span class="doccomment">/// [`Deserialize`](serde::Deserialize)d.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span> {
@@ -165,7 +162,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Builds a new [`Receiver`] from a raw [`quinn`] type. Spawns a task that</span>
 	<span class="doccomment">/// receives data from the stream.</span>
-	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="kw-2">mut</span> <span class="ident">stream</span>: <span class="ident">quinn::RecvStream</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="kw-2">mut</span> <span class="ident">stream</span>: <span class="ident">ReceiverStream</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
 	<span class="kw">where</span>
 		<span class="ident">T</span>: <span class="ident">DeserializeOwned</span> <span class="op">+</span> <span class="ident">Send</span>,
 	{
@@ -185,11 +182,10 @@
 					<span class="ident">Close</span>,
 				}
 
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">reader</span> <span class="op">=</span> <span class="ident">ReceiverStream::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">stream</span>);
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">shutdown</span> <span class="op">=</span> <span class="ident">shutdown_receiver</span>;
 
 				<span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">message</span>) <span class="op">=</span> <span class="macro">allochronic_util::select!</span> {
-					<span class="ident">message</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">reader</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">message</span>.<span class="ident">transpose</span>()<span class="question-mark">?</span>.<span class="ident">map</span>(<span class="ident">Message::Data</span>),
+					<span class="ident">message</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">stream</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">message</span>.<span class="ident">transpose</span>()<span class="question-mark">?</span>.<span class="ident">map</span>(<span class="ident">Message::Data</span>),
 					<span class="ident">shutdown</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">shutdown</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">shutdown</span>.<span class="ident">ok</span>().<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">Message::Close</span>),
 				} {
 					<span class="kw">match</span> <span class="ident">message</span> {
@@ -200,9 +196,7 @@
 							}
 						}
 						<span class="ident">Message::Close</span> <span class="op">=</span><span class="op">&gt;</span> {
-							<span class="ident">stream</span>
-								.<span class="ident">stop</span>(<span class="ident">VarInt::from_u32</span>(<span class="number">0</span>))
-								.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">_error</span><span class="op">|</span> <span class="ident">Error::AlreadyClosed</span>)<span class="question-mark">?</span>;
+							<span class="ident">stream</span>.<span class="ident">stop</span>()<span class="question-mark">?</span>;
 							<span class="kw">break</span>;
 						}
 					}
@@ -222,8 +216,9 @@
 	<span class="doccomment">/// [`Sender::finish`](crate::Sender::finish) or an error.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// - [`Error::Read`] if the [`Receiver`] failed to read from the stream</span>
-	<span class="doccomment">/// - [`Error::AlreadyClosed`] if it has already been closed</span>
+	<span class="doccomment">/// - [`Error::Read`](crate::Error) if the [`Receiver`] failed to read from</span>
+	<span class="doccomment">///   the stream</span>
+	<span class="doccomment">/// - [`Error::AlreadyClosed`](crate::Error) if it has already been closed</span>
 	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">finish</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">task</span>).<span class="kw">await</span><span class="question-mark">?</span>
 	}
@@ -232,8 +227,9 @@
 	<span class="doccomment">/// use [`finish`](Self::finish).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// - [`Error::Read`] if the [`Receiver`] failed to read from the stream</span>
-	<span class="doccomment">/// - [`Error::AlreadyClosed`] if it has already been closed</span>
+	<span class="doccomment">/// - [`Error::Read`](crate::Error) if the [`Receiver`] failed to read from</span>
+	<span class="doccomment">///   the stream</span>
+	<span class="doccomment">/// - [`Error::AlreadyClosed`](crate::Error) if it has already been closed</span>
 	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">close</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">task</span>.<span class="ident">close</span>(()).<span class="kw">await</span><span class="question-mark">?</span>
 	}
