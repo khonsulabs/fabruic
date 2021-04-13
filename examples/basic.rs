@@ -104,8 +104,7 @@ async fn main() -> Result<()> {
 			println!("[client:{}] Bound to {}", index, client.local_address()?);
 
 			let connection = client
-				.connect(format!("[::1]:{}", SERVER_PORT).parse()?, SERVER_NAME)
-				.await?
+				.connect(format!("[::1]:{}", SERVER_PORT).parse()?, SERVER_NAME)?
 				.accept::<()>()
 				.await?;
 			connection.close_incoming().await?;

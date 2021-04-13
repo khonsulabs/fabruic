@@ -256,8 +256,7 @@ mod test {
 
 		// test connection
 		let _connection = client
-			.connect(server.local_address()?, "test")
-			.await?
+			.connect(server.local_address()?, "test")?
 			.accept::<()>()
 			.await?;
 		let _connection = server

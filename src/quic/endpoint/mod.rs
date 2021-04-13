@@ -192,11 +192,7 @@ impl Endpoint {
 	/// # Errors
 	/// [`Error::ConnectConfig`] if configuration needed to connect to a peer is
 	/// faulty.
-	pub async fn connect<D: AsRef<str>>(
-		&self,
-		address: SocketAddr,
-		domain: D,
-	) -> Result<Connecting> {
+	pub fn connect<D: AsRef<str>>(&self, address: SocketAddr, domain: D) -> Result<Connecting> {
 		let connecting = self
 			.endpoint
 			.connect(&address, domain.as_ref())
@@ -241,12 +237,9 @@ impl Endpoint {
 			.map_err(|error| Error::Resolve(Box::new(error)))?;
 
 		// take the first IP found
-		if let Some(ip) = ip.into_iter().next() {
+		ip.into_iter().next().map_or(Err(Error::NoIp), |ip| {
 			self.connect(SocketAddr::from((ip, port)), domain.as_ref())
-				.await
-		} else {
-			Err(Error::NoIp)
-		}
+		})
 	}
 
 	/// Get the local [`SocketAddr`] the underlying socket is bound to.
@@ -329,8 +322,7 @@ mod test {
 		let mut server = Endpoint::new_server(0, &certificate, &private_key)?;
 
 		let _connection = client
-			.connect(server.local_address()?, "test")
-			.await?
+			.connect(server.local_address()?, "test")?
 			.accept::<()>()
 			.await?;
 		let _connection = server
@@ -356,11 +348,7 @@ mod test {
 
 		// `wait_idle` should never finish unless these `Connection`s are closed, which
 		// they won't unless they are dropped or explicitly closed
-		let _connection = client
-			.connect(address, "test")
-			.await?
-			.accept::<()>()
-			.await?;
+		let _connection = client.connect(address, "test")?.accept::<()>().await?;
 		let _connection = server
 			.next()
 			.await
@@ -374,7 +362,7 @@ mod test {
 
 		// connecting to a closed server shouldn't work
 		assert!(matches!(
-			client.connect(address, "test").await?.accept::<()>().await,
+			client.connect(address, "test")?.accept::<()>().await,
 			Err(Error::Connecting(ConnectionError::LocallyClosed))
 		));
 
@@ -401,11 +389,7 @@ mod test {
 
 		// these `Connection`s should still work even if new incoming connections are
 		// refused
-		let client_connection = client
-			.connect(address, "test")
-			.await?
-			.accept::<()>()
-			.await?;
+		let client_connection = client.connect(address, "test")?.accept::<()>().await?;
 		let mut server_connection = server
 			.next()
 			.await
@@ -427,7 +411,7 @@ mod test {
 
 		// connecting to a server that refuses new `Connection`s shouldn't work
 		assert!(matches!(
-			client.connect(address, "test").await?.accept::<()>().await,
+			client.connect(address, "test")?.accept::<()>().await,
 			Err(Error::Connecting(ConnectionError::ConnectionClosed(
 				ConnectionClose {
 					error_code: TransportErrorCode::CONNECTION_REFUSED,
@@ -473,8 +457,7 @@ mod test {
 		// automatically when it's dropped
 		{
 			let _connection = client
-				.connect(server.local_address()?, "test")
-				.await?
+				.connect(server.local_address()?, "test")?
 				.accept::<()>()
 				.await?;
 			let _connection = server
