@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-13 11:15:14</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-13 12:09:23</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -149,7 +149,7 @@
 <div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterCov">1</span><span class="lineCov">		let (sender, receiver) = self.connection.open_bi().await.map_err(Error::OpenStream)?;</span></div>
 <div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterCov">1</span><span class="lineCov">		let sender = Sender::new(sender);</span></div>
-<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterCov">1</span><span class="lineCov">		let receiver = Receiver::new(receiver);</span></div>
+<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterCov">1</span><span class="lineCov">		let receiver = Receiver::new(ReceiverStream::new(receiver));</span></div>
 <div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterCov">1</span><span class="lineCov">		sender.send_any(&amp;r#type)?;</span></div>
 <div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
