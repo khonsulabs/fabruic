@@ -9,11 +9,11 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint</a> - builder.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-13 12:09:23</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-13 12:25:29</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">138</span><span class="linesTotal">159</span><span class="linesPercentage lineMed">86.8 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">138</span><span class="linesTotal">158</span><span class="linesPercentage lineMed">87.3 %</span></div>
 <div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">23</span><span class="funsTotal">41</span><span class="funsPercentage funLow">56.1 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
@@ -277,20 +277,19 @@
 <div class="line"><span id="256" class="lineNum"><a href="#256">256</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="257" class="lineNum"><a href="#257">257</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// test connection</span></div>
 <div class="line"><span id="258" class="lineNum"><a href="#258">258</a></span><span class="counterCov">1</span><span class="lineCov">		let _connection = client</span></div>
-<div class="line"><span id="259" class="lineNum"><a href="#259">259</a></span><span class="counterCov">1</span><span class="lineCov">			.connect(server.local_address()?, &quot;test&quot;)</span></div>
-<div class="line"><span id="260" class="lineNum"><a href="#260">260</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?</span></div>
-<div class="line"><span id="261" class="lineNum"><a href="#261">261</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="262" class="lineNum"><a href="#262">262</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?;</span></div>
-<div class="line"><span id="263" class="lineNum"><a href="#263">263</a></span><span class="counterCov">1</span><span class="lineCov">		let _connection = server</span></div>
-<div class="line"><span id="264" class="lineNum"><a href="#264">264</a></span><span class="counterCov">1</span><span class="lineCov">			.next()</span></div>
-<div class="line"><span id="265" class="lineNum"><a href="#265">265</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.await</span></div>
-<div class="line"><span id="266" class="lineNum"><a href="#266">266</a></span><span class="counterCov">1</span><span class="lineCov">			.expect(&quot;client dropped&quot;)</span></div>
-<div class="line"><span id="267" class="lineNum"><a href="#267">267</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="268" class="lineNum"><a href="#268">268</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?;</span></div>
-<div class="line"><span id="269" class="lineNum"><a href="#269">269</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="270" class="lineNum"><a href="#270">270</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
-<div class="line"><span id="271" class="lineNum"><a href="#271">271</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="272" class="lineNum"><a href="#272">272</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="259" class="lineNum"><a href="#259">259</a></span><span class="counterCov">1</span><span class="lineCov">			.connect(server.local_address()?, &quot;test&quot;)?</span></div>
+<div class="line"><span id="260" class="lineNum"><a href="#260">260</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="261" class="lineNum"><a href="#261">261</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?;</span></div>
+<div class="line"><span id="262" class="lineNum"><a href="#262">262</a></span><span class="counterCov">1</span><span class="lineCov">		let _connection = server</span></div>
+<div class="line"><span id="263" class="lineNum"><a href="#263">263</a></span><span class="counterCov">1</span><span class="lineCov">			.next()</span></div>
+<div class="line"><span id="264" class="lineNum"><a href="#264">264</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.await</span></div>
+<div class="line"><span id="265" class="lineNum"><a href="#265">265</a></span><span class="counterCov">1</span><span class="lineCov">			.expect(&quot;client dropped&quot;)</span></div>
+<div class="line"><span id="266" class="lineNum"><a href="#266">266</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="267" class="lineNum"><a href="#267">267</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?;</span></div>
+<div class="line"><span id="268" class="lineNum"><a href="#268">268</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="269" class="lineNum"><a href="#269">269</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
+<div class="line"><span id="270" class="lineNum"><a href="#270">270</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="271" class="lineNum"><a href="#271">271</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 </div>
 </body>
 </html>
