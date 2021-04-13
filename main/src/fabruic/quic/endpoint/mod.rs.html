@@ -477,23 +477,6 @@
 <span id="474">474</span>
 <span id="475">475</span>
 <span id="476">476</span>
-<span id="477">477</span>
-<span id="478">478</span>
-<span id="479">479</span>
-<span id="480">480</span>
-<span id="481">481</span>
-<span id="482">482</span>
-<span id="483">483</span>
-<span id="484">484</span>
-<span id="485">485</span>
-<span id="486">486</span>
-<span id="487">487</span>
-<span id="488">488</span>
-<span id="489">489</span>
-<span id="490">490</span>
-<span id="491">491</span>
-<span id="492">492</span>
-<span id="493">493</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Starting point to create a QUIC enabled network socket.</span>
 
@@ -689,11 +672,7 @@
 	<span class="doccomment">/// # Errors</span>
 	<span class="doccomment">/// [`Error::ConnectConfig`] if configuration needed to connect to a peer is</span>
 	<span class="doccomment">/// faulty.</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">connect</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>(
-		<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">address</span>: <span class="ident">SocketAddr</span>,
-		<span class="ident">domain</span>: <span class="ident">D</span>,
-	) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Connecting</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">connect</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">address</span>: <span class="ident">SocketAddr</span>, <span class="ident">domain</span>: <span class="ident">D</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Connecting</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">connecting</span> <span class="op">=</span> <span class="self">self</span>
 			.<span class="ident">endpoint</span>
 			.<span class="ident">connect</span>(<span class="kw-2">&amp;</span><span class="ident">address</span>, <span class="ident">domain</span>.<span class="ident">as_ref</span>())
@@ -738,12 +717,9 @@
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">error</span><span class="op">|</span> <span class="ident">Error::Resolve</span>(<span class="ident">Box::new</span>(<span class="ident">error</span>)))<span class="question-mark">?</span>;
 
 		<span class="comment">// take the first IP found</span>
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">ip</span>) <span class="op">=</span> <span class="ident">ip</span>.<span class="ident">into_iter</span>().<span class="ident">next</span>() {
+		<span class="ident">ip</span>.<span class="ident">into_iter</span>().<span class="ident">next</span>().<span class="ident">map_or</span>(<span class="prelude-val">Err</span>(<span class="ident">Error::NoIp</span>), <span class="op">|</span><span class="ident">ip</span><span class="op">|</span> {
 			<span class="self">self</span>.<span class="ident">connect</span>(<span class="ident">SocketAddr::from</span>((<span class="ident">ip</span>, <span class="ident">port</span>)), <span class="ident">domain</span>.<span class="ident">as_ref</span>())
-				.<span class="kw">await</span>
-		} <span class="kw">else</span> {
-			<span class="prelude-val">Err</span>(<span class="ident">Error::NoIp</span>)
-		}
+		})
 	}
 
 	<span class="doccomment">/// Get the local [`SocketAddr`] the underlying socket is bound to.</span>
@@ -826,8 +802,7 @@
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">Endpoint::new_server</span>(<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="ident">certificate</span>, <span class="kw-2">&amp;</span><span class="ident">private_key</span>)<span class="question-mark">?</span>;
 
 		<span class="kw">let</span> <span class="ident">_connection</span> <span class="op">=</span> <span class="ident">client</span>
-			.<span class="ident">connect</span>(<span class="ident">server</span>.<span class="ident">local_address</span>()<span class="question-mark">?</span>, <span class="string">&quot;test&quot;</span>)
-			.<span class="kw">await</span><span class="question-mark">?</span>
+			.<span class="ident">connect</span>(<span class="ident">server</span>.<span class="ident">local_address</span>()<span class="question-mark">?</span>, <span class="string">&quot;test&quot;</span>)<span class="question-mark">?</span>
 			.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
 			.<span class="kw">await</span><span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">_connection</span> <span class="op">=</span> <span class="ident">server</span>
@@ -853,11 +828,7 @@
 
 		<span class="comment">// `wait_idle` should never finish unless these `Connection`s are closed, which</span>
 		<span class="comment">// they won&#39;t unless they are dropped or explicitly closed</span>
-		<span class="kw">let</span> <span class="ident">_connection</span> <span class="op">=</span> <span class="ident">client</span>
-			.<span class="ident">connect</span>(<span class="ident">address</span>, <span class="string">&quot;test&quot;</span>)
-			.<span class="kw">await</span><span class="question-mark">?</span>
-			.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
-			.<span class="kw">await</span><span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">_connection</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">connect</span>(<span class="ident">address</span>, <span class="string">&quot;test&quot;</span>)<span class="question-mark">?</span>.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>().<span class="kw">await</span><span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">_connection</span> <span class="op">=</span> <span class="ident">server</span>
 			.<span class="ident">next</span>()
 			.<span class="kw">await</span>
@@ -871,7 +842,7 @@
 
 		<span class="comment">// connecting to a closed server shouldn&#39;t work</span>
 		<span class="macro">assert!</span>(<span class="macro">matches!</span>(
-			<span class="ident">client</span>.<span class="ident">connect</span>(<span class="ident">address</span>, <span class="string">&quot;test&quot;</span>).<span class="kw">await</span><span class="question-mark">?</span>.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>().<span class="kw">await</span>,
+			<span class="ident">client</span>.<span class="ident">connect</span>(<span class="ident">address</span>, <span class="string">&quot;test&quot;</span>)<span class="question-mark">?</span>.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>().<span class="kw">await</span>,
 			<span class="prelude-val">Err</span>(<span class="ident">Error::Connecting</span>(<span class="ident">ConnectionError::LocallyClosed</span>))
 		));
 
@@ -898,11 +869,7 @@
 
 		<span class="comment">// these `Connection`s should still work even if new incoming connections are</span>
 		<span class="comment">// refused</span>
-		<span class="kw">let</span> <span class="ident">client_connection</span> <span class="op">=</span> <span class="ident">client</span>
-			.<span class="ident">connect</span>(<span class="ident">address</span>, <span class="string">&quot;test&quot;</span>)
-			.<span class="kw">await</span><span class="question-mark">?</span>
-			.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
-			.<span class="kw">await</span><span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">client_connection</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">connect</span>(<span class="ident">address</span>, <span class="string">&quot;test&quot;</span>)<span class="question-mark">?</span>.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>().<span class="kw">await</span><span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server_connection</span> <span class="op">=</span> <span class="ident">server</span>
 			.<span class="ident">next</span>()
 			.<span class="kw">await</span>
@@ -924,7 +891,7 @@
 
 		<span class="comment">// connecting to a server that refuses new `Connection`s shouldn&#39;t work</span>
 		<span class="macro">assert!</span>(<span class="macro">matches!</span>(
-			<span class="ident">client</span>.<span class="ident">connect</span>(<span class="ident">address</span>, <span class="string">&quot;test&quot;</span>).<span class="kw">await</span><span class="question-mark">?</span>.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>().<span class="kw">await</span>,
+			<span class="ident">client</span>.<span class="ident">connect</span>(<span class="ident">address</span>, <span class="string">&quot;test&quot;</span>)<span class="question-mark">?</span>.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>().<span class="kw">await</span>,
 			<span class="prelude-val">Err</span>(<span class="ident">Error::Connecting</span>(<span class="ident">ConnectionError::ConnectionClosed</span>(
 				<span class="ident">ConnectionClose</span> {
 					<span class="ident">error_code</span>: <span class="ident">TransportErrorCode::CONNECTION_REFUSED</span>,
@@ -970,8 +937,7 @@
 		<span class="comment">// automatically when it&#39;s dropped</span>
 		{
 			<span class="kw">let</span> <span class="ident">_connection</span> <span class="op">=</span> <span class="ident">client</span>
-				.<span class="ident">connect</span>(<span class="ident">server</span>.<span class="ident">local_address</span>()<span class="question-mark">?</span>, <span class="string">&quot;test&quot;</span>)
-				.<span class="kw">await</span><span class="question-mark">?</span>
+				.<span class="ident">connect</span>(<span class="ident">server</span>.<span class="ident">local_address</span>()<span class="question-mark">?</span>, <span class="string">&quot;test&quot;</span>)<span class="question-mark">?</span>
 				.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
 				.<span class="kw">await</span><span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">_connection</span> <span class="op">=</span> <span class="ident">server</span>
