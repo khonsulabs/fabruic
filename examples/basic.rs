@@ -7,6 +7,7 @@ const SERVER_PORT: u16 = 5000;
 const CLIENTS: usize = 100;
 
 #[tokio::main]
+#[cfg_attr(test, test)]
 async fn main() -> Result<()> {
 	// collect all tasks
 	let mut tasks = Vec::with_capacity(CLIENTS + 1);

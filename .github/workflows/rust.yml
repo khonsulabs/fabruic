@@ -29,10 +29,6 @@ jobs:
         run: |
           cargo test --workspace --all-targets
 
-      - name: Run basic example
-        run: |
-          cargo run --example basic
-
   docs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
@@ -74,7 +70,7 @@ jobs:
 
       - name: Run code coverage
         run: |
-          LLVM_PROFILE_FILE="profraw/%m.profraw" cargo test --workspace
+          LLVM_PROFILE_FILE="profraw/%m.profraw" cargo test --workspace --all-targets
           ./grcov profraw -b target/debug -s . -t html --branch --ignore-not-existing -o coverage
         env:
           CARGO_INCREMENTAL: 0
