@@ -14,8 +14,6 @@ use thiserror::Error;
 #[cfg_attr(doc, doc(cfg(feature = "dns")))]
 pub use trust_dns_resolver::error::ResolveError;
 pub use webpki::Error as WebPkiError;
-#[cfg(feature = "certificate")]
-#[cfg_attr(doc, doc(cfg(feature = "certificate")))]
 pub use x509_parser::{error::X509Error, nom::Err};
 
 /// [`Result`](std::result::Result) type for this [`crate`].
@@ -25,8 +23,6 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 #[derive(Debug, Error)]
 pub enum Error {
 	/// Failed to parse the given certificate.
-	#[cfg(feature = "certificate")]
-	#[cfg_attr(doc, doc(cfg(feature = "certificate")))]
 	#[error("Failed parsing certificate: {error}")]
 	ParseCertificate {
 		/// The certificate passed to
@@ -38,8 +34,6 @@ pub enum Error {
 	/// Data passed to generate [`Certificate`](crate::Certificate) with
 	/// [`from_der`](crate::Certificate::from_der) found to contain
 	/// uncorrelated bytes.
-	#[cfg(feature = "certificate")]
-	#[cfg_attr(doc, doc(cfg(feature = "certificate")))]
 	#[error("Found dangling bytes in `Certificate`")]
 	DanglingCertificate {
 		/// The certificate passed to
@@ -49,13 +43,9 @@ pub enum Error {
 		dangling: Vec<u8>,
 	},
 	/// [`Certificate`](crate::Certificate) has expired.
-	#[cfg(feature = "certificate")]
-	#[cfg_attr(doc, doc(cfg(feature = "certificate")))]
 	#[error("`Certificate` has expired")]
 	ExpiredCertificate(Vec<u8>),
 	/// [`Certificate`](crate::Certificate) is missing a domain name.
-	#[cfg(feature = "certificate")]
-	#[cfg_attr(doc, doc(cfg(feature = "certificate")))]
 	#[error("`Certificate` is missing a domain name")]
 	DomainCertificate(Vec<u8>),
 	/// Failed to parse the given private key.
@@ -153,7 +143,6 @@ pub enum Error {
 }
 
 /// Possible certificate parsing errors.
-#[cfg(feature = "certificate")]
 #[derive(Debug, Error)]
 pub enum ParseCertificate {
 	/// [`Error`](std::error::Error) returned by [`webpki`].

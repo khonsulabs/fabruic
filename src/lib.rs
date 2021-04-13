@@ -67,8 +67,6 @@ mod certificate;
 pub mod error;
 mod quic;
 
-#[cfg(feature = "certificate")]
-pub use certificate::generate_self_signed;
-pub use certificate::{Certificate, Dangerous, PrivateKey};
+pub use certificate::{generate_self_signed, Certificate, Dangerous, PrivateKey};
 pub use error::{Error, Result};
 pub use quic::{Builder, Connecting, Connection, Endpoint, Incoming, Receiver, Sender};

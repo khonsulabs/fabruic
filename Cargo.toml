@@ -8,7 +8,6 @@ resolver = "2"
 
 [features]
 default = []
-certificate = ["rcgen", "x509-parser"]
 dns = ["trust-dns-resolver"]
 test = []
 
@@ -23,7 +22,7 @@ if_chain = "1"
 parking_lot = { version = "0.11", features = ["send_guard"] }
 pin-project = "1"
 quinn = { version = "0.7", default-features = false, features = ["tls-rustls"] }
-rcgen = { version = "0.8", default-features = false, optional = true }
+rcgen = { version = "0.8", default-features = false }
 ring = "0.16"
 rustls = { version = "0.19", default-features = false, features = [
 	"dangerous_configuration"
@@ -37,12 +36,12 @@ trust-dns-resolver = { version = "0.20", default-features = false, features = [
 	"tokio-runtime",
 ], optional = true }
 webpki = { version = "0.21", default-features = false }
-x509-parser = { version = "0.9", optional = true }
+x509-parser = "0.9"
 zeroize = { version = "1", features = ["zeroize_derive"] }
 
 [dev-dependencies]
 anyhow = "1"
-fabruic = { path = "", features = ["certificate", "test"] }
+fabruic = { path = "", features = ["test"] }
 quinn-proto = { version = "0.7", default-features = false }
 tokio = { version = "1", features = ["macros"] }
 

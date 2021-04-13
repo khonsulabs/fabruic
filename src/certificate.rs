@@ -36,8 +36,6 @@ impl Certificate {
 	/// - [`Error::ExpiredCertificate`] if the certificate has expires
 	/// - [`Error::DomainCertificate`] if the certificate doesn't contain a
 	///   domain name
-	#[cfg(feature = "certificate")]
-	#[cfg_attr(doc, doc(cfg(feature = "certificate")))]
 	pub fn from_der(certificate: Vec<u8>) -> Result<Self> {
 		use std::time::Duration;
 
@@ -200,8 +198,6 @@ impl Dangerous for PrivateKey {
 }
 
 /// Generate a self signed certificate.
-#[cfg(feature = "certificate")]
-#[cfg_attr(doc, doc(cfg(feature = "certificate")))]
 pub fn generate_self_signed<S: Into<String>>(domain: S) -> (Certificate, PrivateKey) {
 	#[allow(clippy::expect_used)]
 	let key_pair = rcgen::generate_simple_self_signed([domain.into()])
