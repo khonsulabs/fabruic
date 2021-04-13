@@ -173,6 +173,28 @@
 <span id="170">170</span>
 <span id="171">171</span>
 <span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! [`Connection`]s hold a connection to a peer in an</span>
 <span class="doccomment">//! [`Endpoint`](crate::Endpoint).</span>
@@ -184,17 +206,21 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! You can use [`open_stream`](Connection::open_stream) to open a stream.</span>
 
+<span class="kw">mod</span> <span class="ident">connecting</span>;
 <span class="kw">mod</span> <span class="ident">incoming</span>;
 <span class="kw">mod</span> <span class="ident">receiver</span>;
+<span class="kw">mod</span> <span class="ident">receiver_stream</span>;
 <span class="kw">mod</span> <span class="ident">sender</span>;
 
 <span class="kw">use</span> <span class="ident">std</span>::{
 	<span class="ident">fmt</span>::{<span class="self">self</span>, <span class="ident">Debug</span>, <span class="ident">Formatter</span>},
+	<span class="ident">marker::PhantomData</span>,
 	<span class="ident">net::SocketAddr</span>,
 	<span class="ident">pin::Pin</span>,
 	<span class="ident">task</span>::{<span class="ident">Context</span>, <span class="ident">Poll</span>},
 };
 
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">connecting::Connecting</span>;
 <span class="kw">use</span> <span class="ident">flume</span>::<span class="ident">r#async</span><span class="ident">::RecvStream</span>;
 <span class="kw">use</span> <span class="ident">futures_channel::oneshot</span>;
 <span class="kw">use</span> <span class="ident">futures_util</span>::{
@@ -202,8 +228,10 @@
 	<span class="ident">StreamExt</span>,
 };
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">incoming::Incoming</span>;
+<span class="kw">use</span> <span class="ident">pin_project::pin_project</span>;
 <span class="kw">use</span> <span class="ident">quinn</span>::{<span class="ident">IncomingBiStreams</span>, <span class="ident">VarInt</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">receiver::Receiver</span>;
+<span class="kw">use</span> <span class="ident">receiver_stream::ReceiverStream</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sender::Sender</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">de::DeserializeOwned</span>, <span class="ident">Serialize</span>};
 <span class="kw">use</span> <span class="ident">stream::Stream</span>;
@@ -212,17 +240,20 @@
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Error</span>, <span class="prelude-ty">Result</span>};
 
 <span class="doccomment">/// Represents an open connection. Receives [`Incoming`] through [`Stream`].</span>
+<span class="attribute">#[<span class="ident">pin_project</span>]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Connection</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Connection</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">DeserializeOwned</span> <span class="op">+</span> <span class="ident">Serialize</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Initiate new connections or close socket.</span>
 	<span class="ident">connection</span>: <span class="ident">quinn::Connection</span>,
 	<span class="doccomment">/// Receive incoming streams.</span>
-	<span class="ident">receiver</span>: <span class="ident">RecvStream</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">Incoming</span><span class="op">&gt;</span>,
+	<span class="ident">receiver</span>: <span class="ident">RecvStream</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">Incoming</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// [`Task`] handling new incoming streams.</span>
 	<span class="ident">task</span>: <span class="ident">Task</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// Type for type negotiation for new streams.</span>
+	<span class="ident">types</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">Connection</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">DeserializeOwned</span> <span class="op">+</span> <span class="ident">Serialize</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">Connection</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
 		<span class="ident">f</span>.<span class="ident">debug_struct</span>(<span class="string">&quot;Connection&quot;</span>)
 			.<span class="ident">field</span>(<span class="string">&quot;connection&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">connection</span>)
@@ -232,7 +263,7 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">Connection</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">DeserializeOwned</span> <span class="op">+</span> <span class="ident">Serialize</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">Connection</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Builds a new [`Connection`] from raw [`quinn`] types.</span>
 	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">connection</span>: <span class="ident">quinn::Connection</span>, <span class="kw-2">mut</span> <span class="ident">bi_streams</span>: <span class="ident">IncomingBiStreams</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="comment">// channels for passing down new `Incoming` `Connection`s</span>
@@ -271,7 +302,44 @@
 			<span class="ident">connection</span>,
 			<span class="ident">receiver</span>,
 			<span class="ident">task</span>,
+			<span class="ident">types</span>: <span class="ident">PhantomData</span>,
 		}
+	}
+
+	<span class="doccomment">/// Open a stream on this [`Connection`], allowing to send data back and</span>
+	<span class="doccomment">/// forth.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Use `S` and `R` to define which type this stream is sending and</span>
+	<span class="doccomment">/// receiving and `type` to send this information to the receiver.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Errors</span>
+	<span class="doccomment">/// - [`Error::OpenStream`] if opening a stream failed</span>
+	<span class="doccomment">/// - [`Error::Serialize`] if `type` failed to be serialized</span>
+	<span class="doccomment">/// - [`Error::Send`] if `type` failed to be sent</span>
+	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">open_stream</span><span class="op">&lt;</span>
+		<span class="ident">S</span>: <span class="ident">DeserializeOwned</span> <span class="op">+</span> <span class="ident">Serialize</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="ident">R</span>: <span class="ident">DeserializeOwned</span> <span class="op">+</span> <span class="ident">Serialize</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+	<span class="op">&gt;</span>(
+		<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">r#type</span>: <span class="kw-2">&amp;</span><span class="ident">T</span>,
+	) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>, <span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
+		<span class="kw">let</span> (<span class="ident">sender</span>, <span class="ident">receiver</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">connection</span>.<span class="ident">open_bi</span>().<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="ident">Error::OpenStream</span>)<span class="question-mark">?</span>;
+
+		<span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">Sender::new</span>(<span class="ident">sender</span>);
+		<span class="kw">let</span> <span class="ident">receiver</span> <span class="op">=</span> <span class="ident">Receiver::new</span>(<span class="ident">receiver</span>);
+
+		<span class="ident">sender</span>.<span class="ident">send_any</span>(<span class="kw-2">&amp;</span><span class="ident">r#type</span>)<span class="question-mark">?</span>;
+
+		<span class="prelude-val">Ok</span>((<span class="ident">sender</span>, <span class="ident">receiver</span>))
+	}
+
+	<span class="doccomment">/// The negotiated application protocol. See</span>
+	<span class="doccomment">/// [`Builder::set_protocols`](crate::Builder::set_protocols).</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">protocol</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">connection</span>
+			.<span class="ident">handshake_data</span>()
+			.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">data</span><span class="op">|</span> <span class="ident">data</span>.<span class="ident">protocol</span>)
 	}
 
 	<span class="doccomment">/// The peer&#39;s address. Clients may change addresses at will, e.g. when</span>
@@ -279,30 +347,6 @@
 	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remote_address</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SocketAddr</span> {
 		<span class="self">self</span>.<span class="ident">connection</span>.<span class="ident">remote_address</span>()
-	}
-
-	<span class="doccomment">/// Open a stream on this [`Connection`], allowing to send data back and</span>
-	<span class="doccomment">/// forth.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Use `S` and `R` to define which type this stream is sending and</span>
-	<span class="doccomment">/// receiving.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// - [`Error::OpenStream`] if opening a stream failed</span>
-	<span class="doccomment">/// - [`Error::Serialize`] if `protocol` failed to be serialized</span>
-	<span class="doccomment">/// - [`Error::Send`] if `protocol` failed to be sent</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">open_stream</span><span class="op">&lt;</span>
-		<span class="ident">S</span>: <span class="ident">DeserializeOwned</span> <span class="op">+</span> <span class="ident">Serialize</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-		<span class="ident">R</span>: <span class="ident">DeserializeOwned</span> <span class="op">+</span> <span class="ident">Serialize</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-	<span class="op">&gt;</span>(
-		<span class="kw-2">&amp;</span><span class="self">self</span>,
-	) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>, <span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
-		<span class="kw">let</span> (<span class="ident">sender</span>, <span class="ident">receiver</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">connection</span>.<span class="ident">open_bi</span>().<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="ident">Error::OpenStream</span>)<span class="question-mark">?</span>;
-
-		<span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">Sender::new</span>(<span class="ident">sender</span>);
-		<span class="kw">let</span> <span class="ident">receiver</span> <span class="op">=</span> <span class="ident">Receiver::new</span>(<span class="ident">receiver</span>);
-
-		<span class="prelude-val">Ok</span>((<span class="ident">sender</span>, <span class="ident">receiver</span>))
 	}
 
 	<span class="doccomment">/// Prevents any new incoming streams. Already incoming streams will</span>
@@ -329,8 +373,8 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">Stream</span> <span class="kw">for</span> <span class="ident">Connection</span> {
-	<span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">Incoming</span>;
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">DeserializeOwned</span> <span class="op">+</span> <span class="ident">Serialize</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">Stream</span> <span class="kw">for</span> <span class="ident">Connection</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">Incoming</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">poll_next</span>(<span class="kw-2">mut</span> <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="ident">::Item</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">receiver</span>.<span class="ident">is_terminated</span>() {
@@ -341,7 +385,7 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">FusedStream</span> <span class="kw">for</span> <span class="ident">Connection</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">DeserializeOwned</span> <span class="op">+</span> <span class="ident">Serialize</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">FusedStream</span> <span class="kw">for</span> <span class="ident">Connection</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">is_terminated</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
 		<span class="self">self</span>.<span class="ident">receiver</span>.<span class="ident">is_terminated</span>()
 	}
