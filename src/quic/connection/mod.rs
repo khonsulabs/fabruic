@@ -10,6 +10,7 @@
 
 mod incoming;
 mod receiver;
+mod receiver_stream;
 mod sender;
 
 use std::{
@@ -28,6 +29,7 @@ use futures_util::{
 pub use incoming::Incoming;
 use quinn::{IncomingBiStreams, VarInt};
 pub use receiver::Receiver;
+use receiver_stream::ReceiverStream;
 pub use sender::Sender;
 use serde::{de::DeserializeOwned, Serialize};
 use stream::Stream;
