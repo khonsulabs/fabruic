@@ -12,13 +12,12 @@ use std::{
 use bytes::{Buf, BufMut, BytesMut};
 use futures_util::{stream::Stream, FutureExt};
 use pin_project::pin_project;
-use quinn::{crypto::rustls::TlsSession, Chunk};
+use quinn::{crypto::rustls::TlsSession, generic::ReadChunk, Chunk, RecvStream};
 use serde::de::DeserializeOwned;
 
 use crate::{Error, Result};
 
-/// Wrapper around [`RecvStream`](quinn::RecvStream) providing framing and
-/// deserialization.
+/// Wrapper around [`RecvStream`] providing framing and deserialization.
 #[pin_project]
 pub(super) struct ReceiverStream<'s, T: DeserializeOwned> {
 	/// Store length of the currently processing message.
@@ -26,14 +25,14 @@ pub(super) struct ReceiverStream<'s, T: DeserializeOwned> {
 	/// Store incoming chunks.
 	buffer: BytesMut,
 	/// [`Quinn`](quinn)s receiver.
-	reader: quinn::generic::ReadChunk<'s, TlsSession>,
+	reader: ReadChunk<'s, TlsSession>,
 	/// Type to be [`Deserialize`](serde::Deserialize)d
 	_type: PhantomData<T>,
 }
 
 impl<'s, T: DeserializeOwned> ReceiverStream<'s, T> {
 	/// Builds a new [`ReceiverStream`].
-	pub(super) fn new(stream: &'s mut quinn::RecvStream) -> Self {
+	pub(super) fn new(stream: &'s mut RecvStream) -> Self {
 		Self {
 			length: 0,
 			// 1480 bytes is a default MTU size configured by quinn-proto
@@ -43,13 +42,13 @@ impl<'s, T: DeserializeOwned> ReceiverStream<'s, T> {
 		}
 	}
 
-	/// [`Poll`](std::future::Future::poll)s [`RecvStream`](quinn::RecvStream)
-	/// for the next [`Chunk`] and stores it in [`ReceiverStream`]. Returns
-	/// [`None`] if the [`Stream`] is finished.
+	/// [`Poll`](std::future::Future::poll)s [`RecvStream`] for the next
+	/// [`Chunk`] and stores it in [`ReceiverStream`]. Returns [`None`] if the
+	/// [`Stream`] is finished.
 	///
 	/// # Errors
 	/// [`Error::Read`] if the [`Receiver`] failed to read from the
-	/// [`RecvStream`](quinn::RecvStream).
+	/// [`RecvStream`].
 	fn poll(&mut self, cx: &mut Context<'_>) -> Poll<Result<Option<()>>> {
 		self.reader
 			.poll_unpin(cx)
