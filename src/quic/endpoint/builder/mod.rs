@@ -70,7 +70,7 @@ impl Builder {
 			address: ([0, 0, 0, 0, 0, 0, 0, 1], 0).into(),
 			client: ClientConfigBuilder::new(client),
 			server: None,
-			config: Config::default(),
+			config: Config::new(),
 		}
 	}
 
