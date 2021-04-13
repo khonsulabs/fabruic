@@ -95,11 +95,6 @@ pub enum Error {
 	#[cfg_attr(doc, doc(cfg(feature = "dns")))]
 	#[error("Found no IP address for that domain")]
 	NoIp,
-	/// Returned by [`Endpoint`](crate::Endpoint)
-	/// [`Stream`](futures_util::stream::Stream) when receiving a new stream
-	/// failed.
-	#[error("Error on receiving a new connection: {0}")]
-	IncomingConnection(ConnectionError),
 	/// Returned by [`Endpoint::local_address`](crate::Endpoint::local_address)
 	/// when failing to aquire the local address.
 	#[error("Failed to aquire local address: {0}")]
@@ -108,11 +103,11 @@ pub enum Error {
 	#[error("This is already closed")]
 	AlreadyClosed,
 	/// Returned by [`Endpoint::connect`](crate::Endpoint::connect) if
-	/// establishing a connection to the given `address` failed.
-	#[error("Error on establishing a connection to a remote address: {0}")]
-	Connect(ConnectError),
-	/// Returned by [`Endpoint::connect`](crate::Endpoint::connect) if
-	/// connecting to the remote `address` failed.
+	/// configuration needed to connect to a peer is faulty.
+	#[error("Error in configuration to connect to a peer: {0}")]
+	ConnectConfig(ConnectError),
+	/// Returned by [`Connecting::accept`](crate::Connecting::accept) if
+	/// connecting to the peer failed.
 	#[error("Error on connecting to a remote address: {0}")]
 	Connecting(ConnectionError),
 	/// Returned by [`Connection`](crate::Connection)
@@ -151,6 +146,10 @@ pub enum Error {
 	/// [`deserialize`](serde::Deserialize) from a stream.
 	#[error("Error deserializing from a stream: {0}")]
 	Deserialize(ErrorKind),
+	/// Returned by [`Incoming::type`](crate::Incoming::r#type) if the peer
+	/// closed the stream before sending the type.
+	#[error("Stream was closed before sending a type")]
+	NoType,
 }
 
 /// Possible certificate parsing errors.

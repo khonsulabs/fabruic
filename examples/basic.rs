@@ -33,7 +33,12 @@ async fn main() -> Result<()> {
 			// in this example we know there is `CLIENTS` number of clients, so we will not
 			// wait for more
 			for _ in 0..CLIENTS {
-				let mut connection = server.next().await.expect("connection failed")?;
+				let mut connection = server
+					.next()
+					.await
+					.expect("connection failed")
+					.accept::<()>()
+					.await?;
 				println!("[server] New Connection: {}", connection.remote_address());
 
 				// every new incoming connections is handled in it's own task
@@ -49,7 +54,7 @@ async fn main() -> Result<()> {
 					);
 
 					// accept stream
-					let (sender, mut receiver) = incoming.accept_stream::<String>();
+					let (sender, mut receiver) = incoming.accept::<String, String>().await?;
 
 					// start listening to new incoming messages
 					// in this example we know there is only 1 incoming message, so we will not wait
@@ -100,6 +105,8 @@ async fn main() -> Result<()> {
 
 			let connection = client
 				.connect(format!("[::1]:{}", SERVER_PORT).parse()?, SERVER_NAME)
+				.await?
+				.accept::<()>()
 				.await?;
 			connection.close_incoming().await?;
 			println!(
@@ -109,7 +116,7 @@ async fn main() -> Result<()> {
 			);
 
 			// initiate a stream
-			let (sender, mut receiver) = connection.open_stream::<String, String>().await?;
+			let (sender, mut receiver) = connection.open_stream::<String, String>(&()).await?;
 			println!(
 				"[client:{}] Successfully opened stream to {}",
 				index,

@@ -255,8 +255,17 @@ mod test {
 		let mut server = builder.build().map_err(|(error, _)| error)?;
 
 		// test connection
-		let _connection = client.connect(server.local_address()?, "test").await?;
-		let _connection = server.next().await.expect("client dropped")?;
+		let _connection = client
+			.connect(server.local_address()?, "test")
+			.await?
+			.accept::<()>()
+			.await?;
+		let _connection = server
+			.next()
+			.await
+			.expect("client dropped")
+			.accept::<()>()
+			.await?;
 
 		Ok(())
 	}

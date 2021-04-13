@@ -16,7 +16,7 @@ use futures_util::{
 	stream::{FusedStream, Stream},
 	StreamExt,
 };
-use quinn::{ClientConfig, NewConnection, ServerConfig, VarInt};
+use quinn::{ClientConfig, ServerConfig, VarInt};
 #[cfg(feature = "dns")]
 use trust_dns_resolver::{
 	config::{ResolverConfig, ResolverOpts},
@@ -26,7 +26,7 @@ use trust_dns_resolver::{
 use super::Task;
 use crate::{
 	certificate::{Certificate, PrivateKey},
-	Connection, Error, Result,
+	Connecting, Error, Result,
 };
 
 /// Represents a socket using the QUIC protocol to communicate with peers.
@@ -36,7 +36,7 @@ pub struct Endpoint {
 	/// Initiate new connections or close socket.
 	endpoint: quinn::Endpoint,
 	/// Receiving new incoming connections.
-	receiver: RecvStream<'static, Result<Connection>>,
+	receiver: RecvStream<'static, Connecting>,
 	/// Task handle handling new incoming connections.
 	task: Task<()>,
 }
@@ -171,26 +171,15 @@ impl Endpoint {
 	/// [`Endpoint`].
 	async fn incoming(
 		mut incoming: quinn::Incoming,
-		sender: Sender<Result<Connection>>,
+		sender: Sender<Connecting>,
 		mut shutdown: Receiver<()>,
 	) {
 		while let Some(connecting) = allochronic_util::select! {
 			connecting: &mut incoming => connecting,
 			_ : &mut shutdown => None,
 		} {
-			let connection = connecting
-				.await
-				.map(
-					|NewConnection {
-					     connection,
-					     bi_streams,
-					     ..
-					 }| Connection::new(connection, bi_streams),
-				)
-				.map_err(Error::IncomingConnection);
-
 			// if there is no receiver, it means that we dropped the last `Endpoint`
-			if sender.send(connection).is_err() {
+			if sender.send(Connecting::new(connecting)).is_err() {
 				break;
 			}
 		}
@@ -200,26 +189,19 @@ impl Endpoint {
 	/// the certificate.
 	///
 	/// # Errors
-	/// - [`Error::Connect`] if no connection to the given `address` could be
-	///   established
-	/// - [`Error::Connecting`] if the connection to the given `address` failed
+	/// [`Error::ConnectConfig`] if configuration needed to connect to a peer is
+	/// faulty.
 	pub async fn connect<D: AsRef<str>>(
 		&self,
 		address: SocketAddr,
 		domain: D,
-	) -> Result<Connection> {
+	) -> Result<Connecting> {
 		let connecting = self
 			.endpoint
 			.connect(&address, domain.as_ref())
-			.map_err(Error::Connect)?;
+			.map_err(Error::ConnectConfig)?;
 
-		let NewConnection {
-			connection,
-			bi_streams,
-			..
-		} = connecting.await.map_err(Error::Connecting)?;
-
-		Ok(Connection::new(connection, bi_streams))
+		Ok(Connecting::new(connecting))
 	}
 
 	/// Attempts to resolve the IP with the given domain name. This is done with
@@ -234,12 +216,11 @@ impl Endpoint {
 	///
 	/// # Errors
 	/// - [`Error::Resolve`] if the domain couldn't be resolved to an IP address
-	/// - [`Error::Connect`] if no connection to the given `address` could be
-	///   established
-	/// - [`Error::Connecting`] if the connection to the given `address` failed
+	/// - [`Error::ConnectConfig`] if configuration needed to connect to a peer
+	///   is faulty
 	#[cfg(feature = "dns")]
 	#[cfg_attr(doc, doc(cfg(feature = "dns")))]
-	pub async fn connect_with<S: AsRef<str>>(&self, port: u16, domain: S) -> Result<Connection> {
+	pub async fn connect_with<S: AsRef<str>>(&self, port: u16, domain: S) -> Result<Connecting> {
 		let config = ResolverConfig::cloudflare_https();
 		// `validate` enforces DNSSEC
 		let opts = ResolverOpts {
@@ -309,7 +290,7 @@ impl Endpoint {
 }
 
 impl Stream for Endpoint {
-	type Item = Result<Connection>;
+	type Item = Connecting;
 
 	fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
 		if self.receiver.is_terminated() {
@@ -346,8 +327,17 @@ mod test {
 		let client = Endpoint::new_client(&certificate)?;
 		let mut server = Endpoint::new_server(0, &certificate, &private_key)?;
 
-		let _connection = client.connect(server.local_address()?, "test").await?;
-		let _connection = server.next().await.expect("client dropped")?;
+		let _connection = client
+			.connect(server.local_address()?, "test")
+			.await?
+			.accept::<()>()
+			.await?;
+		let _connection = server
+			.next()
+			.await
+			.expect("client dropped")
+			.accept::<()>()
+			.await?;
 
 		Ok(())
 	}
@@ -365,8 +355,17 @@ mod test {
 
 		// `wait_idle` should never finish unless these `Connection`s are closed, which
 		// they won't unless they are dropped or explicitly closed
-		let _connection = client.connect(address, "test").await?;
-		let _connection = server.next().await.expect("client dropped")?;
+		let _connection = client
+			.connect(address, "test")
+			.await?
+			.accept::<()>()
+			.await?;
+		let _connection = server
+			.next()
+			.await
+			.expect("client dropped")
+			.accept::<()>()
+			.await?;
 
 		// closing the client/server will close all connection immediately
 		client.close().await;
@@ -374,7 +373,7 @@ mod test {
 
 		// connecting to a closed server shouldn't work
 		assert!(matches!(
-			client.connect(address, "test").await,
+			client.connect(address, "test").await?.accept::<()>().await,
 			Err(Error::Connecting(ConnectionError::LocallyClosed))
 		));
 
@@ -401,8 +400,17 @@ mod test {
 
 		// these `Connection`s should still work even if new incoming connections are
 		// refused
-		let client_connection = client.connect(address, "test").await?;
-		let mut server_connection = server.next().await.expect("client dropped")?;
+		let client_connection = client
+			.connect(address, "test")
+			.await?
+			.accept::<()>()
+			.await?;
+		let mut server_connection = server
+			.next()
+			.await
+			.expect("client dropped")
+			.accept::<()>()
+			.await?;
 
 		// refuse new incoming connections
 		// client never accepts incoming connections
@@ -418,7 +426,7 @@ mod test {
 
 		// connecting to a server that refuses new `Connection`s shouldn't work
 		assert!(matches!(
-			client.connect(address, "test").await,
+			client.connect(address, "test").await?.accept::<()>().await,
 			Err(Error::Connecting(ConnectionError::ConnectionClosed(
 				ConnectionClose {
 					error_code: TransportErrorCode::CONNECTION_REFUSED,
@@ -433,13 +441,13 @@ mod test {
 		assert!(matches!(server.next().await, None));
 
 		{
-			let (sender, _) = client_connection.open_stream::<(), ()>().await?;
-			sender.send(&())?;
+			let (sender, _) = client_connection.open_stream::<(), ()>(&()).await?;
 			let _server_stream = server_connection
 				.next()
 				.await
 				.expect("client dropped")
-				.accept_stream::<()>();
+				.accept::<(), ()>();
+			sender.finish().await?;
 		}
 
 		drop(client_connection);
@@ -463,8 +471,17 @@ mod test {
 		// `wait_idle` will never finish unless the `Connection` closes, which happens
 		// automatically when it's dropped
 		{
-			let _connection = client.connect(server.local_address()?, "test").await?;
-			let _connection = server.next().await.expect("client dropped")?;
+			let _connection = client
+				.connect(server.local_address()?, "test")
+				.await?
+				.accept::<()>()
+				.await?;
+			let _connection = server
+				.next()
+				.await
+				.expect("client dropped")
+				.accept::<()>()
+				.await?;
 		}
 
 		client.wait_idle().await;

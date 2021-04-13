@@ -8,6 +8,7 @@
 //!
 //! You can use [`open_stream`](Connection::open_stream) to open a stream.
 
+mod connecting;
 mod incoming;
 mod receiver;
 mod receiver_stream;
@@ -15,11 +16,13 @@ mod sender;
 
 use std::{
 	fmt::{self, Debug, Formatter},
+	marker::PhantomData,
 	net::SocketAddr,
 	pin::Pin,
 	task::{Context, Poll},
 };
 
+pub use connecting::Connecting;
 use flume::r#async::RecvStream;
 use futures_channel::oneshot;
 use futures_util::{
@@ -27,6 +30,7 @@ use futures_util::{
 	StreamExt,
 };
 pub use incoming::Incoming;
+use pin_project::pin_project;
 use quinn::{IncomingBiStreams, VarInt};
 pub use receiver::Receiver;
 use receiver_stream::ReceiverStream;
@@ -38,17 +42,20 @@ use super::Task;
 use crate::{Error, Result};
 
 /// Represents an open connection. Receives [`Incoming`] through [`Stream`].
+#[pin_project]
 #[derive(Clone)]
-pub struct Connection {
+pub struct Connection<T: DeserializeOwned + Serialize + Send + 'static> {
 	/// Initiate new connections or close socket.
 	connection: quinn::Connection,
 	/// Receive incoming streams.
-	receiver: RecvStream<'static, Incoming>,
+	receiver: RecvStream<'static, Incoming<T>>,
 	/// [`Task`] handling new incoming streams.
 	task: Task<Result<()>>,
+	/// Type for type negotiation for new streams.
+	types: PhantomData<T>,
 }
 
-impl Debug for Connection {
+impl<T: DeserializeOwned + Serialize + Send + 'static> Debug for Connection<T> {
 	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
 		f.debug_struct("Connection")
 			.field("connection", &self.connection)
@@ -58,7 +65,7 @@ impl Debug for Connection {
 	}
 }
 
-impl Connection {
+impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 	/// Builds a new [`Connection`] from raw [`quinn`] types.
 	pub(super) fn new(connection: quinn::Connection, mut bi_streams: IncomingBiStreams) -> Self {
 		// channels for passing down new `Incoming` `Connection`s
@@ -97,6 +104,7 @@ impl Connection {
 			connection,
 			receiver,
 			task,
+			types: PhantomData,
 		}
 	}
 
@@ -104,22 +112,25 @@ impl Connection {
 	/// forth.
 	///
 	/// Use `S` and `R` to define which type this stream is sending and
-	/// receiving.
+	/// receiving and `type` to send this information to the receiver.
 	///
 	/// # Errors
 	/// - [`Error::OpenStream`] if opening a stream failed
-	/// - [`Error::Serialize`] if `protocol` failed to be serialized
-	/// - [`Error::Send`] if `protocol` failed to be sent
+	/// - [`Error::Serialize`] if `type` failed to be serialized
+	/// - [`Error::Send`] if `type` failed to be sent
 	pub async fn open_stream<
 		S: DeserializeOwned + Serialize + Send + 'static,
 		R: DeserializeOwned + Serialize + Send + 'static,
 	>(
 		&self,
+		r#type: &T,
 	) -> Result<(Sender<S>, Receiver<R>)> {
 		let (sender, receiver) = self.connection.open_bi().await.map_err(Error::OpenStream)?;
 
 		let sender = Sender::new(sender);
 		let receiver = Receiver::new(receiver);
+
+		sender.send_any(&r#type)?;
 
 		Ok((sender, receiver))
 	}
@@ -164,8 +175,8 @@ impl Connection {
 	}
 }
 
-impl Stream for Connection {
-	type Item = Incoming;
+impl<T: DeserializeOwned + Serialize + Send + 'static> Stream for Connection<T> {
+	type Item = Incoming<T>;
 
 	fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
 		if self.receiver.is_terminated() {
@@ -176,7 +187,7 @@ impl Stream for Connection {
 	}
 }
 
-impl FusedStream for Connection {
+impl<T: DeserializeOwned + Serialize + Send + 'static> FusedStream for Connection<T> {
 	fn is_terminated(&self) -> bool {
 		self.receiver.is_terminated()
 	}
