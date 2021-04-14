@@ -152,7 +152,7 @@ impl Endpoint {
 		let _ = builder.set_address(([0; 8], port).into());
 		// while testing always use the default loopback address
 		#[cfg(feature = "test")]
-		let _ = builder.set_address(([0, 0, 0, 0, 0, 0, 0, 1], port).into());
+		let _ = builder.set_address(([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], port).into());
 		let _ = builder.add_key_pair(certificate, private_key);
 
 		builder.build().map_err(|(error, _)| error)
