@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../index.html">top level</a> - <a href="index.html">src</a> - certificate.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-14 23:23:53</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-14 23:52:08</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -145,8 +145,8 @@
 <div class="line"><span id="124" class="lineNum"><a href="#124">124</a></span><span class="counterCov">106</span><span class="lineCov">					.general_names</span></div>
 <div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterCov">106</span><span class="lineCov">					.iter()</span></div>
 <div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterCov">106</span><span class="lineCov">					.filter_map(|name| {</span></div>
-<div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterCov">105</span><span class="lineCov">						if let GeneralName::DNSName(name) = name {</span></div>
-<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterCov">105</span><span class="lineCov">							Some((*name).to_owned())</span></div>
+<div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterCov">106</span><span class="lineCov">						if let GeneralName::DNSName(name) = name {</span></div>
+<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterCov">106</span><span class="lineCov">							Some((*name).to_owned())</span></div>
 <div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterUnCov"></span><span class="lineUnCov">						} else {</span></div>
 <div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterNoCov">0</span><span class="lineNoCov">							None</span></div>
 <div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterUnCov"></span><span class="lineUnCov">						}</span></div>
@@ -190,9 +190,9 @@
 <div class="line"><span id="169" class="lineNum"><a href="#169">169</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`from_der`](Self::from_der), which isn&#39;t `unsafe`, but will fail</span></div>
 <div class="line"><span id="170" class="lineNum"><a href="#170">170</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// nonetheless when used on an [`Endpoint`](crate::Endpoint).</span></div>
 <div class="line"><span id="171" class="lineNum"><a href="#171">171</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[must_use]</span></div>
-<div class="line"><span id="172" class="lineNum"><a href="#172">172</a></span><span class="counterCov">9</span><span class="lineCov">	pub fn unchecked_from_der(private_key: Vec&lt;u8&gt;) -&gt; Self {</span></div>
-<div class="line"><span id="173" class="lineNum"><a href="#173">173</a></span><span class="counterCov">9</span><span class="lineCov">		Self(Some(private_key))</span></div>
-<div class="line"><span id="174" class="lineNum"><a href="#174">174</a></span><span class="counterCov">9</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="172" class="lineNum"><a href="#172">172</a></span><span class="counterCov">8</span><span class="lineCov">	pub fn unchecked_from_der(private_key: Vec&lt;u8&gt;) -&gt; Self {</span></div>
+<div class="line"><span id="173" class="lineNum"><a href="#173">173</a></span><span class="counterCov">8</span><span class="lineCov">		Self(Some(private_key))</span></div>
+<div class="line"><span id="174" class="lineNum"><a href="#174">174</a></span><span class="counterCov">8</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="175" class="lineNum"><a href="#175">175</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 <div class="line"><span id="176" class="lineNum"><a href="#176">176</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="177" class="lineNum"><a href="#177">177</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Gives read access to the [`PrivateKey`].</span></div>
