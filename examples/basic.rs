@@ -15,15 +15,14 @@ async fn main() -> Result<()> {
 	// generate a certificate pair
 	let (certificate, private_key) = fabruic::generate_self_signed(SERVER_NAME);
 
+	// build the server
+	// we want to do this outside to reserve the `SERVER_PORT`, otherwise spawned
+	// clients may take it
+	let mut server = Endpoint::new_server(SERVER_PORT, &certificate, &private_key)?;
+	let address = server.local_address()?;
+
 	// start the server
 	tasks.push({
-		let certificate = certificate.clone();
-
-		// build the server
-		// we want to do this outside to reserve the `SERVER_PORT`, otherwise spawned
-		// clients may take it
-		let mut server = Endpoint::new_server(SERVER_PORT, &certificate, &private_key)?;
-
 		tokio::spawn(async move {
 			println!("[server] Listening on {}", server.local_address()?);
 
@@ -105,7 +104,7 @@ async fn main() -> Result<()> {
 			println!("[client:{}] Bound to {}", index, client.local_address()?);
 
 			let connection = client
-				.connect_pinned(format!("[::1]:{}", SERVER_PORT).parse()?, &certificate)?
+				.connect_pinned(address, &certificate)?
 				.accept::<()>()
 				.await?;
 			connection.close_incoming().await?;

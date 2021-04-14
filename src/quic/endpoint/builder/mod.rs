@@ -56,7 +56,7 @@ impl Builder {
 			#[cfg(not(feature = "test"))]
 			address: ([0; 8], 0).into(),
 			// while testing always use the default loopback address
-			// 
+			// equals too `[::ffff:127.0.0.1]:0`
 			#[cfg(feature = "test")]
 			address: ([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], 0).into(),
 			client: config.new_client_builder(),

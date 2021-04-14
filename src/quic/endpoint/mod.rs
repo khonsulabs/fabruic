@@ -279,10 +279,10 @@ impl Endpoint {
 	pub fn local_address(&self) -> Result<SocketAddr> {
 		let address = self.endpoint.local_addr().map_err(Error::LocalAddress)?;
 
-		#[cfg(not(test))]
+		#[cfg(not(feature = "test"))]
 		return Ok(address);
 
-		#[cfg(test)]
+		#[cfg(feature = "test")]
 		Ok(if address.ip().is_loopback() {
 			([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], address.port()).into()
 		} else {
