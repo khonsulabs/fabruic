@@ -285,11 +285,6 @@
 <span id="282">282</span>
 <span id="283">283</span>
 <span id="284">284</span>
-<span id="285">285</span>
-<span id="286">286</span>
-<span id="287">287</span>
-<span id="288">288</span>
-<span id="289">289</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Creating [`Certificate`]s.</span>
 
@@ -404,7 +399,6 @@
 	<span class="doccomment">/// Panics if [`Certificate`] couldn&#39;t be parsed or contained no valid</span>
 	<span class="doccomment">/// domain names. This can&#39;t happen if [`Certificate`] is constructed</span>
 	<span class="doccomment">/// correctly from [`from_der`](Certificate::from_der).</span>
-	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::expect_used</span>)]</span>
 	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">domains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> (<span class="kw">_</span>, <span class="ident">certificate</span>) <span class="op">=</span>
@@ -503,12 +497,10 @@
 
 <span class="kw">impl</span> <span class="ident">Dangerous</span> <span class="kw">for</span> <span class="ident">PrivateKey</span> {
 	<span class="kw">fn</span> <span class="ident">as_ref</span>(<span class="ident">private_key</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">u8</span>] {
-		<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::expect_used</span>)]</span>
 		<span class="ident">private_key</span>.<span class="number">0</span>.<span class="ident">as_deref</span>().<span class="ident">expect</span>(<span class="string">&quot;value already dropped&quot;</span>)
 	}
 
 	<span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">mut</span> <span class="ident">private_key</span>: <span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
-		<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::expect_used</span>)]</span>
 		<span class="ident">private_key</span>.<span class="number">0</span>.<span class="ident">take</span>().<span class="ident">expect</span>(<span class="string">&quot;value already dropped&quot;</span>)
 	}
 
@@ -519,12 +511,10 @@
 
 <span class="doccomment">/// Generate a self signed certificate.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">generate_self_signed</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">domain</span>: <span class="ident">S</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">Certificate</span>, <span class="ident">PrivateKey</span>) {
-	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::expect_used</span>)]</span>
 	<span class="kw">let</span> <span class="ident">key_pair</span> <span class="op">=</span> <span class="ident">rcgen::generate_simple_self_signed</span>([<span class="ident">domain</span>.<span class="ident">into</span>()])
 		.<span class="ident">expect</span>(<span class="string">&quot;`rcgen` failed generating a self-signed certificate&quot;</span>);
 
 	(
-		<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::expect_used</span>)]</span>
 		<span class="ident">Certificate::unchecked_from_der</span>(
 			<span class="ident">key_pair</span>
 				.<span class="ident">serialize_der</span>()

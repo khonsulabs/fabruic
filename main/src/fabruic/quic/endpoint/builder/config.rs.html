@@ -126,9 +126,6 @@
 <span id="123">123</span>
 <span id="124">124</span>
 <span id="125">125</span>
-<span id="126">126</span>
-<span id="127">127</span>
-<span id="128">128</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Persistent configuration shared between the [`Builder`](crate::Builder) and</span>
 <span class="doccomment">//! the [`Endpoint`](crate::Endpoint).</span>
@@ -161,7 +158,6 @@
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">transport</span> <span class="op">=</span> <span class="ident">TransportConfig::default</span>();
 
 		<span class="comment">// set transport defaults</span>
-		<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::expect_used</span>)]</span>
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">transport</span>
 			<span class="comment">// TODO: research if this is necessary, it improves privacy, but may hurt network</span>
 			<span class="comment">// providers?</span>
@@ -186,10 +182,9 @@
 	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">new_client_builder</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ClientConfigBuilder</span> {
 		<span class="comment">// build client</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">ClientConfig::default</span>();
-		<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::expect_used</span>)]</span>
-		<span class="kw">let</span> <span class="ident">crypto</span> <span class="op">=</span> <span class="ident">Arc::get_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">client</span>.<span class="ident">crypto</span>).<span class="ident">expect</span>(<span class="string">&quot;failed to build `ClientConfig`&quot;</span>);
 
 		<span class="comment">// remove defaults</span>
+		<span class="kw">let</span> <span class="ident">crypto</span> <span class="op">=</span> <span class="ident">Arc::get_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">client</span>.<span class="ident">crypto</span>).<span class="ident">expect</span>(<span class="string">&quot;failed to build `ClientConfig`&quot;</span>);
 		<span class="ident">crypto</span>.<span class="ident">root_store</span> <span class="op">=</span> <span class="ident">RootCertStore::empty</span>();
 		<span class="ident">crypto</span>.<span class="ident">ct_logs</span> <span class="op">=</span> <span class="prelude-val">None</span>;
 
@@ -226,7 +221,6 @@
 	<span class="doccomment">/// Panics if the given [`Certificate`] is invalid. Can&#39;t happen if the</span>
 	<span class="doccomment">/// [`Certificate`] was properly validated through</span>
 	<span class="doccomment">/// [`Certificate::from_der`].</span>
-	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::expect_used</span>)]</span>
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::quic::endpoint</span>) <span class="kw">fn</span> <span class="ident">new_client</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">certificate</span>: <span class="kw-2">&amp;</span><span class="ident">Certificate</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ClientConfig</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">client</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">new_client_builder</span>();
 

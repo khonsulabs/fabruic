@@ -68,11 +68,6 @@
 <span id="65">65</span>
 <span id="66">66</span>
 <span id="67">67</span>
-<span id="68">68</span>
-<span id="69">69</span>
-<span id="70">70</span>
-<span id="71">71</span>
-<span id="72">72</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">unsafe_code</span>)]</span>
 <span class="attribute">#![<span class="ident">warn</span>(
@@ -107,6 +102,7 @@
 	<span class="ident">clippy::blanket_clippy_restriction_lints</span>,
 	<span class="ident">clippy::else_if_without_else</span>,
 	<span class="ident">clippy::exhaustive_enums</span>,
+	<span class="ident">clippy::expect_used</span>,
 	<span class="ident">clippy::future_not_send</span>,
 	<span class="ident">clippy::implicit_return</span>,
 	<span class="ident">clippy::missing_inline_in_public_items</span>,
@@ -120,7 +116,6 @@
 	<span class="ident">unreachable_pub</span>,
 	<span class="ident">variant_size_differences</span>
 )]</span>
-<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy::cargo_common_metadata</span>)]</span>
 <span class="attribute">#![<span class="ident">cfg_attr</span>(
 	<span class="ident">doc</span>,
 	<span class="ident">feature</span>(<span class="ident">doc_cfg</span>),
@@ -129,12 +124,7 @@
 )]</span>
 <span class="attribute">#![<span class="ident">cfg_attr</span>(
 	<span class="ident">test</span>,
-	<span class="ident">allow</span>(
-		<span class="ident">clippy::expect_used</span>,
-		<span class="ident">clippy::integer_arithmetic</span>,
-		<span class="ident">clippy::panic</span>,
-		<span class="ident">clippy::panic_in_result_fn</span>
-	)
+	<span class="ident">allow</span>(<span class="ident">clippy::integer_arithmetic</span>, <span class="ident">clippy::panic</span>, <span class="ident">clippy::panic_in_result_fn</span>)
 )]</span>
 
 <span class="doccomment">//! TODO</span>

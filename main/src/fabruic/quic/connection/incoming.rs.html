@@ -93,7 +93,6 @@
 <span id="90">90</span>
 <span id="91">91</span>
 <span id="92">92</span>
-<span id="93">93</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! [`Incoming`] stream of a [`Connection`](crate::Connection).</span>
 
@@ -152,7 +151,6 @@
 			<span class="kw">let</span> <span class="ident">r#type</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">receiver</span>.<span class="ident">next</span>().<span class="kw">await</span>.<span class="ident">unwrap_or</span>(<span class="prelude-val">Err</span>(<span class="ident">Error::NoType</span>));
 			<span class="comment">// TODO: replace with `Option::insert`</span>
 			<span class="self">self</span>.<span class="ident">r#type</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">r#type</span>);
-			<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::expect_used</span>)]</span>
 			<span class="self">self</span>.<span class="ident">r#type</span>
 				.<span class="ident">as_ref</span>()
 				.<span class="ident">expect</span>(<span class="string">&quot;`type` just inserted missing&quot;</span>)
