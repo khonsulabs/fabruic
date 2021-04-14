@@ -248,19 +248,6 @@
 <span id="245">245</span>
 <span id="246">246</span>
 <span id="247">247</span>
-<span id="248">248</span>
-<span id="249">249</span>
-<span id="250">250</span>
-<span id="251">251</span>
-<span id="252">252</span>
-<span id="253">253</span>
-<span id="254">254</span>
-<span id="255">255</span>
-<span id="256">256</span>
-<span id="257">257</span>
-<span id="258">258</span>
-<span id="259">259</span>
-<span id="260">260</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! [`Endpoint`] builder.</span>
 
@@ -269,37 +256,21 @@
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">net::SocketAddr</span>, <span class="ident">str::FromStr</span>};
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">use</span> <span class="ident">config::Config</span>;
-<span class="kw">use</span> <span class="ident">quinn</span>::{<span class="ident">CertificateChain</span>, <span class="ident">ClientConfigBuilder</span>, <span class="ident">ServerConfigBuilder</span>};
+<span class="kw">use</span> <span class="ident">quinn</span>::{<span class="ident">CertificateChain</span>, <span class="ident">ServerConfigBuilder</span>};
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Certificate</span>, <span class="ident">Dangerous</span>, <span class="ident">Endpoint</span>, <span class="ident">Error</span>, <span class="ident">PrivateKey</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Certificate</span>, <span class="ident">Endpoint</span>, <span class="ident">Error</span>, <span class="ident">PrivateKey</span>, <span class="prelude-ty">Result</span>};
 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="doccomment">/// Holding configuration for [`Builder`] to build [`Endpoint`].</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Builder</span> {
 	<span class="doccomment">/// [`SocketAddr`] for [`Endpoint`](quinn::Endpoint) to bind to.</span>
 	<span class="ident">address</span>: <span class="ident">SocketAddr</span>,
-	<span class="doccomment">/// [`ClientConfig`](quinn::ClientConfig) for [`Endpoint`](quinn::Endpoint).</span>
-	<span class="ident">client</span>: <span class="ident">ClientConfigBuilder</span>,
-	<span class="doccomment">/// [`ServerConfig`](quinn::ServerConfig) for [`Endpoint`](quinn::Endpoint).</span>
-	<span class="ident">server</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ServerConfigBuilder</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// Custom CA [`Certificate`]s.</span>
+	<span class="ident">ca_store</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Certificate</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// Key-pair for the server.</span>
+	<span class="ident">key_pair</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">Certificate</span>, <span class="ident">PrivateKey</span>)<span class="op">&gt;</span>,
 	<span class="doccomment">/// Persistent configuration passed to the [`Endpoint`]</span>
 	<span class="ident">config</span>: <span class="ident">Config</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">Builder</span> {
-	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
-		<span class="ident">f</span>.<span class="ident">debug_struct</span>(<span class="string">&quot;Builder&quot;</span>)
-			.<span class="ident">field</span>(<span class="string">&quot;address&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">address</span>)
-			.<span class="ident">field</span>(<span class="string">&quot;client&quot;</span>, <span class="kw-2">&amp;</span><span class="string">&quot;ClientConfigBuilder&quot;</span>)
-			.<span class="ident">field</span>(
-				<span class="string">&quot;server&quot;</span>,
-				<span class="kw-2">&amp;</span><span class="kw">if</span> <span class="self">self</span>.<span class="ident">server</span>.<span class="ident">is_some</span>() {
-					<span class="string">&quot;Some(ServerConfigBuilder)&quot;</span>
-				} <span class="kw">else</span> {
-					<span class="string">&quot;None&quot;</span>
-				},
-			)
-			.<span class="ident">finish</span>()
-	}
 }
 
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">Builder</span> {
@@ -318,11 +289,11 @@
 			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;test&quot;</span>))]</span>
 			<span class="ident">address</span>: ([<span class="number">0</span>; <span class="number">8</span>], <span class="number">0</span>).<span class="ident">into</span>(),
 			<span class="comment">// while testing always use the default loopback address</span>
-			<span class="comment">// equals too `[::ffff:127.0.0.1]:0`</span>
+			<span class="comment">// equals to `[::ffff:127.0.0.1]:0`</span>
 			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;test&quot;</span>)]</span>
 			<span class="ident">address</span>: ([<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0xffff</span>, <span class="number">0x7f00</span>, <span class="number">1</span>], <span class="number">0</span>).<span class="ident">into</span>(),
-			<span class="ident">client</span>: <span class="ident">config</span>.<span class="ident">new_client_builder</span>(),
-			<span class="ident">server</span>: <span class="prelude-val">None</span>,
+			<span class="ident">ca_store</span>: <span class="ident">Vec::new</span>(),
+			<span class="ident">key_pair</span>: <span class="prelude-val">None</span>,
 			<span class="ident">config</span>,
 		}
 	}
@@ -342,50 +313,10 @@
 		<span class="prelude-val">Ok</span>(<span class="self">self</span>)
 	}
 
-	<span class="doccomment">/// Adds a [`Certificate`] into the default certificate authority store for</span>
-	<span class="doccomment">/// client [`connection`](Endpoint::connect)s.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// # Panics</span>
-	<span class="doccomment">/// Panics if the given [`Certificate`] is invalid. Can&#39;t happen if the</span>
-	<span class="doccomment">/// [`Certificate`] was properly validated through</span>
-	<span class="doccomment">/// [`Certificate::from_der`].</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_ca</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">certificate</span>: <span class="kw-2">&amp;</span><span class="ident">Certificate</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span> {
-		<span class="kw">let</span> <span class="ident">certificate</span> <span class="op">=</span> <span class="ident">quinn::Certificate::from_der</span>(<span class="ident">certificate</span>.<span class="ident">as_ref</span>())
-			.<span class="ident">expect</span>(<span class="string">&quot;`Certificate` couldn&#39;t be parsed&quot;</span>);
-		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>
-			.<span class="ident">client</span>
-			.<span class="ident">add_certificate_authority</span>(<span class="ident">certificate</span>)
-			.<span class="ident">expect</span>(<span class="string">&quot;`Certificate` couldn&#39;t be added as a CA&quot;</span>);
-
-		<span class="self">self</span>
-	}
-
-	<span class="doccomment">/// Add a [`Certificate`] and [`PrivateKey`] for the server. This will add a</span>
+	<span class="doccomment">/// Set a [`Certificate`] and [`PrivateKey`] for the server. This will add a</span>
 	<span class="doccomment">/// listener to incoming [`Connection`](crate::Connection)s.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// # Panics</span>
-	<span class="doccomment">/// Panics if the given [`Certificate`] is invalid. Can&#39;t happen if the</span>
-	<span class="doccomment">/// [`Certificate`] was properly validated through</span>
-	<span class="doccomment">/// [`Certificate::from_der`].</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_key_pair</span>(
-		<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-		<span class="ident">certificate</span>: <span class="kw-2">&amp;</span><span class="ident">Certificate</span>,
-		<span class="ident">private_key</span>: <span class="kw-2">&amp;</span><span class="ident">PrivateKey</span>,
-	) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span> {
-		<span class="comment">// process keypair</span>
-		<span class="kw">let</span> <span class="ident">certificate</span> <span class="op">=</span> <span class="ident">quinn::Certificate::from_der</span>(<span class="ident">certificate</span>.<span class="ident">as_ref</span>())
-			.<span class="ident">expect</span>(<span class="string">&quot;`Certificate` couldn&#39;t be parsed&quot;</span>);
-		<span class="kw">let</span> <span class="ident">chain</span> <span class="op">=</span> <span class="ident">CertificateChain::from_certs</span>(<span class="prelude-val">Some</span>(<span class="ident">certificate</span>));
-		<span class="kw">let</span> <span class="ident">private_key</span> <span class="op">=</span> <span class="ident">quinn::PrivateKey::from_der</span>(<span class="ident">Dangerous::as_ref</span>(<span class="ident">private_key</span>))
-			.<span class="ident">expect</span>(<span class="string">&quot;`PrivateKey` couldn&#39;t be parsed&quot;</span>);
-
-		<span class="comment">// add keypair</span>
-		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>
-			.<span class="ident">server</span>
-			.<span class="ident">get_or_insert</span>(<span class="ident">ServerConfigBuilder::default</span>())
-			.<span class="ident">certificate</span>(<span class="ident">chain</span>, <span class="ident">private_key</span>)
-			.<span class="ident">expect</span>(<span class="string">&quot;`CertificateChain` couldn&#39;t be verified&quot;</span>);
-
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_key_pair</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">certificate</span>: <span class="ident">Certificate</span>, <span class="ident">private_key</span>: <span class="ident">PrivateKey</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span> {
+		<span class="self">self</span>.<span class="ident">key_pair</span> <span class="op">=</span> <span class="prelude-val">Some</span>((<span class="ident">certificate</span>, <span class="ident">private_key</span>));
 		<span class="self">self</span>
 	}
 
@@ -394,21 +325,15 @@
 	<span class="doccomment">/// one of the supplied protocols will be rejected.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// See [`Connection::protocol`](crate::Connection::protocol).</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_protocols</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">protocols</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>[<span class="ident">u8</span>]]) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span> {
-		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">protocols</span>(<span class="ident">protocols</span>);
-		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>
-			.<span class="ident">server</span>
-			.<span class="ident">get_or_insert</span>(<span class="ident">ServerConfigBuilder::default</span>())
-			.<span class="ident">protocols</span>(<span class="ident">protocols</span>);
-
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_protocols</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">protocols</span>: <span class="ident">P</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span> {
 		<span class="self">self</span>.<span class="ident">config</span>.<span class="ident">set_protocols</span>(<span class="ident">protocols</span>);
-
 		<span class="self">self</span>
 	}
 
 	<span class="doccomment">/// Forces [`Endpoint::connect`] to use [`trust-dns`](trust_dns_resolver).</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_trust_dns</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">trust_dns</span>: <span class="ident">bool</span>) {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_trust_dns</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">trust_dns</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span> {
 		<span class="self">self</span>.<span class="ident">config</span>.<span class="ident">set_trust_dns</span>(<span class="ident">trust_dns</span>);
+		<span class="self">self</span>
 	}
 
 	<span class="doccomment">/// Consumes [`Builder`] to build [`Endpoint`]. Must be called from inside</span>
@@ -419,17 +344,49 @@
 	<span class="doccomment">/// `address`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Panics</span>
-	<span class="doccomment">/// If not called from inside the Tokio</span>
-	<span class="doccomment">/// [`Runtime`](tokio::runtime::Runtime).</span>
+	<span class="doccomment">/// - if the given [`Certificate`] is invalid. Can&#39;t happen if the</span>
+	<span class="doccomment">///   [`Certificate`] was properly validated through</span>
+	<span class="doccomment">///   [`Certificate::from_der`]</span>
+	<span class="doccomment">/// - if not called from inside the Tokio</span>
+	<span class="doccomment">///   [`Runtime`](tokio::runtime::Runtime)</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Endpoint</span>, (<span class="ident">Error</span>, <span class="self">Self</span>)<span class="op">&gt;</span> {
 		<span class="kw">match</span> {
-			<span class="comment">// to be able to reuse `Builder` on failure, we have to preserve quinn builders</span>
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">client</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">clone</span>().<span class="ident">build</span>();
-			<span class="ident">client</span>.<span class="ident">transport</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">transport</span>();
+			<span class="comment">// build client</span>
+			<span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">new_client</span>(<span class="self">self</span>.<span class="ident">ca_store</span>.<span class="ident">iter</span>());
 
-			<span class="kw">let</span> <span class="ident">server</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">server</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">server</span><span class="op">|</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">server</span>.<span class="ident">clone</span>().<span class="ident">build</span>();
+			<span class="comment">// build server only if we have a key-pair</span>
+			<span class="kw">let</span> <span class="ident">server</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">key_pair</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">certificate</span>, <span class="ident">private_key</span>)<span class="op">|</span> {
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">ServerConfigBuilder::default</span>();
+
+				<span class="comment">// build key-pair</span>
+				<span class="kw">let</span> <span class="ident">certificate</span> <span class="op">=</span> <span class="ident">quinn::Certificate::from_der</span>(<span class="ident">certificate</span>.<span class="ident">as_ref</span>())
+					.<span class="ident">expect</span>(<span class="string">&quot;`Certificate` couldn&#39;t be parsed&quot;</span>);
+				<span class="kw">let</span> <span class="ident">chain</span> <span class="op">=</span> <span class="ident">CertificateChain::from_certs</span>(<span class="prelude-val">Some</span>(<span class="ident">certificate</span>));
+				<span class="kw">let</span> <span class="ident">private_key</span> <span class="op">=</span>
+					<span class="ident">quinn::PrivateKey::from_der</span>(<span class="kw">crate</span><span class="ident">::dangerous::Certificate::as_ref</span>(<span class="ident">private_key</span>))
+						.<span class="ident">expect</span>(<span class="string">&quot;`PrivateKey` couldn&#39;t be parsed&quot;</span>);
+				<span class="comment">// add key-pair</span>
+				<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">server</span>
+					.<span class="ident">certificate</span>(<span class="ident">chain</span>, <span class="ident">private_key</span>)
+					.<span class="ident">expect</span>(<span class="string">&quot;`CertificateChain` couldn&#39;t be verified&quot;</span>);
+
+				<span class="comment">// set protocols</span>
+				<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">config</span>.<span class="ident">protocols</span>().<span class="ident">is_empty</span>() {
+					<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">server</span>.<span class="ident">protocols</span>(
+						<span class="self">self</span>.<span class="ident">config</span>
+							.<span class="ident">protocols</span>()
+							.<span class="ident">iter</span>()
+							.<span class="ident">map</span>(<span class="ident">Vec::as_slice</span>)
+							.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()
+							.<span class="ident">as_slice</span>(),
+					);
+				}
+
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">server</span>.<span class="ident">build</span>();
+
+				<span class="comment">// set transport</span>
 				<span class="ident">server</span>.<span class="ident">transport</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">transport</span>();
+
 				<span class="ident">server</span>
 			});
 
@@ -438,6 +395,23 @@
 			<span class="prelude-val">Ok</span>(<span class="ident">endpoint</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">endpoint</span>),
 			<span class="prelude-val">Err</span>(<span class="ident">error</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>((<span class="ident">error</span>, <span class="self">self</span>)),
 		}
+	}
+}
+
+<span class="doccomment">/// Security-sensitive configuration for [`Builder`].</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Dangerous</span> {
+	<span class="doccomment">/// Adds a [`Certificate`] into the default certificate authority store for</span>
+	<span class="doccomment">/// [`connection`](Endpoint::connect)ing to a server.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Security</span>
+	<span class="doccomment">/// Managing your own CA root store can make sense if a private CA is used.</span>
+	<span class="doccomment">/// Otherwise use [`Endpoint::connect_pinned`].</span>
+	<span class="kw">fn</span> <span class="ident">add_ca</span>(<span class="ident">builder</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>, <span class="ident">certificate</span>: <span class="ident">Certificate</span>);
+}
+
+<span class="kw">impl</span> <span class="ident">Dangerous</span> <span class="kw">for</span> <span class="ident">Builder</span> {
+	<span class="kw">fn</span> <span class="ident">add_ca</span>(<span class="ident">builder</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>, <span class="ident">certificate</span>: <span class="ident">Certificate</span>) {
+		<span class="ident">builder</span>.<span class="ident">ca_store</span>.<span class="ident">push</span>(<span class="ident">certificate</span>);
 	}
 }
 
@@ -495,12 +469,12 @@
 
 		<span class="comment">// build client</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">Builder::new</span>();
-		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">add_ca</span>(<span class="kw-2">&amp;</span><span class="ident">certificate</span>);
+		<span class="ident">Dangerous::add_ca</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">builder</span>, <span class="ident">certificate</span>.<span class="ident">clone</span>());
 		<span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">build</span>().<span class="ident">map_err</span>(<span class="op">|</span>(<span class="ident">error</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">error</span>)<span class="question-mark">?</span>;
 
 		<span class="comment">// build server</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">Builder::new</span>();
-		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">add_key_pair</span>(<span class="kw-2">&amp;</span><span class="ident">certificate</span>, <span class="kw-2">&amp;</span><span class="ident">private_key</span>);
+		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">set_key_pair</span>(<span class="ident">certificate</span>, <span class="ident">private_key</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">build</span>().<span class="ident">map_err</span>(<span class="op">|</span>(<span class="ident">error</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">error</span>)<span class="question-mark">?</span>;
 
 		<span class="comment">// test connection</span>

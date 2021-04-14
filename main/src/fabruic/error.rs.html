@@ -161,6 +161,11 @@
 <span id="158">158</span>
 <span id="159">159</span>
 <span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
 
@@ -262,6 +267,11 @@
 	<span class="doccomment">/// Attempting to close something that is already closed.</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;This is already closed&quot;</span>)]</span>
 	<span class="ident">AlreadyClosed</span>,
+	<span class="doccomment">/// Returned by</span>
+	<span class="doccomment">/// [`Endpoint::connect_pinned`](crate::Endpoint::connect_pinned) if</span>
+	<span class="doccomment">/// the passed [`Certificate`](crate::Certificate) has multiple domains.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Using a `Certificate` with multiple domains for direction connection is invalid&quot;</span>)]</span>
+	<span class="ident">MultipleDomains</span>,
 	<span class="doccomment">/// Returned by [`Endpoint::connect`](crate::Endpoint::connect) if</span>
 	<span class="doccomment">/// configuration needed to connect to a peer is faulty.</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error in configuration to connect to a peer: {0}&quot;</span>)]</span>

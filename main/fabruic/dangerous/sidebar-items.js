@@ -1,0 +1,1 @@
+initSidebarItems({"trait":[["Builder","Security-sensitive configuration for [`Builder`]."],["Certificate","Gives read access to the [`PrivateKey`]."]]});

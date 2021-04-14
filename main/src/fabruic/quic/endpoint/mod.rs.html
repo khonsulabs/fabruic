@@ -569,6 +569,14 @@
 <span id="566">566</span>
 <span id="567">567</span>
 <span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Starting point to create a QUIC enabled network socket.</span>
 
@@ -581,8 +589,8 @@
 	<span class="ident">task</span>::{<span class="ident">Context</span>, <span class="ident">Poll</span>},
 };
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">builder::Builder</span>;
 <span class="kw">use</span> <span class="ident">builder::Config</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">builder</span>::{<span class="ident">Builder</span>, <span class="ident">Dangerous</span>};
 <span class="kw">use</span> <span class="ident">flume</span>::{<span class="ident">r#async</span><span class="ident">::RecvStream</span>, <span class="ident">Sender</span>};
 <span class="kw">use</span> <span class="ident">futures_channel::oneshot</span>::{<span class="self">self</span>, <span class="ident">Receiver</span>};
 <span class="kw">use</span> <span class="ident">futures_util</span>::{
@@ -716,8 +724,8 @@
 	<span class="doccomment">///   [`Certificate::from_der`]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_server</span>(
 		<span class="ident">port</span>: <span class="ident">u16</span>,
-		<span class="ident">certificate</span>: <span class="kw-2">&amp;</span><span class="ident">Certificate</span>,
-		<span class="ident">private_key</span>: <span class="kw-2">&amp;</span><span class="ident">PrivateKey</span>,
+		<span class="ident">certificate</span>: <span class="ident">Certificate</span>,
+		<span class="ident">private_key</span>: <span class="ident">PrivateKey</span>,
 	) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">Builder::new</span>();
 		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;test&quot;</span>))]</span>
@@ -725,7 +733,7 @@
 		<span class="comment">// while testing always use the default loopback address</span>
 		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;test&quot;</span>)]</span>
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">set_address</span>(([<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0xffff</span>, <span class="number">0x7f00</span>, <span class="number">1</span>], <span class="ident">port</span>).<span class="ident">into</span>());
-		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">add_key_pair</span>(<span class="ident">certificate</span>, <span class="ident">private_key</span>);
+		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">set_key_pair</span>(<span class="ident">certificate</span>, <span class="ident">private_key</span>);
 
 		<span class="ident">builder</span>.<span class="ident">build</span>().<span class="ident">map_err</span>(<span class="op">|</span>(<span class="ident">error</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">error</span>)
 	}
@@ -855,9 +863,15 @@
 	<span class="doccomment">/// certificate root store will be ignored and the given [`Certificate`]</span>
 	<span class="doccomment">/// will validate the server.</span>
 	<span class="doccomment">///</span>
+	<span class="doccomment">/// This method is intender for direct connection to a known server.</span>
+	<span class="doccomment">/// Multiple domain names in the [`Certificate`] aren&#39;t supported.</span>
+	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// [`Error::ConnectConfig`] if configuration needed to connect to a peer is</span>
-	<span class="doccomment">/// faulty.</span>
+	<span class="doccomment">/// - [`Error::MultipleDomains`] if multiple domains are used in this</span>
+	<span class="doccomment">///   [`Certificate`]</span>
+	<span class="doccomment">/// - [`Error::ConnectConfig`] if configuration needed to connect to a peer</span>
+	<span class="doccomment">///   is</span>
+	<span class="doccomment">/// faulty</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Panics</span>
 	<span class="doccomment">/// Panics if the given [`Certificate`] is invalid. Can&#39;t happen if the</span>
@@ -869,16 +883,18 @@
 		<span class="ident">address</span>: <span class="ident">SocketAddr</span>,
 		<span class="ident">certificate</span>: <span class="kw-2">&amp;</span><span class="ident">Certificate</span>,
 	) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Connecting</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">domains</span> <span class="op">=</span> <span class="ident">certificate</span>.<span class="ident">domains</span>().<span class="ident">into_iter</span>();
+		<span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="ident">domains</span>
+			.<span class="ident">next</span>()
+			.<span class="ident">expect</span>(<span class="string">&quot;`Certificate` contained no valid domains&quot;</span>);
+
+		<span class="kw">if</span> <span class="ident">domains</span>.<span class="ident">next</span>().<span class="ident">is_some</span>() {
+			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::MultipleDomains</span>);
+		}
+
 		<span class="kw">let</span> <span class="ident">connecting</span> <span class="op">=</span> <span class="self">self</span>
 			.<span class="ident">endpoint</span>
-			.<span class="ident">connect_with</span>(
-				<span class="self">self</span>.<span class="ident">config</span>.<span class="ident">new_client</span>(<span class="ident">certificate</span>),
-				<span class="kw-2">&amp;</span><span class="ident">address</span>,
-				<span class="ident">certificate</span>
-					.<span class="ident">domains</span>()
-					.<span class="ident">get</span>(<span class="number">0</span>)
-					.<span class="ident">expect</span>(<span class="string">&quot;`Certificate` contained no valid domains&quot;</span>),
-			)
+			.<span class="ident">connect_with</span>(<span class="self">self</span>.<span class="ident">config</span>.<span class="ident">new_client</span>(<span class="prelude-val">Some</span>(<span class="ident">certificate</span>)), <span class="kw-2">&amp;</span><span class="ident">address</span>, <span class="kw-2">&amp;</span><span class="ident">domain</span>)
 			.<span class="ident">map_err</span>(<span class="ident">Error::ConnectConfig</span>)<span class="question-mark">?</span>;
 
 		<span class="prelude-val">Ok</span>(<span class="ident">Connecting::new</span>(<span class="ident">connecting</span>))
@@ -974,7 +990,7 @@
 		<span class="kw">let</span> (<span class="ident">certificate</span>, <span class="ident">private_key</span>) <span class="op">=</span> <span class="kw">crate</span><span class="ident">::generate_self_signed</span>(<span class="string">&quot;test&quot;</span>);
 
 		<span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">Endpoint::new_client</span>()<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">Endpoint::new_server</span>(<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="ident">certificate</span>, <span class="kw-2">&amp;</span><span class="ident">private_key</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">Endpoint::new_server</span>(<span class="number">0</span>, <span class="ident">certificate</span>.<span class="ident">clone</span>(), <span class="ident">private_key</span>)<span class="question-mark">?</span>;
 
 		<span class="kw">let</span> <span class="ident">_connection</span> <span class="op">=</span> <span class="ident">client</span>
 			.<span class="ident">connect_pinned</span>(<span class="ident">server</span>.<span class="ident">local_address</span>()<span class="question-mark">?</span>, <span class="kw-2">&amp;</span><span class="ident">certificate</span>)<span class="question-mark">?</span>
@@ -998,7 +1014,7 @@
 		<span class="kw">let</span> (<span class="ident">certificate</span>, <span class="ident">private_key</span>) <span class="op">=</span> <span class="kw">crate</span><span class="ident">::generate_self_signed</span>(<span class="string">&quot;test&quot;</span>);
 
 		<span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">Endpoint::new_client</span>()<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">Endpoint::new_server</span>(<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="ident">certificate</span>, <span class="kw-2">&amp;</span><span class="ident">private_key</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">Endpoint::new_server</span>(<span class="number">0</span>, <span class="ident">certificate</span>.<span class="ident">clone</span>(), <span class="ident">private_key</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">address</span> <span class="op">=</span> <span class="ident">server</span>.<span class="ident">local_address</span>()<span class="question-mark">?</span>;
 
 		<span class="comment">// `wait_idle` should never finish unless these `Connection`s are closed, which</span>
@@ -1045,7 +1061,7 @@
 		<span class="kw">let</span> (<span class="ident">certificate</span>, <span class="ident">private_key</span>) <span class="op">=</span> <span class="kw">crate</span><span class="ident">::generate_self_signed</span>(<span class="string">&quot;test&quot;</span>);
 
 		<span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">Endpoint::new_client</span>()<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">Endpoint::new_server</span>(<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="ident">certificate</span>, <span class="kw-2">&amp;</span><span class="ident">private_key</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">Endpoint::new_server</span>(<span class="number">0</span>, <span class="ident">certificate</span>.<span class="ident">clone</span>(), <span class="ident">private_key</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">address</span> <span class="op">=</span> <span class="ident">server</span>.<span class="ident">local_address</span>()<span class="question-mark">?</span>;
 
 		<span class="comment">// these `Connection`s should still work even if new incoming connections are</span>
@@ -1115,7 +1131,7 @@
 		<span class="kw">let</span> (<span class="ident">certificate</span>, <span class="ident">private_key</span>) <span class="op">=</span> <span class="kw">crate</span><span class="ident">::generate_self_signed</span>(<span class="string">&quot;test&quot;</span>);
 
 		<span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">Endpoint::new_client</span>()<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">Endpoint::new_server</span>(<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="ident">certificate</span>, <span class="kw-2">&amp;</span><span class="ident">private_key</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">Endpoint::new_server</span>(<span class="number">0</span>, <span class="ident">certificate</span>.<span class="ident">clone</span>(), <span class="ident">private_key</span>)<span class="question-mark">?</span>;
 
 		<span class="comment">// `wait_idle` will never finish unless the `Connection` closes, which happens</span>
 		<span class="comment">// automatically when it&#39;s dropped</span>
