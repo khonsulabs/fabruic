@@ -269,6 +269,21 @@
 <span id="266">266</span>
 <span id="267">267</span>
 <span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! [`Endpoint`] builder.</span>
 
@@ -322,13 +337,17 @@
 		}
 	}
 
-	<span class="doccomment">/// Set&#39;s the [`SocketAddr`]. Default is &quot;\[::\]:0&quot;.</span>
+	<span class="doccomment">/// Set&#39;s the [`SocketAddr`].</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Default is &quot;\[::\]:0&quot;.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_address</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">address</span>: <span class="ident">SocketAddr</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span> {
 		<span class="self">self</span>.<span class="ident">address</span> <span class="op">=</span> <span class="ident">address</span>;
 		<span class="self">self</span>
 	}
 
-	<span class="doccomment">/// Set&#39;s the [`SocketAddr`]. Default is &quot;\[::\]:0&quot;.</span>
+	<span class="doccomment">/// Set&#39;s the [`SocketAddr`].</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Default is &quot;\[::\]:0&quot;.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
 	<span class="doccomment">/// [`Error::ParseAddress`] if the `address` couldn&#39;t be parsed.</span>
@@ -339,6 +358,9 @@
 
 	<span class="doccomment">/// Set a [`Certificate`] and [`PrivateKey`] for the server. This will add a</span>
 	<span class="doccomment">/// listener to incoming [`Connection`](crate::Connection)s.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Default is none and therefore [`Endpoint`] will not listen to incoming</span>
+	<span class="doccomment">/// [`Connection`](crate::Connection)s.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_key_pair</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">certificate</span>: <span class="ident">Certificate</span>, <span class="ident">private_key</span>: <span class="ident">PrivateKey</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span> {
 		<span class="self">self</span>.<span class="ident">key_pair</span> <span class="op">=</span> <span class="prelude-val">Some</span>((<span class="ident">certificate</span>, <span class="ident">private_key</span>));
 		<span class="self">self</span>
@@ -349,19 +371,27 @@
 	<span class="doccomment">/// one of the supplied protocols will be rejected.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// See [`Connection::protocol`](crate::Connection::protocol).</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Default is contains no protocols.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_protocols</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">protocols</span>: <span class="ident">P</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span> {
 		<span class="self">self</span>.<span class="ident">config</span>.<span class="ident">set_protocols</span>(<span class="ident">protocols</span>);
 		<span class="self">self</span>
 	}
 
 	<span class="doccomment">/// Forces [`Endpoint::connect`] to use [`trust-dns`](trust_dns_resolver).</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Default is `true` if the crate feature &lt;span</span>
+	<span class="doccomment">///   class=&quot;module-item stab portability&quot;</span>
+	<span class="doccomment">///   style=&quot;display: inline; border-radius: 3px; padding: 2px; font-size:</span>
+	<span class="doccomment">/// 80%; line-height: 1.2;&quot; &gt;&lt;code&gt;trust-dns&lt;/code&gt;&lt;/span&gt; is enabled.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_trust_dns</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">trust_dns</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span> {
 		<span class="self">self</span>.<span class="ident">config</span>.<span class="ident">set_trust_dns</span>(<span class="ident">trust_dns</span>);
 		<span class="self">self</span>
 	}
 
-	<span class="doccomment">/// Set&#39;s the default certificate root store. Default is</span>
-	<span class="doccomment">/// [`Store::Embedded`].</span>
+	<span class="doccomment">/// Set&#39;s the default certificate root store.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Default is [`Store::Embedded`].</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_store</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">store</span>: <span class="ident">Store</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span> {
 		<span class="self">self</span>.<span class="ident">store</span> <span class="op">=</span> <span class="ident">store</span>;
 		<span class="self">self</span>
