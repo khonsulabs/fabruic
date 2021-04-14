@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-14 20:06:15</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-14 20:10:50</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -119,16 +119,16 @@
 <div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">6</span><span class="lineCov">				shutdown_sender,</span></div>
 <div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterCov">6</span><span class="lineCov">			)</span></div>
 <div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
-<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterCov">108</span><span class="lineCov">			Task::empty()</span></div>
+<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterCov">109</span><span class="lineCov">			Task::empty()</span></div>
 <div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterUnCov"></span><span class="lineUnCov">		};</span></div>
 <div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterCov">114</span><span class="lineCov">		Ok(Self {</span></div>
-<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterCov">114</span><span class="lineCov">			endpoint,</span></div>
-<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterCov">114</span><span class="lineCov">			receiver,</span></div>
-<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterCov">114</span><span class="lineCov">			task,</span></div>
-<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterCov">114</span><span class="lineCov">			config,</span></div>
-<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterCov">114</span><span class="lineCov">		})</span></div>
-<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterCov">114</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterCov">115</span><span class="lineCov">		Ok(Self {</span></div>
+<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterCov">115</span><span class="lineCov">			endpoint,</span></div>
+<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterCov">115</span><span class="lineCov">			receiver,</span></div>
+<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterCov">115</span><span class="lineCov">			task,</span></div>
+<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterCov">115</span><span class="lineCov">			config,</span></div>
+<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterCov">115</span><span class="lineCov">		})</span></div>
+<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterCov">115</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Simplified version of creating a client. See [`Builder`] for more</span></div>
 <div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// sophisticated configuration. Must be called from inside the Tokio</span></div>
@@ -337,14 +337,14 @@
 <div class="line"><span id="316" class="lineNum"><a href="#316">316</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
 <div class="line"><span id="317" class="lineNum"><a href="#317">317</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
 <div class="line"><span id="318" class="lineNum"><a href="#318">318</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Error::LocalAddress`] if aquiring the local address failed.</span></div>
-<div class="line"><span id="319" class="lineNum"><a href="#319">319</a></span><span class="counterCov">209</span><span class="lineCov">	pub fn local_address(&amp;self) -&gt; Result&lt;SocketAddr&gt; {</span></div>
-<div class="line"><span id="320" class="lineNum"><a href="#320">320</a></span><span class="counterCov">209</span><span class="lineCov">		let address = self.endpoint.local_addr().map_err(Error::LocalAddress)?;</span></div>
+<div class="line"><span id="319" class="lineNum"><a href="#319">319</a></span><span class="counterCov">210</span><span class="lineCov">	pub fn local_address(&amp;self) -&gt; Result&lt;SocketAddr&gt; {</span></div>
+<div class="line"><span id="320" class="lineNum"><a href="#320">320</a></span><span class="counterCov">210</span><span class="lineCov">		let address = self.endpoint.local_addr().map_err(Error::LocalAddress)?;</span></div>
 <div class="line"><span id="321" class="lineNum"><a href="#321">321</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="322" class="lineNum"><a href="#322">322</a></span><span class="counterUnCov"></span><span class="lineUnCov">		#[cfg(not(feature = &quot;test&quot;))]</span></div>
 <div class="line"><span id="323" class="lineNum"><a href="#323">323</a></span><span class="counterUnCov"></span><span class="lineUnCov">		return Ok(address);</span></div>
 <div class="line"><span id="324" class="lineNum"><a href="#324">324</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="325" class="lineNum"><a href="#325">325</a></span><span class="counterUnCov"></span><span class="lineUnCov">		#[cfg(feature = &quot;test&quot;)]</span></div>
-<div class="line"><span id="326" class="lineNum"><a href="#326">326</a></span><span class="counterCov">209</span><span class="lineCov">		Ok(if address.ip().is_loopback() {</span></div>
+<div class="line"><span id="326" class="lineNum"><a href="#326">326</a></span><span class="counterCov">210</span><span class="lineCov">		Ok(if address.ip().is_loopback() {</span></div>
 <div class="line"><span id="327" class="lineNum"><a href="#327">327</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], address.port()).into()</span></div>
 <div class="line"><span id="328" class="lineNum"><a href="#328">328</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
 <div class="line"><span id="329" class="lineNum"><a href="#329">329</a></span><span class="counterCov">210</span><span class="lineCov">			address</span></div>
