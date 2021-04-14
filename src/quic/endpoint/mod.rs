@@ -363,7 +363,6 @@ mod test {
 
 		let client = Endpoint::new_client()?;
 		let mut server = Endpoint::new_server(0, &certificate, &private_key)?;
-		assert_eq!(server.local_address()?, "[::ffff:127.0.0.1]:5000".parse()?);
 
 		let _connection = client
 			.connect_pinned(server.local_address()?, &certificate)?
