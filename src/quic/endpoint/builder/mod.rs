@@ -50,13 +50,17 @@ impl Builder {
 		}
 	}
 
-	/// Set's the [`SocketAddr`]. Default is "\[::\]:0".
+	/// Set's the [`SocketAddr`].
+	///
+	/// Default is "\[::\]:0".
 	pub fn set_address(&mut self, address: SocketAddr) -> &mut Self {
 		self.address = address;
 		self
 	}
 
-	/// Set's the [`SocketAddr`]. Default is "\[::\]:0".
+	/// Set's the [`SocketAddr`].
+	///
+	/// Default is "\[::\]:0".
 	///
 	/// # Errors
 	/// [`Error::ParseAddress`] if the `address` couldn't be parsed.
@@ -67,6 +71,9 @@ impl Builder {
 
 	/// Set a [`Certificate`] and [`PrivateKey`] for the server. This will add a
 	/// listener to incoming [`Connection`](crate::Connection)s.
+	///
+	/// Default is none and therefore [`Endpoint`] will not listen to incoming
+	/// [`Connection`](crate::Connection)s.
 	pub fn set_key_pair(&mut self, certificate: Certificate, private_key: PrivateKey) -> &mut Self {
 		self.key_pair = Some((certificate, private_key));
 		self
@@ -77,19 +84,27 @@ impl Builder {
 	/// one of the supplied protocols will be rejected.
 	///
 	/// See [`Connection::protocol`](crate::Connection::protocol).
+	///
+	/// Default is contains no protocols.
 	pub fn set_protocols<P: Into<Vec<Vec<u8>>>>(&mut self, protocols: P) -> &mut Self {
 		self.config.set_protocols(protocols);
 		self
 	}
 
 	/// Forces [`Endpoint::connect`] to use [`trust-dns`](trust_dns_resolver).
+	///
+	/// Default is `true` if the crate feature <span
+	///   class="module-item stab portability"
+	///   style="display: inline; border-radius: 3px; padding: 2px; font-size:
+	/// 80%; line-height: 1.2;" ><code>trust-dns</code></span> is enabled.
 	pub fn set_trust_dns(&mut self, trust_dns: bool) -> &mut Self {
 		self.config.set_trust_dns(trust_dns);
 		self
 	}
 
-	/// Set's the default certificate root store. Default is
-	/// [`Store::Embedded`].
+	/// Set's the default certificate root store.
+	///
+	/// Default is [`Store::Embedded`].
 	pub fn set_store(&mut self, store: Store) -> &mut Self {
 		self.store = store;
 		self
