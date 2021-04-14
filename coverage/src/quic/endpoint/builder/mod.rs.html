@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint/builder</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-14 23:52:08</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-14 23:56:23</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -71,222 +71,237 @@
 <div class="line"><span id="50" class="lineNum"><a href="#50">50</a></span><span class="counterCov">116</span><span class="lineCov">		}</span></div>
 <div class="line"><span id="51" class="lineNum"><a href="#51">51</a></span><span class="counterCov">116</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="52" class="lineNum"><a href="#52">52</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="53" class="lineNum"><a href="#53">53</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Set&#39;s the [`SocketAddr`]. Default is &quot;\[::\]:0&quot;.</span></div>
-<div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterCov">6</span><span class="lineCov">	pub fn set_address(&amp;mut self, address: SocketAddr) -&gt; &amp;mut Self {</span></div>
-<div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterCov">6</span><span class="lineCov">		self.address = address;</span></div>
-<div class="line"><span id="56" class="lineNum"><a href="#56">56</a></span><span class="counterCov">6</span><span class="lineCov">		self</span></div>
-<div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterCov">6</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="59" class="lineNum"><a href="#59">59</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Set&#39;s the [`SocketAddr`]. Default is &quot;\[::\]:0&quot;.</span></div>
-<div class="line"><span id="60" class="lineNum"><a href="#60">60</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="61" class="lineNum"><a href="#61">61</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
-<div class="line"><span id="62" class="lineNum"><a href="#62">62</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Error::ParseAddress`] if the `address` couldn&#39;t be parsed.</span></div>
-<div class="line"><span id="63" class="lineNum"><a href="#63">63</a></span><span class="counterCov">1</span><span class="lineCov">	pub fn set_address_str(&amp;mut self, address: &amp;str) -&gt; Result&lt;&amp;mut Self&gt; {</span></div>
-<div class="line"><span id="64" class="lineNum"><a href="#64">64</a></span><span class="counterCov">1</span><span class="lineCov">		self.address = FromStr::from_str(address).map_err(Error::ParseAddress)?;</span></div>
-<div class="line"><span id="65" class="lineNum"><a href="#65">65</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(self)</span></div>
-<div class="line"><span id="66" class="lineNum"><a href="#66">66</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="67" class="lineNum"><a href="#67">67</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="68" class="lineNum"><a href="#68">68</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Set a [`Certificate`] and [`PrivateKey`] for the server. This will add a</span></div>
-<div class="line"><span id="69" class="lineNum"><a href="#69">69</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// listener to incoming [`Connection`](crate::Connection)s.</span></div>
-<div class="line"><span id="70" class="lineNum"><a href="#70">70</a></span><span class="counterCov">6</span><span class="lineCov">	pub fn set_key_pair(&amp;mut self, certificate: Certificate, private_key: PrivateKey) -&gt; &amp;mut Self {</span></div>
-<div class="line"><span id="71" class="lineNum"><a href="#71">71</a></span><span class="counterCov">6</span><span class="lineCov">		self.key_pair = Some((certificate, private_key));</span></div>
-<div class="line"><span id="72" class="lineNum"><a href="#72">72</a></span><span class="counterCov">6</span><span class="lineCov">		self</span></div>
-<div class="line"><span id="73" class="lineNum"><a href="#73">73</a></span><span class="counterCov">6</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="74" class="lineNum"><a href="#74">74</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="75" class="lineNum"><a href="#75">75</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Set the application-layer protocols to accept, in order of descending</span></div>
-<div class="line"><span id="76" class="lineNum"><a href="#76">76</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// preference. When set, clients which don&#39;t declare support for at least</span></div>
-<div class="line"><span id="77" class="lineNum"><a href="#77">77</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// one of the supplied protocols will be rejected.</span></div>
-<div class="line"><span id="78" class="lineNum"><a href="#78">78</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="79" class="lineNum"><a href="#79">79</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// See [`Connection::protocol`](crate::Connection::protocol).</span></div>
-<div class="line"><span id="80" class="lineNum"><a href="#80">80</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub fn set_protocols&lt;P: Into&lt;Vec&lt;Vec&lt;u8&gt;&gt;&gt;&gt;(&amp;mut self, protocols: P) -&gt; &amp;mut Self {</span></div>
-<div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.config.set_protocols(protocols);</span></div>
-<div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self</span></div>
-<div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
-<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Forces [`Endpoint::connect`] to use [`trust-dns`](trust_dns_resolver).</span></div>
-<div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub fn set_trust_dns(&amp;mut self, trust_dns: bool) -&gt; &amp;mut Self {</span></div>
-<div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.config.set_trust_dns(trust_dns);</span></div>
-<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self</span></div>
-<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
-<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Set&#39;s the default certificate root store. Default is</span></div>
-<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Store::Embedded`].</span></div>
-<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub fn set_store(&amp;mut self, store: Store) -&gt; &amp;mut Self {</span></div>
-<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.store = store;</span></div>
-<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self</span></div>
-<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
-<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Consumes [`Builder`] to build [`Endpoint`]. Must be called from inside</span></div>
-<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// the Tokio [`Runtime`](tokio::runtime::Runtime).</span></div>
-<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
-<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Error::BindSocket`] if the socket couldn&#39;t be bound to the given</span></div>
-<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// `address`.</span></div>
-<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Panics</span></div>
-<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - if the given [`Certificate`] is invalid. Can&#39;t happen if the</span></div>
-<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///   [`Certificate`] was properly validated through</span></div>
-<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///   [`Certificate::from_der`]</span></div>
-<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - if not called from inside the Tokio</span></div>
-<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///   [`Runtime`](tokio::runtime::Runtime)</span></div>
-<div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterCov">115</span><span class="lineCov">	pub fn build(self) -&gt; Result&lt;Endpoint, (Error, Self)&gt; {</span></div>
-<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterCov">115</span><span class="lineCov">		match {</span></div>
-<div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterCov">115</span><span class="lineCov">			// build client</span></div>
-<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterCov">115</span><span class="lineCov">			let client = self.config.new_client(self.ca_certs.iter(), self.store);</span></div>
-<div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterCov">115</span><span class="lineCov"></span></div>
-<div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterCov">115</span><span class="lineCov">			// build server only if we have a key-pair</span></div>
-<div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterCov">115</span><span class="lineCov">			let server = self.key_pair.as_ref().map(|(certificate, private_key)| {</span></div>
-<div class="line"><span id="118" class="lineNum"><a href="#118">118</a></span><span class="counterCov">6</span><span class="lineCov">				let mut server = ServerConfigBuilder::default();</span></div>
-<div class="line"><span id="119" class="lineNum"><a href="#119">119</a></span><span class="counterCov">6</span><span class="lineCov"></span></div>
-<div class="line"><span id="120" class="lineNum"><a href="#120">120</a></span><span class="counterCov">6</span><span class="lineCov">				// build key-pair</span></div>
-<div class="line"><span id="121" class="lineNum"><a href="#121">121</a></span><span class="counterCov">6</span><span class="lineCov">				let certificate = quinn::Certificate::from_der(certificate.as_ref())</span></div>
-<div class="line"><span id="122" class="lineNum"><a href="#122">122</a></span><span class="counterCov">6</span><span class="lineCov">					.expect(&quot;`Certificate` couldn&#39;t be parsed&quot;);</span></div>
-<div class="line"><span id="123" class="lineNum"><a href="#123">123</a></span><span class="counterCov">6</span><span class="lineCov">				let chain = CertificateChain::from_certs(Some(certificate));</span></div>
-<div class="line"><span id="124" class="lineNum"><a href="#124">124</a></span><span class="counterCov">6</span><span class="lineCov">				let private_key =</span></div>
-<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterCov">6</span><span class="lineCov">					quinn::PrivateKey::from_der(crate::dangerous::Certificate::as_ref(private_key))</span></div>
-<div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterCov">6</span><span class="lineCov">						.expect(&quot;`PrivateKey` couldn&#39;t be parsed&quot;);</span></div>
-<div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterCov">6</span><span class="lineCov">				// add key-pair</span></div>
-<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterCov">6</span><span class="lineCov">				let _ = server</span></div>
-<div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterCov">6</span><span class="lineCov">					.certificate(chain, private_key)</span></div>
-<div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterCov">6</span><span class="lineCov">					.expect(&quot;`CertificateChain` couldn&#39;t be verified&quot;);</span></div>
-<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterCov">6</span><span class="lineCov"></span></div>
-<div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterCov">6</span><span class="lineCov">				// set protocols</span></div>
-<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterCov">6</span><span class="lineCov">				if !self.config.protocols().is_empty() {</span></div>
-<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterNoCov">0</span><span class="lineNoCov">					let _ = server.protocols(</span></div>
-<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterNoCov">0</span><span class="lineNoCov">						self.config</span></div>
-<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterNoCov">0</span><span class="lineNoCov">							.protocols()</span></div>
-<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterNoCov">0</span><span class="lineNoCov">							.iter()</span></div>
-<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterNoCov">0</span><span class="lineNoCov">							.map(Vec::as_slice)</span></div>
-<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterNoCov">0</span><span class="lineNoCov">							.collect::&lt;Vec&lt;_&gt;&gt;()</span></div>
-<div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterNoCov">0</span><span class="lineNoCov">							.as_slice(),</span></div>
-<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterNoCov">0</span><span class="lineNoCov">					);</span></div>
-<div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterCov">6</span><span class="lineCov">				}</span></div>
-<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterCov">6</span><span class="lineCov">				let mut server = server.build();</span></div>
-<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterCov">6</span><span class="lineCov"></span></div>
-<div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterCov">6</span><span class="lineCov">				// set transport</span></div>
-<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterCov">6</span><span class="lineCov">				server.transport = self.config.transport();</span></div>
-<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterCov">6</span><span class="lineCov"></span></div>
-<div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterCov">6</span><span class="lineCov">				server</span></div>
-<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterCov">115</span><span class="lineCov">			});</span></div>
-<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterCov">115</span><span class="lineCov"></span></div>
-<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterCov">115</span><span class="lineCov">			Endpoint::new(self.address, client, server, self.config.clone())</span></div>
-<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterCov">115</span><span class="lineCov">		} {</span></div>
-<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterCov">115</span><span class="lineCov">			Ok(endpoint) =&gt; Ok(endpoint),</span></div>
-<div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Err(error) =&gt; Err((error, self)),</span></div>
-<div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterCov">115</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="158" class="lineNum"><a href="#158">158</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
-<div class="line"><span id="159" class="lineNum"><a href="#159">159</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="160" class="lineNum"><a href="#160">160</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Configuration option for [`Builder::set_store`].</span></div>
-<div class="line"><span id="161" class="lineNum"><a href="#161">161</a></span><span class="counterNoCov">0</span><span class="lineNoCov">#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]</span></div>
-<div class="line"><span id="162" class="lineNum"><a href="#162">162</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub enum Store {</span></div>
-<div class="line"><span id="163" class="lineNum"><a href="#163">163</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// No certificate root store.</span></div>
-<div class="line"><span id="164" class="lineNum"><a href="#164">164</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Empty,</span></div>
-<div class="line"><span id="165" class="lineNum"><a href="#165">165</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// OS certificate root store.</span></div>
-<div class="line"><span id="166" class="lineNum"><a href="#166">166</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Os,</span></div>
-<div class="line"><span id="167" class="lineNum"><a href="#167">167</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Embedded certificate root store, see [`webpki-roots`](webpki_roots).</span></div>
-<div class="line"><span id="168" class="lineNum"><a href="#168">168</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Embedded,</span></div>
-<div class="line"><span id="169" class="lineNum"><a href="#169">169</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
-<div class="line"><span id="170" class="lineNum"><a href="#170">170</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="171" class="lineNum"><a href="#171">171</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Security-sensitive configuration for [`Builder`].</span></div>
-<div class="line"><span id="172" class="lineNum"><a href="#172">172</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub trait Dangerous {</span></div>
-<div class="line"><span id="173" class="lineNum"><a href="#173">173</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Adds a [`Certificate`] into the default certificate authority store for</span></div>
-<div class="line"><span id="174" class="lineNum"><a href="#174">174</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`connection`](Endpoint::connect)ing to a server.</span></div>
-<div class="line"><span id="175" class="lineNum"><a href="#175">175</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="176" class="lineNum"><a href="#176">176</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Security</span></div>
-<div class="line"><span id="177" class="lineNum"><a href="#177">177</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Managing your own CA root store can make sense if a private CA is used.</span></div>
-<div class="line"><span id="178" class="lineNum"><a href="#178">178</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Otherwise use [`Endpoint::connect_pinned`].</span></div>
-<div class="line"><span id="179" class="lineNum"><a href="#179">179</a></span><span class="counterUnCov"></span><span class="lineUnCov">	fn add_ca(builder: &amp;mut Self, certificate: Certificate);</span></div>
-<div class="line"><span id="180" class="lineNum"><a href="#180">180</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
-<div class="line"><span id="181" class="lineNum"><a href="#181">181</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="182" class="lineNum"><a href="#182">182</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl Dangerous for Builder {</span></div>
-<div class="line"><span id="183" class="lineNum"><a href="#183">183</a></span><span class="counterCov">1</span><span class="lineCov">	fn add_ca(builder: &amp;mut Self, certificate: Certificate) {</span></div>
-<div class="line"><span id="184" class="lineNum"><a href="#184">184</a></span><span class="counterCov">1</span><span class="lineCov">		builder.ca_certs.push(certificate);</span></div>
-<div class="line"><span id="185" class="lineNum"><a href="#185">185</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="186" class="lineNum"><a href="#186">186</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
-<div class="line"><span id="187" class="lineNum"><a href="#187">187</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="188" class="lineNum"><a href="#188">188</a></span><span class="counterUnCov"></span><span class="lineUnCov">#[cfg(test)]</span></div>
-<div class="line"><span id="189" class="lineNum"><a href="#189">189</a></span><span class="counterUnCov"></span><span class="lineUnCov">mod test {</span></div>
-<div class="line"><span id="190" class="lineNum"><a href="#190">190</a></span><span class="counterUnCov"></span><span class="lineUnCov">	use anyhow::Result;</span></div>
-<div class="line"><span id="191" class="lineNum"><a href="#191">191</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="192" class="lineNum"><a href="#192">192</a></span><span class="counterUnCov"></span><span class="lineUnCov">	use super::*;</span></div>
-<div class="line"><span id="193" class="lineNum"><a href="#193">193</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="194" class="lineNum"><a href="#194">194</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
-<div class="line"><span id="195" class="lineNum"><a href="#195">195</a></span><span class="counterCov">1</span><span class="lineCov">	async fn default() -&gt; Result&lt;()&gt; {</span></div>
-<div class="line"><span id="196" class="lineNum"><a href="#196">196</a></span><span class="counterCov">1</span><span class="lineCov">		let _endpoint = Builder::default().build().map_err(|(error, _)| error)?;</span></div>
-<div class="line"><span id="197" class="lineNum"><a href="#197">197</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
-<div class="line"><span id="198" class="lineNum"><a href="#198">198</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="199" class="lineNum"><a href="#199">199</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="200" class="lineNum"><a href="#200">200</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
-<div class="line"><span id="201" class="lineNum"><a href="#201">201</a></span><span class="counterCov">1</span><span class="lineCov">	async fn new() -&gt; Result&lt;()&gt; {</span></div>
-<div class="line"><span id="202" class="lineNum"><a href="#202">202</a></span><span class="counterCov">1</span><span class="lineCov">		let _endpoint = Builder::new().build().map_err(|(error, _)| error)?;</span></div>
-<div class="line"><span id="203" class="lineNum"><a href="#203">203</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
-<div class="line"><span id="204" class="lineNum"><a href="#204">204</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="205" class="lineNum"><a href="#205">205</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="206" class="lineNum"><a href="#206">206</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
-<div class="line"><span id="207" class="lineNum"><a href="#207">207</a></span><span class="counterCov">1</span><span class="lineCov">	async fn address() -&gt; Result&lt;()&gt; {</span></div>
-<div class="line"><span id="208" class="lineNum"><a href="#208">208</a></span><span class="counterCov">1</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
-<div class="line"><span id="209" class="lineNum"><a href="#209">209</a></span><span class="counterCov">1</span><span class="lineCov">		let _ = builder.set_address(([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], 5000).into());</span></div>
-<div class="line"><span id="210" class="lineNum"><a href="#210">210</a></span><span class="counterCov">1</span><span class="lineCov">		let endpoint = builder.build().map_err(|(error, _)| error)?;</span></div>
-<div class="line"><span id="211" class="lineNum"><a href="#211">211</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="212" class="lineNum"><a href="#212">212</a></span><span class="counterUnCov"></span><span class="lineUnCov">		assert_eq!(</span></div>
-<div class="line"><span id="213" class="lineNum"><a href="#213">213</a></span><span class="counterCov">1</span><span class="lineCov">			&quot;[::ffff:127.0.0.1]:5000&quot;.parse::&lt;SocketAddr&gt;()?,</span></div>
-<div class="line"><span id="214" class="lineNum"><a href="#214">214</a></span><span class="counterCov">1</span><span class="lineCov">			endpoint.local_address()?,</span></div>
-<div class="line"><span id="215" class="lineNum"><a href="#215">215</a></span><span class="counterUnCov"></span><span class="lineUnCov">		);</span></div>
-<div class="line"><span id="216" class="lineNum"><a href="#216">216</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="217" class="lineNum"><a href="#217">217</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
-<div class="line"><span id="218" class="lineNum"><a href="#218">218</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="219" class="lineNum"><a href="#219">219</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="220" class="lineNum"><a href="#220">220</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
-<div class="line"><span id="221" class="lineNum"><a href="#221">221</a></span><span class="counterCov">1</span><span class="lineCov">	async fn address_str() -&gt; Result&lt;()&gt; {</span></div>
-<div class="line"><span id="222" class="lineNum"><a href="#222">222</a></span><span class="counterCov">1</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
-<div class="line"><span id="223" class="lineNum"><a href="#223">223</a></span><span class="counterCov">1</span><span class="lineCov">		let _ = builder.set_address_str(&quot;[::ffff:127.0.0.1]:5001&quot;)?;</span></div>
-<div class="line"><span id="224" class="lineNum"><a href="#224">224</a></span><span class="counterCov">1</span><span class="lineCov">		let endpoint = builder.build().map_err(|(error, _)| error)?;</span></div>
-<div class="line"><span id="225" class="lineNum"><a href="#225">225</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="226" class="lineNum"><a href="#226">226</a></span><span class="counterUnCov"></span><span class="lineUnCov">		assert_eq!(</span></div>
-<div class="line"><span id="227" class="lineNum"><a href="#227">227</a></span><span class="counterCov">1</span><span class="lineCov">			&quot;[::ffff:127.0.0.1]:5001&quot;.parse::&lt;SocketAddr&gt;()?,</span></div>
-<div class="line"><span id="228" class="lineNum"><a href="#228">228</a></span><span class="counterCov">1</span><span class="lineCov">			endpoint.local_address()?</span></div>
-<div class="line"><span id="229" class="lineNum"><a href="#229">229</a></span><span class="counterUnCov"></span><span class="lineUnCov">		);</span></div>
-<div class="line"><span id="230" class="lineNum"><a href="#230">230</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="231" class="lineNum"><a href="#231">231</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
-<div class="line"><span id="232" class="lineNum"><a href="#232">232</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="233" class="lineNum"><a href="#233">233</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="234" class="lineNum"><a href="#234">234</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
-<div class="line"><span id="235" class="lineNum"><a href="#235">235</a></span><span class="counterCov">1</span><span class="lineCov">	async fn ca_key_pair() -&gt; Result&lt;()&gt; {</span></div>
-<div class="line"><span id="236" class="lineNum"><a href="#236">236</a></span><span class="counterCov">1</span><span class="lineCov">		use futures_util::StreamExt;</span></div>
-<div class="line"><span id="237" class="lineNum"><a href="#237">237</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
-<div class="line"><span id="238" class="lineNum"><a href="#238">238</a></span><span class="counterCov">1</span><span class="lineCov">		let (certificate, private_key) = crate::generate_self_signed(&quot;localhost&quot;);</span></div>
-<div class="line"><span id="239" class="lineNum"><a href="#239">239</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
-<div class="line"><span id="240" class="lineNum"><a href="#240">240</a></span><span class="counterCov">1</span><span class="lineCov">		// build client</span></div>
-<div class="line"><span id="241" class="lineNum"><a href="#241">241</a></span><span class="counterCov">1</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
-<div class="line"><span id="242" class="lineNum"><a href="#242">242</a></span><span class="counterCov">1</span><span class="lineCov">		Dangerous::add_ca(&amp;mut builder, certificate.clone());</span></div>
-<div class="line"><span id="243" class="lineNum"><a href="#243">243</a></span><span class="counterCov">1</span><span class="lineCov">		let client = builder.build().map_err(|(error, _)| error)?;</span></div>
-<div class="line"><span id="244" class="lineNum"><a href="#244">244</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="245" class="lineNum"><a href="#245">245</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// build server</span></div>
-<div class="line"><span id="246" class="lineNum"><a href="#246">246</a></span><span class="counterCov">1</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
-<div class="line"><span id="247" class="lineNum"><a href="#247">247</a></span><span class="counterCov">1</span><span class="lineCov">		let _ = builder.set_key_pair(certificate, private_key);</span></div>
-<div class="line"><span id="248" class="lineNum"><a href="#248">248</a></span><span class="counterCov">1</span><span class="lineCov">		let mut server = builder.build().map_err(|(error, _)| error)?;</span></div>
-<div class="line"><span id="249" class="lineNum"><a href="#249">249</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="250" class="lineNum"><a href="#250">250</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// test connection</span></div>
-<div class="line"><span id="251" class="lineNum"><a href="#251">251</a></span><span class="counterCov">1</span><span class="lineCov">		let _connection = client</span></div>
-<div class="line"><span id="252" class="lineNum"><a href="#252">252</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.connect(format!(</span></div>
-<div class="line"><span id="253" class="lineNum"><a href="#253">253</a></span><span class="counterCov">1</span><span class="lineCov">				&quot;quic://localhost:{}&quot;,</span></div>
-<div class="line"><span id="254" class="lineNum"><a href="#254">254</a></span><span class="counterCov">1</span><span class="lineCov">				server.local_address()?.port()</span></div>
-<div class="line"><span id="255" class="lineNum"><a href="#255">255</a></span><span class="counterUnCov"></span><span class="lineUnCov">			))</span></div>
-<div class="line"><span id="256" class="lineNum"><a href="#256">256</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?</span></div>
-<div class="line"><span id="257" class="lineNum"><a href="#257">257</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="258" class="lineNum"><a href="#258">258</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?;</span></div>
-<div class="line"><span id="259" class="lineNum"><a href="#259">259</a></span><span class="counterCov">1</span><span class="lineCov">		let _connection = server</span></div>
-<div class="line"><span id="260" class="lineNum"><a href="#260">260</a></span><span class="counterCov">1</span><span class="lineCov">			.next()</span></div>
-<div class="line"><span id="261" class="lineNum"><a href="#261">261</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.await</span></div>
-<div class="line"><span id="262" class="lineNum"><a href="#262">262</a></span><span class="counterCov">1</span><span class="lineCov">			.expect(&quot;client dropped&quot;)</span></div>
-<div class="line"><span id="263" class="lineNum"><a href="#263">263</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="264" class="lineNum"><a href="#264">264</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?;</span></div>
-<div class="line"><span id="265" class="lineNum"><a href="#265">265</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="266" class="lineNum"><a href="#266">266</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
-<div class="line"><span id="267" class="lineNum"><a href="#267">267</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="268" class="lineNum"><a href="#268">268</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="53" class="lineNum"><a href="#53">53</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Set&#39;s the [`SocketAddr`].</span></div>
+<div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Default is &quot;\[::\]:0&quot;.</span></div>
+<div class="line"><span id="56" class="lineNum"><a href="#56">56</a></span><span class="counterCov">6</span><span class="lineCov">	pub fn set_address(&amp;mut self, address: SocketAddr) -&gt; &amp;mut Self {</span></div>
+<div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterCov">6</span><span class="lineCov">		self.address = address;</span></div>
+<div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterCov">6</span><span class="lineCov">		self</span></div>
+<div class="line"><span id="59" class="lineNum"><a href="#59">59</a></span><span class="counterCov">6</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="60" class="lineNum"><a href="#60">60</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="61" class="lineNum"><a href="#61">61</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Set&#39;s the [`SocketAddr`].</span></div>
+<div class="line"><span id="62" class="lineNum"><a href="#62">62</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="63" class="lineNum"><a href="#63">63</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Default is &quot;\[::\]:0&quot;.</span></div>
+<div class="line"><span id="64" class="lineNum"><a href="#64">64</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="65" class="lineNum"><a href="#65">65</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
+<div class="line"><span id="66" class="lineNum"><a href="#66">66</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Error::ParseAddress`] if the `address` couldn&#39;t be parsed.</span></div>
+<div class="line"><span id="67" class="lineNum"><a href="#67">67</a></span><span class="counterCov">1</span><span class="lineCov">	pub fn set_address_str(&amp;mut self, address: &amp;str) -&gt; Result&lt;&amp;mut Self&gt; {</span></div>
+<div class="line"><span id="68" class="lineNum"><a href="#68">68</a></span><span class="counterCov">1</span><span class="lineCov">		self.address = FromStr::from_str(address).map_err(Error::ParseAddress)?;</span></div>
+<div class="line"><span id="69" class="lineNum"><a href="#69">69</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(self)</span></div>
+<div class="line"><span id="70" class="lineNum"><a href="#70">70</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="71" class="lineNum"><a href="#71">71</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="72" class="lineNum"><a href="#72">72</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Set a [`Certificate`] and [`PrivateKey`] for the server. This will add a</span></div>
+<div class="line"><span id="73" class="lineNum"><a href="#73">73</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// listener to incoming [`Connection`](crate::Connection)s.</span></div>
+<div class="line"><span id="74" class="lineNum"><a href="#74">74</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="75" class="lineNum"><a href="#75">75</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Default is none and therefore [`Endpoint`] will not listen to incoming</span></div>
+<div class="line"><span id="76" class="lineNum"><a href="#76">76</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Connection`](crate::Connection)s.</span></div>
+<div class="line"><span id="77" class="lineNum"><a href="#77">77</a></span><span class="counterCov">6</span><span class="lineCov">	pub fn set_key_pair(&amp;mut self, certificate: Certificate, private_key: PrivateKey) -&gt; &amp;mut Self {</span></div>
+<div class="line"><span id="78" class="lineNum"><a href="#78">78</a></span><span class="counterCov">6</span><span class="lineCov">		self.key_pair = Some((certificate, private_key));</span></div>
+<div class="line"><span id="79" class="lineNum"><a href="#79">79</a></span><span class="counterCov">6</span><span class="lineCov">		self</span></div>
+<div class="line"><span id="80" class="lineNum"><a href="#80">80</a></span><span class="counterCov">6</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Set the application-layer protocols to accept, in order of descending</span></div>
+<div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// preference. When set, clients which don&#39;t declare support for at least</span></div>
+<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// one of the supplied protocols will be rejected.</span></div>
+<div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// See [`Connection::protocol`](crate::Connection::protocol).</span></div>
+<div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Default is contains no protocols.</span></div>
+<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub fn set_protocols&lt;P: Into&lt;Vec&lt;Vec&lt;u8&gt;&gt;&gt;&gt;(&amp;mut self, protocols: P) -&gt; &amp;mut Self {</span></div>
+<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.config.set_protocols(protocols);</span></div>
+<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self</span></div>
+<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
+<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Forces [`Endpoint::connect`] to use [`trust-dns`](trust_dns_resolver).</span></div>
+<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Default is `true` if the crate feature &lt;span</span></div>
+<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///   class=&quot;module-item stab portability&quot;</span></div>
+<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///   style=&quot;display: inline; border-radius: 3px; padding: 2px; font-size:</span></div>
+<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// 80%; line-height: 1.2;&quot; &gt;&lt;code&gt;trust-dns&lt;/code&gt;&lt;/span&gt; is enabled.</span></div>
+<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub fn set_trust_dns(&amp;mut self, trust_dns: bool) -&gt; &amp;mut Self {</span></div>
+<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.config.set_trust_dns(trust_dns);</span></div>
+<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self</span></div>
+<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
+<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Set&#39;s the default certificate root store.</span></div>
+<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Default is [`Store::Embedded`].</span></div>
+<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub fn set_store(&amp;mut self, store: Store) -&gt; &amp;mut Self {</span></div>
+<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.store = store;</span></div>
+<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self</span></div>
+<div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
+<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Consumes [`Builder`] to build [`Endpoint`]. Must be called from inside</span></div>
+<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// the Tokio [`Runtime`](tokio::runtime::Runtime).</span></div>
+<div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
+<div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Error::BindSocket`] if the socket couldn&#39;t be bound to the given</span></div>
+<div class="line"><span id="118" class="lineNum"><a href="#118">118</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// `address`.</span></div>
+<div class="line"><span id="119" class="lineNum"><a href="#119">119</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="120" class="lineNum"><a href="#120">120</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Panics</span></div>
+<div class="line"><span id="121" class="lineNum"><a href="#121">121</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - if the given [`Certificate`] is invalid. Can&#39;t happen if the</span></div>
+<div class="line"><span id="122" class="lineNum"><a href="#122">122</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///   [`Certificate`] was properly validated through</span></div>
+<div class="line"><span id="123" class="lineNum"><a href="#123">123</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///   [`Certificate::from_der`]</span></div>
+<div class="line"><span id="124" class="lineNum"><a href="#124">124</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - if not called from inside the Tokio</span></div>
+<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///   [`Runtime`](tokio::runtime::Runtime)</span></div>
+<div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterCov">115</span><span class="lineCov">	pub fn build(self) -&gt; Result&lt;Endpoint, (Error, Self)&gt; {</span></div>
+<div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterCov">115</span><span class="lineCov">		match {</span></div>
+<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterCov">115</span><span class="lineCov">			// build client</span></div>
+<div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterCov">115</span><span class="lineCov">			let client = self.config.new_client(self.ca_certs.iter(), self.store);</span></div>
+<div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterCov">115</span><span class="lineCov"></span></div>
+<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterCov">115</span><span class="lineCov">			// build server only if we have a key-pair</span></div>
+<div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterCov">115</span><span class="lineCov">			let server = self.key_pair.as_ref().map(|(certificate, private_key)| {</span></div>
+<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterCov">6</span><span class="lineCov">				let mut server = ServerConfigBuilder::default();</span></div>
+<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterCov">6</span><span class="lineCov"></span></div>
+<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterCov">6</span><span class="lineCov">				// build key-pair</span></div>
+<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterCov">6</span><span class="lineCov">				let certificate = quinn::Certificate::from_der(certificate.as_ref())</span></div>
+<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterCov">6</span><span class="lineCov">					.expect(&quot;`Certificate` couldn&#39;t be parsed&quot;);</span></div>
+<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterCov">6</span><span class="lineCov">				let chain = CertificateChain::from_certs(Some(certificate));</span></div>
+<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterCov">6</span><span class="lineCov">				let private_key =</span></div>
+<div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterCov">6</span><span class="lineCov">					quinn::PrivateKey::from_der(crate::dangerous::Certificate::as_ref(private_key))</span></div>
+<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterCov">6</span><span class="lineCov">						.expect(&quot;`PrivateKey` couldn&#39;t be parsed&quot;);</span></div>
+<div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterCov">6</span><span class="lineCov">				// add key-pair</span></div>
+<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterCov">6</span><span class="lineCov">				let _ = server</span></div>
+<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterCov">6</span><span class="lineCov">					.certificate(chain, private_key)</span></div>
+<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterCov">6</span><span class="lineCov">					.expect(&quot;`CertificateChain` couldn&#39;t be verified&quot;);</span></div>
+<div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterCov">6</span><span class="lineCov"></span></div>
+<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterCov">6</span><span class="lineCov">				// set protocols</span></div>
+<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterCov">6</span><span class="lineCov">				if !self.config.protocols().is_empty() {</span></div>
+<div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterNoCov">0</span><span class="lineNoCov">					let _ = server.protocols(</span></div>
+<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterNoCov">0</span><span class="lineNoCov">						self.config</span></div>
+<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterNoCov">0</span><span class="lineNoCov">							.protocols()</span></div>
+<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterNoCov">0</span><span class="lineNoCov">							.iter()</span></div>
+<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterNoCov">0</span><span class="lineNoCov">							.map(Vec::as_slice)</span></div>
+<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterNoCov">0</span><span class="lineNoCov">							.collect::&lt;Vec&lt;_&gt;&gt;()</span></div>
+<div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterNoCov">0</span><span class="lineNoCov">							.as_slice(),</span></div>
+<div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterNoCov">0</span><span class="lineNoCov">					);</span></div>
+<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterCov">6</span><span class="lineCov">				}</span></div>
+<div class="line"><span id="158" class="lineNum"><a href="#158">158</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="159" class="lineNum"><a href="#159">159</a></span><span class="counterCov">6</span><span class="lineCov">				let mut server = server.build();</span></div>
+<div class="line"><span id="160" class="lineNum"><a href="#160">160</a></span><span class="counterCov">6</span><span class="lineCov"></span></div>
+<div class="line"><span id="161" class="lineNum"><a href="#161">161</a></span><span class="counterCov">6</span><span class="lineCov">				// set transport</span></div>
+<div class="line"><span id="162" class="lineNum"><a href="#162">162</a></span><span class="counterCov">6</span><span class="lineCov">				server.transport = self.config.transport();</span></div>
+<div class="line"><span id="163" class="lineNum"><a href="#163">163</a></span><span class="counterCov">6</span><span class="lineCov"></span></div>
+<div class="line"><span id="164" class="lineNum"><a href="#164">164</a></span><span class="counterCov">6</span><span class="lineCov">				server</span></div>
+<div class="line"><span id="165" class="lineNum"><a href="#165">165</a></span><span class="counterCov">115</span><span class="lineCov">			});</span></div>
+<div class="line"><span id="166" class="lineNum"><a href="#166">166</a></span><span class="counterCov">115</span><span class="lineCov"></span></div>
+<div class="line"><span id="167" class="lineNum"><a href="#167">167</a></span><span class="counterCov">115</span><span class="lineCov">			Endpoint::new(self.address, client, server, self.config.clone())</span></div>
+<div class="line"><span id="168" class="lineNum"><a href="#168">168</a></span><span class="counterCov">115</span><span class="lineCov">		} {</span></div>
+<div class="line"><span id="169" class="lineNum"><a href="#169">169</a></span><span class="counterCov">115</span><span class="lineCov">			Ok(endpoint) =&gt; Ok(endpoint),</span></div>
+<div class="line"><span id="170" class="lineNum"><a href="#170">170</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Err(error) =&gt; Err((error, self)),</span></div>
+<div class="line"><span id="171" class="lineNum"><a href="#171">171</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
+<div class="line"><span id="172" class="lineNum"><a href="#172">172</a></span><span class="counterCov">115</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="173" class="lineNum"><a href="#173">173</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="174" class="lineNum"><a href="#174">174</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="175" class="lineNum"><a href="#175">175</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Configuration option for [`Builder::set_store`].</span></div>
+<div class="line"><span id="176" class="lineNum"><a href="#176">176</a></span><span class="counterNoCov">0</span><span class="lineNoCov">#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]</span></div>
+<div class="line"><span id="177" class="lineNum"><a href="#177">177</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub enum Store {</span></div>
+<div class="line"><span id="178" class="lineNum"><a href="#178">178</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// No certificate root store.</span></div>
+<div class="line"><span id="179" class="lineNum"><a href="#179">179</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Empty,</span></div>
+<div class="line"><span id="180" class="lineNum"><a href="#180">180</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// OS certificate root store.</span></div>
+<div class="line"><span id="181" class="lineNum"><a href="#181">181</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Os,</span></div>
+<div class="line"><span id="182" class="lineNum"><a href="#182">182</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Embedded certificate root store, see [`webpki-roots`](webpki_roots).</span></div>
+<div class="line"><span id="183" class="lineNum"><a href="#183">183</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Embedded,</span></div>
+<div class="line"><span id="184" class="lineNum"><a href="#184">184</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="185" class="lineNum"><a href="#185">185</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="186" class="lineNum"><a href="#186">186</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Security-sensitive configuration for [`Builder`].</span></div>
+<div class="line"><span id="187" class="lineNum"><a href="#187">187</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub trait Dangerous {</span></div>
+<div class="line"><span id="188" class="lineNum"><a href="#188">188</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Adds a [`Certificate`] into the default certificate authority store for</span></div>
+<div class="line"><span id="189" class="lineNum"><a href="#189">189</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`connection`](Endpoint::connect)ing to a server.</span></div>
+<div class="line"><span id="190" class="lineNum"><a href="#190">190</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="191" class="lineNum"><a href="#191">191</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Security</span></div>
+<div class="line"><span id="192" class="lineNum"><a href="#192">192</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Managing your own CA root store can make sense if a private CA is used.</span></div>
+<div class="line"><span id="193" class="lineNum"><a href="#193">193</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Otherwise use [`Endpoint::connect_pinned`].</span></div>
+<div class="line"><span id="194" class="lineNum"><a href="#194">194</a></span><span class="counterUnCov"></span><span class="lineUnCov">	fn add_ca(builder: &amp;mut Self, certificate: Certificate);</span></div>
+<div class="line"><span id="195" class="lineNum"><a href="#195">195</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="196" class="lineNum"><a href="#196">196</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="197" class="lineNum"><a href="#197">197</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl Dangerous for Builder {</span></div>
+<div class="line"><span id="198" class="lineNum"><a href="#198">198</a></span><span class="counterCov">1</span><span class="lineCov">	fn add_ca(builder: &amp;mut Self, certificate: Certificate) {</span></div>
+<div class="line"><span id="199" class="lineNum"><a href="#199">199</a></span><span class="counterCov">1</span><span class="lineCov">		builder.ca_certs.push(certificate);</span></div>
+<div class="line"><span id="200" class="lineNum"><a href="#200">200</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="201" class="lineNum"><a href="#201">201</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="202" class="lineNum"><a href="#202">202</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="203" class="lineNum"><a href="#203">203</a></span><span class="counterUnCov"></span><span class="lineUnCov">#[cfg(test)]</span></div>
+<div class="line"><span id="204" class="lineNum"><a href="#204">204</a></span><span class="counterUnCov"></span><span class="lineUnCov">mod test {</span></div>
+<div class="line"><span id="205" class="lineNum"><a href="#205">205</a></span><span class="counterUnCov"></span><span class="lineUnCov">	use anyhow::Result;</span></div>
+<div class="line"><span id="206" class="lineNum"><a href="#206">206</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="207" class="lineNum"><a href="#207">207</a></span><span class="counterUnCov"></span><span class="lineUnCov">	use super::*;</span></div>
+<div class="line"><span id="208" class="lineNum"><a href="#208">208</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="209" class="lineNum"><a href="#209">209</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="210" class="lineNum"><a href="#210">210</a></span><span class="counterCov">1</span><span class="lineCov">	async fn default() -&gt; Result&lt;()&gt; {</span></div>
+<div class="line"><span id="211" class="lineNum"><a href="#211">211</a></span><span class="counterCov">1</span><span class="lineCov">		let _endpoint = Builder::default().build().map_err(|(error, _)| error)?;</span></div>
+<div class="line"><span id="212" class="lineNum"><a href="#212">212</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
+<div class="line"><span id="213" class="lineNum"><a href="#213">213</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="214" class="lineNum"><a href="#214">214</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="215" class="lineNum"><a href="#215">215</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="216" class="lineNum"><a href="#216">216</a></span><span class="counterCov">1</span><span class="lineCov">	async fn new() -&gt; Result&lt;()&gt; {</span></div>
+<div class="line"><span id="217" class="lineNum"><a href="#217">217</a></span><span class="counterCov">1</span><span class="lineCov">		let _endpoint = Builder::new().build().map_err(|(error, _)| error)?;</span></div>
+<div class="line"><span id="218" class="lineNum"><a href="#218">218</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
+<div class="line"><span id="219" class="lineNum"><a href="#219">219</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="220" class="lineNum"><a href="#220">220</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="221" class="lineNum"><a href="#221">221</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="222" class="lineNum"><a href="#222">222</a></span><span class="counterCov">1</span><span class="lineCov">	async fn address() -&gt; Result&lt;()&gt; {</span></div>
+<div class="line"><span id="223" class="lineNum"><a href="#223">223</a></span><span class="counterCov">1</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
+<div class="line"><span id="224" class="lineNum"><a href="#224">224</a></span><span class="counterCov">1</span><span class="lineCov">		let _ = builder.set_address(([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], 5000).into());</span></div>
+<div class="line"><span id="225" class="lineNum"><a href="#225">225</a></span><span class="counterCov">1</span><span class="lineCov">		let endpoint = builder.build().map_err(|(error, _)| error)?;</span></div>
+<div class="line"><span id="226" class="lineNum"><a href="#226">226</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="227" class="lineNum"><a href="#227">227</a></span><span class="counterUnCov"></span><span class="lineUnCov">		assert_eq!(</span></div>
+<div class="line"><span id="228" class="lineNum"><a href="#228">228</a></span><span class="counterCov">1</span><span class="lineCov">			&quot;[::ffff:127.0.0.1]:5000&quot;.parse::&lt;SocketAddr&gt;()?,</span></div>
+<div class="line"><span id="229" class="lineNum"><a href="#229">229</a></span><span class="counterCov">1</span><span class="lineCov">			endpoint.local_address()?,</span></div>
+<div class="line"><span id="230" class="lineNum"><a href="#230">230</a></span><span class="counterUnCov"></span><span class="lineUnCov">		);</span></div>
+<div class="line"><span id="231" class="lineNum"><a href="#231">231</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="232" class="lineNum"><a href="#232">232</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
+<div class="line"><span id="233" class="lineNum"><a href="#233">233</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="234" class="lineNum"><a href="#234">234</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="235" class="lineNum"><a href="#235">235</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="236" class="lineNum"><a href="#236">236</a></span><span class="counterCov">1</span><span class="lineCov">	async fn address_str() -&gt; Result&lt;()&gt; {</span></div>
+<div class="line"><span id="237" class="lineNum"><a href="#237">237</a></span><span class="counterCov">1</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
+<div class="line"><span id="238" class="lineNum"><a href="#238">238</a></span><span class="counterCov">1</span><span class="lineCov">		let _ = builder.set_address_str(&quot;[::ffff:127.0.0.1]:5001&quot;)?;</span></div>
+<div class="line"><span id="239" class="lineNum"><a href="#239">239</a></span><span class="counterCov">1</span><span class="lineCov">		let endpoint = builder.build().map_err(|(error, _)| error)?;</span></div>
+<div class="line"><span id="240" class="lineNum"><a href="#240">240</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="241" class="lineNum"><a href="#241">241</a></span><span class="counterUnCov"></span><span class="lineUnCov">		assert_eq!(</span></div>
+<div class="line"><span id="242" class="lineNum"><a href="#242">242</a></span><span class="counterCov">1</span><span class="lineCov">			&quot;[::ffff:127.0.0.1]:5001&quot;.parse::&lt;SocketAddr&gt;()?,</span></div>
+<div class="line"><span id="243" class="lineNum"><a href="#243">243</a></span><span class="counterCov">1</span><span class="lineCov">			endpoint.local_address()?</span></div>
+<div class="line"><span id="244" class="lineNum"><a href="#244">244</a></span><span class="counterUnCov"></span><span class="lineUnCov">		);</span></div>
+<div class="line"><span id="245" class="lineNum"><a href="#245">245</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="246" class="lineNum"><a href="#246">246</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
+<div class="line"><span id="247" class="lineNum"><a href="#247">247</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="248" class="lineNum"><a href="#248">248</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="249" class="lineNum"><a href="#249">249</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="250" class="lineNum"><a href="#250">250</a></span><span class="counterCov">1</span><span class="lineCov">	async fn ca_key_pair() -&gt; Result&lt;()&gt; {</span></div>
+<div class="line"><span id="251" class="lineNum"><a href="#251">251</a></span><span class="counterCov">1</span><span class="lineCov">		use futures_util::StreamExt;</span></div>
+<div class="line"><span id="252" class="lineNum"><a href="#252">252</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="253" class="lineNum"><a href="#253">253</a></span><span class="counterCov">1</span><span class="lineCov">		let (certificate, private_key) = crate::generate_self_signed(&quot;localhost&quot;);</span></div>
+<div class="line"><span id="254" class="lineNum"><a href="#254">254</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="255" class="lineNum"><a href="#255">255</a></span><span class="counterCov">1</span><span class="lineCov">		// build client</span></div>
+<div class="line"><span id="256" class="lineNum"><a href="#256">256</a></span><span class="counterCov">1</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
+<div class="line"><span id="257" class="lineNum"><a href="#257">257</a></span><span class="counterCov">1</span><span class="lineCov">		Dangerous::add_ca(&amp;mut builder, certificate.clone());</span></div>
+<div class="line"><span id="258" class="lineNum"><a href="#258">258</a></span><span class="counterCov">1</span><span class="lineCov">		let client = builder.build().map_err(|(error, _)| error)?;</span></div>
+<div class="line"><span id="259" class="lineNum"><a href="#259">259</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="260" class="lineNum"><a href="#260">260</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// build server</span></div>
+<div class="line"><span id="261" class="lineNum"><a href="#261">261</a></span><span class="counterCov">1</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
+<div class="line"><span id="262" class="lineNum"><a href="#262">262</a></span><span class="counterCov">1</span><span class="lineCov">		let _ = builder.set_key_pair(certificate, private_key);</span></div>
+<div class="line"><span id="263" class="lineNum"><a href="#263">263</a></span><span class="counterCov">1</span><span class="lineCov">		let mut server = builder.build().map_err(|(error, _)| error)?;</span></div>
+<div class="line"><span id="264" class="lineNum"><a href="#264">264</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="265" class="lineNum"><a href="#265">265</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// test connection</span></div>
+<div class="line"><span id="266" class="lineNum"><a href="#266">266</a></span><span class="counterCov">1</span><span class="lineCov">		let _connection = client</span></div>
+<div class="line"><span id="267" class="lineNum"><a href="#267">267</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.connect(format!(</span></div>
+<div class="line"><span id="268" class="lineNum"><a href="#268">268</a></span><span class="counterCov">1</span><span class="lineCov">				&quot;quic://localhost:{}&quot;,</span></div>
+<div class="line"><span id="269" class="lineNum"><a href="#269">269</a></span><span class="counterCov">1</span><span class="lineCov">				server.local_address()?.port()</span></div>
+<div class="line"><span id="270" class="lineNum"><a href="#270">270</a></span><span class="counterUnCov"></span><span class="lineUnCov">			))</span></div>
+<div class="line"><span id="271" class="lineNum"><a href="#271">271</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?</span></div>
+<div class="line"><span id="272" class="lineNum"><a href="#272">272</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="273" class="lineNum"><a href="#273">273</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?;</span></div>
+<div class="line"><span id="274" class="lineNum"><a href="#274">274</a></span><span class="counterCov">1</span><span class="lineCov">		let _connection = server</span></div>
+<div class="line"><span id="275" class="lineNum"><a href="#275">275</a></span><span class="counterCov">1</span><span class="lineCov">			.next()</span></div>
+<div class="line"><span id="276" class="lineNum"><a href="#276">276</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.await</span></div>
+<div class="line"><span id="277" class="lineNum"><a href="#277">277</a></span><span class="counterCov">1</span><span class="lineCov">			.expect(&quot;client dropped&quot;)</span></div>
+<div class="line"><span id="278" class="lineNum"><a href="#278">278</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="279" class="lineNum"><a href="#279">279</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?;</span></div>
+<div class="line"><span id="280" class="lineNum"><a href="#280">280</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="281" class="lineNum"><a href="#281">281</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
+<div class="line"><span id="282" class="lineNum"><a href="#282">282</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="283" class="lineNum"><a href="#283">283</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 </div>
 </body>
 </html>
