@@ -25,7 +25,9 @@ pin-project = "1"
 quinn = { version = "0.7", default-features = false, features = ["tls-rustls"] }
 rcgen = { version = "0.8", default-features = false, optional = true }
 ring = "0.16"
-rustls = { version = "0.19", default-features = false, features = ["dangerous_configuration"] }
+rustls = { version = "0.19", default-features = false, features = [
+	"dangerous_configuration"
+] }
 serde = "1"
 thiserror = "1"
 tokio = { version = "1", features = ["rt-multi-thread"] }
