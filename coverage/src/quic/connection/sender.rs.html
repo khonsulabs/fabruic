@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - sender.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-14 19:49:10</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-14 20:06:15</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -125,69 +125,65 @@
 <div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterUnCov"></span><span class="lineUnCov">		#[allow(box_pointers)]</span></div>
 <div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterCov">301</span><span class="lineCov">		let len = bincode::serialized_size(&amp;data).map_err(|error| Error::Serialize(*error))?;</span></div>
 <div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// reserve an appropriate amount of space</span></div>
-<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterUnCov"></span><span class="lineUnCov">		#[allow(clippy::expect_used)]</span></div>
-<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterCov">301</span><span class="lineCov">		bytes.reserve(</span></div>
-<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterCov">301</span><span class="lineCov">			usize::try_from(len)</span></div>
-<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterCov">301</span><span class="lineCov">				.expect(&quot;not a 64-bit system&quot;)</span></div>
-<div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterCov">301</span><span class="lineCov">				.checked_add(size_of::&lt;u64&gt;())</span></div>
-<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterCov">301</span><span class="lineCov">				.expect(&quot;data trying to be sent is too big&quot;),</span></div>
-<div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterCov">301</span><span class="lineCov">		);</span></div>
-<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterCov">301</span><span class="lineCov">		// insert length first, this enables framing</span></div>
-<div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterCov">301</span><span class="lineCov">		bytes.put_u64_le(len);</span></div>
-<div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterCov">301</span><span class="lineCov"></span></div>
-<div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterCov">301</span><span class="lineCov">		let mut bytes = bytes.writer();</span></div>
-<div class="line"><span id="118" class="lineNum"><a href="#118">118</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="119" class="lineNum"><a href="#119">119</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// serialize `data` into `bytes`</span></div>
-<div class="line"><span id="120" class="lineNum"><a href="#120">120</a></span><span class="counterUnCov"></span><span class="lineUnCov">		#[allow(box_pointers)]</span></div>
-<div class="line"><span id="121" class="lineNum"><a href="#121">121</a></span><span class="counterCov">301</span><span class="lineCov">		bincode::serialize_into(&amp;mut bytes, &amp;data).map_err(|error| Error::Serialize(*error))?;</span></div>
-<div class="line"><span id="122" class="lineNum"><a href="#122">122</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="123" class="lineNum"><a href="#123">123</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// send data to task</span></div>
-<div class="line"><span id="124" class="lineNum"><a href="#124">124</a></span><span class="counterCov">301</span><span class="lineCov">		let bytes = bytes.into_inner().freeze();</span></div>
-<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// make sure that our length is correct</span></div>
-<div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterUnCov"></span><span class="lineUnCov">		#[allow(clippy::expect_used)]</span></div>
-<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterUnCov"></span><span class="lineUnCov">		{</span></div>
-<div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterUnCov"></span><span class="lineUnCov">			debug_assert_eq!(</span></div>
-<div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterCov">301</span><span class="lineCov">				u64::try_from(bytes.len()).expect(&quot;not a 64-bit system&quot;),</span></div>
-<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterCov">301</span><span class="lineCov">				u64::try_from(size_of::&lt;u64&gt;())</span></div>
-<div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterCov">301</span><span class="lineCov">					.expect(&quot;not a 64-bit system&quot;)</span></div>
-<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterCov">301</span><span class="lineCov">					.checked_add(len)</span></div>
-<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterCov">301</span><span class="lineCov">					.expect(&quot;message to long&quot;)</span></div>
-<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterUnCov"></span><span class="lineUnCov">			);</span></div>
-<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterCov">301</span><span class="lineCov">		self.sender.send(bytes).map_err(|_bytes| Error::Send)</span></div>
-<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterCov">301</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Shut down the [`Send`] part of the stream gracefully.</span></div>
-<div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// No new data may be written after calling this method. Completes when the</span></div>
-<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// peer has acknowledged all sent data, retransmitting data as needed.</span></div>
-<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
-<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`Error::AlreadyClosed`] if it was already finished</span></div>
-<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`Error::Write`] if the [`Sender`] failed to write to the stream</span></div>
-<div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`Error::Finish`] if the [`finish`](Self::finish) failed to finish the</span></div>
-<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///   stream</span></div>
-<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterCov">201</span><span class="lineCov">	pub async fn finish(&amp;self) -&gt; Result&lt;()&gt; {</span></div>
-<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterCov">201</span><span class="lineCov">		self.task.close(Message::Finish).await?</span></div>
-<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterCov">201</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Close the [`Sender`] immediately.</span></div>
-<div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// To close a [`Sender`] gracefully use [`Sender::finish`].</span></div>
-<div class="line"><span id="158" class="lineNum"><a href="#158">158</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="159" class="lineNum"><a href="#159">159</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
-<div class="line"><span id="160" class="lineNum"><a href="#160">160</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// This can only return [`Error::AlreadyClosed`] as an [`Err`], if it was</span></div>
-<div class="line"><span id="161" class="lineNum"><a href="#161">161</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// already closed, but there could be other errors queued up in the</span></div>
-<div class="line"><span id="162" class="lineNum"><a href="#162">162</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Sender`]:</span></div>
-<div class="line"><span id="163" class="lineNum"><a href="#163">163</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`Error::Write`] if the [`Sender`] failed to write to the stream</span></div>
-<div class="line"><span id="164" class="lineNum"><a href="#164">164</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`Error::Finish`] if the [`finish`](Self::finish) failed to finish the</span></div>
-<div class="line"><span id="165" class="lineNum"><a href="#165">165</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///   stream</span></div>
-<div class="line"><span id="166" class="lineNum"><a href="#166">166</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub async fn close(&amp;self) -&gt; Result&lt;()&gt; {</span></div>
-<div class="line"><span id="167" class="lineNum"><a href="#167">167</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.task.close(Message::Close).await?</span></div>
-<div class="line"><span id="168" class="lineNum"><a href="#168">168</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
-<div class="line"><span id="169" class="lineNum"><a href="#169">169</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterCov">301</span><span class="lineCov">		bytes.reserve(</span></div>
+<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterCov">301</span><span class="lineCov">			usize::try_from(len)</span></div>
+<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterCov">301</span><span class="lineCov">				.expect(&quot;not a 64-bit system&quot;)</span></div>
+<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterCov">301</span><span class="lineCov">				.checked_add(size_of::&lt;u64&gt;())</span></div>
+<div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterCov">301</span><span class="lineCov">				.expect(&quot;data trying to be sent is too big&quot;),</span></div>
+<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterCov">301</span><span class="lineCov">		);</span></div>
+<div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterCov">301</span><span class="lineCov">		// insert length first, this enables framing</span></div>
+<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterCov">301</span><span class="lineCov">		bytes.put_u64_le(len);</span></div>
+<div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterCov">301</span><span class="lineCov"></span></div>
+<div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterCov">301</span><span class="lineCov">		let mut bytes = bytes.writer();</span></div>
+<div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="118" class="lineNum"><a href="#118">118</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// serialize `data` into `bytes`</span></div>
+<div class="line"><span id="119" class="lineNum"><a href="#119">119</a></span><span class="counterUnCov"></span><span class="lineUnCov">		#[allow(box_pointers)]</span></div>
+<div class="line"><span id="120" class="lineNum"><a href="#120">120</a></span><span class="counterCov">301</span><span class="lineCov">		bincode::serialize_into(&amp;mut bytes, &amp;data).map_err(|error| Error::Serialize(*error))?;</span></div>
+<div class="line"><span id="121" class="lineNum"><a href="#121">121</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="122" class="lineNum"><a href="#122">122</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// send data to task</span></div>
+<div class="line"><span id="123" class="lineNum"><a href="#123">123</a></span><span class="counterCov">301</span><span class="lineCov">		let bytes = bytes.into_inner().freeze();</span></div>
+<div class="line"><span id="124" class="lineNum"><a href="#124">124</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// make sure that our length is correct</span></div>
+<div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterUnCov"></span><span class="lineUnCov">		debug_assert_eq!(</span></div>
+<div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterCov">301</span><span class="lineCov">			u64::try_from(bytes.len()).expect(&quot;not a 64-bit system&quot;),</span></div>
+<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterCov">301</span><span class="lineCov">			u64::try_from(size_of::&lt;u64&gt;())</span></div>
+<div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterCov">301</span><span class="lineCov">				.expect(&quot;not a 64-bit system&quot;)</span></div>
+<div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterCov">301</span><span class="lineCov">				.checked_add(len)</span></div>
+<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterCov">301</span><span class="lineCov">				.expect(&quot;message to long&quot;)</span></div>
+<div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterUnCov"></span><span class="lineUnCov">		);</span></div>
+<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterCov">301</span><span class="lineCov">		self.sender.send(bytes).map_err(|_bytes| Error::Send)</span></div>
+<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterCov">301</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Shut down the [`Send`] part of the stream gracefully.</span></div>
+<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// No new data may be written after calling this method. Completes when the</span></div>
+<div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// peer has acknowledged all sent data, retransmitting data as needed.</span></div>
+<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
+<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`Error::AlreadyClosed`] if it was already finished</span></div>
+<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`Error::Write`] if the [`Sender`] failed to write to the stream</span></div>
+<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`Error::Finish`] if the [`finish`](Self::finish) failed to finish the</span></div>
+<div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///   stream</span></div>
+<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterCov">201</span><span class="lineCov">	pub async fn finish(&amp;self) -&gt; Result&lt;()&gt; {</span></div>
+<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterCov">201</span><span class="lineCov">		self.task.close(Message::Finish).await?</span></div>
+<div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterCov">201</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Close the [`Sender`] immediately.</span></div>
+<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// To close a [`Sender`] gracefully use [`Sender::finish`].</span></div>
+<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
+<div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// This can only return [`Error::AlreadyClosed`] as an [`Err`], if it was</span></div>
+<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// already closed, but there could be other errors queued up in the</span></div>
+<div class="line"><span id="158" class="lineNum"><a href="#158">158</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Sender`]:</span></div>
+<div class="line"><span id="159" class="lineNum"><a href="#159">159</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`Error::Write`] if the [`Sender`] failed to write to the stream</span></div>
+<div class="line"><span id="160" class="lineNum"><a href="#160">160</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`Error::Finish`] if the [`finish`](Self::finish) failed to finish the</span></div>
+<div class="line"><span id="161" class="lineNum"><a href="#161">161</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///   stream</span></div>
+<div class="line"><span id="162" class="lineNum"><a href="#162">162</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub async fn close(&amp;self) -&gt; Result&lt;()&gt; {</span></div>
+<div class="line"><span id="163" class="lineNum"><a href="#163">163</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.task.close(Message::Close).await?</span></div>
+<div class="line"><span id="164" class="lineNum"><a href="#164">164</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
+<div class="line"><span id="165" class="lineNum"><a href="#165">165</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 </div>
 </body>
 </html>
