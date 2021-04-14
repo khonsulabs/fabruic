@@ -32,7 +32,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Run clippy
+      - name: Install nightly Rust
+        run: |
+          rustup toolchain install nightly --profile minimal --component llvm-tools-preview --allow-downgrade
+          rustup default nightly
+
+      - name: Run Clippy
         continue-on-error: true
         run: |
           cargo clippy --workspace --all-targets
