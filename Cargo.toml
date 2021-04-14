@@ -1,7 +1,7 @@
 [package]
 name = "fabruic"
-version = "0.0.0-reserve"
-description = "reserved crate"
+version = "0.0.1-dev-1"
+description = "A simple QUIC-based protocol using quinn. Written for PliantDB and Cosmic Verge."
 license = "MIT OR Apache-2.0"
 edition = "2018"
 resolver = "2"
@@ -15,7 +15,7 @@ test = []
 [dependencies]
 bincode = "1"
 bytes = "1"
-allochronic-util = { git = "https://github.com/khonsulabs/allochronic", branch = "main" }
+allochronic-util = "0.0.1-dev-1"
 flume = "0.10"
 futures-channel = "0.3"
 futures-util = "0.3"
@@ -25,9 +25,7 @@ pin-project = "1"
 quinn = { version = "0.7", default-features = false, features = ["tls-rustls"] }
 rcgen = { version = "0.8", default-features = false, optional = true }
 ring = "0.16"
-rustls = { version = "0.19", default-features = false, features = [
-	"dangerous_configuration"
-] }
+rustls = { version = "0.19", default-features = false, features = ["dangerous_configuration"] }
 serde = "1"
 thiserror = "1"
 tokio = { version = "1", features = ["rt-multi-thread"] }
