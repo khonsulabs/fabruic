@@ -21,9 +21,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Run default features unit tests
+      - name: Run unit tests
         run: |
-          cargo test --workspace --all-targets
+          cargo test --workspace --all-targets --all-features
 
   lint:
     runs-on: ubuntu-latest
