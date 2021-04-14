@@ -146,6 +146,11 @@ impl Builder {
 		self
 	}
 
+	/// Forces [`Endpoint::connect`] to use [`trust-dns`](trust_dns_resolver).
+	pub fn set_trust_dns(&mut self, trust_dns: bool) {
+		self.config.set_trust_dns(trust_dns);
+	}
+
 	/// Consumes [`Builder`] to build [`Endpoint`]. Must be called from inside
 	/// the Tokio [`Runtime`](tokio::runtime::Runtime).
 	///

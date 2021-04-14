@@ -16,6 +16,10 @@ pub(in crate::quic::endpoint) struct Config {
 	transport: Arc<TransportConfig>,
 	/// Protocols used.
 	protocols: Option<Vec<Vec<u8>>>,
+	/// Enable [`trust-dns`](trust_dns_resolver).
+	#[cfg(feature = "trust-dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
+	trust_dns: bool,
 }
 
 impl Config {
@@ -41,6 +45,8 @@ impl Config {
 		Self {
 			transport,
 			protocols: None,
+			#[cfg(feature = "trust-dns")]
+			trust_dns: true,
 		}
 	}
 
@@ -102,5 +108,21 @@ impl Config {
 		client.transport = self.transport();
 
 		client
+	}
+
+	/// Forces [`Endpoint::connect`](crate::Endpoint::connect) to use
+	/// [`trust-dns`](trust_dns_resolver).
+	pub(super) fn set_trust_dns(&mut self, trust_dns: bool) {
+		#[cfg(feature = "trust-dns")]
+		{
+			self.trust_dns = trust_dns;
+		}
+	}
+
+	/// Returns if [`trust-dns`](trust_dns_resolver) is enabled.
+	#[cfg(feature = "trust-dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
+	pub(in crate::quic::endpoint) const fn trust_dns(&self) -> bool {
+		self.trust_dns
 	}
 }

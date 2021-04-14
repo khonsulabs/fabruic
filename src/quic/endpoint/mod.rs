@@ -4,7 +4,7 @@ mod builder;
 
 use std::{
 	fmt::{self, Debug, Formatter},
-	net::SocketAddr,
+	net::{IpAddr, SocketAddr, ToSocketAddrs},
 	pin::Pin,
 	task::{Context, Poll},
 };
@@ -176,10 +176,21 @@ impl Endpoint {
 		}
 	}
 
-	/// Attempts to resolve the IP from the given URL. This is done with
-	/// the help of the [`trust_dns_resolver`] crate.
+	/// Establishes a new [`Connection`](crate::Connection) to a server. The
+	/// certificate root store will validate the servers [`Certificate`]
+	/// together with the domain.
 	///
-	/// The following default are in play:
+	/// Attempts to resolve the IP from the given URL. Uses
+	/// [`trust-dns`](trust_dns_resolver) by default if the crate feature <span
+	///   class="module-item stab portability"
+	///   style="display: inline; border-radius: 3px; padding: 2px; font-size:
+	/// 80%; line-height: 1.2;" ><code>trust-dns</code></span> is enabled.
+	/// Otherwise [`ToSocketAddrs`] is used.
+	///
+	/// See [`Builder::set_trust_dns`] for more control.
+	///
+	/// The following settings are used when using
+	/// [`trust-dns`](trust_dns_resolver):
 	/// - all system configurations are ignored
 	/// - Cloudflare DNS is used as the name server
 	/// - DNSSEC is used
@@ -190,7 +201,10 @@ impl Endpoint {
 	/// - [`Error::ParseUrl`] if the URL couldn't be parsed
 	/// - [`Error::Domain`] if the URL didn't contain a domain
 	/// - [`Error::Port`] if the URL didn't contain a port
-	/// - [`Error::Resolve`] if the URL couldn't be resolved to an IP address
+	/// - [`Error::ResolveTrustDns`] if the URL couldn't be resolved to an IP
+	///   address with [`trust-dns`](trust_dns_resolver)
+	/// - [`Error::ResolveTrustDns`] if the URL couldn't be resolved to an IP
+	///   address with [`ToSocketAddrs`]
 	/// - [`Error::ConnectConfig`] if configuration needed to connect to a peer
 	///   is faulty
 	///
@@ -198,49 +212,77 @@ impl Endpoint {
 	/// Panics if the given [`Certificate`] is invalid. Can't happen if the
 	/// [`Certificate`] was properly validated through
 	/// [`Certificate::from_der`].
-	#[cfg(feature = "dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "dns")))]
 	pub async fn connect<U: AsRef<str>>(&self, url: U) -> Result<Connecting> {
-		use trust_dns_resolver::{
-			config::{ResolverConfig, ResolverOpts},
-			TokioAsyncResolver,
-		};
 		use url::Url;
 
 		let url = Url::parse(url.as_ref()).map_err(Error::ParseUrl)?;
 		let domain = url.domain().ok_or(Error::Domain)?;
 		let port = url.port().ok_or(Error::Port)?;
 
-		let config = ResolverConfig::cloudflare_https();
-		// `validate` enforces DNSSEC
-		let opts = ResolverOpts {
-			validate: true,
-			..ResolverOpts::default()
-		};
+		let ip = self.resolve_domain(domain.to_owned()).await?;
 
-		// build the `Resolver`
-		#[allow(box_pointers)]
-		let resolver = TokioAsyncResolver::tokio(config, opts)
-			.map_err(|error| Error::Resolve(Box::new(error)))?;
-		// query the IP
-		#[allow(box_pointers)]
-		let ip = resolver
-			.lookup_ip(domain)
-			.await
-			.map_err(|error| Error::Resolve(Box::new(error)))?;
-
-		// take the first IP found
-		ip.into_iter().next().map_or(Err(Error::NoIp), |ip| {
-			Ok(Connecting::new(
-				self.endpoint
-					.connect(&SocketAddr::from((ip, port)), domain)
-					.map_err(Error::ConnectConfig)?,
-			))
-		})
+		Ok(Connecting::new(
+			self.endpoint
+				.connect(&SocketAddr::from((ip, port)), domain)
+				.map_err(Error::ConnectConfig)?,
+		))
 	}
 
-	/// Establish a new [`Connection`](crate::Connection) to a client. The
-	/// `domain` validates the certificate.
+	/// Resolve the IP from the given domain. See [`connect`](Self::connect) for
+	/// more details.
+	///
+	/// # Errors
+	/// - [`Error::ResolveTrustDns`] if the URL couldn't be resolved to an IP
+	///   address with [`trust-dns`](trust_dns_resolver)
+	/// - [`Error::ResolveTrustDns`] if the URL couldn't be resolved to an IP
+	///   address with [`ToSocketAddrs`]
+	async fn resolve_domain(&self, domain: String) -> Result<IpAddr> {
+		#[cfg(feature = "trust-dns")]
+		if self.config.trust_dns() {
+			use trust_dns_resolver::{
+				config::{ResolverConfig, ResolverOpts},
+				TokioAsyncResolver,
+			};
+
+			let config = ResolverConfig::cloudflare_https();
+			// `validate` enforces DNSSEC
+			let opts = ResolverOpts {
+				validate: true,
+				..ResolverOpts::default()
+			};
+
+			// build the `Resolver`
+			#[allow(box_pointers)]
+			let resolver = TokioAsyncResolver::tokio(config, opts)
+				.map_err(|error| Error::ResolveTrustDns(Box::new(error)))?;
+			// query the IP
+			#[allow(box_pointers)]
+			let ip = resolver
+				.lookup_ip(domain)
+				.await
+				.map_err(|error| Error::ResolveTrustDns(Box::new(error)))?;
+
+			// take the first IP found
+			return ip.into_iter().next().ok_or(Error::NoIp);
+		}
+
+		// TODO: configure executor
+		#[allow(clippy::expect_used)]
+		tokio::task::spawn_blocking(move || {
+			domain
+				.to_socket_addrs()
+				.map_err(Error::ResolveStdDns)?
+				.next()
+				.map(|address| address.ip())
+				.ok_or(Error::NoIp)
+		})
+		.await
+		.expect("Resolving domain panicked")
+	}
+
+	/// Establishes a new [`Connection`](crate::Connection) to a server. The
+	/// certificate root store will be ignored and the given [`Certificate`]
+	/// will validate the server.
 	///
 	/// # Errors
 	/// [`Error::ConnectConfig`] if configuration needed to connect to a peer is
