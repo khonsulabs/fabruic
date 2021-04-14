@@ -320,7 +320,7 @@
 			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;test&quot;</span>))]</span>
 			<span class="ident">address</span>: ([<span class="number">0</span>; <span class="number">8</span>], <span class="number">0</span>).<span class="ident">into</span>(),
 			<span class="comment">// while testing always use the default loopback address</span>
-			<span class="comment">// </span>
+			<span class="comment">// equals too `[::ffff:127.0.0.1]:0`</span>
 			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;test&quot;</span>)]</span>
 			<span class="ident">address</span>: ([<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0xffff</span>, <span class="number">0x7f00</span>, <span class="number">1</span>], <span class="number">0</span>).<span class="ident">into</span>(),
 			<span class="ident">client</span>: <span class="ident">config</span>.<span class="ident">new_client_builder</span>(),

@@ -812,10 +812,10 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">local_address</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">SocketAddr</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">address</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">endpoint</span>.<span class="ident">local_addr</span>().<span class="ident">map_err</span>(<span class="ident">Error::LocalAddress</span>)<span class="question-mark">?</span>;
 
-		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">test</span>))]</span>
+		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;test&quot;</span>))]</span>
 		<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">address</span>);
 
-		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;test&quot;</span>)]</span>
 		<span class="prelude-val">Ok</span>(<span class="kw">if</span> <span class="ident">address</span>.<span class="ident">ip</span>().<span class="ident">is_loopback</span>() {
 			([<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0xffff</span>, <span class="number">0x7f00</span>, <span class="number">1</span>], <span class="ident">address</span>.<span class="ident">port</span>()).<span class="ident">into</span>()
 		} <span class="kw">else</span> {
