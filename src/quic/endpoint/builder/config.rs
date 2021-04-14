@@ -15,7 +15,7 @@ pub(in crate::quic::endpoint) struct Config {
 	/// Storing the default [`TransportConfig`].
 	transport: Arc<TransportConfig>,
 	/// Protocols used.
-	protocols: Option<Vec<Vec<u8>>>,
+	protocols: Vec<Vec<u8>>,
 	/// Enable [`trust-dns`](trust_dns_resolver).
 	#[cfg(feature = "trust-dns")]
 	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
@@ -43,14 +43,38 @@ impl Config {
 
 		Self {
 			transport,
-			protocols: None,
+			protocols: Vec::new(),
 			#[cfg(feature = "trust-dns")]
 			trust_dns: true,
 		}
 	}
 
-	/// Builds a new [`ClientConfigBuilder`] with this [`Config`].
-	pub(super) fn new_client_builder(&self) -> ClientConfigBuilder {
+	/// Returns the default [`TransportConfig`].
+	pub(super) fn transport(&self) -> Arc<TransportConfig> {
+		Arc::clone(&self.transport)
+	}
+
+	/// Set the application-layer protocols.
+	pub(super) fn set_protocols(&mut self, protocols: impl Into<Vec<Vec<u8>>>) {
+		self.protocols = protocols.into();
+	}
+
+	/// Returns the configured protocols.
+	pub(super) const fn protocols(&self) -> &Vec<Vec<u8>> {
+		&self.protocols
+	}
+
+	/// Builds a new [`ClientConfig`] with this [`Config`] and the given
+	/// [`Certificate`] as the only certificate authority.
+	///
+	/// # Panics
+	/// Panics if the given [`Certificate`] is invalid. Can't happen if the
+	/// [`Certificate`] was properly validated through
+	/// [`Certificate::from_der`].
+	pub(in crate::quic::endpoint) fn new_client<'a>(
+		&self,
+		certificates: impl IntoIterator<Item = &'a Certificate> + 'a,
+	) -> ClientConfig {
 		// build client
 		let mut client = ClientConfig::default();
 
@@ -62,44 +86,20 @@ impl Config {
 		// build client builder
 		let mut client = ClientConfigBuilder::new(client);
 
-		if let Some(protocols) = &self.protocols {
-			let protocols: Vec<_> = protocols.iter().map(Deref::deref).collect();
+		// add protocols
+		if !self.protocols.is_empty() {
+			let protocols: Vec<_> = self.protocols.iter().map(Deref::deref).collect();
 			let _ = client.protocols(&protocols);
 		}
 
-		client
-	}
-
-	/// Returns the default [`TransportConfig`].
-	pub(super) fn transport(&self) -> Arc<TransportConfig> {
-		Arc::clone(&self.transport)
-	}
-
-	/// Set the application-layer protocols.
-	pub(super) fn set_protocols(&mut self, protocols: &[&[u8]]) {
-		self.protocols = Some(
-			protocols
-				.iter()
-				.map(|protocol| (*protocol).to_owned())
-				.collect(),
-		);
-	}
-
-	/// Builds a new [`ClientConfig`] with this [`Config`] and the given
-	/// [`Certificate`] as the only certificate authority.
-	///
-	/// # Panics
-	/// Panics if the given [`Certificate`] is invalid. Can't happen if the
-	/// [`Certificate`] was properly validated through
-	/// [`Certificate::from_der`].
-	pub(in crate::quic::endpoint) fn new_client(&self, certificate: &Certificate) -> ClientConfig {
-		let mut client = self.new_client_builder();
-
-		let certificate = quinn::Certificate::from_der(certificate.as_ref())
-			.expect("`Certificate` couldn't be parsed");
-		let _ = client
-			.add_certificate_authority(certificate)
-			.expect("`Certificate` couldn't be added as a CA");
+		// add CAs
+		for certificate in certificates {
+			let certificate = quinn::Certificate::from_der(certificate.as_ref())
+				.expect("`Certificate` couldn't be parsed");
+			let _ = client
+				.add_certificate_authority(certificate)
+				.expect("`Certificate` couldn't be added as a CA");
+		}
 
 		let mut client = client.build();
 		client.transport = self.transport();

@@ -10,6 +10,7 @@ edition = "2018"
 resolver = "2"
 
 [features]
+dangerous = []
 default = []
 trust-dns = ["trust-dns-resolver"]
 test = []

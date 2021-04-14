@@ -9,8 +9,8 @@ use std::{
 	task::{Context, Poll},
 };
 
-pub use builder::Builder;
 use builder::Config;
+pub use builder::{Builder, Dangerous};
 use flume::{r#async::RecvStream, Sender};
 use futures_channel::oneshot::{self, Receiver};
 use futures_util::{
@@ -144,8 +144,8 @@ impl Endpoint {
 	///   [`Certificate::from_der`]
 	pub fn new_server(
 		port: u16,
-		certificate: &Certificate,
-		private_key: &PrivateKey,
+		certificate: Certificate,
+		private_key: PrivateKey,
 	) -> Result<Self> {
 		let mut builder = Builder::new();
 		#[cfg(not(feature = "test"))]
@@ -153,7 +153,7 @@ impl Endpoint {
 		// while testing always use the default loopback address
 		#[cfg(feature = "test")]
 		let _ = builder.set_address(([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], port).into());
-		let _ = builder.add_key_pair(certificate, private_key);
+		let _ = builder.set_key_pair(certificate, private_key);
 
 		builder.build().map_err(|(error, _)| error)
 	}
@@ -283,9 +283,15 @@ impl Endpoint {
 	/// certificate root store will be ignored and the given [`Certificate`]
 	/// will validate the server.
 	///
+	/// This method is intender for direct connection to a known server.
+	/// Multiple domain names in the [`Certificate`] aren't supported.
+	///
 	/// # Errors
-	/// [`Error::ConnectConfig`] if configuration needed to connect to a peer is
-	/// faulty.
+	/// - [`Error::MultipleDomains`] if multiple domains are used in this
+	///   [`Certificate`]
+	/// - [`Error::ConnectConfig`] if configuration needed to connect to a peer
+	///   is
+	/// faulty
 	///
 	/// # Panics
 	/// Panics if the given [`Certificate`] is invalid. Can't happen if the
@@ -297,16 +303,18 @@ impl Endpoint {
 		address: SocketAddr,
 		certificate: &Certificate,
 	) -> Result<Connecting> {
+		let mut domains = certificate.domains().into_iter();
+		let domain = domains
+			.next()
+			.expect("`Certificate` contained no valid domains");
+
+		if domains.next().is_some() {
+			return Err(Error::MultipleDomains);
+		}
+
 		let connecting = self
 			.endpoint
-			.connect_with(
-				self.config.new_client(certificate),
-				&address,
-				certificate
-					.domains()
-					.get(0)
-					.expect("`Certificate` contained no valid domains"),
-			)
+			.connect_with(self.config.new_client(Some(certificate)), &address, &domain)
 			.map_err(Error::ConnectConfig)?;
 
 		Ok(Connecting::new(connecting))
@@ -402,7 +410,7 @@ mod test {
 		let (certificate, private_key) = crate::generate_self_signed("test");
 
 		let client = Endpoint::new_client()?;
-		let mut server = Endpoint::new_server(0, &certificate, &private_key)?;
+		let mut server = Endpoint::new_server(0, certificate.clone(), private_key)?;
 
 		let _connection = client
 			.connect_pinned(server.local_address()?, &certificate)?
@@ -426,7 +434,7 @@ mod test {
 		let (certificate, private_key) = crate::generate_self_signed("test");
 
 		let client = Endpoint::new_client()?;
-		let mut server = Endpoint::new_server(0, &certificate, &private_key)?;
+		let mut server = Endpoint::new_server(0, certificate.clone(), private_key)?;
 		let address = server.local_address()?;
 
 		// `wait_idle` should never finish unless these `Connection`s are closed, which
@@ -473,7 +481,7 @@ mod test {
 		let (certificate, private_key) = crate::generate_self_signed("test");
 
 		let client = Endpoint::new_client()?;
-		let mut server = Endpoint::new_server(0, &certificate, &private_key)?;
+		let mut server = Endpoint::new_server(0, certificate.clone(), private_key)?;
 		let address = server.local_address()?;
 
 		// these `Connection`s should still work even if new incoming connections are
@@ -543,7 +551,7 @@ mod test {
 		let (certificate, private_key) = crate::generate_self_signed("test");
 
 		let client = Endpoint::new_client()?;
-		let mut server = Endpoint::new_server(0, &certificate, &private_key)?;
+		let mut server = Endpoint::new_server(0, certificate.clone(), private_key)?;
 
 		// `wait_idle` will never finish unless the `Connection` closes, which happens
 		// automatically when it's dropped

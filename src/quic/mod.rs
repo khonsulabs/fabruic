@@ -5,5 +5,5 @@ mod endpoint;
 mod task;
 
 pub use connection::{Connecting, Connection, Incoming, Receiver, Sender};
-pub use endpoint::{Builder, Endpoint};
+pub use endpoint::{Builder, Dangerous, Endpoint};
 use task::Task;

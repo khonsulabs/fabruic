@@ -98,6 +98,11 @@ pub enum Error {
 	/// Attempting to close something that is already closed.
 	#[error("This is already closed")]
 	AlreadyClosed,
+	/// Returned by
+	/// [`Endpoint::connect_pinned`](crate::Endpoint::connect_pinned) if
+	/// the passed [`Certificate`](crate::Certificate) has multiple domains.
+	#[error("Using a `Certificate` with multiple domains for direction connection is invalid")]
+	MultipleDomains,
 	/// Returned by [`Endpoint::connect`](crate::Endpoint::connect) if
 	/// configuration needed to connect to a peer is faulty.
 	#[error("Error in configuration to connect to a peer: {0}")]

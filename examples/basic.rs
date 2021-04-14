@@ -18,7 +18,7 @@ async fn main() -> Result<()> {
 	// build the server
 	// we want to do this outside to reserve the `SERVER_PORT`, otherwise spawned
 	// clients may take it
-	let mut server = Endpoint::new_server(SERVER_PORT, &certificate, &private_key)?;
+	let mut server = Endpoint::new_server(SERVER_PORT, certificate.clone(), private_key)?;
 	let address = server.local_address()?;
 
 	// start the server

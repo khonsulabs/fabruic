@@ -5,37 +5,21 @@ mod config;
 use std::{fmt::Debug, net::SocketAddr, str::FromStr};
 
 pub(super) use config::Config;
-use quinn::{CertificateChain, ClientConfigBuilder, ServerConfigBuilder};
+use quinn::{CertificateChain, ServerConfigBuilder};
 
-use crate::{Certificate, Dangerous, Endpoint, Error, PrivateKey, Result};
+use crate::{Certificate, Endpoint, Error, PrivateKey, Result};
 
+#[derive(Debug)]
 /// Holding configuration for [`Builder`] to build [`Endpoint`].
 pub struct Builder {
 	/// [`SocketAddr`] for [`Endpoint`](quinn::Endpoint) to bind to.
 	address: SocketAddr,
-	/// [`ClientConfig`](quinn::ClientConfig) for [`Endpoint`](quinn::Endpoint).
-	client: ClientConfigBuilder,
-	/// [`ServerConfig`](quinn::ServerConfig) for [`Endpoint`](quinn::Endpoint).
-	server: Option<ServerConfigBuilder>,
+	/// Custom CA [`Certificate`]s.
+	ca_store: Vec<Certificate>,
+	/// Key-pair for the server.
+	key_pair: Option<(Certificate, PrivateKey)>,
 	/// Persistent configuration passed to the [`Endpoint`]
 	config: Config,
-}
-
-impl Debug for Builder {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		f.debug_struct("Builder")
-			.field("address", &self.address)
-			.field("client", &"ClientConfigBuilder")
-			.field(
-				"server",
-				&if self.server.is_some() {
-					"Some(ServerConfigBuilder)"
-				} else {
-					"None"
-				},
-			)
-			.finish()
-	}
 }
 
 impl Default for Builder {
@@ -57,8 +41,8 @@ impl Builder {
 			// equals to `[::ffff:127.0.0.1]:0`
 			#[cfg(feature = "test")]
 			address: ([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], 0).into(),
-			client: config.new_client_builder(),
-			server: None,
+			ca_store: Vec::new(),
+			key_pair: None,
 			config,
 		}
 	}
@@ -78,50 +62,10 @@ impl Builder {
 		Ok(self)
 	}
 
-	/// Adds a [`Certificate`] into the default certificate authority store for
-	/// client [`connection`](Endpoint::connect)s.
-	///
-	/// # Panics
-	/// Panics if the given [`Certificate`] is invalid. Can't happen if the
-	/// [`Certificate`] was properly validated through
-	/// [`Certificate::from_der`].
-	pub fn add_ca(&mut self, certificate: &Certificate) -> &mut Self {
-		let certificate = quinn::Certificate::from_der(certificate.as_ref())
-			.expect("`Certificate` couldn't be parsed");
-		let _ = self
-			.client
-			.add_certificate_authority(certificate)
-			.expect("`Certificate` couldn't be added as a CA");
-
-		self
-	}
-
-	/// Add a [`Certificate`] and [`PrivateKey`] for the server. This will add a
+	/// Set a [`Certificate`] and [`PrivateKey`] for the server. This will add a
 	/// listener to incoming [`Connection`](crate::Connection)s.
-	///
-	/// # Panics
-	/// Panics if the given [`Certificate`] is invalid. Can't happen if the
-	/// [`Certificate`] was properly validated through
-	/// [`Certificate::from_der`].
-	pub fn add_key_pair(
-		&mut self,
-		certificate: &Certificate,
-		private_key: &PrivateKey,
-	) -> &mut Self {
-		// process keypair
-		let certificate = quinn::Certificate::from_der(certificate.as_ref())
-			.expect("`Certificate` couldn't be parsed");
-		let chain = CertificateChain::from_certs(Some(certificate));
-		let private_key = quinn::PrivateKey::from_der(Dangerous::as_ref(private_key))
-			.expect("`PrivateKey` couldn't be parsed");
-
-		// add keypair
-		let _ = self
-			.server
-			.get_or_insert(ServerConfigBuilder::default())
-			.certificate(chain, private_key)
-			.expect("`CertificateChain` couldn't be verified");
-
+	pub fn set_key_pair(&mut self, certificate: Certificate, private_key: PrivateKey) -> &mut Self {
+		self.key_pair = Some((certificate, private_key));
 		self
 	}
 
@@ -130,21 +74,15 @@ impl Builder {
 	/// one of the supplied protocols will be rejected.
 	///
 	/// See [`Connection::protocol`](crate::Connection::protocol).
-	pub fn set_protocols(&mut self, protocols: &[&[u8]]) -> &mut Self {
-		let _ = self.client.protocols(protocols);
-		let _ = self
-			.server
-			.get_or_insert(ServerConfigBuilder::default())
-			.protocols(protocols);
-
+	pub fn set_protocols<P: Into<Vec<Vec<u8>>>>(&mut self, protocols: P) -> &mut Self {
 		self.config.set_protocols(protocols);
-
 		self
 	}
 
 	/// Forces [`Endpoint::connect`] to use [`trust-dns`](trust_dns_resolver).
-	pub fn set_trust_dns(&mut self, trust_dns: bool) {
+	pub fn set_trust_dns(&mut self, trust_dns: bool) -> &mut Self {
 		self.config.set_trust_dns(trust_dns);
+		self
 	}
 
 	/// Consumes [`Builder`] to build [`Endpoint`]. Must be called from inside
@@ -155,17 +93,49 @@ impl Builder {
 	/// `address`.
 	///
 	/// # Panics
-	/// If not called from inside the Tokio
-	/// [`Runtime`](tokio::runtime::Runtime).
+	/// - if the given [`Certificate`] is invalid. Can't happen if the
+	///   [`Certificate`] was properly validated through
+	///   [`Certificate::from_der`]
+	/// - if not called from inside the Tokio
+	///   [`Runtime`](tokio::runtime::Runtime)
 	pub fn build(self) -> Result<Endpoint, (Error, Self)> {
 		match {
-			// to be able to reuse `Builder` on failure, we have to preserve quinn builders
-			let mut client = self.client.clone().build();
-			client.transport = self.config.transport();
+			// build client
+			let client = self.config.new_client(self.ca_store.iter());
 
-			let server = self.server.as_ref().map(|server| {
-				let mut server = server.clone().build();
+			// build server only if we have a key-pair
+			let server = self.key_pair.as_ref().map(|(certificate, private_key)| {
+				let mut server = ServerConfigBuilder::default();
+
+				// build key-pair
+				let certificate = quinn::Certificate::from_der(certificate.as_ref())
+					.expect("`Certificate` couldn't be parsed");
+				let chain = CertificateChain::from_certs(Some(certificate));
+				let private_key =
+					quinn::PrivateKey::from_der(crate::dangerous::Certificate::as_ref(private_key))
+						.expect("`PrivateKey` couldn't be parsed");
+				// add key-pair
+				let _ = server
+					.certificate(chain, private_key)
+					.expect("`CertificateChain` couldn't be verified");
+
+				// set protocols
+				if !self.config.protocols().is_empty() {
+					let _ = server.protocols(
+						self.config
+							.protocols()
+							.iter()
+							.map(Vec::as_slice)
+							.collect::<Vec<_>>()
+							.as_slice(),
+					);
+				}
+
+				let mut server = server.build();
+
+				// set transport
 				server.transport = self.config.transport();
+
 				server
 			});
 
@@ -174,6 +144,23 @@ impl Builder {
 			Ok(endpoint) => Ok(endpoint),
 			Err(error) => Err((error, self)),
 		}
+	}
+}
+
+/// Security-sensitive configuration for [`Builder`].
+pub trait Dangerous {
+	/// Adds a [`Certificate`] into the default certificate authority store for
+	/// [`connection`](Endpoint::connect)ing to a server.
+	///
+	/// # Security
+	/// Managing your own CA root store can make sense if a private CA is used.
+	/// Otherwise use [`Endpoint::connect_pinned`].
+	fn add_ca(builder: &mut Self, certificate: Certificate);
+}
+
+impl Dangerous for Builder {
+	fn add_ca(builder: &mut Self, certificate: Certificate) {
+		builder.ca_store.push(certificate);
 	}
 }
 
@@ -231,12 +218,12 @@ mod test {
 
 		// build client
 		let mut builder = Builder::new();
-		let _ = builder.add_ca(&certificate);
+		Dangerous::add_ca(&mut builder, certificate.clone());
 		let client = builder.build().map_err(|(error, _)| error)?;
 
 		// build server
 		let mut builder = Builder::new();
-		let _ = builder.add_key_pair(&certificate, &private_key);
+		let _ = builder.set_key_pair(certificate, private_key);
 		let mut server = builder.build().map_err(|(error, _)| error)?;
 
 		// test connection
