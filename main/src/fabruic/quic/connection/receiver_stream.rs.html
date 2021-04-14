@@ -168,7 +168,6 @@
 <span id="165">165</span>
 <span id="166">166</span>
 <span id="167">167</span>
-<span id="168">168</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Implementation of [`ReceiverStream`], a wrapper providing framing and</span>
 <span class="doccomment">//! deserialization around [`RecvStream`](quinn::RecvStream).</span>
@@ -257,7 +256,6 @@
 	<span class="doccomment">/// Check if we currently have enough data to build</span>
 	<span class="doccomment">/// [`length`](Self::length) and returns it. Returns [`None`] if there isn&#39;t</span>
 	<span class="doccomment">/// enough data to extract [`length`](Self::length) yet.</span>
-	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::unwrap_in_result</span>)]</span>
 	<span class="kw">fn</span> <span class="ident">length</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">length</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
 			(<span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">len</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>()).<span class="ident">then</span>(<span class="op">|</span><span class="op">|</span> {

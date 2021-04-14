@@ -261,12 +261,7 @@
 <span id="258">258</span>
 <span id="259">259</span>
 <span id="260">260</span>
-<span id="261">261</span>
-<span id="262">262</span>
-<span id="263">263</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy::missing_panics_doc</span>)]</span>
-
 <span class="doccomment">//! [`Endpoint`] builder.</span>
 
 <span class="kw">mod</span> <span class="ident">config</span>;
@@ -426,7 +421,6 @@
 	<span class="doccomment">/// # Panics</span>
 	<span class="doccomment">/// If not called from inside the Tokio</span>
 	<span class="doccomment">/// [`Runtime`](tokio::runtime::Runtime).</span>
-	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::unwrap_in_result</span>)]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Endpoint</span>, (<span class="ident">Error</span>, <span class="self">Self</span>)<span class="op">&gt;</span> {
 		<span class="kw">match</span> {
 			<span class="comment">// to be able to reuse `Builder` on failure, we have to preserve quinn builders</span>
