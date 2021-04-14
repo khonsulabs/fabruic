@@ -31,6 +31,7 @@
 	clippy::blanket_clippy_restriction_lints,
 	clippy::else_if_without_else,
 	clippy::exhaustive_enums,
+	clippy::expect_used,
 	clippy::future_not_send,
 	clippy::implicit_return,
 	clippy::missing_inline_in_public_items,
@@ -44,7 +45,6 @@
 	unreachable_pub,
 	variant_size_differences
 )]
-#![allow(clippy::cargo_common_metadata)]
 #![cfg_attr(
 	doc,
 	feature(doc_cfg),
@@ -53,12 +53,7 @@
 )]
 #![cfg_attr(
 	test,
-	allow(
-		clippy::expect_used,
-		clippy::integer_arithmetic,
-		clippy::panic,
-		clippy::panic_in_result_fn
-	)
+	allow(clippy::integer_arithmetic, clippy::panic, clippy::panic_in_result_fn)
 )]
 
 //! TODO

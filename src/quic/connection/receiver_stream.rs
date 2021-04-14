@@ -89,12 +89,9 @@ impl<M: DeserializeOwned> ReceiverStream<M> {
 	fn length(&mut self) -> Option<usize> {
 		if self.length == 0 {
 			(self.buffer.len() >= size_of::<u64>()).then(|| {
-				#[allow(clippy::expect_used)]
-				{
-					// aquire the length by reading the first 8 bytes (u64)
-					self.length = usize::try_from(self.buffer.get_uint_le(size_of::<u64>()))
-						.expect("not a 64-bit system");
-				}
+				// aquire the length by reading the first 8 bytes (u64)
+				self.length = usize::try_from(self.buffer.get_uint_le(size_of::<u64>()))
+					.expect("not a 64-bit system");
 
 				self.length
 			})

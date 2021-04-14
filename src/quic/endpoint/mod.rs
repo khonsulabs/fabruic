@@ -267,7 +267,6 @@ impl Endpoint {
 		}
 
 		// TODO: configure executor
-		#[allow(clippy::expect_used)]
 		tokio::task::spawn_blocking(move || {
 			domain
 				.to_socket_addrs()
@@ -303,7 +302,6 @@ impl Endpoint {
 			.connect_with(
 				self.config.new_client(certificate),
 				&address,
-				#[allow(clippy::expect_used)]
 				certificate
 					.domains()
 					.get(0)

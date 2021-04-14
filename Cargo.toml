@@ -3,6 +3,9 @@ name = "fabruic"
 version = "0.0.1-dev-1"
 description = "A simple QUIC-based protocol using quinn. Written for PliantDB and Cosmic Verge."
 license = "MIT OR Apache-2.0"
+repository = "https://github.com/khonsulabs/fabruic"
+keywords = ["quic"]
+categories = ["network-programming"]
 edition = "2018"
 resolver = "2"
 

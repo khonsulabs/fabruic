@@ -87,7 +87,6 @@ impl Builder {
 	/// Panics if the given [`Certificate`] is invalid. Can't happen if the
 	/// [`Certificate`] was properly validated through
 	/// [`Certificate::from_der`].
-	#[allow(clippy::expect_used)]
 	pub fn add_ca(&mut self, certificate: &Certificate) -> &mut Self {
 		let certificate = quinn::Certificate::from_der(certificate.as_ref())
 			.expect("`Certificate` couldn't be parsed");
@@ -106,7 +105,6 @@ impl Builder {
 	/// Panics if the given [`Certificate`] is invalid. Can't happen if the
 	/// [`Certificate`] was properly validated through
 	/// [`Certificate::from_der`].
-	#[allow(clippy::expect_used)]
 	pub fn add_key_pair(
 		&mut self,
 		certificate: &Certificate,

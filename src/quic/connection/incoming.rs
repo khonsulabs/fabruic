@@ -55,7 +55,6 @@ impl<T: DeserializeOwned> Incoming<T> {
 			let r#type = self.receiver.next().await.unwrap_or(Err(Error::NoType));
 			// TODO: replace with `Option::insert`
 			self.r#type = Some(r#type);
-			#[allow(clippy::expect_used)]
 			self.r#type
 				.as_ref()
 				.expect("`type` just inserted missing")

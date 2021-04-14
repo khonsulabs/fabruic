@@ -104,7 +104,6 @@ impl<T: Serialize> Sender<T> {
 		#[allow(box_pointers)]
 		let len = bincode::serialized_size(&data).map_err(|error| Error::Serialize(*error))?;
 		// reserve an appropriate amount of space
-		#[allow(clippy::expect_used)]
 		bytes.reserve(
 			usize::try_from(len)
 				.expect("not a 64-bit system")
@@ -124,16 +123,13 @@ impl<T: Serialize> Sender<T> {
 		let bytes = bytes.into_inner().freeze();
 
 		// make sure that our length is correct
-		#[allow(clippy::expect_used)]
-		{
-			debug_assert_eq!(
-				u64::try_from(bytes.len()).expect("not a 64-bit system"),
-				u64::try_from(size_of::<u64>())
-					.expect("not a 64-bit system")
-					.checked_add(len)
-					.expect("message to long")
-			);
-		}
+		debug_assert_eq!(
+			u64::try_from(bytes.len()).expect("not a 64-bit system"),
+			u64::try_from(size_of::<u64>())
+				.expect("not a 64-bit system")
+				.checked_add(len)
+				.expect("message to long")
+		);
 
 		self.sender.send(bytes).map_err(|_bytes| Error::Send)
 	}

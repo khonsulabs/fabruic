@@ -29,7 +29,6 @@ impl Config {
 		let mut transport = TransportConfig::default();
 
 		// set transport defaults
-		#[allow(clippy::expect_used)]
 		let _ = transport
 			// TODO: research if this is necessary, it improves privacy, but may hurt network
 			// providers?
@@ -54,10 +53,9 @@ impl Config {
 	pub(super) fn new_client_builder(&self) -> ClientConfigBuilder {
 		// build client
 		let mut client = ClientConfig::default();
-		#[allow(clippy::expect_used)]
-		let crypto = Arc::get_mut(&mut client.crypto).expect("failed to build `ClientConfig`");
 
 		// remove defaults
+		let crypto = Arc::get_mut(&mut client.crypto).expect("failed to build `ClientConfig`");
 		crypto.root_store = RootCertStore::empty();
 		crypto.ct_logs = None;
 
@@ -94,7 +92,6 @@ impl Config {
 	/// Panics if the given [`Certificate`] is invalid. Can't happen if the
 	/// [`Certificate`] was properly validated through
 	/// [`Certificate::from_der`].
-	#[allow(clippy::expect_used)]
 	pub(in crate::quic::endpoint) fn new_client(&self, certificate: &Certificate) -> ClientConfig {
 		let mut client = self.new_client_builder();
 

@@ -111,7 +111,6 @@ impl Certificate {
 	/// Panics if [`Certificate`] couldn't be parsed or contained no valid
 	/// domain names. This can't happen if [`Certificate`] is constructed
 	/// correctly from [`from_der`](Certificate::from_der).
-	#[allow(clippy::expect_used)]
 	#[must_use]
 	pub fn domains(&self) -> Vec<String> {
 		let (_, certificate) =
@@ -210,12 +209,10 @@ pub trait Dangerous {
 
 impl Dangerous for PrivateKey {
 	fn as_ref(private_key: &Self) -> &[u8] {
-		#[allow(clippy::expect_used)]
 		private_key.0.as_deref().expect("value already dropped")
 	}
 
 	fn into(mut private_key: Self) -> Vec<u8> {
-		#[allow(clippy::expect_used)]
 		private_key.0.take().expect("value already dropped")
 	}
 
@@ -226,12 +223,10 @@ impl Dangerous for PrivateKey {
 
 /// Generate a self signed certificate.
 pub fn generate_self_signed<S: Into<String>>(domain: S) -> (Certificate, PrivateKey) {
-	#[allow(clippy::expect_used)]
 	let key_pair = rcgen::generate_simple_self_signed([domain.into()])
 		.expect("`rcgen` failed generating a self-signed certificate");
 
 	(
-		#[allow(clippy::expect_used)]
 		Certificate::unchecked_from_der(
 			key_pair
 				.serialize_der()
