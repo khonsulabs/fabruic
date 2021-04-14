@@ -9,12 +9,12 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint/builder</a> - config.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-14 20:10:50</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-14 23:23:53</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">60</span><span class="linesTotal">76</span><span class="linesPercentage lineMed">78.9 %</span></div>
-<div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">11</span><span class="funsTotal">20</span><span class="funsPercentage funLow">55.0 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">64</span><span class="linesTotal">75</span><span class="linesPercentage lineMed">85.3 %</span></div>
+<div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">13</span><span class="funsTotal">20</span><span class="funsPercentage funLow">65.0 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
 </div>
@@ -36,7 +36,7 @@
 <div class="line"><span id="15" class="lineNum"><a href="#15">15</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Storing the default [`TransportConfig`].</span></div>
 <div class="line"><span id="16" class="lineNum"><a href="#16">16</a></span><span class="counterUnCov"></span><span class="lineUnCov">	transport: Arc&lt;TransportConfig&gt;,</span></div>
 <div class="line"><span id="17" class="lineNum"><a href="#17">17</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Protocols used.</span></div>
-<div class="line"><span id="18" class="lineNum"><a href="#18">18</a></span><span class="counterUnCov"></span><span class="lineUnCov">	protocols: Option&lt;Vec&lt;Vec&lt;u8&gt;&gt;&gt;,</span></div>
+<div class="line"><span id="18" class="lineNum"><a href="#18">18</a></span><span class="counterUnCov"></span><span class="lineUnCov">	protocols: Vec&lt;Vec&lt;u8&gt;&gt;,</span></div>
 <div class="line"><span id="19" class="lineNum"><a href="#19">19</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Enable [`trust-dns`](trust_dns_resolver).</span></div>
 <div class="line"><span id="20" class="lineNum"><a href="#20">20</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[cfg(feature = &quot;trust-dns&quot;)]</span></div>
 <div class="line"><span id="21" class="lineNum"><a href="#21">21</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[cfg_attr(doc, doc(cfg(feature = &quot;trust-dns&quot;)))]</span></div>
@@ -64,69 +64,69 @@
 <div class="line"><span id="43" class="lineNum"><a href="#43">43</a></span><span class="counterCov">116</span><span class="lineCov"></span></div>
 <div class="line"><span id="44" class="lineNum"><a href="#44">44</a></span><span class="counterCov">116</span><span class="lineCov">		Self {</span></div>
 <div class="line"><span id="45" class="lineNum"><a href="#45">45</a></span><span class="counterCov">116</span><span class="lineCov">			transport,</span></div>
-<div class="line"><span id="46" class="lineNum"><a href="#46">46</a></span><span class="counterCov">116</span><span class="lineCov">			protocols: None,</span></div>
+<div class="line"><span id="46" class="lineNum"><a href="#46">46</a></span><span class="counterCov">116</span><span class="lineCov">			protocols: Vec::new(),</span></div>
 <div class="line"><span id="47" class="lineNum"><a href="#47">47</a></span><span class="counterCov">116</span><span class="lineCov">			#[cfg(feature = &quot;trust-dns&quot;)]</span></div>
 <div class="line"><span id="48" class="lineNum"><a href="#48">48</a></span><span class="counterCov">116</span><span class="lineCov">			trust_dns: true,</span></div>
 <div class="line"><span id="49" class="lineNum"><a href="#49">49</a></span><span class="counterCov">116</span><span class="lineCov">		}</span></div>
 <div class="line"><span id="50" class="lineNum"><a href="#50">50</a></span><span class="counterCov">116</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="51" class="lineNum"><a href="#51">51</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="52" class="lineNum"><a href="#52">52</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Builds a new [`ClientConfigBuilder`] with this [`Config`].</span></div>
-<div class="line"><span id="53" class="lineNum"><a href="#53">53</a></span><span class="counterCov">222</span><span class="lineCov">	pub(super) fn new_client_builder(&amp;self) -&gt; ClientConfigBuilder {</span></div>
-<div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterCov">222</span><span class="lineCov">		// build client</span></div>
-<div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterCov">222</span><span class="lineCov">		let mut client = ClientConfig::default();</span></div>
-<div class="line"><span id="56" class="lineNum"><a href="#56">56</a></span><span class="counterCov">222</span><span class="lineCov"></span></div>
-<div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterCov">222</span><span class="lineCov">		// remove defaults</span></div>
-<div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterCov">222</span><span class="lineCov">		let crypto = Arc::get_mut(&amp;mut client.crypto).expect(&quot;failed to build `ClientConfig`&quot;);</span></div>
-<div class="line"><span id="59" class="lineNum"><a href="#59">59</a></span><span class="counterCov">222</span><span class="lineCov">		crypto.root_store = RootCertStore::empty();</span></div>
-<div class="line"><span id="60" class="lineNum"><a href="#60">60</a></span><span class="counterCov">222</span><span class="lineCov">		crypto.ct_logs = None;</span></div>
-<div class="line"><span id="61" class="lineNum"><a href="#61">61</a></span><span class="counterCov">222</span><span class="lineCov"></span></div>
-<div class="line"><span id="62" class="lineNum"><a href="#62">62</a></span><span class="counterCov">222</span><span class="lineCov">		// build client builder</span></div>
-<div class="line"><span id="63" class="lineNum"><a href="#63">63</a></span><span class="counterCov">222</span><span class="lineCov">		let mut client = ClientConfigBuilder::new(client);</span></div>
-<div class="line"><span id="64" class="lineNum"><a href="#64">64</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="65" class="lineNum"><a href="#65">65</a></span><span class="counterCov">222</span><span class="lineCov">		if let Some(protocols) = &amp;self.protocols {</span></div>
-<div class="line"><span id="66" class="lineNum"><a href="#66">66</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			let protocols: Vec&lt;_&gt; = protocols.iter().map(Deref::deref).collect();</span></div>
-<div class="line"><span id="67" class="lineNum"><a href="#67">67</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			let _ = client.protocols(&amp;protocols);</span></div>
-<div class="line"><span id="68" class="lineNum"><a href="#68">68</a></span><span class="counterCov">222</span><span class="lineCov">		}</span></div>
-<div class="line"><span id="69" class="lineNum"><a href="#69">69</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="70" class="lineNum"><a href="#70">70</a></span><span class="counterCov">222</span><span class="lineCov">		client</span></div>
-<div class="line"><span id="71" class="lineNum"><a href="#71">71</a></span><span class="counterCov">222</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="72" class="lineNum"><a href="#72">72</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="73" class="lineNum"><a href="#73">73</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returns the default [`TransportConfig`].</span></div>
-<div class="line"><span id="74" class="lineNum"><a href="#74">74</a></span><span class="counterCov">227</span><span class="lineCov">	pub(super) fn transport(&amp;self) -&gt; Arc&lt;TransportConfig&gt; {</span></div>
-<div class="line"><span id="75" class="lineNum"><a href="#75">75</a></span><span class="counterCov">227</span><span class="lineCov">		Arc::clone(&amp;self.transport)</span></div>
-<div class="line"><span id="76" class="lineNum"><a href="#76">76</a></span><span class="counterCov">227</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="77" class="lineNum"><a href="#77">77</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="78" class="lineNum"><a href="#78">78</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Set the application-layer protocols.</span></div>
-<div class="line"><span id="79" class="lineNum"><a href="#79">79</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub(super) fn set_protocols(&amp;mut self, protocols: &amp;[&amp;[u8]]) {</span></div>
-<div class="line"><span id="80" class="lineNum"><a href="#80">80</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.protocols = Some(</span></div>
-<div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			protocols</span></div>
-<div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.iter()</span></div>
-<div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.map(|protocol| (*protocol).to_owned())</span></div>
-<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.collect(),</span></div>
-<div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		);</span></div>
-<div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
-<div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Builds a new [`ClientConfig`] with this [`Config`] and the given</span></div>
-<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Certificate`] as the only certificate authority.</span></div>
-<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Panics</span></div>
-<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Panics if the given [`Certificate`] is invalid. Can&#39;t happen if the</span></div>
-<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Certificate`] was properly validated through</span></div>
-<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Certificate::from_der`].</span></div>
-<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">106</span><span class="lineCov">	pub(in crate::quic::endpoint) fn new_client(&amp;self, certificate: &amp;Certificate) -&gt; ClientConfig {</span></div>
-<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterCov">106</span><span class="lineCov">		let mut client = self.new_client_builder();</span></div>
-<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">106</span><span class="lineCov"></span></div>
-<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">106</span><span class="lineCov">		let certificate = quinn::Certificate::from_der(certificate.as_ref())</span></div>
-<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterCov">106</span><span class="lineCov">			.expect(&quot;`Certificate` couldn&#39;t be parsed&quot;);</span></div>
-<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterCov">106</span><span class="lineCov">		let _ = client</span></div>
-<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterCov">106</span><span class="lineCov">			.add_certificate_authority(certificate)</span></div>
-<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterCov">106</span><span class="lineCov">			.expect(&quot;`Certificate` couldn&#39;t be added as a CA&quot;);</span></div>
-<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterCov">106</span><span class="lineCov"></span></div>
-<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterCov">106</span><span class="lineCov">		let mut client = client.build();</span></div>
-<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterCov">106</span><span class="lineCov">		client.transport = self.transport();</span></div>
-<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterCov">106</span><span class="lineCov"></span></div>
-<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterCov">106</span><span class="lineCov">		client</span></div>
-<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterCov">106</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="52" class="lineNum"><a href="#52">52</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returns the default [`TransportConfig`].</span></div>
+<div class="line"><span id="53" class="lineNum"><a href="#53">53</a></span><span class="counterCov">227</span><span class="lineCov">	pub(super) fn transport(&amp;self) -&gt; Arc&lt;TransportConfig&gt; {</span></div>
+<div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterCov">227</span><span class="lineCov">		Arc::clone(&amp;self.transport)</span></div>
+<div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterCov">227</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="56" class="lineNum"><a href="#56">56</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Set the application-layer protocols.</span></div>
+<div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub(super) fn set_protocols(&amp;mut self, protocols: impl Into&lt;Vec&lt;Vec&lt;u8&gt;&gt;&gt;) {</span></div>
+<div class="line"><span id="59" class="lineNum"><a href="#59">59</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.protocols = protocols.into();</span></div>
+<div class="line"><span id="60" class="lineNum"><a href="#60">60</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
+<div class="line"><span id="61" class="lineNum"><a href="#61">61</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="62" class="lineNum"><a href="#62">62</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returns the configured protocols.</span></div>
+<div class="line"><span id="63" class="lineNum"><a href="#63">63</a></span><span class="counterCov">6</span><span class="lineCov">	pub(super) const fn protocols(&amp;self) -&gt; &amp;Vec&lt;Vec&lt;u8&gt;&gt; {</span></div>
+<div class="line"><span id="64" class="lineNum"><a href="#64">64</a></span><span class="counterCov">6</span><span class="lineCov">		&amp;self.protocols</span></div>
+<div class="line"><span id="65" class="lineNum"><a href="#65">65</a></span><span class="counterCov">6</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="66" class="lineNum"><a href="#66">66</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="67" class="lineNum"><a href="#67">67</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Builds a new [`ClientConfig`] with this [`Config`] and the given</span></div>
+<div class="line"><span id="68" class="lineNum"><a href="#68">68</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Certificate`] as the only certificate authority.</span></div>
+<div class="line"><span id="69" class="lineNum"><a href="#69">69</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="70" class="lineNum"><a href="#70">70</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Panics</span></div>
+<div class="line"><span id="71" class="lineNum"><a href="#71">71</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Panics if the given [`Certificate`] is invalid. Can&#39;t happen if the</span></div>
+<div class="line"><span id="72" class="lineNum"><a href="#72">72</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Certificate`] was properly validated through</span></div>
+<div class="line"><span id="73" class="lineNum"><a href="#73">73</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Certificate::from_der`].</span></div>
+<div class="line"><span id="74" class="lineNum"><a href="#74">74</a></span><span class="counterCov">221</span><span class="lineCov">	pub(in crate::quic::endpoint) fn new_client&lt;&#39;a&gt;(</span></div>
+<div class="line"><span id="75" class="lineNum"><a href="#75">75</a></span><span class="counterCov">221</span><span class="lineCov">		&amp;self,</span></div>
+<div class="line"><span id="76" class="lineNum"><a href="#76">76</a></span><span class="counterCov">221</span><span class="lineCov">		certificates: impl IntoIterator&lt;Item = &amp;&#39;a Certificate&gt; + &#39;a,</span></div>
+<div class="line"><span id="77" class="lineNum"><a href="#77">77</a></span><span class="counterCov">221</span><span class="lineCov">	) -&gt; ClientConfig {</span></div>
+<div class="line"><span id="78" class="lineNum"><a href="#78">78</a></span><span class="counterCov">221</span><span class="lineCov">		// build client</span></div>
+<div class="line"><span id="79" class="lineNum"><a href="#79">79</a></span><span class="counterCov">221</span><span class="lineCov">		let mut client = ClientConfig::default();</span></div>
+<div class="line"><span id="80" class="lineNum"><a href="#80">80</a></span><span class="counterCov">221</span><span class="lineCov"></span></div>
+<div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterCov">221</span><span class="lineCov">		// remove defaults</span></div>
+<div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterCov">221</span><span class="lineCov">		let crypto = Arc::get_mut(&amp;mut client.crypto).expect(&quot;failed to build `ClientConfig`&quot;);</span></div>
+<div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterCov">221</span><span class="lineCov">		crypto.root_store = RootCertStore::empty();</span></div>
+<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterCov">221</span><span class="lineCov">		crypto.ct_logs = None;</span></div>
+<div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterCov">221</span><span class="lineCov"></span></div>
+<div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterCov">221</span><span class="lineCov">		// build client builder</span></div>
+<div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterCov">221</span><span class="lineCov">		let mut client = ClientConfigBuilder::new(client);</span></div>
+<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterCov">221</span><span class="lineCov"></span></div>
+<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterCov">221</span><span class="lineCov">		// add protocols</span></div>
+<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterCov">221</span><span class="lineCov">		if !self.protocols.is_empty() {</span></div>
+<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			let protocols: Vec&lt;_&gt; = self.protocols.iter().map(Deref::deref).collect();</span></div>
+<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			let _ = client.protocols(&amp;protocols);</span></div>
+<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterCov">221</span><span class="lineCov">		}</span></div>
+<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// add CAs</span></div>
+<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterCov">107</span><span class="lineCov">		for certificate in certificates {</span></div>
+<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">107</span><span class="lineCov">			let certificate = quinn::Certificate::from_der(certificate.as_ref())</span></div>
+<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">107</span><span class="lineCov">				.expect(&quot;`Certificate` couldn&#39;t be parsed&quot;);</span></div>
+<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterCov">107</span><span class="lineCov">			let _ = client</span></div>
+<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterCov">107</span><span class="lineCov">				.add_certificate_authority(certificate)</span></div>
+<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterCov">107</span><span class="lineCov">				.expect(&quot;`Certificate` couldn&#39;t be added as a CA&quot;);</span></div>
+<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterCov">107</span><span class="lineCov">		}</span></div>
+<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterCov">221</span><span class="lineCov">		let mut client = client.build();</span></div>
+<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterCov">221</span><span class="lineCov">		client.transport = self.transport();</span></div>
+<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterCov">221</span><span class="lineCov"></span></div>
+<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterCov">221</span><span class="lineCov">		client</span></div>
+<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterCov">221</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Forces [`Endpoint::connect`](crate::Endpoint::connect) to use</span></div>
 <div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`trust-dns`](trust_dns_resolver).</span></div>
