@@ -53,7 +53,12 @@
 )]
 #![cfg_attr(
 	test,
-	allow(clippy::integer_arithmetic, clippy::panic, clippy::panic_in_result_fn)
+	allow(
+		box_pointers,
+		clippy::integer_arithmetic,
+		clippy::panic,
+		clippy::panic_in_result_fn
+	)
 )]
 
 //! TODO

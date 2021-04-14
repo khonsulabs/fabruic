@@ -85,7 +85,6 @@ impl<M: DeserializeOwned> ReceiverStream<M> {
 	/// Check if we currently have enough data to build
 	/// [`length`](Self::length) and returns it. Returns [`None`] if there isn't
 	/// enough data to extract [`length`](Self::length) yet.
-	#[allow(clippy::unwrap_in_result)]
 	fn length(&mut self) -> Option<usize> {
 		if self.length == 0 {
 			(self.buffer.len() >= size_of::<u64>()).then(|| {

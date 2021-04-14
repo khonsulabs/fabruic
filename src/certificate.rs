@@ -254,7 +254,6 @@ fn validate() -> anyhow::Result<()> {
 }
 
 #[test]
-#[allow(box_pointers)]
 fn serialize() -> anyhow::Result<()> {
 	use bincode::{config::DefaultOptions, Options, Serializer};
 

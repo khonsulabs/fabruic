@@ -1,5 +1,3 @@
-#![allow(clippy::missing_panics_doc)]
-
 //! [`Endpoint`] builder.
 
 mod config;
@@ -159,7 +157,6 @@ impl Builder {
 	/// # Panics
 	/// If not called from inside the Tokio
 	/// [`Runtime`](tokio::runtime::Runtime).
-	#[allow(clippy::unwrap_in_result)]
 	pub fn build(self) -> Result<Endpoint, (Error, Self)> {
 		match {
 			// to be able to reuse `Builder` on failure, we have to preserve quinn builders
