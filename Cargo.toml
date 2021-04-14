@@ -16,9 +16,9 @@ trust-dns = ["trust-dns-resolver"]
 test = []
 
 [dependencies]
+allochronic-util = "0.0.1-dev-1"
 bincode = "1"
 bytes = "1"
-allochronic-util = "0.0.1-dev-1"
 flume = "0.10"
 futures-channel = "0.3"
 futures-util = "0.3"
