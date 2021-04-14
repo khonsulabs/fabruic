@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-14 18:39:52</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-14 18:49:48</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -168,9 +168,9 @@
 <div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// The peer&#39;s address. Clients may change addresses at will, e.g. when</span></div>
 <div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// switching to a cellular internet connection.</span></div>
 <div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[must_use]</span></div>
-<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterCov">600</span><span class="lineCov">	pub fn remote_address(&amp;self) -&gt; SocketAddr {</span></div>
-<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterCov">600</span><span class="lineCov">		self.connection.remote_address()</span></div>
-<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterCov">600</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterCov">599</span><span class="lineCov">	pub fn remote_address(&amp;self) -&gt; SocketAddr {</span></div>
+<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterCov">599</span><span class="lineCov">		self.connection.remote_address()</span></div>
+<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterCov">599</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Prevents any new incoming streams. Already incoming streams will</span></div>
 <div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// finish first.</span></div>
@@ -199,13 +199,13 @@
 <div class="line"><span id="178" class="lineNum"><a href="#178">178</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;T: DeserializeOwned + Serialize + Send + &#39;static&gt; Stream for Connection&lt;T&gt; {</span></div>
 <div class="line"><span id="179" class="lineNum"><a href="#179">179</a></span><span class="counterUnCov"></span><span class="lineUnCov">	type Item = Incoming&lt;T&gt;;</span></div>
 <div class="line"><span id="180" class="lineNum"><a href="#180">180</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="181" class="lineNum"><a href="#181">181</a></span><span class="counterCov">183</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
-<div class="line"><span id="182" class="lineNum"><a href="#182">182</a></span><span class="counterCov">183</span><span class="lineCov">		if self.receiver.is_terminated() {</span></div>
+<div class="line"><span id="181" class="lineNum"><a href="#181">181</a></span><span class="counterCov">145</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
+<div class="line"><span id="182" class="lineNum"><a href="#182">182</a></span><span class="counterCov">145</span><span class="lineCov">		if self.receiver.is_terminated() {</span></div>
 <div class="line"><span id="183" class="lineNum"><a href="#183">183</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Poll::Ready(None)</span></div>
 <div class="line"><span id="184" class="lineNum"><a href="#184">184</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
-<div class="line"><span id="185" class="lineNum"><a href="#185">185</a></span><span class="counterCov">183</span><span class="lineCov">			self.receiver.poll_next_unpin(cx)</span></div>
+<div class="line"><span id="185" class="lineNum"><a href="#185">185</a></span><span class="counterCov">145</span><span class="lineCov">			self.receiver.poll_next_unpin(cx)</span></div>
 <div class="line"><span id="186" class="lineNum"><a href="#186">186</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="187" class="lineNum"><a href="#187">187</a></span><span class="counterCov">183</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="187" class="lineNum"><a href="#187">187</a></span><span class="counterCov">145</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="188" class="lineNum"><a href="#188">188</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 <div class="line"><span id="189" class="lineNum"><a href="#189">189</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="190" class="lineNum"><a href="#190">190</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;T: DeserializeOwned + Serialize + Send + &#39;static&gt; FusedStream for Connection&lt;T&gt; {</span></div>
