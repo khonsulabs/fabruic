@@ -107,6 +107,28 @@
 <span id="104">104</span>
 <span id="105">105</span>
 <span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Persistent configuration shared between the [`Builder`](crate::Builder) and</span>
 <span class="doccomment">//! the [`Endpoint`](crate::Endpoint).</span>
@@ -126,6 +148,10 @@
 	<span class="ident">transport</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TransportConfig</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Protocols used.</span>
 	<span class="ident">protocols</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// Enable [`trust-dns`](trust_dns_resolver).</span>
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">doc</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)))]</span>
+	<span class="ident">trust_dns</span>: <span class="ident">bool</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Config</span> {
@@ -151,6 +177,8 @@
 		<span class="self">Self</span> {
 			<span class="ident">transport</span>,
 			<span class="ident">protocols</span>: <span class="prelude-val">None</span>,
+			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
+			<span class="ident">trust_dns</span>: <span class="bool-val">true</span>,
 		}
 	}
 
@@ -212,6 +240,22 @@
 		<span class="ident">client</span>.<span class="ident">transport</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">transport</span>();
 
 		<span class="ident">client</span>
+	}
+
+	<span class="doccomment">/// Forces [`Endpoint::connect`](crate::Endpoint::connect) to use</span>
+	<span class="doccomment">/// [`trust-dns`](trust_dns_resolver).</span>
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">set_trust_dns</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">trust_dns</span>: <span class="ident">bool</span>) {
+		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
+		{
+			<span class="self">self</span>.<span class="ident">trust_dns</span> <span class="op">=</span> <span class="ident">trust_dns</span>;
+		}
+	}
+
+	<span class="doccomment">/// Returns if [`trust-dns`](trust_dns_resolver) is enabled.</span>
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">doc</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)))]</span>
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::quic::endpoint</span>) <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">trust_dns</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+		<span class="self">self</span>.<span class="ident">trust_dns</span>
 	}
 }
 </pre></div>

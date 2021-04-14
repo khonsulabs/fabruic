@@ -261,6 +261,11 @@
 <span id="258">258</span>
 <span id="259">259</span>
 <span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy::missing_panics_doc</span>)]</span>
 
@@ -408,6 +413,11 @@
 		<span class="self">self</span>.<span class="ident">config</span>.<span class="ident">set_protocols</span>(<span class="ident">protocols</span>);
 
 		<span class="self">self</span>
+	}
+
+	<span class="doccomment">/// Forces [`Endpoint::connect`] to use [`trust-dns`](trust_dns_resolver).</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_trust_dns</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">trust_dns</span>: <span class="ident">bool</span>) {
+		<span class="self">self</span>.<span class="ident">config</span>.<span class="ident">set_trust_dns</span>(<span class="ident">trust_dns</span>);
 	}
 
 	<span class="doccomment">/// Consumes [`Builder`] to build [`Endpoint`]. Must be called from inside</span>
