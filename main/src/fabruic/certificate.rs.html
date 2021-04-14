@@ -267,16 +267,44 @@
 <span id="264">264</span>
 <span id="265">265</span>
 <span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Creating [`Certificate`]s.</span>
 
-<span class="kw">use</span> <span class="ident">std::fmt</span>::{<span class="self">self</span>, <span class="ident">Debug</span>, <span class="ident">Formatter</span>};
+<span class="kw">use</span> <span class="ident">std</span>::{
+	<span class="ident">fmt</span>::{<span class="self">self</span>, <span class="ident">Debug</span>, <span class="ident">Formatter</span>},
+	<span class="ident">time::Duration</span>,
+};
 
 <span class="kw">use</span> <span class="ident">rustls::sign</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>, <span class="ident">Serializer</span>};
+<span class="kw">use</span> <span class="ident">webpki::EndEntityCert</span>;
+<span class="kw">use</span> <span class="ident">x509_parser</span>::{<span class="ident">certificate::X509Certificate</span>, <span class="ident">extensions::GeneralName</span>};
 <span class="kw">use</span> <span class="ident">zeroize::Zeroize</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Error</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">error::ParseCertificate</span>, <span class="ident">Error</span>, <span class="prelude-ty">Result</span>};
 
 <span class="doccomment">/// A public Certificate. You can distribute it freely to peers.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Deserialize</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>, <span class="ident">Ord</span>, <span class="ident">PartialEq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Serialize</span>)]</span>
@@ -306,16 +334,7 @@
 	<span class="doccomment">/// - [`Error::ExpiredCertificate`] if the certificate has expires</span>
 	<span class="doccomment">/// - [`Error::DomainCertificate`] if the certificate doesn&#39;t contain a</span>
 	<span class="doccomment">///   domain name</span>
-	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;certificate&quot;</span>)]</span>
-	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">doc</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;certificate&quot;</span>)))]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_der</span>(<span class="ident">certificate</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-		<span class="kw">use</span> <span class="ident">std::time::Duration</span>;
-
-		<span class="kw">use</span> <span class="ident">webpki::EndEntityCert</span>;
-		<span class="kw">use</span> <span class="ident">x509_parser::certificate::X509Certificate</span>;
-
-		<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::error::ParseCertificate</span>;
-
 		<span class="comment">// parse certificate with `webpki`, which is what `rustls` uses, which is what</span>
 		<span class="comment">// `quinn` uses</span>
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">EndEntityCert::from</span>(<span class="kw-2">&amp;</span><span class="ident">certificate</span>) {
@@ -379,6 +398,35 @@
 	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unchecked_from_der</span>(<span class="ident">certificate</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span>(<span class="ident">certificate</span>)
+	}
+
+	<span class="doccomment">/// # Panics</span>
+	<span class="doccomment">/// Panics if [`Certificate`] couldn&#39;t be parsed or contained no valid</span>
+	<span class="doccomment">/// domain names. This can&#39;t happen if [`Certificate`] is constructed</span>
+	<span class="doccomment">/// correctly from [`from_der`](Certificate::from_der).</span>
+	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::expect_used</span>)]</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">domains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> (<span class="kw">_</span>, <span class="ident">certificate</span>) <span class="op">=</span>
+			<span class="ident">X509Certificate::from_der</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>).<span class="ident">expect</span>(<span class="string">&quot;`Certificate` couldn&#39;t be parsed&quot;</span>);
+
+		<span class="ident">certificate</span>
+			.<span class="ident">tbs_certificate</span>
+			.<span class="ident">subject_alternative_name</span>()
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">name</span><span class="op">|</span> {
+				<span class="ident">name</span>.<span class="number">1</span>
+					.<span class="ident">general_names</span>
+					.<span class="ident">iter</span>()
+					.<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">name</span><span class="op">|</span> {
+						<span class="kw">if</span> <span class="kw">let</span> <span class="ident">GeneralName::DNSName</span>(<span class="ident">name</span>) <span class="op">=</span> <span class="ident">name</span> {
+							<span class="prelude-val">Some</span>((<span class="kw-2">*</span><span class="ident">name</span>).<span class="ident">to_owned</span>())
+						} <span class="kw">else</span> {
+							<span class="prelude-val">None</span>
+						}
+					})
+					.<span class="ident">collect</span>()
+			})
+			.<span class="ident">expect</span>(<span class="string">&quot;`Certificate` contained no valid domains&quot;</span>)
 	}
 }
 
@@ -470,8 +518,6 @@
 }
 
 <span class="doccomment">/// Generate a self signed certificate.</span>
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;certificate&quot;</span>)]</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">doc</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;certificate&quot;</span>)))]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">generate_self_signed</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">domain</span>: <span class="ident">S</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">Certificate</span>, <span class="ident">PrivateKey</span>) {
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::expect_used</span>)]</span>
 	<span class="kw">let</span> <span class="ident">key_pair</span> <span class="op">=</span> <span class="ident">rcgen::generate_simple_self_signed</span>([<span class="ident">domain</span>.<span class="ident">into</span>()])

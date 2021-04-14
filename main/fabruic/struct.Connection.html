@@ -25,7 +25,7 @@ finish first.</p>
 </ul>
 </div><h4 id="method.close" class="method"><code>pub async fn <a href="#method.close" class="fnname">close</a>(&amp;self) -&gt; <a class="type" href="../fabruic/error/type.Result.html" title="type fabruic::error::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>&gt;</code><a class="srclink" href="../src/fabruic/quic/connection/mod.rs.html#172-175" title="goto source code">[src]</a></h4><div class="docblock"><p>Close the <a href="../fabruic/struct.Connection.html" title="Connection"><code>Connection</code></a> immediately.</p>
 <p>To close a <a href="../fabruic/struct.Connection.html" title="Connection"><code>Connection</code></a> gracefully use <a href="../fabruic/struct.Sender.html#method.finish" title="Sender::finish"><code>Sender::finish</code></a>, the
-<a href="../fabruic/struct.Receiver.html" title="Receiver"><code>Receiver</code></a> can’t be gracefull closed from the receiving end.</p>
+<a href="../fabruic/struct.Receiver.html" title="Receiver"><code>Receiver</code></a> can’t be gracefully closed from the receiving end.</p>
 <h1 id="errors-2" class="section-header"><a href="#errors-2">Errors</a></h1>
 <ul>
 <li><a href="../fabruic/error/enum.Error.html#variant.ReceiveStream" title="Error::ReceiveStream"><code>Error::ReceiveStream</code></a> if the connection was lost</li>

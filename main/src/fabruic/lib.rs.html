@@ -73,8 +73,6 @@
 <span id="70">70</span>
 <span id="71">71</span>
 <span id="72">72</span>
-<span id="73">73</span>
-<span id="74">74</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">unsafe_code</span>)]</span>
 <span class="attribute">#![<span class="ident">warn</span>(
@@ -145,9 +143,7 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">error</span>;
 <span class="kw">mod</span> <span class="ident">quic</span>;
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;certificate&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">certificate::generate_self_signed</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">certificate</span>::{<span class="ident">Certificate</span>, <span class="ident">Dangerous</span>, <span class="ident">PrivateKey</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">certificate</span>::{<span class="ident">generate_self_signed</span>, <span class="ident">Certificate</span>, <span class="ident">Dangerous</span>, <span class="ident">PrivateKey</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">error</span>::{<span class="ident">Error</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">quic</span>::{<span class="ident">Builder</span>, <span class="ident">Connecting</span>, <span class="ident">Connection</span>, <span class="ident">Endpoint</span>, <span class="ident">Incoming</span>, <span class="ident">Receiver</span>, <span class="ident">Sender</span>};
 </pre></div>
