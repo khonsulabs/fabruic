@@ -1,11 +1,11 @@
 //! [`Endpoint`] builder.
 
 mod config;
-
 use std::{fmt::Debug, net::SocketAddr, str::FromStr};
 
 pub(super) use config::Config;
 use quinn::{CertificateChain, ServerConfigBuilder};
+use serde::{Deserialize, Serialize};
 
 use crate::{Certificate, Endpoint, Error, PrivateKey, Result};
 
@@ -15,9 +15,11 @@ pub struct Builder {
 	/// [`SocketAddr`] for [`Endpoint`](quinn::Endpoint) to bind to.
 	address: SocketAddr,
 	/// Custom CA [`Certificate`]s.
-	ca_store: Vec<Certificate>,
+	ca_certs: Vec<Certificate>,
 	/// Key-pair for the server.
 	key_pair: Option<(Certificate, PrivateKey)>,
+	/// [`Store`] option.
+	store: Store,
 	/// Persistent configuration passed to the [`Endpoint`]
 	config: Config,
 }
@@ -41,8 +43,9 @@ impl Builder {
 			// equals to `[::ffff:127.0.0.1]:0`
 			#[cfg(feature = "test")]
 			address: ([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], 0).into(),
-			ca_store: Vec::new(),
+			ca_certs: Vec::new(),
 			key_pair: None,
+			store: Store::Embedded,
 			config,
 		}
 	}
@@ -85,6 +88,13 @@ impl Builder {
 		self
 	}
 
+	/// Set's the default certificate root store. Default is
+	/// [`Store::Embedded`].
+	pub fn set_store(&mut self, store: Store) -> &mut Self {
+		self.store = store;
+		self
+	}
+
 	/// Consumes [`Builder`] to build [`Endpoint`]. Must be called from inside
 	/// the Tokio [`Runtime`](tokio::runtime::Runtime).
 	///
@@ -101,7 +111,7 @@ impl Builder {
 	pub fn build(self) -> Result<Endpoint, (Error, Self)> {
 		match {
 			// build client
-			let client = self.config.new_client(self.ca_store.iter());
+			let client = self.config.new_client(self.ca_certs.iter(), self.store);
 
 			// build server only if we have a key-pair
 			let server = self.key_pair.as_ref().map(|(certificate, private_key)| {
@@ -147,6 +157,17 @@ impl Builder {
 	}
 }
 
+/// Configuration option for [`Builder::set_store`].
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
+pub enum Store {
+	/// No certificate root store.
+	Empty,
+	/// OS certificate root store.
+	Os,
+	/// Embedded certificate root store, see [`webpki-roots`](webpki_roots).
+	Embedded,
+}
+
 /// Security-sensitive configuration for [`Builder`].
 pub trait Dangerous {
 	/// Adds a [`Certificate`] into the default certificate authority store for
@@ -160,7 +181,7 @@ pub trait Dangerous {
 
 impl Dangerous for Builder {
 	fn add_ca(builder: &mut Self, certificate: Certificate) {
-		builder.ca_store.push(certificate);
+		builder.ca_certs.push(certificate);
 	}
 }
 

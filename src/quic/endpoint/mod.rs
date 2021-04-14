@@ -10,7 +10,7 @@ use std::{
 };
 
 use builder::Config;
-pub use builder::{Builder, Dangerous};
+pub use builder::{Builder, Dangerous, Store};
 use flume::{r#async::RecvStream, Sender};
 use futures_channel::oneshot::{self, Receiver};
 use futures_util::{
@@ -314,7 +314,11 @@ impl Endpoint {
 
 		let connecting = self
 			.endpoint
-			.connect_with(self.config.new_client(Some(certificate)), &address, &domain)
+			.connect_with(
+				self.config.new_client(Some(certificate), Store::Empty),
+				&address,
+				&domain,
+			)
 			.map_err(Error::ConnectConfig)?;
 
 		Ok(Connecting::new(connecting))

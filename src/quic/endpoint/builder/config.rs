@@ -6,7 +6,7 @@ use std::{ops::Deref, sync::Arc};
 use quinn::{ClientConfig, ClientConfigBuilder, TransportConfig};
 use rustls::RootCertStore;
 
-use crate::Certificate;
+use crate::{Certificate, Store};
 
 /// Persistent configuration shared between the [`Builder`](crate::Builder) and
 /// the [`Endpoint`](crate::Endpoint).
@@ -64,8 +64,24 @@ impl Config {
 		&self.protocols
 	}
 
-	/// Builds a new [`ClientConfig`] with this [`Config`] and the given
-	/// [`Certificate`] as the only certificate authority.
+	/// Forces [`Endpoint::connect`](crate::Endpoint::connect) to use
+	/// [`trust-dns`](trust_dns_resolver).
+	pub(super) fn set_trust_dns(&mut self, trust_dns: bool) {
+		#[cfg(feature = "trust-dns")]
+		{
+			self.trust_dns = trust_dns;
+		}
+	}
+
+	/// Returns if [`trust-dns`](trust_dns_resolver) is enabled.
+	#[cfg(feature = "trust-dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
+	pub(in crate::quic::endpoint) const fn trust_dns(&self) -> bool {
+		self.trust_dns
+	}
+
+	/// Builds a new [`ClientConfig`] with this [`Config`] and adds
+	/// `certificates` to the CA store.
 	///
 	/// # Panics
 	/// Panics if the given [`Certificate`] is invalid. Can't happen if the
@@ -74,14 +90,28 @@ impl Config {
 	pub(in crate::quic::endpoint) fn new_client<'a>(
 		&self,
 		certificates: impl IntoIterator<Item = &'a Certificate> + 'a,
+		store: Store,
 	) -> ClientConfig {
 		// build client
 		let mut client = ClientConfig::default();
 
 		// remove defaults
 		let crypto = Arc::get_mut(&mut client.crypto).expect("failed to build `ClientConfig`");
-		crypto.root_store = RootCertStore::empty();
-		crypto.ct_logs = None;
+
+		match store {
+			// remove the defaults set by Quinn
+			Store::Empty => {
+				crypto.root_store = RootCertStore::empty();
+				crypto.ct_logs = None;
+			}
+			// is set correctly by Quinn by default
+			Store::Os => (),
+			Store::Embedded => {
+				let mut store = RootCertStore::empty();
+				store.add_server_trust_anchors(&webpki_roots::TLS_SERVER_ROOTS);
+				crypto.root_store = store;
+			}
+		}
 
 		// build client builder
 		let mut client = ClientConfigBuilder::new(client);
@@ -105,21 +135,5 @@ impl Config {
 		client.transport = self.transport();
 
 		client
-	}
-
-	/// Forces [`Endpoint::connect`](crate::Endpoint::connect) to use
-	/// [`trust-dns`](trust_dns_resolver).
-	pub(super) fn set_trust_dns(&mut self, trust_dns: bool) {
-		#[cfg(feature = "trust-dns")]
-		{
-			self.trust_dns = trust_dns;
-		}
-	}
-
-	/// Returns if [`trust-dns`](trust_dns_resolver) is enabled.
-	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
-	pub(in crate::quic::endpoint) const fn trust_dns(&self) -> bool {
-		self.trust_dns
 	}
 }

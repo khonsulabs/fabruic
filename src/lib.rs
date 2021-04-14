@@ -77,4 +77,4 @@ pub mod dangerous {
 
 pub use certificate::{generate_self_signed, Certificate, PrivateKey};
 pub use error::{Error, Result};
-pub use quic::{Builder, Connecting, Connection, Endpoint, Incoming, Receiver, Sender};
+pub use quic::{Builder, Connecting, Connection, Endpoint, Incoming, Receiver, Sender, Store};
