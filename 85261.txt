@@ -1,0 +1,1 @@
+A new language file for Japanese people.
