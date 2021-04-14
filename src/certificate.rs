@@ -1,12 +1,17 @@
 //! Creating [`Certificate`]s.
 
-use std::fmt::{self, Debug, Formatter};
+use std::{
+	fmt::{self, Debug, Formatter},
+	time::Duration,
+};
 
 use rustls::sign;
 use serde::{Deserialize, Serialize, Serializer};
+use webpki::EndEntityCert;
+use x509_parser::{certificate::X509Certificate, extensions::GeneralName};
 use zeroize::Zeroize;
 
-use crate::{Error, Result};
+use crate::{error::ParseCertificate, Error, Result};
 
 /// A public Certificate. You can distribute it freely to peers.
 #[derive(Clone, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
@@ -37,13 +42,6 @@ impl Certificate {
 	/// - [`Error::DomainCertificate`] if the certificate doesn't contain a
 	///   domain name
 	pub fn from_der(certificate: Vec<u8>) -> Result<Self> {
-		use std::time::Duration;
-
-		use webpki::EndEntityCert;
-		use x509_parser::certificate::X509Certificate;
-
-		use crate::error::ParseCertificate;
-
 		// parse certificate with `webpki`, which is what `rustls` uses, which is what
 		// `quinn` uses
 		let _ = match EndEntityCert::from(&certificate) {
@@ -107,6 +105,35 @@ impl Certificate {
 	#[must_use]
 	pub fn unchecked_from_der(certificate: Vec<u8>) -> Self {
 		Self(certificate)
+	}
+
+	/// # Panics
+	/// Panics if [`Certificate`] couldn't be parsed or contained no valid
+	/// domain names. This can't happen if [`Certificate`] is constructed
+	/// correctly from [`from_der`](Certificate::from_der).
+	#[allow(clippy::expect_used)]
+	#[must_use]
+	pub fn domains(&self) -> Vec<String> {
+		let (_, certificate) =
+			X509Certificate::from_der(&self.0).expect("`Certificate` couldn't be parsed");
+
+		certificate
+			.tbs_certificate
+			.subject_alternative_name()
+			.map(|name| {
+				name.1
+					.general_names
+					.iter()
+					.filter_map(|name| {
+						if let GeneralName::DNSName(name) = name {
+							Some((*name).to_owned())
+						} else {
+							None
+						}
+					})
+					.collect()
+			})
+			.expect("`Certificate` contained no valid domains")
 	}
 }
 

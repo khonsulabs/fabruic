@@ -18,11 +18,6 @@ use futures_util::{
 	StreamExt,
 };
 use quinn::{ClientConfig, ServerConfig, VarInt};
-#[cfg(feature = "dns")]
-use trust_dns_resolver::{
-	config::{ResolverConfig, ResolverOpts},
-	TokioAsyncResolver,
-};
 
 use super::Task;
 use crate::{
@@ -118,28 +113,19 @@ impl Endpoint {
 	/// sophisticated configuration. Must be called from inside the Tokio
 	/// [`Runtime`](tokio::runtime::Runtime).
 	///
-	/// Deviates from default [`Builder`] configuration only by
-	/// `Builder::add_ca`.
-	///
 	/// # Notes
 	/// This configuration will not be able to receive new
 	/// [`Connection`](crate::Connection)s.
 	///
 	/// # Errors
-	/// - [`Error::Certificate`] if the [`Certificate`] couldn't be parsed
-	/// - [`Error::InvalidCertificate`] if the [`Certificate`] couldn't be added
-	///   as a certificate authority
-	/// - [`Error::BindSocket`] if the socket couldn't be bound to the given
-	///   `address`
+	/// [`Error::BindSocket`] if the socket couldn't be bound to the given
+	/// `address`.
 	///
 	/// # Panics
 	/// If not called from inside the Tokio
 	/// [`Runtime`](tokio::runtime::Runtime).
-	pub fn new_client(ca: &Certificate) -> Result<Self> {
-		let mut builder = Builder::new();
-		let _ = builder.add_ca(ca)?;
-
-		builder.build().map_err(|(error, _)| error)
+	pub fn new_client() -> Result<Self> {
+		Builder::new().build().map_err(|(error, _)| error)
 	}
 
 	/// Simplified version of creating a server. See [`Builder`] for more
@@ -147,16 +133,15 @@ impl Endpoint {
 	/// [`Runtime`](tokio::runtime::Runtime).
 	///
 	/// # Errors
-	/// - [`Error::Certificate`] if the [`Certificate`] couldn't be parsed
-	/// - [`Error::PrivateKey`] if the [`PrivateKey`] couldn't be parsed
-	/// - [`Error::InvalidKeyPair`] if failed to pair the given [`Certificate`]
-	///   and [`PrivateKey`]
-	/// - [`Error::BindSocket`] if the socket couldn't be bound to the given
-	///   `address`
+	/// [`Error::BindSocket`] if the socket couldn't be bound to the given
+	/// `address`.
 	///
 	/// # Panics
-	/// If not called from inside the Tokio
-	/// [`Runtime`](tokio::runtime::Runtime).
+	/// - if not called from inside the Tokio
+	///   [`Runtime`](tokio::runtime::Runtime)
+	/// - if the given [`Certificate`] is invalid - can't happen if the
+	///   [`Certificate`] was properly validated through
+	///   [`Certificate::from_der`]
 	pub fn new_server(
 		port: u16,
 		certificate: &Certificate,
@@ -168,7 +153,7 @@ impl Endpoint {
 		// while testing always use the default loopback address
 		#[cfg(feature = "test")]
 		let _ = builder.set_address(([0, 0, 0, 0, 0, 0, 0, 1], port).into());
-		let _ = builder.add_key_pair(certificate, private_key)?;
+		let _ = builder.add_key_pair(certificate, private_key);
 
 		builder.build().map_err(|(error, _)| error)
 	}
@@ -191,22 +176,7 @@ impl Endpoint {
 		}
 	}
 
-	/// Establish a new [`Connection`](crate::Connection) to a client. The
-	/// `domain` validates the certificate.
-	///
-	/// # Errors
-	/// [`Error::ConnectConfig`] if configuration needed to connect to a peer is
-	/// faulty.
-	pub fn connect<D: AsRef<str>>(&self, address: SocketAddr, domain: D) -> Result<Connecting> {
-		let connecting = self
-			.endpoint
-			.connect(&address, domain.as_ref())
-			.map_err(Error::ConnectConfig)?;
-
-		Ok(Connecting::new(connecting))
-	}
-
-	/// Attempts to resolve the IP with the given domain name. This is done with
+	/// Attempts to resolve the IP from the given URL. This is done with
 	/// the help of the [`trust_dns_resolver`] crate.
 	///
 	/// The following default are in play:
@@ -217,12 +187,30 @@ impl Endpoint {
 	/// - IPv4 is preferred over IPv6
 	///
 	/// # Errors
-	/// - [`Error::Resolve`] if the domain couldn't be resolved to an IP address
+	/// - [`Error::ParseUrl`] if the URL couldn't be parsed
+	/// - [`Error::Domain`] if the URL didn't contain a domain
+	/// - [`Error::Port`] if the URL didn't contain a port
+	/// - [`Error::Resolve`] if the URL couldn't be resolved to an IP address
 	/// - [`Error::ConnectConfig`] if configuration needed to connect to a peer
 	///   is faulty
+	///
+	/// # Panics
+	/// Panics if the given [`Certificate`] is invalid. Can't happen if the
+	/// [`Certificate`] was properly validated through
+	/// [`Certificate::from_der`].
 	#[cfg(feature = "dns")]
 	#[cfg_attr(doc, doc(cfg(feature = "dns")))]
-	pub async fn connect_with<S: AsRef<str>>(&self, port: u16, domain: S) -> Result<Connecting> {
+	pub async fn connect<U: AsRef<str>>(&self, url: U) -> Result<Connecting> {
+		use trust_dns_resolver::{
+			config::{ResolverConfig, ResolverOpts},
+			TokioAsyncResolver,
+		};
+		use url::Url;
+
+		let url = Url::parse(url.as_ref()).map_err(Error::ParseUrl)?;
+		let domain = url.domain().ok_or(Error::Domain)?;
+		let port = url.port().ok_or(Error::Port)?;
+
 		let config = ResolverConfig::cloudflare_https();
 		// `validate` enforces DNSSEC
 		let opts = ResolverOpts {
@@ -237,14 +225,51 @@ impl Endpoint {
 		// query the IP
 		#[allow(box_pointers)]
 		let ip = resolver
-			.lookup_ip(domain.as_ref())
+			.lookup_ip(domain)
 			.await
 			.map_err(|error| Error::Resolve(Box::new(error)))?;
 
 		// take the first IP found
 		ip.into_iter().next().map_or(Err(Error::NoIp), |ip| {
-			self.connect(SocketAddr::from((ip, port)), domain.as_ref())
+			Ok(Connecting::new(
+				self.endpoint
+					.connect(&SocketAddr::from((ip, port)), domain)
+					.map_err(Error::ConnectConfig)?,
+			))
 		})
+	}
+
+	/// Establish a new [`Connection`](crate::Connection) to a client. The
+	/// `domain` validates the certificate.
+	///
+	/// # Errors
+	/// [`Error::ConnectConfig`] if configuration needed to connect to a peer is
+	/// faulty.
+	///
+	/// # Panics
+	/// Panics if the given [`Certificate`] is invalid. Can't happen if the
+	/// [`Certificate`] was properly validated through
+	/// [`Certificate::from_der`].
+	#[allow(clippy::unwrap_in_result)]
+	pub fn connect_pinned(
+		&self,
+		address: SocketAddr,
+		certificate: &Certificate,
+	) -> Result<Connecting> {
+		let connecting = self
+			.endpoint
+			.connect_with(
+				self.config.new_client(certificate),
+				&address,
+				#[allow(clippy::expect_used)]
+				certificate
+					.domains()
+					.get(0)
+					.expect("`Certificate` contained no valid domains"),
+			)
+			.map_err(Error::ConnectConfig)?;
+
+		Ok(Connecting::new(connecting))
 	}
 
 	/// Get the local [`SocketAddr`] the underlying socket is bound to.
@@ -252,7 +277,17 @@ impl Endpoint {
 	/// # Errors
 	/// [`Error::LocalAddress`] if aquiring the local address failed.
 	pub fn local_address(&self) -> Result<SocketAddr> {
-		self.endpoint.local_addr().map_err(Error::LocalAddress)
+		let address = self.endpoint.local_addr().map_err(Error::LocalAddress)?;
+
+		#[cfg(not(test))]
+		return Ok(address);
+
+		#[cfg(test)]
+		Ok(if address.ip().is_loopback() {
+			([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], address.port()).into()
+		} else {
+			address
+		})
 	}
 
 	/// Close all of this [`Endpoint`]'s [`Connection`](crate::Connection)s
@@ -326,11 +361,12 @@ mod test {
 
 		let (certificate, private_key) = crate::generate_self_signed("test");
 
-		let client = Endpoint::new_client(&certificate)?;
+		let client = Endpoint::new_client()?;
 		let mut server = Endpoint::new_server(0, &certificate, &private_key)?;
+		assert_eq!(server.local_address()?, "[::ffff:127.0.0.1]:5000".parse()?);
 
 		let _connection = client
-			.connect(server.local_address()?, "test")?
+			.connect_pinned(server.local_address()?, &certificate)?
 			.accept::<()>()
 			.await?;
 		let _connection = server
@@ -350,13 +386,16 @@ mod test {
 
 		let (certificate, private_key) = crate::generate_self_signed("test");
 
-		let client = Endpoint::new_client(&certificate)?;
+		let client = Endpoint::new_client()?;
 		let mut server = Endpoint::new_server(0, &certificate, &private_key)?;
 		let address = server.local_address()?;
 
 		// `wait_idle` should never finish unless these `Connection`s are closed, which
 		// they won't unless they are dropped or explicitly closed
-		let _connection = client.connect(address, "test")?.accept::<()>().await?;
+		let _connection = client
+			.connect_pinned(address, &certificate)?
+			.accept::<()>()
+			.await?;
 		let _connection = server
 			.next()
 			.await
@@ -370,7 +409,10 @@ mod test {
 
 		// connecting to a closed server shouldn't work
 		assert!(matches!(
-			client.connect(address, "test")?.accept::<()>().await,
+			client
+				.connect_pinned(address, &certificate)?
+				.accept::<()>()
+				.await,
 			Err(Error::Connecting(ConnectionError::LocallyClosed))
 		));
 
@@ -391,13 +433,16 @@ mod test {
 
 		let (certificate, private_key) = crate::generate_self_signed("test");
 
-		let client = Endpoint::new_client(&certificate)?;
+		let client = Endpoint::new_client()?;
 		let mut server = Endpoint::new_server(0, &certificate, &private_key)?;
 		let address = server.local_address()?;
 
 		// these `Connection`s should still work even if new incoming connections are
 		// refused
-		let client_connection = client.connect(address, "test")?.accept::<()>().await?;
+		let client_connection = client
+			.connect_pinned(address, &certificate)?
+			.accept::<()>()
+			.await?;
 		let mut server_connection = server
 			.next()
 			.await
@@ -419,7 +464,7 @@ mod test {
 
 		// connecting to a server that refuses new `Connection`s shouldn't work
 		assert!(matches!(
-			client.connect(address, "test")?.accept::<()>().await,
+			client.connect_pinned(address, &certificate)?.accept::<()>().await,
 			Err(Error::Connecting(ConnectionError::ConnectionClosed(
 				ConnectionClose {
 					error_code: TransportErrorCode::CONNECTION_REFUSED,
@@ -458,14 +503,14 @@ mod test {
 
 		let (certificate, private_key) = crate::generate_self_signed("test");
 
-		let client = Endpoint::new_client(&certificate)?;
+		let client = Endpoint::new_client()?;
 		let mut server = Endpoint::new_server(0, &certificate, &private_key)?;
 
 		// `wait_idle` will never finish unless the `Connection` closes, which happens
 		// automatically when it's dropped
 		{
 			let _connection = client
-				.connect(server.local_address()?, "test")?
+				.connect_pinned(server.local_address()?, &certificate)?
 				.accept::<()>()
 				.await?;
 			let _connection = server

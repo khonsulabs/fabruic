@@ -8,7 +8,7 @@ resolver = "2"
 
 [features]
 default = []
-dns = ["trust-dns-resolver"]
+dns = ["trust-dns-resolver", "url"]
 test = []
 
 [dependencies]
@@ -35,13 +35,14 @@ trust-dns-resolver = { version = "0.20", default-features = false, features = [
 	"dnssec-ring",
 	"tokio-runtime",
 ], optional = true }
+url = { version = "2", optional = true }
 webpki = { version = "0.21", default-features = false }
 x509-parser = "0.9"
 zeroize = { version = "1", features = ["zeroize_derive"] }
 
 [dev-dependencies]
 anyhow = "1"
-fabruic = { path = "", features = ["test"] }
+fabruic = { path = "", features = ["test", "dns"] }
 quinn-proto = { version = "0.7", default-features = false }
 tokio = { version = "1", features = ["macros"] }
 

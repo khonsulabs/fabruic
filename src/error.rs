@@ -6,13 +6,14 @@
 pub use std::{io::Error as IoError, net::AddrParseError};
 
 pub use bincode::ErrorKind;
-pub use quinn::{ConnectError, ConnectionError, EndpointError, ParseError, ReadError, WriteError};
-pub use ring::error::KeyRejected;
-pub use rustls::TLSError;
+pub use quinn::{ConnectError, ConnectionError, EndpointError, ReadError, WriteError};
 use thiserror::Error;
 #[cfg(feature = "dns")]
 #[cfg_attr(doc, doc(cfg(feature = "dns")))]
 pub use trust_dns_resolver::error::ResolveError;
+#[cfg(feature = "dns")]
+#[cfg_attr(doc, doc(cfg(feature = "dns")))]
+pub use url::ParseError as UrlParseError;
 pub use webpki::Error as WebPkiError;
 pub use x509_parser::{error::X509Error, nom::Err};
 
@@ -54,27 +55,25 @@ pub enum Error {
 	/// Parsing a [`SocketAddr`](std::net::SocketAddr) from a [`str`] failed.
 	#[error("Failed parsing socket: {0}")]
 	ParseAddress(AddrParseError),
-	/// Returned by [`Endpoint`](crate::Endpoint) when failing to parse the
-	/// given [`Certificate`](crate::Certificate).
-	#[error("Failed parsing certificate: {0}")]
-	Certificate(ParseError),
-	/// Returned by [`Endpoint`](crate::Endpoint) when failing to parse the
-	/// given [`PrivateKey`](crate::PrivateKey).
-	#[error("Failed parsing private key: {0}")]
-	PrivateKey(ParseError),
-	/// Returned by [`Endpoint`](crate::Endpoint) when failing to pair the given
-	/// [`Certificate`](crate::Certificate) and
-	/// [`PrivateKey`](crate::PrivateKey).
-	#[error("Invalid certificate key pair: {0}")]
-	InvalidKeyPair(TLSError),
-	/// Returned by [`Endpoint`](crate::Endpoint) when failing to add the given
-	/// [`Certificate`](crate::Certificate) as a certificate authority.
-	#[error("Invalid certificate: {0}")]
-	InvalidCertificate(WebPkiError),
 	/// Returned by [`Endpoint`](crate::Endpoint) when failing to bind the
 	/// socket on the given `address`.
 	#[error("Failed to bind socket: {0}")]
 	BindSocket(EndpointError),
+	/// Failed to parse URL.
+	#[cfg(feature = "dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "dns")))]
+	#[error("Error parsing URL: {0}")]
+	ParseUrl(UrlParseError),
+	/// URL didn't contain a domain.
+	#[cfg(feature = "dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "dns")))]
+	#[error("URL without a domain is invalid")]
+	Domain,
+	/// URL didn't contain a port.
+	#[cfg(feature = "dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "dns")))]
+	#[error("URL without a port is invalid")]
+	Port,
 	/// Failed to resolve domain to IP address.
 	#[cfg(feature = "dns")]
 	#[cfg_attr(doc, doc(cfg(feature = "dns")))]

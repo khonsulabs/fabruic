@@ -101,11 +101,11 @@ async fn main() -> Result<()> {
 
 		tasks.push(tokio::spawn(async move {
 			// build a client
-			let client = Endpoint::new_client(&certificate)?;
+			let client = Endpoint::new_client()?;
 			println!("[client:{}] Bound to {}", index, client.local_address()?);
 
 			let connection = client
-				.connect(format!("[::1]:{}", SERVER_PORT).parse()?, SERVER_NAME)?
+				.connect_pinned(format!("[::1]:{}", SERVER_PORT).parse()?, &certificate)?
 				.accept::<()>()
 				.await?;
 			connection.close_incoming().await?;

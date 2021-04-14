@@ -4,13 +4,10 @@
 
 mod config;
 
-use std::{fmt::Debug, net::SocketAddr, str::FromStr, sync::Arc};
+use std::{fmt::Debug, net::SocketAddr, str::FromStr};
 
 pub(super) use config::Config;
-use quinn::{
-	CertificateChain, ClientConfig, ClientConfigBuilder, ServerConfigBuilder, TransportConfig,
-};
-use rustls::RootCertStore;
+use quinn::{CertificateChain, ClientConfigBuilder, ServerConfigBuilder};
 
 use crate::{Certificate, Dangerous, Endpoint, Error, PrivateKey, Result};
 
@@ -18,7 +15,7 @@ use crate::{Certificate, Dangerous, Endpoint, Error, PrivateKey, Result};
 pub struct Builder {
 	/// [`SocketAddr`] for [`Endpoint`](quinn::Endpoint) to bind to.
 	address: SocketAddr,
-	/// [`ClientConfig`] for [`Endpoint`](quinn::Endpoint).
+	/// [`ClientConfig`](quinn::ClientConfig) for [`Endpoint`](quinn::Endpoint).
 	client: ClientConfigBuilder,
 	/// [`ServerConfig`](quinn::ServerConfig) for [`Endpoint`](quinn::Endpoint).
 	server: Option<ServerConfigBuilder>,
@@ -53,24 +50,18 @@ impl Builder {
 	/// Builds a new [`Builder`]. See [`Builder`] methods for defaults.
 	#[must_use]
 	pub fn new() -> Self {
-		// build client
-		let mut client = ClientConfig::default();
-		#[allow(clippy::expect_used)]
-		let crypto = Arc::get_mut(&mut client.crypto).expect("failed to build `ClientConfig`");
-
-		// remove defaults
-		crypto.root_store = RootCertStore::empty();
-		crypto.ct_logs = None;
+		let config = Config::new();
 
 		Self {
 			#[cfg(not(feature = "test"))]
 			address: ([0; 8], 0).into(),
 			// while testing always use the default loopback address
+			// 
 			#[cfg(feature = "test")]
-			address: ([0, 0, 0, 0, 0, 0, 0, 1], 0).into(),
-			client: ClientConfigBuilder::new(client),
+			address: ([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], 0).into(),
+			client: config.new_client_builder(),
 			server: None,
-			config: Config::new(),
+			config,
 		}
 	}
 
@@ -89,52 +80,53 @@ impl Builder {
 		Ok(self)
 	}
 
-	/// Adds a [`Certificate`] as a certificate authority for client
-	/// [`connection`](Endpoint::connect)s.
+	/// Adds a [`Certificate`] into the default certificate authority store for
+	/// client [`connection`](Endpoint::connect)s.
 	///
-	/// # Errors
-	/// - [`Error::Certificate`] if the [`Certificate`] couldn't be parsed
-	/// - [`Error::InvalidCertificate`] if the [`Certificate`] couldn't be added
-	///   as a certificate authority
-	pub fn add_ca(&mut self, certificate: &Certificate) -> Result<&mut Self> {
-		let certificate =
-			quinn::Certificate::from_der(certificate.as_ref()).map_err(Error::Certificate)?;
+	/// # Panics
+	/// Panics if the given [`Certificate`] is invalid. Can't happen if the
+	/// [`Certificate`] was properly validated through
+	/// [`Certificate::from_der`].
+	#[allow(clippy::expect_used)]
+	pub fn add_ca(&mut self, certificate: &Certificate) -> &mut Self {
+		let certificate = quinn::Certificate::from_der(certificate.as_ref())
+			.expect("`Certificate` couldn't be parsed");
 		let _ = self
 			.client
 			.add_certificate_authority(certificate)
-			.map_err(Error::InvalidCertificate)?;
+			.expect("`Certificate` couldn't be added as a CA");
 
-		Ok(self)
+		self
 	}
 
 	/// Add a [`Certificate`] and [`PrivateKey`] for the server. This will add a
 	/// listener to incoming [`Connection`](crate::Connection)s.
 	///
-	/// # Errors
-	/// - [`Error::Certificate`] if the [`Certificate`] couldn't be parsed
-	/// - [`Error::PrivateKey`] if the [`PrivateKey`] couldn't be parsed
-	/// - [`Error::InvalidKeyPair`] if failed to pair the given [`Certificate`]
-	///   and [`PrivateKey`]
+	/// # Panics
+	/// Panics if the given [`Certificate`] is invalid. Can't happen if the
+	/// [`Certificate`] was properly validated through
+	/// [`Certificate::from_der`].
+	#[allow(clippy::expect_used)]
 	pub fn add_key_pair(
 		&mut self,
 		certificate: &Certificate,
 		private_key: &PrivateKey,
-	) -> Result<&mut Self> {
+	) -> &mut Self {
 		// process keypair
-		let certificate =
-			quinn::Certificate::from_der(certificate.as_ref()).map_err(Error::Certificate)?;
+		let certificate = quinn::Certificate::from_der(certificate.as_ref())
+			.expect("`Certificate` couldn't be parsed");
 		let chain = CertificateChain::from_certs(Some(certificate));
 		let private_key = quinn::PrivateKey::from_der(Dangerous::as_ref(private_key))
-			.map_err(Error::PrivateKey)?;
+			.expect("`PrivateKey` couldn't be parsed");
 
 		// add keypair
 		let _ = self
 			.server
 			.get_or_insert(ServerConfigBuilder::default())
 			.certificate(chain, private_key)
-			.map_err(Error::InvalidKeyPair)?;
+			.expect("`CertificateChain` couldn't be verified");
 
-		Ok(self)
+		self
 	}
 
 	/// Set the application-layer protocols to accept, in order of descending
@@ -166,31 +158,14 @@ impl Builder {
 	/// [`Runtime`](tokio::runtime::Runtime).
 	#[allow(clippy::unwrap_in_result)]
 	pub fn build(self) -> Result<Endpoint, (Error, Self)> {
-		// build transport
-		let mut transport = TransportConfig::default();
-
-		// set transport defaults
-		#[allow(clippy::expect_used)]
-		let _ = transport
-			// TODO: research if this is necessary, it improves privacy, but may hurt network
-			// providers?
-			.allow_spin(false)
-			// we don't support unordered for now
-			.datagram_receive_buffer_size(None)
-			// TODO: handle uni streams
-			.max_concurrent_uni_streams(0)
-			.expect("can't be bigger then `VarInt`");
-
-		let transport = Arc::new(transport);
-
 		match {
 			// to be able to reuse `Builder` on failure, we have to preserve quinn builders
 			let mut client = self.client.clone().build();
-			client.transport = Arc::clone(&transport);
+			client.transport = self.config.transport();
 
 			let server = self.server.as_ref().map(|server| {
 				let mut server = server.clone().build();
-				server.transport = transport;
+				server.transport = self.config.transport();
 				server
 			});
 
@@ -223,11 +198,11 @@ mod test {
 	#[tokio::test]
 	async fn address() -> Result<()> {
 		let mut builder = Builder::new();
-		let _ = builder.set_address(([0, 0, 0, 0, 0, 0, 0, 1], 5000).into());
+		let _ = builder.set_address(([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], 5000).into());
 		let endpoint = builder.build().map_err(|(error, _)| error)?;
 
 		assert_eq!(
-			"[::1]:5000".parse::<SocketAddr>()?,
+			"[::ffff:127.0.0.1]:5000".parse::<SocketAddr>()?,
 			endpoint.local_address()?,
 		);
 
@@ -237,11 +212,11 @@ mod test {
 	#[tokio::test]
 	async fn address_str() -> Result<()> {
 		let mut builder = Builder::new();
-		let _ = builder.set_address_str("[::1]:5001")?;
+		let _ = builder.set_address_str("[::ffff:127.0.0.1]:5001")?;
 		let endpoint = builder.build().map_err(|(error, _)| error)?;
 
 		assert_eq!(
-			"[::1]:5001".parse::<SocketAddr>()?,
+			"[::ffff:127.0.0.1]:5001".parse::<SocketAddr>()?,
 			endpoint.local_address()?
 		);
 
@@ -252,21 +227,25 @@ mod test {
 	async fn ca_key_pair() -> Result<()> {
 		use futures_util::StreamExt;
 
-		let (certificate, private_key) = crate::generate_self_signed("test");
+		let (certificate, private_key) = crate::generate_self_signed("localhost");
 
 		// build client
 		let mut builder = Builder::new();
-		let _ = builder.add_ca(&certificate)?;
+		let _ = builder.add_ca(&certificate);
 		let client = builder.build().map_err(|(error, _)| error)?;
 
 		// build server
 		let mut builder = Builder::new();
-		let _ = builder.add_key_pair(&certificate, &private_key)?;
+		let _ = builder.add_key_pair(&certificate, &private_key);
 		let mut server = builder.build().map_err(|(error, _)| error)?;
 
 		// test connection
 		let _connection = client
-			.connect(server.local_address()?, "test")?
+			.connect(format!(
+				"quic://localhost:{}",
+				server.local_address()?.port()
+			))
+			.await?
 			.accept::<()>()
 			.await?;
 		let _connection = server
