@@ -18,7 +18,7 @@ use futures_util::{
 	StreamExt,
 };
 use quinn::{ClientConfig, ServerConfig, VarInt};
-use url::Url;
+use url::{Host, Url};
 
 use super::Task;
 use crate::{
@@ -288,8 +288,12 @@ impl Endpoint {
 	///   address with [`ToSocketAddrs`]
 	async fn resolve_domain(&self, url: impl AsRef<str>) -> Result<(SocketAddr, String)> {
 		let url = Url::parse(url.as_ref()).map_err(Error::ParseUrl)?;
-		let domain = url.domain().ok_or(Error::Domain)?.to_owned();
 		let port = url.port().ok_or(Error::Port)?;
+		let domain = match url.host().ok_or(Error::Domain)? {
+			Host::Domain(domain) => domain.to_owned(),
+			Host::Ipv4(ip) => return Ok((SocketAddr::from((ip, port)), ip.to_string())),
+			Host::Ipv6(ip) => return Ok((SocketAddr::from((ip, port)), ip.to_string())),
+		};
 
 		#[cfg(feature = "trust-dns")]
 		if self.config.trust_dns() {

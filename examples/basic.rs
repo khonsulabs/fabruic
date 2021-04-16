@@ -1,6 +1,6 @@
 use anyhow::{Error, Result};
 use fabruic::Endpoint;
-use futures_util::{future, StreamExt};
+use futures_util::{future, StreamExt, TryFutureExt};
 
 const SERVER_NAME: &str = "test";
 const SERVER_PORT: u16 = 5000;
@@ -92,6 +92,8 @@ async fn main() -> Result<()> {
 
 			Result::<_, Error>::Ok(())
 		})
+		.map_err(Error::from)
+		.and_then(future::ready)
 	});
 
 	// start 100 clients
@@ -99,66 +101,66 @@ async fn main() -> Result<()> {
 		let address = address.clone();
 		let certificate = certificate.clone();
 
-		tasks.push(tokio::spawn(async move {
-			// build a client
-			let client = Endpoint::new_client()?;
-			println!("[client:{}] Bound to {}", index, client.local_address()?);
+		tasks.push(
+			tokio::spawn(async move {
+				// build a client
+				let client = Endpoint::new_client()?;
+				println!("[client:{}] Bound to {}", index, client.local_address()?);
 
-			let connection = client
-				.connect_pinned(address, &certificate)
-				.await?
-				.accept::<()>()
-				.await?;
-			connection.close_incoming().await?;
-			println!(
-				"[client:{}] Successfully connected to {}",
-				index,
-				connection.remote_address()
-			);
+				let connection = client
+					.connect_pinned(address, &certificate)
+					.await?
+					.accept::<()>()
+					.await?;
+				connection.close_incoming().await?;
+				println!(
+					"[client:{}] Successfully connected to {}",
+					index,
+					connection.remote_address()
+				);
 
-			// initiate a stream
-			let (sender, mut receiver) = connection.open_stream::<String, String>(&()).await?;
-			println!(
-				"[client:{}] Successfully opened stream to {}",
-				index,
-				connection.remote_address()
-			);
+				// initiate a stream
+				let (sender, mut receiver) = connection.open_stream::<String, String>(&()).await?;
+				println!(
+					"[client:{}] Successfully opened stream to {}",
+					index,
+					connection.remote_address()
+				);
 
-			// send message
-			sender.send(&format!("hello from client {}", index))?;
+				// send message
+				sender.send(&format!("hello from client {}", index))?;
 
-			// start listening to new incoming messages
-			// in this example we know there is only 1 incoming message, so we will not wait
-			// for more
-			let message = receiver.next().await.expect("no message found");
-			println!(
-				"[client:{}] New message from {}: {}",
-				index,
-				connection.remote_address(),
-				message
-			);
+				// start listening to new incoming messages
+				// in this example we know there is only 1 incoming message, so we will not wait
+				// for more
+				let message = receiver.next().await.expect("no message found");
+				println!(
+					"[client:{}] New message from {}: {}",
+					index,
+					connection.remote_address(),
+					message
+				);
 
-			// wait for stream to finish
-			sender.finish().await?;
-			receiver.finish().await?;
+				// wait for stream to finish
+				sender.finish().await?;
+				receiver.finish().await?;
 
-			// wait for client to finish cleanly
-			client.wait_idle().await;
-			println!(
-				"[client:{}] Successfully finished {}",
-				index,
-				client.local_address()?
-			);
+				// wait for client to finish cleanly
+				client.wait_idle().await;
+				println!(
+					"[client:{}] Successfully finished {}",
+					index,
+					client.local_address()?
+				);
 
-			Result::<_, Error>::Ok(())
-		}));
+				Result::<_, Error>::Ok(())
+			})
+			.map_err(Error::from)
+			.and_then(future::ready),
+		);
 	}
 
-	let tasks = future::try_join_all(tasks).await?;
-
-	for task in tasks {
-		task?
-	}
+	future::try_join_all(tasks).await?;
 
 	Ok(())
 }
