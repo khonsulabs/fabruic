@@ -153,7 +153,7 @@ impl Endpoint {
 		// while testing always use the default loopback address
 		#[cfg(feature = "test")]
 		let _ = builder.set_address(([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], port).into());
-		let _ = builder.set_key_pair(certificate, private_key);
+		let _ = builder.set_server_key_pair(certificate, private_key);
 
 		builder.build().map_err(|(error, _)| error)
 	}
@@ -315,7 +315,8 @@ impl Endpoint {
 		let connecting = self
 			.endpoint
 			.connect_with(
-				self.config.new_client(Some(certificate), Store::Empty),
+				self.config
+					.new_client(Some(certificate), Store::Empty, None),
 				&address,
 				&domain,
 			)

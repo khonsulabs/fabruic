@@ -4,9 +4,9 @@
 use std::{ops::Deref, sync::Arc};
 
 use quinn::{ClientConfig, ClientConfigBuilder, TransportConfig};
-use rustls::RootCertStore;
+use rustls::{sign::CertifiedKey, ResolvesClientCert, RootCertStore, SignatureScheme};
 
-use crate::{Certificate, Store};
+use crate::{Certificate, PrivateKey, Store};
 
 /// Persistent configuration shared between the [`Builder`](crate::Builder) and
 /// the [`Endpoint`](crate::Endpoint).
@@ -95,11 +95,12 @@ impl Config {
 		&self,
 		certificates: impl IntoIterator<Item = &'a Certificate> + 'a,
 		store: Store,
+		client_cert: Option<(Certificate, PrivateKey)>,
 	) -> ClientConfig {
 		// build client
 		let mut client = ClientConfig::default();
 
-		// remove defaults
+		// get inner rustls `ClientConfig`
 		let crypto = Arc::get_mut(&mut client.crypto).expect("failed to build `ClientConfig`");
 
 		match store {
@@ -117,6 +118,10 @@ impl Config {
 			}
 		}
 
+		if let Some((certificate, private_key)) = client_cert {
+			crypto.client_auth_cert_resolver = CertificateResolver::new(certificate, private_key);
+		}
+
 		// build client builder
 		let mut client = ClientConfigBuilder::new(client);
 
@@ -128,10 +133,8 @@ impl Config {
 
 		// add CAs
 		for certificate in certificates {
-			let certificate = quinn::Certificate::from_der(certificate.as_ref())
-				.expect("`Certificate` couldn't be parsed");
 			let _ = client
-				.add_certificate_authority(certificate)
+				.add_certificate_authority(certificate.as_quinn())
 				.expect("`Certificate` couldn't be added as a CA");
 		}
 
@@ -139,5 +142,33 @@ impl Config {
 		client.transport = self.transport();
 
 		client
+	}
+}
+
+/// Client certificate handler.
+struct CertificateResolver(CertifiedKey);
+
+impl ResolvesClientCert for CertificateResolver {
+	fn resolve(
+		&self,
+		_acceptable_issuers: &[&[u8]],
+		_sigschemes: &[SignatureScheme],
+	) -> Option<CertifiedKey> {
+		Some(self.0.clone())
+	}
+
+	fn has_certs(&self) -> bool {
+		true
+	}
+}
+
+impl CertificateResolver {
+	/// Builds a new [`CertificateResolver`].
+	fn new(certificate: Certificate, private_key: PrivateKey) -> Arc<Self> {
+		Arc::new(Self(CertifiedKey::new(
+			vec![certificate.into_rustls()],
+			#[allow(box_pointers)]
+			Arc::new(private_key.into_rustls()),
+		)))
 	}
 }

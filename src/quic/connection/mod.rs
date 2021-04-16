@@ -39,7 +39,7 @@ use serde::{de::DeserializeOwned, Serialize};
 use stream::Stream;
 
 use super::Task;
-use crate::{Error, Result};
+use crate::{Certificate, Error, Result};
 
 /// Represents an open connection. Receives [`Incoming`] through [`Stream`].
 #[pin_project]
@@ -142,6 +142,17 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 		self.connection
 			.handshake_data()
 			.and_then(|data| data.protocol)
+	}
+
+	/// Get the peer’s identity, if available.
+	#[must_use]
+	pub fn peer_identity(&self) -> Option<Vec<Certificate>> {
+		self.connection.peer_identity().map(|chain| {
+			chain
+				.into_iter()
+				.map(|certificate| Certificate::unchecked_from_der(certificate.0))
+				.collect()
+		})
 	}
 
 	/// The peer's address. Clients may change addresses at will, e.g. when

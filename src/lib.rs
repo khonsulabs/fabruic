@@ -64,11 +64,13 @@
 //! TODO
 
 mod certificate;
-#[cfg(not(feature = "dangerous"))]
-mod dangerous;
 #[cfg(feature = "dangerous")]
 #[cfg_attr(doc, doc(cfg(feature = "dangerous")))]
-pub mod dangerous;
+pub mod dangerous {
+	//! Security-sensitive settings are hidden behind these traits. Be careful!
+
+	pub use crate::{certificate::Dangerous as Certificate, quic::Dangerous as Builder};
+}
 pub mod error;
 mod quic;
 

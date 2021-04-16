@@ -5,7 +5,7 @@ use std::{
 	time::Duration,
 };
 
-use rustls::sign;
+use rustls::sign::{self, SigningKey};
 use serde::{Deserialize, Serialize, Serializer};
 use webpki::EndEntityCert;
 use x509_parser::{certificate::X509Certificate, extensions::GeneralName};
@@ -110,7 +110,7 @@ impl Certificate {
 	/// # Panics
 	/// Panics if [`Certificate`] couldn't be parsed or contained no valid
 	/// domain names. This can't happen if [`Certificate`] is constructed
-	/// correctly from [`from_der`](Certificate::from_der).
+	/// correctly from [`from_der`](Self::from_der).
 	#[must_use]
 	pub fn domains(&self) -> Vec<String> {
 		let (_, certificate) =
@@ -134,13 +134,33 @@ impl Certificate {
 			})
 			.expect("`Certificate` contained no valid domains")
 	}
+
+	/// Convert into a type [`rustls`] can consume.
+	///
+	/// # Panics
+	/// Panics if [`Certificate`] couldn't be parsed or contained no valid
+	/// domain names. This can't happen if [`Certificate`] is constructed
+	/// correctly from [`from_der`](Self::from_der).
+	pub(crate) fn into_rustls(self) -> rustls::Certificate {
+		rustls::Certificate(self.into())
+	}
+
+	/// Convert into a type [`quinn`] can consume.
+	///
+	/// # Panics
+	/// Panics if [`Certificate`] couldn't be parsed or contained no valid
+	/// domain names. This can't happen if [`Certificate`] is constructed
+	/// correctly from [`from_der`](Self::from_der).
+	pub(crate) fn as_quinn(&self) -> quinn::Certificate {
+		quinn::Certificate::from_der(self.as_ref()).expect("`Certificate` couldn't be parsed")
+	}
 }
 
 /// A private Key.
 ///
 /// # Safety
 /// Never give this to anybody.
-#[derive(Clone, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, serde::Serialize, Zeroize)]
+#[derive(Clone, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Zeroize)]
 #[zeroize(drop)]
 pub struct PrivateKey(Option<Vec<u8>>);
 
@@ -171,6 +191,29 @@ impl PrivateKey {
 	#[must_use]
 	pub fn unchecked_from_der(private_key: Vec<u8>) -> Self {
 		Self(Some(private_key))
+	}
+
+	/// Convert into a type [`rustls`] can consume.
+	///
+	/// # Panics
+	/// Panics if [`PrivateKey`] couldn't be parsed. This can't happen if
+	/// [`PrivateKey`] is constructed correctly from
+	/// [`from_der`](Self::from_der).
+	#[allow(box_pointers)]
+	pub(crate) fn into_rustls(self) -> Box<dyn SigningKey> {
+		sign::any_supported_type(&rustls::PrivateKey(Dangerous::into(self)))
+			.expect("`PrivateKey` not compatible with `rustls`")
+	}
+
+	/// Convert into a type [`quinn`] can consume.
+	///
+	/// # Panics
+	/// Panics if [`PrivateKey`] couldn't be parsed. This can't happen if
+	/// [`PrivateKey`] is constructed correctly from
+	/// [`from_der`](Self::from_der).
+	pub(crate) fn as_quinn(&self) -> quinn::PrivateKey {
+		quinn::PrivateKey::from_der(Dangerous::as_ref(self))
+			.expect("`PrivateKey` couldn't be parsed")
 	}
 }
 

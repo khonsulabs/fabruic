@@ -1,11 +1,13 @@
 //! [`Endpoint`] builder.
 
 mod config;
-use std::{fmt::Debug, net::SocketAddr, str::FromStr};
+use std::{fmt::Debug, net::SocketAddr, str::FromStr, sync::Arc};
 
 pub(super) use config::Config;
 use quinn::{CertificateChain, ServerConfigBuilder};
+use rustls::{ClientCertVerified, ClientCertVerifier, DistinguishedNames, TLSError};
 use serde::{Deserialize, Serialize};
+use webpki::DNSName;
 
 use crate::{Certificate, Endpoint, Error, PrivateKey, Result};
 
@@ -17,7 +19,9 @@ pub struct Builder {
 	/// Custom CA [`Certificate`]s.
 	ca_certs: Vec<Certificate>,
 	/// Key-pair for the server.
-	key_pair: Option<(Certificate, PrivateKey)>,
+	server_key_pair: Option<(Certificate, PrivateKey)>,
+	/// Client certificate.
+	client_key_pair: Option<(Certificate, PrivateKey)>,
 	/// [`Store`] option.
 	store: Store,
 	/// Persistent configuration passed to the [`Endpoint`]
@@ -44,7 +48,8 @@ impl Builder {
 			#[cfg(feature = "test")]
 			address: ([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], 0).into(),
 			ca_certs: Vec::new(),
-			key_pair: None,
+			server_key_pair: None,
+			client_key_pair: None,
 			store: Store::Embedded,
 			config,
 		}
@@ -74,8 +79,24 @@ impl Builder {
 	///
 	/// Default is none and therefore [`Endpoint`] will not listen to incoming
 	/// [`Connection`](crate::Connection)s.
-	pub fn set_key_pair(&mut self, certificate: Certificate, private_key: PrivateKey) -> &mut Self {
-		self.key_pair = Some((certificate, private_key));
+	pub fn set_server_key_pair(
+		&mut self,
+		certificate: Certificate,
+		private_key: PrivateKey,
+	) -> &mut Self {
+		self.server_key_pair = Some((certificate, private_key));
+		self
+	}
+
+	/// Set a [`Certificate`] and [`PrivateKey`] for the client.
+	///
+	/// Default is none.
+	pub fn set_client_key_pair(
+		&mut self,
+		certificate: Certificate,
+		private_key: PrivateKey,
+	) -> &mut Self {
+		self.client_key_pair = Some((certificate, private_key));
 		self
 	}
 
@@ -126,49 +147,78 @@ impl Builder {
 	pub fn build(self) -> Result<Endpoint, (Error, Self)> {
 		match {
 			// build client
-			let client = self.config.new_client(self.ca_certs.iter(), self.store);
+			let client = self.config.new_client(
+				self.ca_certs.iter(),
+				self.store,
+				self.client_key_pair.clone(),
+			);
 
 			// build server only if we have a key-pair
-			let server = self.key_pair.as_ref().map(|(certificate, private_key)| {
-				let mut server = ServerConfigBuilder::default();
+			let server = self
+				.server_key_pair
+				.as_ref()
+				.map(|(certificate, private_key)| {
+					let mut server = ServerConfigBuilder::default();
 
-				// build key-pair
-				let certificate = quinn::Certificate::from_der(certificate.as_ref())
-					.expect("`Certificate` couldn't be parsed");
-				let chain = CertificateChain::from_certs(Some(certificate));
-				let private_key =
-					quinn::PrivateKey::from_der(crate::dangerous::Certificate::as_ref(private_key))
-						.expect("`PrivateKey` couldn't be parsed");
-				// add key-pair
-				let _ = server
-					.certificate(chain, private_key)
-					.expect("`CertificateChain` couldn't be verified");
+					// build key-pair
+					let chain = CertificateChain::from_certs(Some(certificate.as_quinn()));
+					// add key-pair
+					let _ = server
+						.certificate(chain, private_key.as_quinn())
+						.expect("`CertificateChain` couldn't be verified");
 
-				// set protocols
-				if !self.config.protocols().is_empty() {
-					let _ = server.protocols(
-						self.config
-							.protocols()
-							.iter()
-							.map(Vec::as_slice)
-							.collect::<Vec<_>>()
-							.as_slice(),
-					);
-				}
+					// set protocols
+					if !self.config.protocols().is_empty() {
+						let _ = server.protocols(
+							self.config
+								.protocols()
+								.iter()
+								.map(Vec::as_slice)
+								.collect::<Vec<_>>()
+								.as_slice(),
+						);
+					}
 
-				let mut server = server.build();
+					let mut server = server.build();
 
-				// set transport
-				server.transport = self.config.transport();
+					// get inner rustls `ServerConfig`
+					let crypto =
+						Arc::get_mut(&mut server.crypto).expect("failed to build `ServerConfig`");
+					crypto.set_client_certificate_verifier(Arc::new(ClientVerifier));
 
-				server
-			});
+					// set transport
+					server.transport = self.config.transport();
+
+					server
+				});
 
 			Endpoint::new(self.address, client, server, self.config.clone())
 		} {
 			Ok(endpoint) => Ok(endpoint),
 			Err(error) => Err((error, self)),
 		}
+	}
+}
+
+/// Client certificate verifier accepting anything. Verification has to happen
+/// on an application level.
+struct ClientVerifier;
+
+impl ClientCertVerifier for ClientVerifier {
+	fn client_auth_mandatory(&self, _sni: Option<&DNSName>) -> Option<bool> {
+		Some(false)
+	}
+
+	fn client_auth_root_subjects(&self, _sni: Option<&DNSName>) -> Option<DistinguishedNames> {
+		Some(DistinguishedNames::new())
+	}
+
+	fn verify_client_cert(
+		&self,
+		_presented_certs: &[rustls::Certificate],
+		_sni: Option<&DNSName>,
+	) -> Result<ClientCertVerified, TLSError> {
+		Ok(ClientCertVerified::assertion())
 	}
 }
 
@@ -259,7 +309,7 @@ mod test {
 
 		// build server
 		let mut builder = Builder::new();
-		let _ = builder.set_key_pair(certificate, private_key);
+		let _ = builder.set_server_key_pair(certificate, private_key);
 		let mut server = builder.build().map_err(|(error, _)| error)?;
 
 		// test connection
@@ -277,6 +327,52 @@ mod test {
 			.expect("client dropped")
 			.accept::<()>()
 			.await?;
+
+		Ok(())
+	}
+
+	#[tokio::test]
+	async fn client_certificate() -> Result<()> {
+		use futures_util::StreamExt;
+
+		let (server_certificate, server_private_key) = crate::generate_self_signed("localhost");
+		let (client_certificate, client_private_key) = crate::generate_self_signed("client");
+
+		// build client
+		let mut builder = Builder::new();
+		Dangerous::add_ca(&mut builder, server_certificate.clone());
+		let _ = builder.set_client_key_pair(client_certificate.clone(), client_private_key);
+		let client = builder.build().map_err(|(error, _)| error)?;
+
+		// build server
+		let mut builder = Builder::new();
+		let _ = builder.set_server_key_pair(server_certificate, server_private_key);
+		let mut server = builder.build().map_err(|(error, _)| error)?;
+
+		// test connection
+		let _connection = client
+			.connect(format!(
+				"quic://localhost:{}",
+				server.local_address()?.port()
+			))
+			.await?
+			.accept::<()>()
+			.await?;
+		let connection = server
+			.next()
+			.await
+			.expect("client dropped")
+			.accept::<()>()
+			.await?;
+
+		// test client certificate
+		assert_eq!(
+			[client_certificate],
+			connection
+				.peer_identity()
+				.expect("found no client certificate")
+				.as_slice()
+		);
 
 		Ok(())
 	}
