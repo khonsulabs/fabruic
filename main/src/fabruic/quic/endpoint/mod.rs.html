@@ -601,6 +601,10 @@
 <span id="598">598</span>
 <span id="599">599</span>
 <span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Starting point to create a QUIC enabled network socket.</span>
 
@@ -622,7 +626,7 @@
 	<span class="ident">StreamExt</span>,
 };
 <span class="kw">use</span> <span class="ident">quinn</span>::{<span class="ident">ClientConfig</span>, <span class="ident">ServerConfig</span>, <span class="ident">VarInt</span>};
-<span class="kw">use</span> <span class="ident">url::Url</span>;
+<span class="kw">use</span> <span class="ident">url</span>::{<span class="ident">Host</span>, <span class="ident">Url</span>};
 
 <span class="kw">use</span> <span class="kw">super</span><span class="ident">::Task</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::{
@@ -892,8 +896,12 @@
 	<span class="doccomment">///   address with [`ToSocketAddrs`]</span>
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">resolve_domain</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">url</span>: <span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">SocketAddr</span>, <span class="ident">String</span>)<span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="ident">Url::parse</span>(<span class="ident">url</span>.<span class="ident">as_ref</span>()).<span class="ident">map_err</span>(<span class="ident">Error::ParseUrl</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="ident">url</span>.<span class="ident">domain</span>().<span class="ident">ok_or</span>(<span class="ident">Error::Domain</span>)<span class="question-mark">?</span>.<span class="ident">to_owned</span>();
 		<span class="kw">let</span> <span class="ident">port</span> <span class="op">=</span> <span class="ident">url</span>.<span class="ident">port</span>().<span class="ident">ok_or</span>(<span class="ident">Error::Port</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">url</span>.<span class="ident">host</span>().<span class="ident">ok_or</span>(<span class="ident">Error::Domain</span>)<span class="question-mark">?</span> {
+			<span class="ident">Host::Domain</span>(<span class="ident">domain</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">domain</span>.<span class="ident">to_owned</span>(),
+			<span class="ident">Host::Ipv4</span>(<span class="ident">ip</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">SocketAddr::from</span>((<span class="ident">ip</span>, <span class="ident">port</span>)), <span class="ident">ip</span>.<span class="ident">to_string</span>())),
+			<span class="ident">Host::Ipv6</span>(<span class="ident">ip</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">SocketAddr::from</span>((<span class="ident">ip</span>, <span class="ident">port</span>)), <span class="ident">ip</span>.<span class="ident">to_string</span>())),
+		};
 
 		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">trust_dns</span>() {
