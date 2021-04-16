@@ -11,8 +11,6 @@ use thiserror::Error;
 #[cfg(feature = "trust-dns")]
 #[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 pub use trust_dns_resolver::error::ResolveError;
-#[cfg(feature = "trust-dns")]
-#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 pub use url::ParseError as UrlParseError;
 pub use webpki::Error as WebPkiError;
 pub use x509_parser::{error::X509Error, nom::Err};
@@ -60,18 +58,12 @@ pub enum Error {
 	#[error("Failed to bind socket: {0}")]
 	BindSocket(EndpointError),
 	/// Failed to parse URL.
-	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	#[error("Error parsing URL: {0}")]
 	ParseUrl(UrlParseError),
 	/// URL didn't contain a domain.
-	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	#[error("URL without a domain is invalid")]
 	Domain,
 	/// URL didn't contain a port.
-	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	#[error("URL without a port is invalid")]
 	Port,
 	/// Failed to resolve domain to IP address with
@@ -82,13 +74,9 @@ pub enum Error {
 	ResolveTrustDns(Box<ResolveError>),
 	/// Failed to resolve domain to IP address with
 	/// [`ToSocketAddrs`](std::net::ToSocketAddrs).
-	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	#[error("Error resolving domain with `ToSocketAddrs`: {0}")]
 	ResolveStdDns(IoError),
 	/// Found no IP address for that domain.
-	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	#[error("Found no IP address for that domain")]
 	NoIp,
 	/// Returned by [`Endpoint::local_address`](crate::Endpoint::local_address)
