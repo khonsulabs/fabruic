@@ -140,6 +140,10 @@
 <span id="137">137</span>
 <span id="138">138</span>
 <span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Persistent configuration shared between the [`Builder`](crate::Builder) and</span>
 <span class="doccomment">//! the [`Endpoint`](crate::Endpoint).</span>
@@ -209,6 +213,10 @@
 
 	<span class="doccomment">/// Forces [`Endpoint::connect`](crate::Endpoint::connect) to use</span>
 	<span class="doccomment">/// [`trust-dns`](trust_dns_resolver).</span>
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(
+		<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>),
+		<span class="ident">allow</span>(<span class="ident">clippy::unused_self</span>, <span class="ident">unused_variables</span>)
+	)]</span>
 	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">set_trust_dns</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">trust_dns</span>: <span class="ident">bool</span>) {
 		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
 		{
