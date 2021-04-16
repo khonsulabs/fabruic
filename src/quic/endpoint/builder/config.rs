@@ -66,6 +66,10 @@ impl Config {
 
 	/// Forces [`Endpoint::connect`](crate::Endpoint::connect) to use
 	/// [`trust-dns`](trust_dns_resolver).
+	#[cfg_attr(
+		not(feature = "trust-dns"),
+		allow(clippy::unused_self, unused_variables)
+	)]
 	pub(super) fn set_trust_dns(&mut self, trust_dns: bool) {
 		#[cfg(feature = "trust-dns")]
 		{
