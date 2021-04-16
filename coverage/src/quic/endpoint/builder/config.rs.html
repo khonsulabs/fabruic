@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint/builder</a> - config.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-14 23:59:25</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-16 10:26:19</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -87,77 +87,81 @@
 <div class="line"><span id="66" class="lineNum"><a href="#66">66</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="67" class="lineNum"><a href="#67">67</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Forces [`Endpoint::connect`](crate::Endpoint::connect) to use</span></div>
 <div class="line"><span id="68" class="lineNum"><a href="#68">68</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`trust-dns`](trust_dns_resolver).</span></div>
-<div class="line"><span id="69" class="lineNum"><a href="#69">69</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub(super) fn set_trust_dns(&amp;mut self, trust_dns: bool) {</span></div>
-<div class="line"><span id="70" class="lineNum"><a href="#70">70</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		#[cfg(feature = &quot;trust-dns&quot;)]</span></div>
-<div class="line"><span id="71" class="lineNum"><a href="#71">71</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		{</span></div>
-<div class="line"><span id="72" class="lineNum"><a href="#72">72</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			self.trust_dns = trust_dns;</span></div>
-<div class="line"><span id="73" class="lineNum"><a href="#73">73</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		}</span></div>
-<div class="line"><span id="74" class="lineNum"><a href="#74">74</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
-<div class="line"><span id="75" class="lineNum"><a href="#75">75</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="76" class="lineNum"><a href="#76">76</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returns if [`trust-dns`](trust_dns_resolver) is enabled.</span></div>
-<div class="line"><span id="77" class="lineNum"><a href="#77">77</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[cfg(feature = &quot;trust-dns&quot;)]</span></div>
-<div class="line"><span id="78" class="lineNum"><a href="#78">78</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[cfg_attr(doc, doc(cfg(feature = &quot;trust-dns&quot;)))]</span></div>
-<div class="line"><span id="79" class="lineNum"><a href="#79">79</a></span><span class="counterCov">1</span><span class="lineCov">	pub(in crate::quic::endpoint) const fn trust_dns(&amp;self) -&gt; bool {</span></div>
-<div class="line"><span id="80" class="lineNum"><a href="#80">80</a></span><span class="counterCov">1</span><span class="lineCov">		self.trust_dns</span></div>
-<div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Builds a new [`ClientConfig`] with this [`Config`] and adds</span></div>
-<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// `certificates` to the CA store.</span></div>
-<div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Panics</span></div>
-<div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Panics if the given [`Certificate`] is invalid. Can&#39;t happen if the</span></div>
-<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Certificate`] was properly validated through</span></div>
-<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Certificate::from_der`].</span></div>
-<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterCov">221</span><span class="lineCov">	pub(in crate::quic::endpoint) fn new_client&lt;&#39;a&gt;(</span></div>
-<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterCov">221</span><span class="lineCov">		&amp;self,</span></div>
-<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterCov">221</span><span class="lineCov">		certificates: impl IntoIterator&lt;Item = &amp;&#39;a Certificate&gt; + &#39;a,</span></div>
-<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterCov">221</span><span class="lineCov">		store: Store,</span></div>
-<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterCov">221</span><span class="lineCov">	) -&gt; ClientConfig {</span></div>
-<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">221</span><span class="lineCov">		// build client</span></div>
-<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterCov">221</span><span class="lineCov">		let mut client = ClientConfig::default();</span></div>
-<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">221</span><span class="lineCov"></span></div>
-<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">221</span><span class="lineCov">		// remove defaults</span></div>
-<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterCov">221</span><span class="lineCov">		let crypto = Arc::get_mut(&amp;mut client.crypto).expect(&quot;failed to build `ClientConfig`&quot;);</span></div>
-<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterCov">221</span><span class="lineCov"></span></div>
-<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterCov">221</span><span class="lineCov">		match store {</span></div>
-<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterCov">221</span><span class="lineCov">			// remove the defaults set by Quinn</span></div>
-<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterCov">221</span><span class="lineCov">			Store::Empty =&gt; {</span></div>
-<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterCov">106</span><span class="lineCov">				crypto.root_store = RootCertStore::empty();</span></div>
-<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterCov">106</span><span class="lineCov">				crypto.ct_logs = None;</span></div>
-<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterCov">106</span><span class="lineCov">			}</span></div>
-<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// is set correctly by Quinn by default</span></div>
-<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Store::Os =&gt; (),</span></div>
-<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterCov">115</span><span class="lineCov">			Store::Embedded =&gt; {</span></div>
-<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterCov">115</span><span class="lineCov">				let mut store = RootCertStore::empty();</span></div>
-<div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterCov">115</span><span class="lineCov">				store.add_server_trust_anchors(&amp;webpki_roots::TLS_SERVER_ROOTS);</span></div>
-<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterCov">115</span><span class="lineCov">				crypto.root_store = store;</span></div>
-<div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterCov">115</span><span class="lineCov">			}</span></div>
-<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// build client builder</span></div>
-<div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterCov">221</span><span class="lineCov">		let mut client = ClientConfigBuilder::new(client);</span></div>
-<div class="line"><span id="118" class="lineNum"><a href="#118">118</a></span><span class="counterCov">221</span><span class="lineCov"></span></div>
-<div class="line"><span id="119" class="lineNum"><a href="#119">119</a></span><span class="counterCov">221</span><span class="lineCov">		// add protocols</span></div>
-<div class="line"><span id="120" class="lineNum"><a href="#120">120</a></span><span class="counterCov">221</span><span class="lineCov">		if !self.protocols.is_empty() {</span></div>
-<div class="line"><span id="121" class="lineNum"><a href="#121">121</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			let protocols: Vec&lt;_&gt; = self.protocols.iter().map(Deref::deref).collect();</span></div>
-<div class="line"><span id="122" class="lineNum"><a href="#122">122</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			let _ = client.protocols(&amp;protocols);</span></div>
-<div class="line"><span id="123" class="lineNum"><a href="#123">123</a></span><span class="counterCov">221</span><span class="lineCov">		}</span></div>
-<div class="line"><span id="124" class="lineNum"><a href="#124">124</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// add CAs</span></div>
-<div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterCov">107</span><span class="lineCov">		for certificate in certificates {</span></div>
-<div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterCov">107</span><span class="lineCov">			let certificate = quinn::Certificate::from_der(certificate.as_ref())</span></div>
-<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterCov">107</span><span class="lineCov">				.expect(&quot;`Certificate` couldn&#39;t be parsed&quot;);</span></div>
-<div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterCov">107</span><span class="lineCov">			let _ = client</span></div>
-<div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterCov">107</span><span class="lineCov">				.add_certificate_authority(certificate)</span></div>
-<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterCov">107</span><span class="lineCov">				.expect(&quot;`Certificate` couldn&#39;t be added as a CA&quot;);</span></div>
-<div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterCov">107</span><span class="lineCov">		}</span></div>
-<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterCov">221</span><span class="lineCov">		let mut client = client.build();</span></div>
-<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterCov">221</span><span class="lineCov">		client.transport = self.transport();</span></div>
-<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterCov">221</span><span class="lineCov"></span></div>
-<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterCov">221</span><span class="lineCov">		client</span></div>
-<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterCov">221</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="69" class="lineNum"><a href="#69">69</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[cfg_attr(</span></div>
+<div class="line"><span id="70" class="lineNum"><a href="#70">70</a></span><span class="counterUnCov"></span><span class="lineUnCov">		not(feature = &quot;trust-dns&quot;),</span></div>
+<div class="line"><span id="71" class="lineNum"><a href="#71">71</a></span><span class="counterUnCov"></span><span class="lineUnCov">		allow(clippy::unused_self, unused_variables)</span></div>
+<div class="line"><span id="72" class="lineNum"><a href="#72">72</a></span><span class="counterUnCov"></span><span class="lineUnCov">	)]</span></div>
+<div class="line"><span id="73" class="lineNum"><a href="#73">73</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub(super) fn set_trust_dns(&amp;mut self, trust_dns: bool) {</span></div>
+<div class="line"><span id="74" class="lineNum"><a href="#74">74</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		#[cfg(feature = &quot;trust-dns&quot;)]</span></div>
+<div class="line"><span id="75" class="lineNum"><a href="#75">75</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		{</span></div>
+<div class="line"><span id="76" class="lineNum"><a href="#76">76</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			self.trust_dns = trust_dns;</span></div>
+<div class="line"><span id="77" class="lineNum"><a href="#77">77</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		}</span></div>
+<div class="line"><span id="78" class="lineNum"><a href="#78">78</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
+<div class="line"><span id="79" class="lineNum"><a href="#79">79</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="80" class="lineNum"><a href="#80">80</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returns if [`trust-dns`](trust_dns_resolver) is enabled.</span></div>
+<div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[cfg(feature = &quot;trust-dns&quot;)]</span></div>
+<div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[cfg_attr(doc, doc(cfg(feature = &quot;trust-dns&quot;)))]</span></div>
+<div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterCov">1</span><span class="lineCov">	pub(in crate::quic::endpoint) const fn trust_dns(&amp;self) -&gt; bool {</span></div>
+<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterCov">1</span><span class="lineCov">		self.trust_dns</span></div>
+<div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Builds a new [`ClientConfig`] with this [`Config`] and adds</span></div>
+<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// `certificates` to the CA store.</span></div>
+<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Panics</span></div>
+<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Panics if the given [`Certificate`] is invalid. Can&#39;t happen if the</span></div>
+<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Certificate`] was properly validated through</span></div>
+<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Certificate::from_der`].</span></div>
+<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterCov">221</span><span class="lineCov">	pub(in crate::quic::endpoint) fn new_client&lt;&#39;a&gt;(</span></div>
+<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">221</span><span class="lineCov">		&amp;self,</span></div>
+<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterCov">221</span><span class="lineCov">		certificates: impl IntoIterator&lt;Item = &amp;&#39;a Certificate&gt; + &#39;a,</span></div>
+<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">221</span><span class="lineCov">		store: Store,</span></div>
+<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">221</span><span class="lineCov">	) -&gt; ClientConfig {</span></div>
+<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterCov">221</span><span class="lineCov">		// build client</span></div>
+<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterCov">221</span><span class="lineCov">		let mut client = ClientConfig::default();</span></div>
+<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterCov">221</span><span class="lineCov"></span></div>
+<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterCov">221</span><span class="lineCov">		// remove defaults</span></div>
+<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterCov">221</span><span class="lineCov">		let crypto = Arc::get_mut(&amp;mut client.crypto).expect(&quot;failed to build `ClientConfig`&quot;);</span></div>
+<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterCov">221</span><span class="lineCov"></span></div>
+<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterCov">221</span><span class="lineCov">		match store {</span></div>
+<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterCov">221</span><span class="lineCov">			// remove the defaults set by Quinn</span></div>
+<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterCov">221</span><span class="lineCov">			Store::Empty =&gt; {</span></div>
+<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterCov">106</span><span class="lineCov">				crypto.root_store = RootCertStore::empty();</span></div>
+<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterCov">106</span><span class="lineCov">				crypto.ct_logs = None;</span></div>
+<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterCov">106</span><span class="lineCov">			}</span></div>
+<div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// is set correctly by Quinn by default</span></div>
+<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Store::Os =&gt; (),</span></div>
+<div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterCov">115</span><span class="lineCov">			Store::Embedded =&gt; {</span></div>
+<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterCov">115</span><span class="lineCov">				let mut store = RootCertStore::empty();</span></div>
+<div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterCov">115</span><span class="lineCov">				store.add_server_trust_anchors(&amp;webpki_roots::TLS_SERVER_ROOTS);</span></div>
+<div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterCov">115</span><span class="lineCov">				crypto.root_store = store;</span></div>
+<div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterCov">115</span><span class="lineCov">			}</span></div>
+<div class="line"><span id="118" class="lineNum"><a href="#118">118</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
+<div class="line"><span id="119" class="lineNum"><a href="#119">119</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="120" class="lineNum"><a href="#120">120</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// build client builder</span></div>
+<div class="line"><span id="121" class="lineNum"><a href="#121">121</a></span><span class="counterCov">221</span><span class="lineCov">		let mut client = ClientConfigBuilder::new(client);</span></div>
+<div class="line"><span id="122" class="lineNum"><a href="#122">122</a></span><span class="counterCov">221</span><span class="lineCov"></span></div>
+<div class="line"><span id="123" class="lineNum"><a href="#123">123</a></span><span class="counterCov">221</span><span class="lineCov">		// add protocols</span></div>
+<div class="line"><span id="124" class="lineNum"><a href="#124">124</a></span><span class="counterCov">221</span><span class="lineCov">		if !self.protocols.is_empty() {</span></div>
+<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			let protocols: Vec&lt;_&gt; = self.protocols.iter().map(Deref::deref).collect();</span></div>
+<div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			let _ = client.protocols(&amp;protocols);</span></div>
+<div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterCov">221</span><span class="lineCov">		}</span></div>
+<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// add CAs</span></div>
+<div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterCov">107</span><span class="lineCov">		for certificate in certificates {</span></div>
+<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterCov">107</span><span class="lineCov">			let certificate = quinn::Certificate::from_der(certificate.as_ref())</span></div>
+<div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterCov">107</span><span class="lineCov">				.expect(&quot;`Certificate` couldn&#39;t be parsed&quot;);</span></div>
+<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterCov">107</span><span class="lineCov">			let _ = client</span></div>
+<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterCov">107</span><span class="lineCov">				.add_certificate_authority(certificate)</span></div>
+<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterCov">107</span><span class="lineCov">				.expect(&quot;`Certificate` couldn&#39;t be added as a CA&quot;);</span></div>
+<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterCov">107</span><span class="lineCov">		}</span></div>
+<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterCov">221</span><span class="lineCov">		let mut client = client.build();</span></div>
+<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterCov">221</span><span class="lineCov">		client.transport = self.transport();</span></div>
+<div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterCov">221</span><span class="lineCov"></span></div>
+<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterCov">221</span><span class="lineCov">		client</span></div>
+<div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterCov">221</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 </div>
 </body>
 </html>
