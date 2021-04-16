@@ -4,7 +4,7 @@ mod builder;
 
 use std::{
 	fmt::{self, Debug, Formatter},
-	net::{IpAddr, SocketAddr, ToSocketAddrs},
+	net::{SocketAddr, ToSocketAddrs},
 	pin::Pin,
 	task::{Context, Poll},
 };
@@ -18,6 +18,7 @@ use futures_util::{
 	StreamExt,
 };
 use quinn::{ClientConfig, ServerConfig, VarInt};
+use url::Url;
 
 use super::Task;
 use crate::{
@@ -207,36 +208,89 @@ impl Endpoint {
 	///   address with [`ToSocketAddrs`]
 	/// - [`Error::ConnectConfig`] if configuration needed to connect to a peer
 	///   is faulty
+	pub async fn connect<U: AsRef<str>>(&self, url: U) -> Result<Connecting> {
+		let (address, domain) = self.resolve_domain(url).await?;
+
+		Ok(Connecting::new(
+			self.endpoint
+				.connect(&address, &domain)
+				.map_err(Error::ConnectConfig)?,
+		))
+	}
+
+	/// Establishes a new [`Connection`](crate::Connection) to a server. The
+	/// certificate root store will be ignored and the given [`Certificate`]
+	/// will validate the server.
+	///
+	/// This method is intended for direct connection to a known server.
+	/// Multiple domain names in the [`Certificate`] aren't supported.
+	///
+	/// See [`connect`](Self::connect) for more information on host name
+	/// resolution.
+	///
+	/// # Errors
+	/// - [`Error::MultipleDomains`] if multiple domains are used in this
+	///   [`Certificate`]
+	/// - [`Error::ParseUrl`] if the URL couldn't be parsed
+	/// - [`Error::Domain`] if the URL didn't contain a domain
+	/// - [`Error::Port`] if the URL didn't contain a port
+	/// - [`Error::ResolveTrustDns`] if the URL couldn't be resolved to an IP
+	///   address with [`trust-dns`](trust_dns_resolver)
+	/// - [`Error::ResolveTrustDns`] if the URL couldn't be resolved to an IP
+	///   address with [`ToSocketAddrs`]
+	/// - [`Error::ConnectConfig`] if configuration needed to connect to a peer
+	///   is faulty
 	///
 	/// # Panics
 	/// Panics if the given [`Certificate`] is invalid. Can't happen if the
 	/// [`Certificate`] was properly validated through
 	/// [`Certificate::from_der`].
-	pub async fn connect<U: AsRef<str>>(&self, url: U) -> Result<Connecting> {
-		use url::Url;
+	#[allow(clippy::unwrap_in_result)]
+	pub async fn connect_pinned<U: AsRef<str>>(
+		&self,
+		url: U,
+		certificate: &Certificate,
+	) -> Result<Connecting> {
+		let mut domains = certificate.domains().into_iter();
+		let domain = domains
+			.next()
+			.expect("`Certificate` contained no valid domains");
 
-		let url = Url::parse(url.as_ref()).map_err(Error::ParseUrl)?;
-		let domain = url.domain().ok_or(Error::Domain)?;
-		let port = url.port().ok_or(Error::Port)?;
+		if domains.next().is_some() {
+			return Err(Error::MultipleDomains);
+		}
 
-		let ip = self.resolve_domain(domain.to_owned()).await?;
+		let (address, _) = self.resolve_domain(url).await?;
 
-		Ok(Connecting::new(
-			self.endpoint
-				.connect(&SocketAddr::from((ip, port)), domain)
-				.map_err(Error::ConnectConfig)?,
-		))
+		let connecting = self
+			.endpoint
+			.connect_with(
+				self.config
+					.new_client(Some(certificate), Store::Empty, None),
+				&address,
+				&domain,
+			)
+			.map_err(Error::ConnectConfig)?;
+
+		Ok(Connecting::new(connecting))
 	}
 
 	/// Resolve the IP from the given domain. See [`connect`](Self::connect) for
 	/// more details.
 	///
 	/// # Errors
+	/// - [`Error::ParseUrl`] if the URL couldn't be parsed
+	/// - [`Error::Domain`] if the URL didn't contain a domain
+	/// - [`Error::Port`] if the URL didn't contain a port
 	/// - [`Error::ResolveTrustDns`] if the URL couldn't be resolved to an IP
 	///   address with [`trust-dns`](trust_dns_resolver)
 	/// - [`Error::ResolveTrustDns`] if the URL couldn't be resolved to an IP
 	///   address with [`ToSocketAddrs`]
-	async fn resolve_domain(&self, domain: String) -> Result<IpAddr> {
+	async fn resolve_domain(&self, url: impl AsRef<str>) -> Result<(SocketAddr, String)> {
+		let url = Url::parse(url.as_ref()).map_err(Error::ParseUrl)?;
+		let domain = url.domain().ok_or(Error::Domain)?.to_owned();
+		let port = url.port().ok_or(Error::Port)?;
+
 		#[cfg(feature = "trust-dns")]
 		if self.config.trust_dns() {
 			use trust_dns_resolver::{
@@ -258,71 +312,31 @@ impl Endpoint {
 			// query the IP
 			#[allow(box_pointers)]
 			let ip = resolver
-				.lookup_ip(domain)
+				.lookup_ip(domain.clone())
 				.await
 				.map_err(|error| Error::ResolveTrustDns(Box::new(error)))?;
 
 			// take the first IP found
-			return ip.into_iter().next().ok_or(Error::NoIp);
+			let ip = ip.into_iter().next().ok_or(Error::NoIp)?;
+
+			return Ok((SocketAddr::from((ip, port)), domain));
 		}
 
 		// TODO: configure executor
-		tokio::task::spawn_blocking(move || {
-			domain
-				.to_socket_addrs()
-				.map_err(Error::ResolveStdDns)?
-				.next()
-				.map(|address| address.ip())
-				.ok_or(Error::NoIp)
-		})
-		.await
-		.expect("Resolving domain panicked")
-	}
+		let address = {
+			let domain = domain.clone();
+			tokio::task::spawn_blocking(move || {
+				domain
+					.to_socket_addrs()
+					.map_err(Error::ResolveStdDns)?
+					.next()
+					.ok_or(Error::NoIp)
+			})
+			.await
+			.expect("Resolving domain panicked")?
+		};
 
-	/// Establishes a new [`Connection`](crate::Connection) to a server. The
-	/// certificate root store will be ignored and the given [`Certificate`]
-	/// will validate the server.
-	///
-	/// This method is intender for direct connection to a known server.
-	/// Multiple domain names in the [`Certificate`] aren't supported.
-	///
-	/// # Errors
-	/// - [`Error::MultipleDomains`] if multiple domains are used in this
-	///   [`Certificate`]
-	/// - [`Error::ConnectConfig`] if configuration needed to connect to a peer
-	///   is
-	/// faulty
-	///
-	/// # Panics
-	/// Panics if the given [`Certificate`] is invalid. Can't happen if the
-	/// [`Certificate`] was properly validated through
-	/// [`Certificate::from_der`].
-	#[allow(clippy::unwrap_in_result)]
-	pub fn connect_pinned(
-		&self,
-		address: SocketAddr,
-		certificate: &Certificate,
-	) -> Result<Connecting> {
-		let mut domains = certificate.domains().into_iter();
-		let domain = domains
-			.next()
-			.expect("`Certificate` contained no valid domains");
-
-		if domains.next().is_some() {
-			return Err(Error::MultipleDomains);
-		}
-
-		let connecting = self
-			.endpoint
-			.connect_with(
-				self.config
-					.new_client(Some(certificate), Store::Empty, None),
-				&address,
-				&domain,
-			)
-			.map_err(Error::ConnectConfig)?;
-
-		Ok(Connecting::new(connecting))
+		Ok((address, domain))
 	}
 
 	/// Get the local [`SocketAddr`] the underlying socket is bound to.
@@ -418,7 +432,8 @@ mod test {
 		let mut server = Endpoint::new_server(0, certificate.clone(), private_key)?;
 
 		let _connection = client
-			.connect_pinned(server.local_address()?, &certificate)?
+			.connect_pinned(format!("quic://{}", server.local_address()?), &certificate)
+			.await?
 			.accept::<()>()
 			.await?;
 		let _connection = server
@@ -440,12 +455,13 @@ mod test {
 
 		let client = Endpoint::new_client()?;
 		let mut server = Endpoint::new_server(0, certificate.clone(), private_key)?;
-		let address = server.local_address()?;
+		let address = format!("quic://{}", server.local_address()?);
 
 		// `wait_idle` should never finish unless these `Connection`s are closed, which
 		// they won't unless they are dropped or explicitly closed
 		let _connection = client
-			.connect_pinned(address, &certificate)?
+			.connect_pinned(&address, &certificate)
+			.await?
 			.accept::<()>()
 			.await?;
 		let _connection = server
@@ -462,7 +478,8 @@ mod test {
 		// connecting to a closed server shouldn't work
 		assert!(matches!(
 			client
-				.connect_pinned(address, &certificate)?
+				.connect_pinned(address, &certificate)
+				.await?
 				.accept::<()>()
 				.await,
 			Err(Error::Connecting(ConnectionError::LocallyClosed))
@@ -487,12 +504,13 @@ mod test {
 
 		let client = Endpoint::new_client()?;
 		let mut server = Endpoint::new_server(0, certificate.clone(), private_key)?;
-		let address = server.local_address()?;
+		let address = format!("quic://{}", server.local_address()?);
 
 		// these `Connection`s should still work even if new incoming connections are
 		// refused
 		let client_connection = client
-			.connect_pinned(address, &certificate)?
+			.connect_pinned(&address, &certificate)
+			.await?
 			.accept::<()>()
 			.await?;
 		let mut server_connection = server
@@ -516,7 +534,7 @@ mod test {
 
 		// connecting to a server that refuses new `Connection`s shouldn't work
 		assert!(matches!(
-			client.connect_pinned(address, &certificate)?.accept::<()>().await,
+			client.connect_pinned(address, &certificate).await?.accept::<()>().await,
 			Err(Error::Connecting(ConnectionError::ConnectionClosed(
 				ConnectionClose {
 					error_code: TransportErrorCode::CONNECTION_REFUSED,
@@ -562,7 +580,8 @@ mod test {
 		// automatically when it's dropped
 		{
 			let _connection = client
-				.connect_pinned(server.local_address()?, &certificate)?
+				.connect_pinned(format!("quic://{}", server.local_address()?), &certificate)
+				.await?
 				.accept::<()>()
 				.await?;
 			let _connection = server

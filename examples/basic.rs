@@ -19,7 +19,7 @@ async fn main() -> Result<()> {
 	// we want to do this outside to reserve the `SERVER_PORT`, otherwise spawned
 	// clients may take it
 	let mut server = Endpoint::new_server(SERVER_PORT, certificate.clone(), private_key)?;
-	let address = server.local_address()?;
+	let address = format!("quic://{}", server.local_address()?);
 
 	// start the server
 	tasks.push({
@@ -96,6 +96,7 @@ async fn main() -> Result<()> {
 
 	// start 100 clients
 	for index in 0..CLIENTS {
+		let address = address.clone();
 		let certificate = certificate.clone();
 
 		tasks.push(tokio::spawn(async move {
@@ -104,7 +105,8 @@ async fn main() -> Result<()> {
 			println!("[client:{}] Bound to {}", index, client.local_address()?);
 
 			let connection = client
-				.connect_pinned(address, &certificate)?
+				.connect_pinned(address, &certificate)
+				.await?
 				.accept::<()>()
 				.await?;
 			connection.close_incoming().await?;
