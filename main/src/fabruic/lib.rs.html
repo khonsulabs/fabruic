@@ -78,6 +78,8 @@
 <span id="75">75</span>
 <span id="76">76</span>
 <span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">unsafe_code</span>)]</span>
 <span class="attribute">#![<span class="ident">warn</span>(
@@ -145,11 +147,13 @@
 <span class="doccomment">//! TODO</span>
 
 <span class="kw">mod</span> <span class="ident">certificate</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;dangerous&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">dangerous</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;dangerous&quot;</span>)]</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">doc</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;dangerous&quot;</span>)))]</span>
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">dangerous</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">dangerous</span> {
+	<span class="doccomment">//! Security-sensitive settings are hidden behind these traits. Be careful!</span>
+
+	<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">certificate::Dangerous</span> <span class="kw">as</span> <span class="ident">Certificate</span>, <span class="ident">quic::Dangerous</span> <span class="kw">as</span> <span class="ident">Builder</span>};
+}
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">error</span>;
 <span class="kw">mod</span> <span class="ident">quic</span>;
 

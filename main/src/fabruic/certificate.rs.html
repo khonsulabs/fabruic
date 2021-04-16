@@ -284,6 +284,49 @@
 <span id="281">281</span>
 <span id="282">282</span>
 <span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Creating [`Certificate`]s.</span>
 
@@ -292,7 +335,7 @@
 	<span class="ident">time::Duration</span>,
 };
 
-<span class="kw">use</span> <span class="ident">rustls::sign</span>;
+<span class="kw">use</span> <span class="ident">rustls::sign</span>::{<span class="self">self</span>, <span class="ident">SigningKey</span>};
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>, <span class="ident">Serializer</span>};
 <span class="kw">use</span> <span class="ident">webpki::EndEntityCert</span>;
 <span class="kw">use</span> <span class="ident">x509_parser</span>::{<span class="ident">certificate::X509Certificate</span>, <span class="ident">extensions::GeneralName</span>};
@@ -397,7 +440,7 @@
 	<span class="doccomment">/// # Panics</span>
 	<span class="doccomment">/// Panics if [`Certificate`] couldn&#39;t be parsed or contained no valid</span>
 	<span class="doccomment">/// domain names. This can&#39;t happen if [`Certificate`] is constructed</span>
-	<span class="doccomment">/// correctly from [`from_der`](Certificate::from_der).</span>
+	<span class="doccomment">/// correctly from [`from_der`](Self::from_der).</span>
 	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">domains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> (<span class="kw">_</span>, <span class="ident">certificate</span>) <span class="op">=</span>
@@ -421,13 +464,33 @@
 			})
 			.<span class="ident">expect</span>(<span class="string">&quot;`Certificate` contained no valid domains&quot;</span>)
 	}
+
+	<span class="doccomment">/// Convert into a type [`rustls`] can consume.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Panics</span>
+	<span class="doccomment">/// Panics if [`Certificate`] couldn&#39;t be parsed or contained no valid</span>
+	<span class="doccomment">/// domain names. This can&#39;t happen if [`Certificate`] is constructed</span>
+	<span class="doccomment">/// correctly from [`from_der`](Self::from_der).</span>
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">into_rustls</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">rustls::Certificate</span> {
+		<span class="ident">rustls::Certificate</span>(<span class="self">self</span>.<span class="ident">into</span>())
+	}
+
+	<span class="doccomment">/// Convert into a type [`quinn`] can consume.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Panics</span>
+	<span class="doccomment">/// Panics if [`Certificate`] couldn&#39;t be parsed or contained no valid</span>
+	<span class="doccomment">/// domain names. This can&#39;t happen if [`Certificate`] is constructed</span>
+	<span class="doccomment">/// correctly from [`from_der`](Self::from_der).</span>
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">as_quinn</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">quinn::Certificate</span> {
+		<span class="ident">quinn::Certificate::from_der</span>(<span class="self">self</span>.<span class="ident">as_ref</span>()).<span class="ident">expect</span>(<span class="string">&quot;`Certificate` couldn&#39;t be parsed&quot;</span>)
+	}
 }
 
 <span class="doccomment">/// A private Key.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// # Safety</span>
 <span class="doccomment">/// Never give this to anybody.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Deserialize</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>, <span class="ident">Ord</span>, <span class="ident">PartialEq</span>, <span class="ident">PartialOrd</span>, <span class="ident">serde::Serialize</span>, <span class="ident">Zeroize</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Deserialize</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>, <span class="ident">Ord</span>, <span class="ident">PartialEq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Zeroize</span>)]</span>
 <span class="attribute">#[<span class="ident">zeroize</span>(<span class="ident">drop</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PrivateKey</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>);
 
@@ -458,6 +521,29 @@
 	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unchecked_from_der</span>(<span class="ident">private_key</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span>(<span class="prelude-val">Some</span>(<span class="ident">private_key</span>))
+	}
+
+	<span class="doccomment">/// Convert into a type [`rustls`] can consume.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Panics</span>
+	<span class="doccomment">/// Panics if [`PrivateKey`] couldn&#39;t be parsed. This can&#39;t happen if</span>
+	<span class="doccomment">/// [`PrivateKey`] is constructed correctly from</span>
+	<span class="doccomment">/// [`from_der`](Self::from_der).</span>
+	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">into_rustls</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">SigningKey</span><span class="op">&gt;</span> {
+		<span class="ident">sign::any_supported_type</span>(<span class="kw-2">&amp;</span><span class="ident">rustls::PrivateKey</span>(<span class="ident">Dangerous::into</span>(<span class="self">self</span>)))
+			.<span class="ident">expect</span>(<span class="string">&quot;`PrivateKey` not compatible with `rustls`&quot;</span>)
+	}
+
+	<span class="doccomment">/// Convert into a type [`quinn`] can consume.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Panics</span>
+	<span class="doccomment">/// Panics if [`PrivateKey`] couldn&#39;t be parsed. This can&#39;t happen if</span>
+	<span class="doccomment">/// [`PrivateKey`] is constructed correctly from</span>
+	<span class="doccomment">/// [`from_der`](Self::from_der).</span>
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">as_quinn</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">quinn::PrivateKey</span> {
+		<span class="ident">quinn::PrivateKey::from_der</span>(<span class="ident">Dangerous::as_ref</span>(<span class="self">self</span>))
+			.<span class="ident">expect</span>(<span class="string">&quot;`PrivateKey` couldn&#39;t be parsed&quot;</span>)
 	}
 }
 
