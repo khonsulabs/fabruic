@@ -191,10 +191,10 @@ impl Endpoint {
 	/// The following settings are used when using
 	/// [`trust-dns`](trust_dns_resolver):
 	/// - all system configurations are ignored
-	/// - Cloudflare DNS is used as the name server
-	/// - DNSSEC is used
-	/// - DOH is used
-	/// - IPv4 is preferred over IPv6
+	#[allow(clippy::doc_markdown)]
+	/// - Cloudflare with DoT is used as the name server
+	/// - DNSSEC is enabled
+	/// - IPv6 is preferred over IPv4 if the bound socket is IPv6
 	///
 	/// # Errors
 	/// - [`Error::ParseUrl`] if the URL couldn't be parsed
@@ -202,7 +202,7 @@ impl Endpoint {
 	/// - [`Error::Port`] if the URL didn't contain a port
 	/// - [`Error::ResolveTrustDns`] if the URL couldn't be resolved to an IP
 	///   address with [`trust-dns`](trust_dns_resolver)
-	/// - [`Error::ResolveTrustDns`] if the URL couldn't be resolved to an IP
+	/// - [`Error::ResolveStdDns`] if the URL couldn't be resolved to an IP
 	///   address with [`ToSocketAddrs`]
 	/// - [`Error::ConnectConfig`] if configuration needed to connect to a peer
 	///   is faulty
@@ -234,7 +234,7 @@ impl Endpoint {
 	/// - [`Error::Port`] if the URL didn't contain a port
 	/// - [`Error::ResolveTrustDns`] if the URL couldn't be resolved to an IP
 	///   address with [`trust-dns`](trust_dns_resolver)
-	/// - [`Error::ResolveTrustDns`] if the URL couldn't be resolved to an IP
+	/// - [`Error::ResolveStdDns`] if the URL couldn't be resolved to an IP
 	///   address with [`ToSocketAddrs`]
 	/// - [`Error::ConnectConfig`] if configuration needed to connect to a peer
 	///   is faulty
@@ -283,7 +283,7 @@ impl Endpoint {
 	/// - [`Error::Port`] if the URL didn't contain a port
 	/// - [`Error::ResolveTrustDns`] if the URL couldn't be resolved to an IP
 	///   address with [`trust-dns`](trust_dns_resolver)
-	/// - [`Error::ResolveTrustDns`] if the URL couldn't be resolved to an IP
+	/// - [`Error::ResolveStdDns`] if the URL couldn't be resolved to an IP
 	///   address with [`ToSocketAddrs`]
 	async fn resolve_domain(&self, url: impl AsRef<str>) -> Result<(SocketAddr, String)> {
 		let url = Url::parse(url.as_ref()).map_err(Error::ParseUrl)?;
@@ -302,20 +302,29 @@ impl Endpoint {
 		#[cfg(feature = "trust-dns")]
 		if self.config.trust_dns() {
 			use trust_dns_resolver::{
-				config::{ResolverConfig, ResolverOpts},
+				config::{LookupIpStrategy, ResolverConfig, ResolverOpts},
 				TokioAsyncResolver,
 			};
 
-			let config = ResolverConfig::cloudflare_https();
-			// `validate` enforces DNSSEC
+			// ip strategy depends on the current socket
+			let ip_strategy = if let Ok(true) = self.local_address().map(|socket| socket.is_ipv6())
+			{
+				LookupIpStrategy::Ipv6thenIpv4
+			} else {
+				LookupIpStrategy::Ipv4Only
+			};
+
+			// build `Resolver` options
 			let opts = ResolverOpts {
+				ip_strategy,
+				use_hosts_file: false,
 				validate: true,
 				..ResolverOpts::default()
 			};
 
 			// build the `Resolver`
 			#[allow(box_pointers)]
-			let resolver = TokioAsyncResolver::tokio(config, opts)
+			let resolver = TokioAsyncResolver::tokio(ResolverConfig::cloudflare_tls(), opts)
 				.map_err(|error| Error::ResolveTrustDns(Box::new(error)))?;
 			// query the IP
 			#[allow(box_pointers)]
