@@ -461,10 +461,14 @@ impl Dangerous for Builder {
 
 #[cfg(test)]
 mod test {
+	use std::task::Poll;
+
 	use anyhow::Result;
 	use futures_util::StreamExt;
+	use quinn::{ConnectionClose, ConnectionError};
 
 	use super::*;
+	use crate::Error;
 
 	#[tokio::test]
 	async fn default() -> Result<()> {
@@ -507,7 +511,7 @@ mod test {
 		// test connection
 		let _connection = client
 			.connect_pinned(
-				server.local_address()?.to_string(),
+				format!("quic://{}", server.local_address()?),
 				key_pair.certificate(),
 				None,
 			)
@@ -517,7 +521,7 @@ mod test {
 		let _connection = server
 			.next()
 			.await
-			.expect("client dropped")
+			.expect("server dropped")
 			.accept::<()>()
 			.await?;
 
@@ -552,7 +556,7 @@ mod test {
 		let connection = server
 			.next()
 			.await
-			.expect("client dropped")
+			.expect("server dropped")
 			.accept::<()>()
 			.await?;
 
@@ -593,13 +597,15 @@ mod test {
 
 		// build server
 		let mut builder = Builder::new();
-		let _ = builder.set_protocols(protocols.clone());
+		let _ = builder
+			.set_server_key_pair(Some(key_pair.clone()))
+			.set_protocols(protocols.clone());
 		let mut server = builder.build()?;
 
 		// connect with server
 		let mut connecting = client
 			.connect_pinned(
-				server.local_address()?.to_string(),
+				format!("quic://{}", server.local_address()?),
 				key_pair.certificate(),
 				None,
 			)
@@ -615,7 +621,7 @@ mod test {
 		);
 
 		// receive connection from client
-		let mut connecting = server.next().await.expect("client dropped");
+		let mut connecting = server.next().await.expect("server dropped");
 		assert_eq!(
 			protocols[0],
 			connecting.protocol().await?.expect("no protocol found")
@@ -625,6 +631,51 @@ mod test {
 			protocols[0],
 			connection.protocol().expect("no protocol found")
 		);
+
+		Ok(())
+	}
+
+	#[tokio::test]
+	async fn protocols_incompatible() -> Result<()> {
+		let key_pair = KeyPair::new_self_signed("test");
+
+		// build client
+		let mut builder = Builder::new();
+		let _ = builder.set_protocols([b"test1".to_vec()]);
+		let client = builder.build()?;
+
+		// build server
+		let mut builder = Builder::new();
+		let _ = builder
+			.set_server_key_pair(Some(key_pair.clone()))
+			.set_protocols([b"test2".to_vec()]);
+		let mut server = builder.build()?;
+
+		// connect with server
+		let result = client
+			.connect_pinned(
+				format!("quic://{}", server.local_address()?),
+				key_pair.certificate(),
+				None,
+			)
+			.await?
+			.accept::<()>()
+			.await;
+		// check result
+		assert!(matches!(
+			result,
+			Err(Error::Connecting(ConnectionError::ConnectionClosed(ConnectionClose {
+				error_code,
+				frame_type: None,
+				reason
+			}))) if (reason.as_ref() == b"peer doesn't support any known protocol")
+				&& format!("{:?}", error_code) == "Code::crypto(78)"));
+
+		// on protocol mismatch, the server receives nothing
+		assert!(matches!(
+			allochronic_util::poll(server.next()).await,
+			Poll::Pending
+		));
 
 		Ok(())
 	}
