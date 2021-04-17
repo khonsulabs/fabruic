@@ -1,7 +1,7 @@
 //! [`Endpoint`] builder.
 
 mod config;
-use std::{fmt::Debug, net::SocketAddr, str::FromStr, sync::Arc};
+use std::{fmt::Debug, net::SocketAddr, sync::Arc};
 
 pub(super) use config::Config;
 use quinn::{CertificateChain, ServerConfigBuilder};
@@ -9,19 +9,33 @@ use rustls::{ClientCertVerified, ClientCertVerifier, DistinguishedNames, TLSErro
 use serde::{Deserialize, Serialize};
 use webpki::DNSName;
 
-use crate::{Certificate, Endpoint, Error, PrivateKey, Result};
+use crate::{error, Certificate, Endpoint, KeyPair, Result};
 
+/// Helper for constructing an [`Endpoint`].
+///
+/// # Examples
+/// ```
+/// # #[tokio::main] async fn main() -> anyhow::Result<()> {
+/// use fabruic::{Builder, Store};
+///
+/// let mut builder = Builder::new();
+/// builder
+/// 	.set_protocols([b"test".to_vec()])
+/// 	.set_store(Store::Os);
+///
+/// let endpoint = builder.build()?;
+/// # Ok(()) }
+/// ```
 #[derive(Debug)]
-/// Holding configuration for [`Builder`] to build [`Endpoint`].
 pub struct Builder {
 	/// [`SocketAddr`] for [`Endpoint`](quinn::Endpoint) to bind to.
 	address: SocketAddr,
-	/// Custom CA [`Certificate`]s.
-	ca_certs: Vec<Certificate>,
-	/// Key-pair for the server.
-	server_key_pair: Option<(Certificate, PrivateKey)>,
-	/// Client certificate.
-	client_key_pair: Option<(Certificate, PrivateKey)>,
+	/// Custom root [`Certificate`]s.
+	root_certificates: Vec<Certificate>,
+	/// Server certificate ley-pair.
+	server_key_pair: Option<KeyPair>,
+	/// Client certificate key-pair.
+	client_key_pair: Option<KeyPair>,
 	/// [`Store`] option.
 	store: Store,
 	/// Persistent configuration passed to the [`Endpoint`]
@@ -36,6 +50,15 @@ impl Default for Builder {
 
 impl Builder {
 	/// Builds a new [`Builder`]. See [`Builder`] methods for defaults.
+	///
+	/// # Examples
+	/// ```
+	/// # #[tokio::main] async fn main() -> anyhow::Result<()> {
+	/// use fabruic::Builder;
+	///
+	/// let mut endpoint = Builder::new().build()?;
+	/// # Ok(()) }
+	/// ```
 	#[must_use]
 	pub fn new() -> Self {
 		let config = Config::new();
@@ -47,7 +70,7 @@ impl Builder {
 			// equals to `[::ffff:127.0.0.1]:0`
 			#[cfg(feature = "test")]
 			address: ([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], 0).into(),
-			ca_certs: Vec::new(),
+			root_certificates: Vec::new(),
 			server_key_pair: None,
 			client_key_pair: None,
 			store: Store::Embedded,
@@ -55,147 +78,332 @@ impl Builder {
 		}
 	}
 
-	/// Set's the [`SocketAddr`].
+	/// Set's the [`SocketAddr`] to bind to.
 	///
 	/// Default is "\[::\]:0".
+	///
+	/// # Examples
+	/// ```
+	/// # fn main() -> anyhow::Result<()> {
+	/// use fabruic::Builder;
+	///
+	/// let mut builder = Builder::new();
+	/// builder.set_address("[::1]:0".parse()?);
+	/// # Ok(()) }
+	/// ```
 	pub fn set_address(&mut self, address: SocketAddr) -> &mut Self {
 		self.address = address;
 		self
 	}
 
-	/// Set's the [`SocketAddr`].
+	/// Returns the [`SocketAddr`] to bind to.
 	///
-	/// Default is "\[::\]:0".
+	/// See [`set_address`](Self::set_address).
 	///
-	/// # Errors
-	/// [`Error::ParseAddress`] if the `address` couldn't be parsed.
-	pub fn set_address_str(&mut self, address: &str) -> Result<&mut Self> {
-		self.address = FromStr::from_str(address).map_err(Error::ParseAddress)?;
-		Ok(self)
+	/// # Examples
+	/// ```
+	/// # fn main() -> anyhow::Result<()> {
+	/// use fabruic::Builder;
+	///
+	/// let mut builder = Builder::new();
+	///
+	/// let address = "[::1]:0".parse()?;
+	/// builder.set_address(address);
+	/// assert_eq!(builder.address(), &address);
+	/// # Ok(()) }
+	/// ```
+	#[must_use]
+	pub const fn address(&self) -> &SocketAddr {
+		&self.address
 	}
 
-	/// Set a [`Certificate`] and [`PrivateKey`] for the server. This will add a
-	/// listener to incoming [`Connection`](crate::Connection)s.
+	/// Set a server certificate [`KeyPair`], use [`None`] to
+	/// remove any server certificate.
 	///
-	/// Default is none and therefore [`Endpoint`] will not listen to incoming
-	/// [`Connection`](crate::Connection)s.
-	pub fn set_server_key_pair(
-		&mut self,
-		certificate: Certificate,
-		private_key: PrivateKey,
-	) -> &mut Self {
-		self.server_key_pair = Some((certificate, private_key));
+	/// [`Endpoint`] won't listen to any incoming
+	/// [`Connection`](crate::Connection)s without a server certificate.
+	///
+	/// Default is [`None`].
+	///
+	/// # Examples
+	/// ```
+	/// use fabruic::{Builder, KeyPair};
+	///
+	/// let mut builder = Builder::new();
+	/// builder.set_server_key_pair(Some(KeyPair::new_self_signed("test")));
+	/// ```
+	pub fn set_server_key_pair(&mut self, key_pair: Option<KeyPair>) -> &mut Self {
+		self.server_key_pair = key_pair;
 		self
 	}
 
-	/// Set a [`Certificate`] and [`PrivateKey`] for the client.
+	/// Returns the server certificate [`KeyPair`].
 	///
-	/// Default is none.
-	pub fn set_client_key_pair(
-		&mut self,
-		certificate: Certificate,
-		private_key: PrivateKey,
-	) -> &mut Self {
-		self.client_key_pair = Some((certificate, private_key));
+	/// See [`set_server_key_pair`](Self::set_server_key_pair).
+	///
+	/// # Examples
+	/// ```
+	/// use fabruic::{Builder, KeyPair};
+	///
+	/// let mut builder = Builder::new();
+	///
+	/// let key_pair = KeyPair::new_self_signed("test");
+	/// builder.set_server_key_pair(Some(key_pair.clone()));
+	/// assert_eq!(builder.server_key_pair(), &Some(key_pair))
+	/// ```
+	#[must_use]
+	pub const fn server_key_pair(&self) -> &Option<KeyPair> {
+		&self.server_key_pair
+	}
+
+	/// Set a client certificate [`KeyPair`], use [`None`] to
+	/// remove any client certificate.
+	///
+	/// Default is [`None`].
+	///
+	/// # Examples
+	/// ```
+	/// use fabruic::{Builder, KeyPair};
+	///
+	/// let mut builder = Builder::new();
+	/// builder.set_client_key_pair(Some(KeyPair::new_self_signed("test")));
+	/// ```
+	pub fn set_client_key_pair(&mut self, key_pair: Option<KeyPair>) -> &mut Self {
+		self.client_key_pair = key_pair;
 		self
 	}
 
-	/// Set the application-layer protocols to accept, in order of descending
-	/// preference. When set, clients which don't declare support for at least
-	/// one of the supplied protocols will be rejected.
+	/// Returns the client certificate [`KeyPair`].
+	///
+	/// See [`set_client_key_pair`](Self::set_client_key_pair).
+	///
+	/// # Examples
+	/// ```
+	/// use fabruic::{Builder, KeyPair};
+	///
+	/// let mut builder = Builder::new();
+	///
+	/// let key_pair = KeyPair::new_self_signed("test");
+	/// builder.set_client_key_pair(Some(key_pair.clone()));
+	/// assert_eq!(builder.client_key_pair(), &Some(key_pair))
+	/// ```
+	#[must_use]
+	pub const fn client_key_pair(&self) -> &Option<KeyPair> {
+		&self.client_key_pair
+	}
+
+	/// Set the protocols to accept, in order of descending preference. When
+	/// set, clients which don't declare support for at least one of the
+	/// supplied protocols will be rejected.
 	///
 	/// See [`Connection::protocol`](crate::Connection::protocol).
 	///
-	/// Default is contains no protocols.
+	/// Default contains no protocols.
+	///
+	/// # Examples
+	/// ```
+	/// use fabruic::Builder;
+	///
+	/// let mut builder = Builder::new();
+	/// builder.set_protocols([b"test".to_vec()]);
+	/// ```
 	pub fn set_protocols<P: Into<Vec<Vec<u8>>>>(&mut self, protocols: P) -> &mut Self {
 		self.config.set_protocols(protocols);
 		self
 	}
 
-	/// Forces [`Endpoint::connect`] to use [`trust-dns`](trust_dns_resolver).
+	/// Returns the set protocols.
 	///
-	/// Default is `true` if the crate feature <span
+	/// See [`set_protocols`](Self::set_protocols).
+	///
+	/// # Examples
+	/// ```
+	/// use fabruic::Builder;
+	///
+	/// let mut builder = Builder::new();
+	///
+	/// let protocols = [b"test".to_vec()];
+	/// builder.set_protocols(protocols.clone());
+	/// assert_eq!(builder.protocols(), protocols)
+	/// ```
+	#[must_use]
+	pub fn protocols(&self) -> &[Vec<u8>] {
+		self.config.protocols()
+	}
+
+	/// Controls the use of [`trust-dns`](trust_dns_resolver) for
+	/// [`Endpoint::connect`].
+	///
+	/// Default is [`true`] if the crate feature <span
 	///   class="module-item stab portability"
 	///   style="display: inline; border-radius: 3px; padding: 2px; font-size:
 	/// 80%; line-height: 1.2;" ><code>trust-dns</code></span> is enabled.
-	pub fn set_trust_dns(&mut self, trust_dns: bool) -> &mut Self {
-		self.config.set_trust_dns(trust_dns);
+	///
+	/// # Examples
+	/// ```
+	/// use fabruic::Builder;
+	///
+	/// let mut builder = Builder::new();
+	/// builder.set_trust_dns(false);
+	/// ```
+	#[cfg(feature = "trust-dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
+	pub fn set_trust_dns(&mut self, enable: bool) -> &mut Self {
+		self.config.set_trust_dns(enable);
 		self
 	}
 
-	/// Set's the default certificate root store.
+	/// Disables the use of [`trust-dns`](trust_dns_resolver) for
+	/// [`Endpoint::connect`] despite the activated crate feature.
+	///
+	/// Default is enabled if the crate feature <span
+	///   class="module-item stab portability"
+	///   style="display: inline; border-radius: 3px; padding: 2px; font-size:
+	/// 80%; line-height: 1.2;" ><code>trust-dns</code></span> is enabled.
+	///
+	/// # Examples
+	/// ```
+	/// use fabruic::Builder;
+	///
+	/// let mut builder = Builder::new();
+	/// builder.disable_trust_dns();
+	/// ```
+	pub fn disable_trust_dns(&mut self) -> &mut Self {
+		self.config.disable_trust_dns();
+		self
+	}
+
+	/// Returns if [`trust-dns`](trust_dns_resolver) is enabled.
+	///
+	/// See [`set_trust_dns`](Self::set_trust_dns) or
+	/// [`disable_trust_dns`](Self::disable_trust_dns).
+	///
+	/// # Examples
+	/// ```
+	/// use fabruic::Builder;
+	///
+	/// let mut builder = Builder::new();
+	///
+	/// builder.set_trust_dns(true);
+	/// assert_eq!(builder.trust_dns(), true);
+	///
+	/// builder.disable_trust_dns();
+	/// assert_eq!(builder.trust_dns(), false);
+	/// ```
+	#[must_use]
+	pub const fn trust_dns(&self) -> bool {
+		self.config.trust_dns()
+	}
+
+	/// Set's the default root certificate store. See [`Store`] for more
+	/// details.
 	///
 	/// Default is [`Store::Embedded`].
+	///
+	/// # Examples
+	/// ```
+	/// use fabruic::{Builder, Store};
+	///
+	/// let mut builder = Builder::new();
+	/// builder.set_store(Store::Os);
+	/// ```
 	pub fn set_store(&mut self, store: Store) -> &mut Self {
 		self.store = store;
 		self
+	}
+
+	/// Returns the set [`Store`].
+	///
+	/// See [`set_store`](Self::set_store).
+	///
+	/// # Examples
+	/// ```
+	/// use fabruic::{Builder, Store};
+	///
+	/// let mut builder = Builder::new();
+	///
+	/// // default
+	/// assert_eq!(builder.store(), Store::Embedded);
+	///
+	/// builder.set_store(Store::Os);
+	/// assert_eq!(builder.store(), Store::Os);
+	///
+	/// builder.set_store(Store::Empty);
+	/// assert_eq!(builder.store(), Store::Empty);
+	/// ```
+	#[must_use]
+	pub const fn store(&self) -> Store {
+		self.store
 	}
 
 	/// Consumes [`Builder`] to build [`Endpoint`]. Must be called from inside
 	/// the Tokio [`Runtime`](tokio::runtime::Runtime).
 	///
 	/// # Errors
-	/// [`Error::BindSocket`] if the socket couldn't be bound to the given
+	/// [`error::Builder`] if the socket couldn't be bound to the given
 	/// `address`.
 	///
 	/// # Panics
-	/// - if the given [`Certificate`] is invalid. Can't happen if the
-	///   [`Certificate`] was properly validated through
-	///   [`Certificate::from_der`]
+	/// - if the given [`KeyPair`]s or [`Certificate`]s are invalid - can't
+	///   happen if they were properly validated through [`KeyPair::from_parts`]
+	///   or [`Certificate::from_der`]
 	/// - if not called from inside the Tokio
 	///   [`Runtime`](tokio::runtime::Runtime)
-	pub fn build(self) -> Result<Endpoint, (Error, Self)> {
+	pub fn build(self) -> Result<Endpoint, error::Builder> {
 		match {
 			// build client
 			let client = self.config.new_client(
-				self.ca_certs.iter(),
+				self.root_certificates.iter(),
 				self.store,
 				self.client_key_pair.clone(),
 			);
 
 			// build server only if we have a key-pair
-			let server = self
-				.server_key_pair
-				.as_ref()
-				.map(|(certificate, private_key)| {
-					let mut server = ServerConfigBuilder::default();
+			let server = self.server_key_pair.as_ref().map(|key_pair| {
+				let mut server = ServerConfigBuilder::default();
 
-					// build key-pair
-					let chain = CertificateChain::from_certs(Some(certificate.as_quinn()));
-					// add key-pair
-					let _ = server
-						.certificate(chain, private_key.as_quinn())
-						.expect("`CertificateChain` couldn't be verified");
+				// set protocols
+				if !self.config.protocols().is_empty() {
+					let _ = server.protocols(
+						self.config
+							.protocols()
+							.iter()
+							.map(Vec::as_slice)
+							.collect::<Vec<_>>()
+							.as_slice(),
+					);
+				}
 
-					// set protocols
-					if !self.config.protocols().is_empty() {
-						let _ = server.protocols(
-							self.config
-								.protocols()
-								.iter()
-								.map(Vec::as_slice)
-								.collect::<Vec<_>>()
-								.as_slice(),
-						);
-					}
+				let mut server = server.build();
 
-					let mut server = server.build();
+				// set key-pair
+				let chain = CertificateChain::from_certs(Some(key_pair.certificate().as_quinn()));
+				let _ = server
+					.certificate(chain, key_pair.private_key().as_quinn())
+					.expect("`CertificateChain` couldn't be verified");
 
-					// get inner rustls `ServerConfig`
+				// get inner rustls `ServerConfig`
+				{
 					let crypto =
 						Arc::get_mut(&mut server.crypto).expect("failed to build `ServerConfig`");
+
+					// set client certificate verifier
 					crypto.set_client_certificate_verifier(Arc::new(ClientVerifier));
+				}
 
-					// set transport
-					server.transport = self.config.transport();
+				// set transport
+				server.transport = self.config.transport();
 
-					server
-				});
+				server
+			});
 
 			Endpoint::new(self.address, client, server, self.config.clone())
 		} {
 			Ok(endpoint) => Ok(endpoint),
-			Err(error) => Err((error, self)),
+			Err(error) => Err(error::Builder {
+				error,
+				builder: self,
+			}),
 		}
 	}
 }
@@ -225,11 +433,13 @@ impl ClientCertVerifier for ClientVerifier {
 /// Configuration option for [`Builder::set_store`].
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 pub enum Store {
-	/// No certificate root store.
+	/// Empty root certificate store.
 	Empty,
-	/// OS certificate root store.
+	/// Uses the OS root certificate store, see
+	/// [`rustls-native-certs`](https://docs.rs/rustls-native-certs).
 	Os,
-	/// Embedded certificate root store, see [`webpki-roots`](webpki_roots).
+	/// Use an embedded root certificate store, see
+	/// [`webpki-roots`](webpki_roots).
 	Embedded,
 }
 
@@ -239,32 +449,34 @@ pub trait Dangerous {
 	/// [`connection`](Endpoint::connect)ing to a server.
 	///
 	/// # Security
-	/// Managing your own CA root store can make sense if a private CA is used.
-	/// Otherwise use [`Endpoint::connect_pinned`].
+	/// Managing your own root certificate store can make sense if a private CA
+	/// is used. Otherwise use [`Endpoint::connect_pinned`].
 	fn add_ca(builder: &mut Self, certificate: Certificate);
 }
 
 impl Dangerous for Builder {
 	fn add_ca(builder: &mut Self, certificate: Certificate) {
-		builder.ca_certs.push(certificate);
+		builder.root_certificates.push(certificate);
 	}
 }
 
 #[cfg(test)]
 mod test {
 	use anyhow::Result;
+	use futures_util::StreamExt;
 
 	use super::*;
+	use crate::KeyPair;
 
 	#[tokio::test]
 	async fn default() -> Result<()> {
-		let _endpoint = Builder::default().build().map_err(|(error, _)| error)?;
+		let _endpoint = Builder::default().build()?;
 		Ok(())
 	}
 
 	#[tokio::test]
 	async fn new() -> Result<()> {
-		let _endpoint = Builder::new().build().map_err(|(error, _)| error)?;
+		let _endpoint = Builder::new().build()?;
 		Ok(())
 	}
 
@@ -272,7 +484,7 @@ mod test {
 	async fn address() -> Result<()> {
 		let mut builder = Builder::new();
 		let _ = builder.set_address(([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], 5000).into());
-		let endpoint = builder.build().map_err(|(error, _)| error)?;
+		let endpoint = builder.build()?;
 
 		assert_eq!(
 			"[::ffff:127.0.0.1]:5000".parse::<SocketAddr>()?,
@@ -283,34 +495,18 @@ mod test {
 	}
 
 	#[tokio::test]
-	async fn address_str() -> Result<()> {
-		let mut builder = Builder::new();
-		let _ = builder.set_address_str("[::ffff:127.0.0.1]:5001")?;
-		let endpoint = builder.build().map_err(|(error, _)| error)?;
-
-		assert_eq!(
-			"[::ffff:127.0.0.1]:5001".parse::<SocketAddr>()?,
-			endpoint.local_address()?
-		);
-
-		Ok(())
-	}
-
-	#[tokio::test]
 	async fn ca_key_pair() -> Result<()> {
-		use futures_util::StreamExt;
-
-		let (certificate, private_key) = crate::generate_self_signed("localhost");
+		let key_pair = KeyPair::new_self_signed("localhost");
 
 		// build client
 		let mut builder = Builder::new();
-		Dangerous::add_ca(&mut builder, certificate.clone());
-		let client = builder.build().map_err(|(error, _)| error)?;
+		Dangerous::add_ca(&mut builder, key_pair.certificate().clone());
+		let client = builder.build()?;
 
 		// build server
 		let mut builder = Builder::new();
-		let _ = builder.set_server_key_pair(certificate, private_key);
-		let mut server = builder.build().map_err(|(error, _)| error)?;
+		let _ = builder.set_server_key_pair(Some(key_pair));
+		let mut server = builder.build()?;
 
 		// test connection
 		let _connection = client
@@ -333,21 +529,19 @@ mod test {
 
 	#[tokio::test]
 	async fn client_certificate() -> Result<()> {
-		use futures_util::StreamExt;
-
-		let (server_certificate, server_private_key) = crate::generate_self_signed("localhost");
-		let (client_certificate, client_private_key) = crate::generate_self_signed("client");
+		let server_key_pair = KeyPair::new_self_signed("localhost");
+		let client_key_pair = KeyPair::new_self_signed("client");
 
 		// build client
 		let mut builder = Builder::new();
-		Dangerous::add_ca(&mut builder, server_certificate.clone());
-		let _ = builder.set_client_key_pair(client_certificate.clone(), client_private_key);
-		let client = builder.build().map_err(|(error, _)| error)?;
+		Dangerous::add_ca(&mut builder, server_key_pair.certificate().clone());
+		let _ = builder.set_client_key_pair(Some(client_key_pair.clone()));
+		let client = builder.build()?;
 
 		// build server
 		let mut builder = Builder::new();
-		let _ = builder.set_server_key_pair(server_certificate, server_private_key);
-		let mut server = builder.build().map_err(|(error, _)| error)?;
+		let _ = builder.set_server_key_pair(Some(server_key_pair));
+		let mut server = builder.build()?;
 
 		// test connection
 		let _connection = client
@@ -367,12 +561,21 @@ mod test {
 
 		// test client certificate
 		assert_eq!(
-			[client_certificate],
+			[client_key_pair.into_parts().0],
 			connection
 				.peer_identity()
 				.expect("found no client certificate")
 				.as_slice()
 		);
+
+		Ok(())
+	}
+
+	#[tokio::test]
+	async fn protocols() -> Result<()> {
+		let mut builder = Builder::new();
+		let _ = builder.set_protocols([b"test".to_vec()]);
+		let _endpoint = builder.build()?;
 
 		Ok(())
 	}

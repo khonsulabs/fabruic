@@ -1,5 +1,5 @@
 use anyhow::{Error, Result};
-use fabruic::Endpoint;
+use fabruic::{Endpoint, KeyPair};
 use futures_util::{future, StreamExt, TryFutureExt};
 
 const SERVER_NAME: &str = "test";
@@ -13,12 +13,12 @@ async fn main() -> Result<()> {
 	let mut tasks = Vec::with_capacity(CLIENTS + 1);
 
 	// generate a certificate pair
-	let (certificate, private_key) = fabruic::generate_self_signed(SERVER_NAME);
+	let key_pair = KeyPair::new_self_signed(SERVER_NAME);
 
 	// build the server
 	// we want to do this outside to reserve the `SERVER_PORT`, otherwise spawned
 	// clients may take it
-	let mut server = Endpoint::new_server(SERVER_PORT, certificate.clone(), private_key)?;
+	let mut server = Endpoint::new_server(SERVER_PORT, key_pair.clone())?;
 	let address = format!("quic://{}", server.local_address()?);
 
 	// start the server
@@ -99,7 +99,7 @@ async fn main() -> Result<()> {
 	// start 100 clients
 	for index in 0..CLIENTS {
 		let address = address.clone();
-		let certificate = certificate.clone();
+		let certificate = key_pair.certificate().clone();
 
 		tasks.push(
 			tokio::spawn(async move {

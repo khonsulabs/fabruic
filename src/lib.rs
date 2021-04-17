@@ -63,17 +63,20 @@
 
 //! TODO
 
-mod certificate;
+mod x509;
 #[cfg(feature = "dangerous")]
 #[cfg_attr(doc, doc(cfg(feature = "dangerous")))]
 pub mod dangerous {
 	//! Security-sensitive settings are hidden behind these traits. Be careful!
 
-	pub use crate::{certificate::Dangerous as Certificate, quic::Dangerous as Builder};
+	pub use crate::{
+		quic::Dangerous as Builder,
+		x509::{private_key::Dangerous as PrivateKey, Dangerous as KeyPair},
+	};
 }
 pub mod error;
 mod quic;
 
-pub use certificate::{generate_self_signed, Certificate, PrivateKey};
 pub use error::{Error, Result};
 pub use quic::{Builder, Connecting, Connection, Endpoint, Incoming, Receiver, Sender, Store};
+pub use x509::{Certificate, KeyPair, PrivateKey};

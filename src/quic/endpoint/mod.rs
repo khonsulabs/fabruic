@@ -17,14 +17,11 @@ use futures_util::{
 	stream::{FusedStream, Stream},
 	StreamExt,
 };
-use quinn::{ClientConfig, ServerConfig, VarInt};
+use quinn::{ClientConfig, EndpointError, ServerConfig, VarInt};
 use url::{Host, Url};
 
 use super::Task;
-use crate::{
-	certificate::{Certificate, PrivateKey},
-	Connecting, Error, Result,
-};
+use crate::{error, Certificate, Connecting, Error, KeyPair, Result};
 
 /// Represents a socket using the QUIC protocol to communicate with peers.
 /// Receives incoming [`Connection`](crate::Connection)s through [`Stream`].
@@ -61,7 +58,7 @@ impl Endpoint {
 	/// inside the Tokio [`Runtime`](tokio::runtime::Runtime).
 	///
 	/// # Errors
-	/// [`Error::BindSocket`] if the socket couldn't be bound to the given
+	/// [`error::Builder`] if the socket couldn't be bound to the given
 	/// `address`.
 	///
 	/// # Panics
@@ -72,7 +69,7 @@ impl Endpoint {
 		client: ClientConfig,
 		server: Option<ServerConfig>,
 		config: Config,
-	) -> Result<Self> {
+	) -> Result<Self, error::Endpoint> {
 		// configure endpoint for server and client
 		let mut endpoint_builder = quinn::Endpoint::builder();
 		let _ = endpoint_builder.default_client_config(client);
@@ -84,7 +81,11 @@ impl Endpoint {
 		});
 
 		// build endpoint
-		let (endpoint, incoming) = endpoint_builder.bind(&address).map_err(Error::BindSocket)?;
+		let (endpoint, incoming) = endpoint_builder.bind(&address).map_err(|error| {
+			error::Endpoint(match error {
+				EndpointError::Socket(error) => error,
+			})
+		})?;
 
 		// create channels that will receive incoming `Connection`s
 		let (sender, receiver) = flume::unbounded();
@@ -119,14 +120,16 @@ impl Endpoint {
 	/// [`Connection`](crate::Connection)s.
 	///
 	/// # Errors
-	/// [`Error::BindSocket`] if the socket couldn't be bound to the given
+	/// [`error::Builder`] if the socket couldn't be bound to the given
 	/// `address`.
 	///
 	/// # Panics
 	/// If not called from inside the Tokio
 	/// [`Runtime`](tokio::runtime::Runtime).
-	pub fn new_client() -> Result<Self> {
-		Builder::new().build().map_err(|(error, _)| error)
+	pub fn new_client() -> Result<Self, error::Endpoint> {
+		Builder::new()
+			.build()
+			.map_err(|error::Builder { error, .. }| error)
 	}
 
 	/// Simplified version of creating a server. See [`Builder`] for more
@@ -134,29 +137,27 @@ impl Endpoint {
 	/// [`Runtime`](tokio::runtime::Runtime).
 	///
 	/// # Errors
-	/// [`Error::BindSocket`] if the socket couldn't be bound to the given
+	/// [`error::Builder`] if the socket couldn't be bound to the given
 	/// `address`.
 	///
 	/// # Panics
+	/// - if the given [`KeyPair`] or [`Certificate`]s are invalid - can't
+	///   happen if they were properly validated through [`KeyPair::from_parts`]
+	///   or [`Certificate::from_der`]
 	/// - if not called from inside the Tokio
 	///   [`Runtime`](tokio::runtime::Runtime)
-	/// - if the given [`Certificate`] is invalid - can't happen if the
-	///   [`Certificate`] was properly validated through
-	///   [`Certificate::from_der`]
-	pub fn new_server(
-		port: u16,
-		certificate: Certificate,
-		private_key: PrivateKey,
-	) -> Result<Self> {
+	pub fn new_server(port: u16, key_pair: KeyPair) -> Result<Self, error::Endpoint> {
 		let mut builder = Builder::new();
 		#[cfg(not(feature = "test"))]
 		let _ = builder.set_address(([0; 8], port).into());
 		// while testing always use the default loopback address
 		#[cfg(feature = "test")]
 		let _ = builder.set_address(([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], port).into());
-		let _ = builder.set_server_key_pair(certificate, private_key);
+		let _ = builder.set_server_key_pair(Some(key_pair));
 
-		builder.build().map_err(|(error, _)| error)
+		builder
+			.build()
+			.map_err(|error::Builder { error, .. }| error)
 	}
 
 	/// Handle incoming connections. Accessed through [`Stream`] of
@@ -178,8 +179,8 @@ impl Endpoint {
 	}
 
 	/// Establishes a new [`Connection`](crate::Connection) to a server. The
-	/// certificate root store will validate the servers [`Certificate`]
-	/// together with the domain.
+	/// servers [`Certificate`] will be validated aggainst the root certificate
+	/// store together with the domain.
 	///
 	/// Attempts to resolve the IP from the given URL. Uses
 	/// [`trust-dns`](trust_dns_resolver) by default if the crate feature <span
@@ -188,7 +189,7 @@ impl Endpoint {
 	/// 80%; line-height: 1.2;" ><code>trust-dns</code></span> is enabled.
 	/// Otherwise [`ToSocketAddrs`] is used.
 	///
-	/// See [`Builder::set_trust_dns`] for more control.
+	/// See [`Builder::disable_trust_dns`] for more control.
 	///
 	/// The following settings are used when using
 	/// [`trust-dns`](trust_dns_resolver):
@@ -219,7 +220,7 @@ impl Endpoint {
 	}
 
 	/// Establishes a new [`Connection`](crate::Connection) to a server. The
-	/// certificate root store will be ignored and the given [`Certificate`]
+	/// root certificate store will be ignored and the given [`Certificate`]
 	/// will validate the server.
 	///
 	/// This method is intended for direct connection to a known server.
@@ -418,8 +419,12 @@ impl FusedStream for Endpoint {
 #[cfg(test)]
 mod test {
 	use anyhow::Result;
+	use futures_util::StreamExt;
+	use quinn::{ConnectionClose, ConnectionError};
+	use quinn_proto::TransportErrorCode;
 
 	use super::*;
+	use crate::KeyPair;
 
 	#[test]
 	fn builder() {
@@ -428,15 +433,16 @@ mod test {
 
 	#[tokio::test]
 	async fn endpoint() -> Result<()> {
-		use futures_util::StreamExt;
-
-		let (certificate, private_key) = crate::generate_self_signed("test");
+		let key_pair = KeyPair::new_self_signed("test");
 
 		let client = Endpoint::new_client()?;
-		let mut server = Endpoint::new_server(0, certificate.clone(), private_key)?;
+		let mut server = Endpoint::new_server(0, key_pair.clone())?;
 
 		let _connection = client
-			.connect_pinned(format!("quic://{}", server.local_address()?), &certificate)
+			.connect_pinned(
+				format!("quic://{}", server.local_address()?),
+				key_pair.certificate(),
+			)
 			.await?
 			.accept::<()>()
 			.await?;
@@ -452,19 +458,16 @@ mod test {
 
 	#[tokio::test]
 	async fn close() -> Result<()> {
-		use futures_util::StreamExt;
-		use quinn::ConnectionError;
-
-		let (certificate, private_key) = crate::generate_self_signed("test");
+		let key_pair = KeyPair::new_self_signed("test");
 
 		let client = Endpoint::new_client()?;
-		let mut server = Endpoint::new_server(0, certificate.clone(), private_key)?;
+		let mut server = Endpoint::new_server(0, key_pair.clone())?;
 		let address = format!("quic://{}", server.local_address()?);
 
 		// `wait_idle` should never finish unless these `Connection`s are closed, which
 		// they won't unless they are dropped or explicitly closed
 		let _connection = client
-			.connect_pinned(&address, &certificate)
+			.connect_pinned(&address, key_pair.certificate())
 			.await?
 			.accept::<()>()
 			.await?;
@@ -482,7 +485,7 @@ mod test {
 		// connecting to a closed server shouldn't work
 		assert!(matches!(
 			client
-				.connect_pinned(address, &certificate)
+				.connect_pinned(address, key_pair.certificate())
 				.await?
 				.accept::<()>()
 				.await,
@@ -500,20 +503,16 @@ mod test {
 
 	#[tokio::test]
 	async fn close_incoming() -> Result<()> {
-		use futures_util::StreamExt;
-		use quinn::{ConnectionClose, ConnectionError};
-		use quinn_proto::TransportErrorCode;
-
-		let (certificate, private_key) = crate::generate_self_signed("test");
+		let key_pair = KeyPair::new_self_signed("test");
 
 		let client = Endpoint::new_client()?;
-		let mut server = Endpoint::new_server(0, certificate.clone(), private_key)?;
+		let mut server = Endpoint::new_server(0, key_pair.clone())?;
 		let address = format!("quic://{}", server.local_address()?);
 
 		// these `Connection`s should still work even if new incoming connections are
 		// refused
 		let client_connection = client
-			.connect_pinned(&address, &certificate)
+			.connect_pinned(&address, key_pair.certificate())
 			.await?
 			.accept::<()>()
 			.await?;
@@ -538,7 +537,7 @@ mod test {
 
 		// connecting to a server that refuses new `Connection`s shouldn't work
 		assert!(matches!(
-			client.connect_pinned(address, &certificate).await?.accept::<()>().await,
+			client.connect_pinned(address, key_pair.certificate()).await?.accept::<()>().await,
 			Err(Error::Connecting(ConnectionError::ConnectionClosed(
 				ConnectionClose {
 					error_code: TransportErrorCode::CONNECTION_REFUSED,
@@ -573,18 +572,19 @@ mod test {
 
 	#[tokio::test]
 	async fn wait_idle() -> Result<()> {
-		use futures_util::StreamExt;
-
-		let (certificate, private_key) = crate::generate_self_signed("test");
+		let key_pair = KeyPair::new_self_signed("test");
 
 		let client = Endpoint::new_client()?;
-		let mut server = Endpoint::new_server(0, certificate.clone(), private_key)?;
+		let mut server = Endpoint::new_server(0, key_pair.clone())?;
 
 		// `wait_idle` will never finish unless the `Connection` closes, which happens
 		// automatically when it's dropped
 		{
 			let _connection = client
-				.connect_pinned(format!("quic://{}", server.local_address()?), &certificate)
+				.connect_pinned(
+					format!("quic://{}", server.local_address()?),
+					key_pair.certificate(),
+				)
 				.await?
 				.accept::<()>()
 				.await?;

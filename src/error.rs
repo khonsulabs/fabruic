@@ -1,4 +1,5 @@
 #![allow(box_pointers)]
+#![allow(clippy::exhaustive_structs)]
 
 //! [`Error`](std::error::Error) for this [`crate`].
 // TODO: error type is becoming too big, split it up
@@ -6,7 +7,7 @@
 pub use std::{io::Error as IoError, net::AddrParseError};
 
 pub use bincode::ErrorKind;
-pub use quinn::{ConnectError, ConnectionError, EndpointError, ReadError, WriteError};
+pub use quinn::{ConnectError, ConnectionError, ReadError, WriteError};
 use thiserror::Error;
 #[cfg(feature = "trust-dns")]
 #[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
@@ -17,6 +18,23 @@ pub use x509_parser::{error::X509Error, nom::Err};
 
 /// [`Result`](std::result::Result) type for this [`crate`].
 pub type Result<T, E = Error> = std::result::Result<T, E>;
+
+/// Error binding the socket during construction of
+/// [`Endpoint`](crate::Endpoint) with a [`Builder`](crate::Builder).
+#[derive(Debug, Error)]
+#[error("Error binding the socket during construction of `Endpoint`")]
+pub struct Builder {
+	/// The error binding [`Endpoint`](crate::Endpoint).
+	pub error: Endpoint,
+	/// Recovered [`Builder`](crate::Builder) for re-use.
+	pub builder: crate::Builder,
+}
+
+/// Error binding the socket during construction of
+/// [`Endpoint`](crate::Endpoint).
+#[derive(Debug, Error)]
+#[error("Error binding the socket during construction of `Endpoint`")]
+pub struct Endpoint(pub IoError);
 
 /// [`Error`](std::error::Error) for this [`crate`].
 #[derive(Debug, Error)]
@@ -53,10 +71,6 @@ pub enum Error {
 	/// Parsing a [`SocketAddr`](std::net::SocketAddr) from a [`str`] failed.
 	#[error("Failed parsing socket: {0}")]
 	ParseAddress(AddrParseError),
-	/// Returned by [`Endpoint`](crate::Endpoint) when failing to bind the
-	/// socket on the given `address`.
-	#[error("Failed to bind socket: {0}")]
-	BindSocket(EndpointError),
 	/// Failed to parse URL.
 	#[error("Error parsing URL: {0}")]
 	ParseUrl(UrlParseError),

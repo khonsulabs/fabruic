@@ -1,15 +1,15 @@
-//! Persistent configuration shared between the [`Builder`](crate::Builder) and
-//! the [`Endpoint`](crate::Endpoint).
+//! Persistent configuration shared between [`Builder`](crate::Builder) and
+//! [`Endpoint`](crate::Endpoint).
 
 use std::{ops::Deref, sync::Arc};
 
 use quinn::{ClientConfig, ClientConfigBuilder, TransportConfig};
 use rustls::{sign::CertifiedKey, ResolvesClientCert, RootCertStore, SignatureScheme};
 
-use crate::{Certificate, PrivateKey, Store};
+use crate::{Certificate, KeyPair, Store};
 
-/// Persistent configuration shared between the [`Builder`](crate::Builder) and
-/// the [`Endpoint`](crate::Endpoint).
+/// Persistent configuration shared between [`Builder`](crate::Builder) and
+/// [`Endpoint`](crate::Endpoint).
 #[derive(Clone, Debug)]
 pub(in crate::quic::endpoint) struct Config {
 	/// Storing the default [`TransportConfig`].
@@ -25,24 +25,22 @@ pub(in crate::quic::endpoint) struct Config {
 impl Config {
 	/// Builds a new [`Config`].
 	pub(super) fn new() -> Self {
-		// build transport
 		let mut transport = TransportConfig::default();
 
 		// set transport defaults
+		// TODO: research other settings
 		let _ = transport
 			// TODO: research if this is necessary, it improves privacy, but may hurt network
 			// providers?
 			.allow_spin(false)
 			// we don't support unordered for now
 			.datagram_receive_buffer_size(None)
-			// TODO: handle uni streams
+			// for compatibility with WebRTC, we won't be using uni-directional streams
 			.max_concurrent_uni_streams(0)
 			.expect("can't be bigger then `VarInt`");
 
-		let transport = Arc::new(transport);
-
 		Self {
-			transport,
+			transport: Arc::new(transport),
 			protocols: Vec::new(),
 			#[cfg(feature = "trust-dns")]
 			trust_dns: true,
@@ -59,71 +57,55 @@ impl Config {
 		self.protocols = protocols.into();
 	}
 
-	/// Returns the configured protocols.
-	pub(super) const fn protocols(&self) -> &Vec<Vec<u8>> {
-		&self.protocols
+	/// Returns the configured application-layer protocols.
+	pub(super) fn protocols(&self) -> &[Vec<u8>] {
+		self.protocols.as_slice()
 	}
 
-	/// Forces [`Endpoint::connect`](crate::Endpoint::connect) to use
-	/// [`trust-dns`](trust_dns_resolver).
+	/// Controls the use of [`trust-dns`](trust_dns_resolver) for
+	/// [`Endpoint::connect`](crate::Endpoint::connect).
+	#[cfg(feature = "trust-dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
+	pub(super) fn set_trust_dns(&mut self, enable: bool) {
+		self.trust_dns = enable;
+	}
+
+	/// Disables the use of [`trust-dns`](trust_dns_resolver) for
+	/// [`Endpoint::connect`](crate::Endpoint::connect) despite the activates
+	/// crate features.
 	#[cfg_attr(
 		not(feature = "trust-dns"),
 		allow(clippy::unused_self, unused_variables)
 	)]
-	pub(super) fn set_trust_dns(&mut self, trust_dns: bool) {
+	pub(super) fn disable_trust_dns(&mut self) {
 		#[cfg(feature = "trust-dns")]
 		{
-			self.trust_dns = trust_dns;
+			self.trust_dns = false;
 		}
 	}
 
 	/// Returns if [`trust-dns`](trust_dns_resolver) is enabled.
-	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	pub(in crate::quic::endpoint) const fn trust_dns(&self) -> bool {
-		self.trust_dns
+		#[cfg(feature = "trust-dns")]
+		return self.trust_dns;
+		#[cfg(not(feature = "trust-dns"))]
+		false
 	}
 
 	/// Builds a new [`ClientConfig`] with this [`Config`] and adds
-	/// `certificates` to the CA store.
+	/// [`Certificate`]s to the CA store.
 	///
 	/// # Panics
-	/// Panics if the given [`Certificate`] is invalid. Can't happen if the
-	/// [`Certificate`] was properly validated through
-	/// [`Certificate::from_der`].
+	/// Panics if the given [`KeyPair`] or [`Certificate`]s are invalid. Can't
+	/// happen if they were properly validated through [`KeyPair::from_parts`]
+	/// or [`Certificate::from_der`].
 	pub(in crate::quic::endpoint) fn new_client<'a>(
 		&self,
 		certificates: impl IntoIterator<Item = &'a Certificate> + 'a,
 		store: Store,
-		client_cert: Option<(Certificate, PrivateKey)>,
+		client_key_pair: Option<KeyPair>,
 	) -> ClientConfig {
-		// build client
-		let mut client = ClientConfig::default();
-
-		// get inner rustls `ClientConfig`
-		let crypto = Arc::get_mut(&mut client.crypto).expect("failed to build `ClientConfig`");
-
-		match store {
-			// remove the defaults set by Quinn
-			Store::Empty => {
-				crypto.root_store = RootCertStore::empty();
-				crypto.ct_logs = None;
-			}
-			// is set correctly by Quinn by default
-			Store::Os => (),
-			Store::Embedded => {
-				let mut store = RootCertStore::empty();
-				store.add_server_trust_anchors(&webpki_roots::TLS_SERVER_ROOTS);
-				crypto.root_store = store;
-			}
-		}
-
-		if let Some((certificate, private_key)) = client_cert {
-			crypto.client_auth_cert_resolver = CertificateResolver::new(certificate, private_key);
-		}
-
-		// build client builder
-		let mut client = ClientConfigBuilder::new(client);
+		let mut client = ClientConfigBuilder::default();
 
 		// add protocols
 		if !self.protocols.is_empty() {
@@ -131,14 +113,43 @@ impl Config {
 			let _ = client.protocols(&protocols);
 		}
 
-		// add CAs
+		let mut client = client.build();
+
+		// get inner rustls `ClientConfig`
+		{
+			let crypto = Arc::get_mut(&mut client.crypto).expect("failed to build `ClientConfig`");
+
+			// set default root certificates
+			match store {
+				// remove the defaults set by Quinn
+				Store::Empty => {
+					crypto.root_store = RootCertStore::empty();
+					crypto.ct_logs = None;
+				}
+				// is set correctly by Quinn by default
+				Store::Os => (),
+				// insert `webpki-roots`
+				Store::Embedded => {
+					let mut store = RootCertStore::empty();
+					store.add_server_trust_anchors(&webpki_roots::TLS_SERVER_ROOTS);
+					crypto.root_store = store;
+				}
+			}
+
+			// insert client certificate
+			if let Some(key_pair) = client_key_pair {
+				crypto.client_auth_cert_resolver = CertificateResolver::new(key_pair);
+			}
+		}
+
+		// add root certificates
 		for certificate in certificates {
 			let _ = client
 				.add_certificate_authority(certificate.as_quinn())
 				.expect("`Certificate` couldn't be added as a CA");
 		}
 
-		let mut client = client.build();
+		// set transport
 		client.transport = self.transport();
 
 		client
@@ -164,11 +175,8 @@ impl ResolvesClientCert for CertificateResolver {
 
 impl CertificateResolver {
 	/// Builds a new [`CertificateResolver`].
-	fn new(certificate: Certificate, private_key: PrivateKey) -> Arc<Self> {
-		Arc::new(Self(CertifiedKey::new(
-			vec![certificate.into_rustls()],
-			#[allow(box_pointers)]
-			Arc::new(private_key.into_rustls()),
-		)))
+	fn new(key_pair: KeyPair) -> Arc<Self> {
+		// build a `rustls::sign::CertifiedKey`
+		Arc::new(Self(key_pair.into_rustls()))
 	}
 }
