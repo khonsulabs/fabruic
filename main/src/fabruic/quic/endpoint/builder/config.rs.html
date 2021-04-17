@@ -182,7 +182,6 @@
 <span id="179">179</span>
 <span id="180">180</span>
 <span id="181">181</span>
-<span id="182">182</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Persistent configuration shared between [`Builder`](crate::Builder) and</span>
 <span class="doccomment">//! [`Endpoint`](crate::Endpoint).</span>
@@ -362,7 +361,6 @@
 <span class="kw">impl</span> <span class="ident">CertificateResolver</span> {
 	<span class="doccomment">/// Builds a new [`CertificateResolver`].</span>
 	<span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">key_pair</span>: <span class="ident">KeyPair</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-		<span class="comment">// build a `rustls::sign::CertifiedKey`</span>
 		<span class="ident">Arc::new</span>(<span class="self">Self</span>(<span class="ident">key_pair</span>.<span class="ident">into_rustls</span>()))
 	}
 }

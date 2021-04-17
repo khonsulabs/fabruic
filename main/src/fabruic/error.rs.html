@@ -167,7 +167,6 @@
 <span id="164">164</span>
 <span id="165">165</span>
 <span id="166">166</span>
-<span id="167">167</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy::exhaustive_structs</span>)]</span>
@@ -190,10 +189,10 @@
 <span class="doccomment">/// [`Result`](std::result::Result) type for this [`crate`].</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span> <span class="op">=</span> <span class="ident">Error</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>;
 
-<span class="doccomment">/// Error binding the socket during construction of</span>
-<span class="doccomment">/// [`Endpoint`](crate::Endpoint) with a [`Builder`](crate::Builder).</span>
+<span class="doccomment">/// Error binding socket during construction of [`Endpoint`](crate::Endpoint)</span>
+<span class="doccomment">/// with a [`Builder`](crate::Builder).</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
-<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error binding the socket during construction of `Endpoint`&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error binding socket during construction of `Endpoint`&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Builder</span> {
 	<span class="doccomment">/// The error binding [`Endpoint`](crate::Endpoint).</span>
 	<span class="kw">pub</span> <span class="ident">error</span>: <span class="ident">Endpoint</span>,
@@ -201,10 +200,9 @@
 	<span class="kw">pub</span> <span class="ident">builder</span>: <span class="kw">crate</span><span class="ident">::Builder</span>,
 }
 
-<span class="doccomment">/// Error binding the socket during construction of</span>
-<span class="doccomment">/// [`Endpoint`](crate::Endpoint).</span>
+<span class="doccomment">/// Error binding socket during construction of [`Endpoint`](crate::Endpoint).</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
-<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error binding the socket during construction of `Endpoint`&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error binding socket during construction of `Endpoint`&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Endpoint</span>(<span class="kw">pub</span> <span class="ident">IoError</span>);
 
 <span class="doccomment">/// [`Error`](std::error::Error) for this [`crate`].</span>

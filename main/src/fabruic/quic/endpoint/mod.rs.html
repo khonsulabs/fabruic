@@ -605,6 +605,11 @@
 <span id="602">602</span>
 <span id="603">603</span>
 <span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Starting point to create a QUIC enabled network socket.</span>
 
@@ -663,15 +668,14 @@
 	}
 
 	<span class="doccomment">/// Builds a new [`Endpoint`] from raw [`quinn`] types. Must be called from</span>
-	<span class="doccomment">/// inside the Tokio [`Runtime`](tokio::runtime::Runtime).</span>
+	<span class="doccomment">/// inside a Tokio [`Runtime`](tokio::runtime::Runtime).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
 	<span class="doccomment">/// [`error::Builder`] if the socket couldn&#39;t be bound to the given</span>
 	<span class="doccomment">/// `address`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Panics</span>
-	<span class="doccomment">/// If not called from inside the Tokio</span>
-	<span class="doccomment">/// [`Runtime`](tokio::runtime::Runtime).</span>
+	<span class="doccomment">/// If not called from inside a Tokio [`Runtime`](tokio::runtime::Runtime).</span>
 	<span class="kw">fn</span> <span class="ident">new</span>(
 		<span class="ident">address</span>: <span class="ident">SocketAddr</span>,
 		<span class="ident">client</span>: <span class="ident">ClientConfig</span>,
@@ -720,7 +724,7 @@
 	}
 
 	<span class="doccomment">/// Simplified version of creating a client. See [`Builder`] for more</span>
-	<span class="doccomment">/// sophisticated configuration. Must be called from inside the Tokio</span>
+	<span class="doccomment">/// sophisticated configuration. Must be called from inside a Tokio</span>
 	<span class="doccomment">/// [`Runtime`](tokio::runtime::Runtime).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Notes</span>
@@ -732,8 +736,7 @@
 	<span class="doccomment">/// `address`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Panics</span>
-	<span class="doccomment">/// If not called from inside the Tokio</span>
-	<span class="doccomment">/// [`Runtime`](tokio::runtime::Runtime).</span>
+	<span class="doccomment">/// If not called from inside a Tokio [`Runtime`](tokio::runtime::Runtime).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_client</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">error::Endpoint</span><span class="op">&gt;</span> {
 		<span class="ident">Builder::new</span>()
 			.<span class="ident">build</span>()
@@ -741,7 +744,7 @@
 	}
 
 	<span class="doccomment">/// Simplified version of creating a server. See [`Builder`] for more</span>
-	<span class="doccomment">/// sophisticated configuration. Must be called from inside the Tokio</span>
+	<span class="doccomment">/// sophisticated configuration. Must be called from inside a Tokio</span>
 	<span class="doccomment">/// [`Runtime`](tokio::runtime::Runtime).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
@@ -752,8 +755,7 @@
 	<span class="doccomment">/// - if the given [`KeyPair`] or [`Certificate`]s are invalid - can&#39;t</span>
 	<span class="doccomment">///   happen if they were properly validated through [`KeyPair::from_parts`]</span>
 	<span class="doccomment">///   or [`Certificate::from_der`]</span>
-	<span class="doccomment">/// - if not called from inside the Tokio</span>
-	<span class="doccomment">///   [`Runtime`](tokio::runtime::Runtime)</span>
+	<span class="doccomment">/// - if not called from inside a Tokio [`Runtime`](tokio::runtime::Runtime)</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_server</span>(<span class="ident">port</span>: <span class="ident">u16</span>, <span class="ident">key_pair</span>: <span class="ident">KeyPair</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">error::Endpoint</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">Builder::new</span>();
 		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;test&quot;</span>))]</span>
@@ -858,9 +860,10 @@
 	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">connect_pinned</span><span class="op">&lt;</span><span class="ident">U</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">url</span>: <span class="ident">U</span>,
-		<span class="ident">certificate</span>: <span class="kw-2">&amp;</span><span class="ident">Certificate</span>,
+		<span class="ident">server_certificate</span>: <span class="kw-2">&amp;</span><span class="ident">Certificate</span>,
+		<span class="ident">client_key_pair</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">KeyPair</span><span class="op">&gt;</span>,
 	) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Connecting</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">domains</span> <span class="op">=</span> <span class="ident">certificate</span>.<span class="ident">domains</span>().<span class="ident">into_iter</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">domains</span> <span class="op">=</span> <span class="ident">server_certificate</span>.<span class="ident">domains</span>().<span class="ident">into_iter</span>();
 		<span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="ident">domains</span>
 			.<span class="ident">next</span>()
 			.<span class="ident">expect</span>(<span class="string">&quot;`Certificate` contained no valid domains&quot;</span>);
@@ -875,7 +878,7 @@
 			.<span class="ident">endpoint</span>
 			.<span class="ident">connect_with</span>(
 				<span class="self">self</span>.<span class="ident">config</span>
-					.<span class="ident">new_client</span>(<span class="prelude-val">Some</span>(<span class="ident">certificate</span>), <span class="ident">Store::Empty</span>, <span class="prelude-val">None</span>),
+					.<span class="ident">new_client</span>(<span class="prelude-val">Some</span>(<span class="ident">server_certificate</span>), <span class="ident">Store::Empty</span>, <span class="ident">client_key_pair</span>),
 				<span class="kw-2">&amp;</span><span class="ident">address</span>,
 				<span class="kw-2">&amp;</span><span class="ident">domain</span>,
 			)
@@ -1050,6 +1053,7 @@
 			.<span class="ident">connect_pinned</span>(
 				<span class="macro">format!</span>(<span class="string">&quot;quic://{}&quot;</span>, <span class="ident">server</span>.<span class="ident">local_address</span>()<span class="question-mark">?</span>),
 				<span class="ident">key_pair</span>.<span class="ident">certificate</span>(),
+				<span class="prelude-val">None</span>,
 			)
 			.<span class="kw">await</span><span class="question-mark">?</span>
 			.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
@@ -1075,7 +1079,7 @@
 		<span class="comment">// `wait_idle` should never finish unless these `Connection`s are closed, which</span>
 		<span class="comment">// they won&#39;t unless they are dropped or explicitly closed</span>
 		<span class="kw">let</span> <span class="ident">_connection</span> <span class="op">=</span> <span class="ident">client</span>
-			.<span class="ident">connect_pinned</span>(<span class="kw-2">&amp;</span><span class="ident">address</span>, <span class="ident">key_pair</span>.<span class="ident">certificate</span>())
+			.<span class="ident">connect_pinned</span>(<span class="kw-2">&amp;</span><span class="ident">address</span>, <span class="ident">key_pair</span>.<span class="ident">certificate</span>(), <span class="prelude-val">None</span>)
 			.<span class="kw">await</span><span class="question-mark">?</span>
 			.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
 			.<span class="kw">await</span><span class="question-mark">?</span>;
@@ -1093,7 +1097,7 @@
 		<span class="comment">// connecting to a closed server shouldn&#39;t work</span>
 		<span class="macro">assert!</span>(<span class="macro">matches!</span>(
 			<span class="ident">client</span>
-				.<span class="ident">connect_pinned</span>(<span class="ident">address</span>, <span class="ident">key_pair</span>.<span class="ident">certificate</span>())
+				.<span class="ident">connect_pinned</span>(<span class="ident">address</span>, <span class="ident">key_pair</span>.<span class="ident">certificate</span>(), <span class="prelude-val">None</span>)
 				.<span class="kw">await</span><span class="question-mark">?</span>
 				.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
 				.<span class="kw">await</span>,
@@ -1120,7 +1124,7 @@
 		<span class="comment">// these `Connection`s should still work even if new incoming connections are</span>
 		<span class="comment">// refused</span>
 		<span class="kw">let</span> <span class="ident">client_connection</span> <span class="op">=</span> <span class="ident">client</span>
-			.<span class="ident">connect_pinned</span>(<span class="kw-2">&amp;</span><span class="ident">address</span>, <span class="ident">key_pair</span>.<span class="ident">certificate</span>())
+			.<span class="ident">connect_pinned</span>(<span class="kw-2">&amp;</span><span class="ident">address</span>, <span class="ident">key_pair</span>.<span class="ident">certificate</span>(), <span class="prelude-val">None</span>)
 			.<span class="kw">await</span><span class="question-mark">?</span>
 			.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
 			.<span class="kw">await</span><span class="question-mark">?</span>;
@@ -1144,8 +1148,13 @@
 		));
 
 		<span class="comment">// connecting to a server that refuses new `Connection`s shouldn&#39;t work</span>
+		<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">client</span>
+			.<span class="ident">connect_pinned</span>(<span class="ident">address</span>, <span class="ident">key_pair</span>.<span class="ident">certificate</span>(), <span class="prelude-val">None</span>)
+			.<span class="kw">await</span><span class="question-mark">?</span>
+			.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
+			.<span class="kw">await</span>;
 		<span class="macro">assert!</span>(<span class="macro">matches!</span>(
-			<span class="ident">client</span>.<span class="ident">connect_pinned</span>(<span class="ident">address</span>, <span class="ident">key_pair</span>.<span class="ident">certificate</span>()).<span class="kw">await</span><span class="question-mark">?</span>.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>().<span class="kw">await</span>,
+			<span class="ident">result</span>,
 			<span class="prelude-val">Err</span>(<span class="ident">Error::Connecting</span>(<span class="ident">ConnectionError::ConnectionClosed</span>(
 				<span class="ident">ConnectionClose</span> {
 					<span class="ident">error_code</span>: <span class="ident">TransportErrorCode::CONNECTION_REFUSED</span>,
@@ -1192,6 +1201,7 @@
 				.<span class="ident">connect_pinned</span>(
 					<span class="macro">format!</span>(<span class="string">&quot;quic://{}&quot;</span>, <span class="ident">server</span>.<span class="ident">local_address</span>()<span class="question-mark">?</span>),
 					<span class="ident">key_pair</span>.<span class="ident">certificate</span>(),
+					<span class="prelude-val">None</span>,
 				)
 				.<span class="kw">await</span><span class="question-mark">?</span>
 				.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
