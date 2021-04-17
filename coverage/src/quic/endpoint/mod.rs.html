@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-17 11:35:05</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-17 11:43:35</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -285,14 +285,14 @@
 <div class="line"><span id="264" class="lineNum"><a href="#264">264</a></span><span class="counterCov">106</span><span class="lineCov">		let (address, _) = self.resolve_domain(url).await?;</span></div>
 <div class="line"><span id="265" class="lineNum"><a href="#265">265</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="266" class="lineNum"><a href="#266">266</a></span><span class="counterCov">106</span><span class="lineCov">		let connecting = self</span></div>
-<div class="line"><span id="267" class="lineNum"><a href="#267">267</a></span><span class="counterCov">106</span><span class="lineCov">			.endpoint</span></div>
-<div class="line"><span id="268" class="lineNum"><a href="#268">268</a></span><span class="counterCov">106</span><span class="lineCov">			.connect_with(</span></div>
-<div class="line"><span id="269" class="lineNum"><a href="#269">269</a></span><span class="counterCov">106</span><span class="lineCov">				self.config</span></div>
-<div class="line"><span id="270" class="lineNum"><a href="#270">270</a></span><span class="counterCov">106</span><span class="lineCov">					.new_client(Some(certificate), Store::Empty, None),</span></div>
-<div class="line"><span id="271" class="lineNum"><a href="#271">271</a></span><span class="counterCov">106</span><span class="lineCov">				&amp;address,</span></div>
-<div class="line"><span id="272" class="lineNum"><a href="#272">272</a></span><span class="counterCov">106</span><span class="lineCov">				&amp;domain,</span></div>
-<div class="line"><span id="273" class="lineNum"><a href="#273">273</a></span><span class="counterCov">106</span><span class="lineCov">			)</span></div>
-<div class="line"><span id="274" class="lineNum"><a href="#274">274</a></span><span class="counterCov">106</span><span class="lineCov">			.map_err(Error::ConnectConfig)?;</span></div>
+<div class="line"><span id="267" class="lineNum"><a href="#267">267</a></span><span class="counterCov">105</span><span class="lineCov">			.endpoint</span></div>
+<div class="line"><span id="268" class="lineNum"><a href="#268">268</a></span><span class="counterCov">105</span><span class="lineCov">			.connect_with(</span></div>
+<div class="line"><span id="269" class="lineNum"><a href="#269">269</a></span><span class="counterCov">105</span><span class="lineCov">				self.config</span></div>
+<div class="line"><span id="270" class="lineNum"><a href="#270">270</a></span><span class="counterCov">105</span><span class="lineCov">					.new_client(Some(certificate), Store::Empty, None),</span></div>
+<div class="line"><span id="271" class="lineNum"><a href="#271">271</a></span><span class="counterCov">105</span><span class="lineCov">				&amp;address,</span></div>
+<div class="line"><span id="272" class="lineNum"><a href="#272">272</a></span><span class="counterCov">105</span><span class="lineCov">				&amp;domain,</span></div>
+<div class="line"><span id="273" class="lineNum"><a href="#273">273</a></span><span class="counterCov">105</span><span class="lineCov">			)</span></div>
+<div class="line"><span id="274" class="lineNum"><a href="#274">274</a></span><span class="counterCov">105</span><span class="lineCov">			.map_err(Error::ConnectConfig)?;</span></div>
 <div class="line"><span id="275" class="lineNum"><a href="#275">275</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="276" class="lineNum"><a href="#276">276</a></span><span class="counterCov">106</span><span class="lineCov">		Ok(Connecting::new(connecting))</span></div>
 <div class="line"><span id="277" class="lineNum"><a href="#277">277</a></span><span class="counterCov">106</span><span class="lineCov">	}</span></div>
@@ -369,14 +369,14 @@
 <div class="line"><span id="348" class="lineNum"><a href="#348">348</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
 <div class="line"><span id="349" class="lineNum"><a href="#349">349</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
 <div class="line"><span id="350" class="lineNum"><a href="#350">350</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Error::LocalAddress`] if aquiring the local address failed.</span></div>
-<div class="line"><span id="351" class="lineNum"><a href="#351">351</a></span><span class="counterCov">210</span><span class="lineCov">	pub fn local_address(&amp;self) -&gt; Result&lt;SocketAddr&gt; {</span></div>
-<div class="line"><span id="352" class="lineNum"><a href="#352">352</a></span><span class="counterCov">210</span><span class="lineCov">		let address = self.endpoint.local_addr().map_err(Error::LocalAddress)?;</span></div>
+<div class="line"><span id="351" class="lineNum"><a href="#351">351</a></span><span class="counterCov">209</span><span class="lineCov">	pub fn local_address(&amp;self) -&gt; Result&lt;SocketAddr&gt; {</span></div>
+<div class="line"><span id="352" class="lineNum"><a href="#352">352</a></span><span class="counterCov">209</span><span class="lineCov">		let address = self.endpoint.local_addr().map_err(Error::LocalAddress)?;</span></div>
 <div class="line"><span id="353" class="lineNum"><a href="#353">353</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="354" class="lineNum"><a href="#354">354</a></span><span class="counterUnCov"></span><span class="lineUnCov">		#[cfg(not(feature = &quot;test&quot;))]</span></div>
 <div class="line"><span id="355" class="lineNum"><a href="#355">355</a></span><span class="counterUnCov"></span><span class="lineUnCov">		return Ok(address);</span></div>
 <div class="line"><span id="356" class="lineNum"><a href="#356">356</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="357" class="lineNum"><a href="#357">357</a></span><span class="counterUnCov"></span><span class="lineUnCov">		#[cfg(feature = &quot;test&quot;)]</span></div>
-<div class="line"><span id="358" class="lineNum"><a href="#358">358</a></span><span class="counterCov">210</span><span class="lineCov">		Ok(if address.ip().is_loopback() {</span></div>
+<div class="line"><span id="358" class="lineNum"><a href="#358">358</a></span><span class="counterCov">209</span><span class="lineCov">		Ok(if address.ip().is_loopback() {</span></div>
 <div class="line"><span id="359" class="lineNum"><a href="#359">359</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], address.port()).into()</span></div>
 <div class="line"><span id="360" class="lineNum"><a href="#360">360</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
 <div class="line"><span id="361" class="lineNum"><a href="#361">361</a></span><span class="counterCov">210</span><span class="lineCov">			address</span></div>
