@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../index.html">top level</a> - <a href="index.html">examples</a> - basic.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-16 17:45:44</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-17 11:35:05</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -20,7 +20,7 @@
 </div>
 <div class="sourceCode">
 <div class="line"><span id="1" class="lineNum"><a href="#1">1</a></span><span class="counterCov">1</span><span class="lineCov">use anyhow::{Error, Result};</span></div>
-<div class="line"><span id="2" class="lineNum"><a href="#2">2</a></span><span class="counterUnCov"></span><span class="lineUnCov">use fabruic::Endpoint;</span></div>
+<div class="line"><span id="2" class="lineNum"><a href="#2">2</a></span><span class="counterUnCov"></span><span class="lineUnCov">use fabruic::{Endpoint, KeyPair};</span></div>
 <div class="line"><span id="3" class="lineNum"><a href="#3">3</a></span><span class="counterUnCov"></span><span class="lineUnCov">use futures_util::{future, StreamExt, TryFutureExt};</span></div>
 <div class="line"><span id="4" class="lineNum"><a href="#4">4</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="5" class="lineNum"><a href="#5">5</a></span><span class="counterUnCov"></span><span class="lineUnCov">const SERVER_NAME: &amp;str = &quot;test&quot;;</span></div>
@@ -34,12 +34,12 @@
 <div class="line"><span id="13" class="lineNum"><a href="#13">13</a></span><span class="counterCov">1</span><span class="lineCov">	let mut tasks = Vec::with_capacity(CLIENTS + 1);</span></div>
 <div class="line"><span id="14" class="lineNum"><a href="#14">14</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
 <div class="line"><span id="15" class="lineNum"><a href="#15">15</a></span><span class="counterCov">1</span><span class="lineCov">	// generate a certificate pair</span></div>
-<div class="line"><span id="16" class="lineNum"><a href="#16">16</a></span><span class="counterCov">1</span><span class="lineCov">	let (certificate, private_key) = fabruic::generate_self_signed(SERVER_NAME);</span></div>
+<div class="line"><span id="16" class="lineNum"><a href="#16">16</a></span><span class="counterCov">1</span><span class="lineCov">	let key_pair = KeyPair::new_self_signed(SERVER_NAME);</span></div>
 <div class="line"><span id="17" class="lineNum"><a href="#17">17</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="18" class="lineNum"><a href="#18">18</a></span><span class="counterUnCov"></span><span class="lineUnCov">	// build the server</span></div>
 <div class="line"><span id="19" class="lineNum"><a href="#19">19</a></span><span class="counterUnCov"></span><span class="lineUnCov">	// we want to do this outside to reserve the `SERVER_PORT`, otherwise spawned</span></div>
 <div class="line"><span id="20" class="lineNum"><a href="#20">20</a></span><span class="counterUnCov"></span><span class="lineUnCov">	// clients may take it</span></div>
-<div class="line"><span id="21" class="lineNum"><a href="#21">21</a></span><span class="counterCov">1</span><span class="lineCov">	let mut server = Endpoint::new_server(SERVER_PORT, certificate.clone(), private_key)?;</span></div>
+<div class="line"><span id="21" class="lineNum"><a href="#21">21</a></span><span class="counterCov">1</span><span class="lineCov">	let mut server = Endpoint::new_server(SERVER_PORT, key_pair.clone())?;</span></div>
 <div class="line"><span id="22" class="lineNum"><a href="#22">22</a></span><span class="counterCov">1</span><span class="lineCov">	let address = format!(&quot;quic://{}&quot;, server.local_address()?);</span></div>
 <div class="line"><span id="23" class="lineNum"><a href="#23">23</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="24" class="lineNum"><a href="#24">24</a></span><span class="counterUnCov"></span><span class="lineUnCov">	// start the server</span></div>
@@ -120,7 +120,7 @@
 <div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterUnCov"></span><span class="lineUnCov">	// start 100 clients</span></div>
 <div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterCov">100</span><span class="lineCov">	for index in 0..CLIENTS {</span></div>
 <div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterCov">100</span><span class="lineCov">		let address = address.clone();</span></div>
-<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterCov">100</span><span class="lineCov">		let certificate = certificate.clone();</span></div>
+<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterCov">100</span><span class="lineCov">		let certificate = key_pair.certificate().clone();</span></div>
 <div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterCov">100</span><span class="lineCov"></span></div>
 <div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterCov">100</span><span class="lineCov">		tasks.push(</span></div>
 <div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterCov">100</span><span class="lineCov">			tokio::spawn(async move {</span></div>
