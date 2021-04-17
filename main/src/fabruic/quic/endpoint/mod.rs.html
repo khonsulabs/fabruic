@@ -616,6 +616,15 @@
 <span id="613">613</span>
 <span id="614">614</span>
 <span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Starting point to create a QUIC enabled network socket.</span>
 
@@ -810,10 +819,10 @@
 	<span class="doccomment">/// The following settings are used when using</span>
 	<span class="doccomment">/// [`trust-dns`](trust_dns_resolver):</span>
 	<span class="doccomment">/// - all system configurations are ignored</span>
-	<span class="doccomment">/// - Cloudflare DNS is used as the name server</span>
-	<span class="doccomment">/// - DNSSEC is used</span>
-	<span class="doccomment">/// - DOH is used</span>
-	<span class="doccomment">/// - IPv4 is preferred over IPv6</span>
+	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::doc_markdown</span>)]</span>
+	<span class="doccomment">/// - Cloudflare with DoT is used as the name server</span>
+	<span class="doccomment">/// - DNSSEC is enabled</span>
+	<span class="doccomment">/// - IPv6 is preferred over IPv4 if the bound socket is IPv6</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
 	<span class="doccomment">/// - [`Error::ParseUrl`] if the URL couldn&#39;t be parsed</span>
@@ -821,7 +830,7 @@
 	<span class="doccomment">/// - [`Error::Port`] if the URL didn&#39;t contain a port</span>
 	<span class="doccomment">/// - [`Error::ResolveTrustDns`] if the URL couldn&#39;t be resolved to an IP</span>
 	<span class="doccomment">///   address with [`trust-dns`](trust_dns_resolver)</span>
-	<span class="doccomment">/// - [`Error::ResolveTrustDns`] if the URL couldn&#39;t be resolved to an IP</span>
+	<span class="doccomment">/// - [`Error::ResolveStdDns`] if the URL couldn&#39;t be resolved to an IP</span>
 	<span class="doccomment">///   address with [`ToSocketAddrs`]</span>
 	<span class="doccomment">/// - [`Error::ConnectConfig`] if configuration needed to connect to a peer</span>
 	<span class="doccomment">///   is faulty</span>
@@ -853,7 +862,7 @@
 	<span class="doccomment">/// - [`Error::Port`] if the URL didn&#39;t contain a port</span>
 	<span class="doccomment">/// - [`Error::ResolveTrustDns`] if the URL couldn&#39;t be resolved to an IP</span>
 	<span class="doccomment">///   address with [`trust-dns`](trust_dns_resolver)</span>
-	<span class="doccomment">/// - [`Error::ResolveTrustDns`] if the URL couldn&#39;t be resolved to an IP</span>
+	<span class="doccomment">/// - [`Error::ResolveStdDns`] if the URL couldn&#39;t be resolved to an IP</span>
 	<span class="doccomment">///   address with [`ToSocketAddrs`]</span>
 	<span class="doccomment">/// - [`Error::ConnectConfig`] if configuration needed to connect to a peer</span>
 	<span class="doccomment">///   is faulty</span>
@@ -902,7 +911,7 @@
 	<span class="doccomment">/// - [`Error::Port`] if the URL didn&#39;t contain a port</span>
 	<span class="doccomment">/// - [`Error::ResolveTrustDns`] if the URL couldn&#39;t be resolved to an IP</span>
 	<span class="doccomment">///   address with [`trust-dns`](trust_dns_resolver)</span>
-	<span class="doccomment">/// - [`Error::ResolveTrustDns`] if the URL couldn&#39;t be resolved to an IP</span>
+	<span class="doccomment">/// - [`Error::ResolveStdDns`] if the URL couldn&#39;t be resolved to an IP</span>
 	<span class="doccomment">///   address with [`ToSocketAddrs`]</span>
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">resolve_domain</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">url</span>: <span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">SocketAddr</span>, <span class="ident">String</span>)<span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="ident">Url::parse</span>(<span class="ident">url</span>.<span class="ident">as_ref</span>()).<span class="ident">map_err</span>(<span class="ident">Error::ParseUrl</span>)<span class="question-mark">?</span>;
@@ -921,20 +930,29 @@
 		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">trust_dns</span>() {
 			<span class="kw">use</span> <span class="ident">trust_dns_resolver</span>::{
-				<span class="ident">config</span>::{<span class="ident">ResolverConfig</span>, <span class="ident">ResolverOpts</span>},
+				<span class="ident">config</span>::{<span class="ident">LookupIpStrategy</span>, <span class="ident">ResolverConfig</span>, <span class="ident">ResolverOpts</span>},
 				<span class="ident">TokioAsyncResolver</span>,
 			};
 
-			<span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">ResolverConfig::cloudflare_https</span>();
-			<span class="comment">// `validate` enforces DNSSEC</span>
+			<span class="comment">// ip strategy depends on the current socket</span>
+			<span class="kw">let</span> <span class="ident">ip_strategy</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">local_address</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">socket</span><span class="op">|</span> <span class="ident">socket</span>.<span class="ident">is_ipv6</span>())
+			{
+				<span class="ident">LookupIpStrategy::Ipv6thenIpv4</span>
+			} <span class="kw">else</span> {
+				<span class="ident">LookupIpStrategy::Ipv4Only</span>
+			};
+
+			<span class="comment">// build `Resolver` options</span>
 			<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">ResolverOpts</span> {
+				<span class="ident">ip_strategy</span>,
+				<span class="ident">use_hosts_file</span>: <span class="bool-val">false</span>,
 				<span class="ident">validate</span>: <span class="bool-val">true</span>,
 				..<span class="ident">ResolverOpts::default</span>()
 			};
 
 			<span class="comment">// build the `Resolver`</span>
 			<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
-			<span class="kw">let</span> <span class="ident">resolver</span> <span class="op">=</span> <span class="ident">TokioAsyncResolver::tokio</span>(<span class="ident">config</span>, <span class="ident">opts</span>)
+			<span class="kw">let</span> <span class="ident">resolver</span> <span class="op">=</span> <span class="ident">TokioAsyncResolver::tokio</span>(<span class="ident">ResolverConfig::cloudflare_tls</span>(), <span class="ident">opts</span>)
 				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">error</span><span class="op">|</span> <span class="ident">Error::ResolveTrustDns</span>(<span class="ident">Box::new</span>(<span class="ident">error</span>)))<span class="question-mark">?</span>;
 			<span class="comment">// query the IP</span>
 			<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
