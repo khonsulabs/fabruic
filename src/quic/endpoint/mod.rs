@@ -287,9 +287,14 @@ impl Endpoint {
 	///   address with [`ToSocketAddrs`]
 	async fn resolve_domain(&self, url: impl AsRef<str>) -> Result<(SocketAddr, String)> {
 		let url = Url::parse(url.as_ref()).map_err(Error::ParseUrl)?;
-		let port = url.port().ok_or(Error::Port)?;
-		let domain = match url.host().ok_or(Error::Domain)? {
-			Host::Domain(domain) => domain.to_owned(),
+		// url removes known default ports, we don't actually want to accept known
+		// schemes, but this is proabably not intended behaviour
+		let port = url.port_or_known_default().ok_or(Error::Port)?;
+		let domain = url.host_str().ok_or(Error::Domain)?;
+		// url doesn't parse IP addresses unless the schema is known, which doesn't
+		// work for "quic://" for example
+		let domain = match Host::parse(domain).map_err(Error::ParseUrl)? {
+			Host::Domain(domain) => domain,
 			Host::Ipv4(ip) => return Ok((SocketAddr::from((ip, port)), ip.to_string())),
 			Host::Ipv6(ip) => return Ok((SocketAddr::from((ip, port)), ip.to_string())),
 		};
@@ -327,7 +332,8 @@ impl Endpoint {
 
 		// TODO: configure executor
 		let address = {
-			let domain = domain.clone();
+			// `ToSocketAddrs` needs a port
+			let domain = format!("{}:{}", domain, port);
 			tokio::task::spawn_blocking(move || {
 				domain
 					.to_socket_addrs()

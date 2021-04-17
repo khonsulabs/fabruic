@@ -466,6 +466,8 @@ mod test {
 	use anyhow::Result;
 	use futures_util::StreamExt;
 	use quinn::{ConnectionClose, ConnectionError};
+	use trust_dns_proto::error::ProtoErrorKind;
+	use trust_dns_resolver::error::ResolveErrorKind;
 
 	use super::*;
 	use crate::Error;
@@ -678,5 +680,51 @@ mod test {
 		));
 
 		Ok(())
+	}
+
+	#[test]
+	fn trust_dns() {
+		let mut builder = Builder::new();
+
+		// default
+		assert!(builder.trust_dns());
+
+		let _ = builder.set_trust_dns(false);
+		assert!(!builder.trust_dns());
+
+		let _ = builder.set_trust_dns(true);
+		assert!(builder.trust_dns());
+
+		let _ = builder.disable_trust_dns();
+		assert!(!builder.trust_dns());
+	}
+
+	#[tokio::test]
+	async fn trust_dns_success() -> Result<()> {
+		let mut builder = Builder::new();
+		let _ = builder.disable_trust_dns();
+		let endpoint = builder.build()?;
+
+		assert!(endpoint.connect("https://one.one.one.one").await.is_ok());
+
+		Ok(())
+	}
+
+	#[tokio::test]
+	async fn trust_dns_fail() -> Result<()> {
+		let endpoint = Builder::new().build()?;
+
+		// has broken DNSSEC records and therefore should fail
+		let result = endpoint.connect("https://one.one.one.one").await;
+
+		if let Err(Error::ResolveTrustDns(error)) = &result {
+			if let ResolveErrorKind::Proto(error) = error.kind() {
+				if let ProtoErrorKind::RrsigsNotPresent { .. } = error.kind() {
+					return Ok(());
+				}
+			}
+		}
+
+		panic!("unexpected result: {:?}", result)
 	}
 }

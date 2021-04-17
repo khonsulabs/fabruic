@@ -50,6 +50,7 @@ anyhow = "1"
 fabruic = { path = "", features = ["test", "trust-dns"] }
 quinn-proto = { version = "0.7", default-features = false }
 tokio = { version = "1", features = ["macros"] }
+trust-dns-proto = "0.20"
 
 [profile.release]
 codegen-units = 1
