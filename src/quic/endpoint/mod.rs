@@ -247,9 +247,10 @@ impl Endpoint {
 	pub async fn connect_pinned<U: AsRef<str>>(
 		&self,
 		url: U,
-		certificate: &Certificate,
+		server_certificate: &Certificate,
+		client_key_pair: Option<KeyPair>,
 	) -> Result<Connecting> {
-		let mut domains = certificate.domains().into_iter();
+		let mut domains = server_certificate.domains().into_iter();
 		let domain = domains
 			.next()
 			.expect("`Certificate` contained no valid domains");
@@ -264,7 +265,7 @@ impl Endpoint {
 			.endpoint
 			.connect_with(
 				self.config
-					.new_client(Some(certificate), Store::Empty, None),
+					.new_client(Some(server_certificate), Store::Empty, client_key_pair),
 				&address,
 				&domain,
 			)
@@ -439,6 +440,7 @@ mod test {
 			.connect_pinned(
 				format!("quic://{}", server.local_address()?),
 				key_pair.certificate(),
+				None,
 			)
 			.await?
 			.accept::<()>()
@@ -464,7 +466,7 @@ mod test {
 		// `wait_idle` should never finish unless these `Connection`s are closed, which
 		// they won't unless they are dropped or explicitly closed
 		let _connection = client
-			.connect_pinned(&address, key_pair.certificate())
+			.connect_pinned(&address, key_pair.certificate(), None)
 			.await?
 			.accept::<()>()
 			.await?;
@@ -482,7 +484,7 @@ mod test {
 		// connecting to a closed server shouldn't work
 		assert!(matches!(
 			client
-				.connect_pinned(address, key_pair.certificate())
+				.connect_pinned(address, key_pair.certificate(), None)
 				.await?
 				.accept::<()>()
 				.await,
@@ -509,7 +511,7 @@ mod test {
 		// these `Connection`s should still work even if new incoming connections are
 		// refused
 		let client_connection = client
-			.connect_pinned(&address, key_pair.certificate())
+			.connect_pinned(&address, key_pair.certificate(), None)
 			.await?
 			.accept::<()>()
 			.await?;
@@ -533,8 +535,13 @@ mod test {
 		));
 
 		// connecting to a server that refuses new `Connection`s shouldn't work
+		let result = client
+			.connect_pinned(address, key_pair.certificate(), None)
+			.await?
+			.accept::<()>()
+			.await;
 		assert!(matches!(
-			client.connect_pinned(address, key_pair.certificate()).await?.accept::<()>().await,
+			result,
 			Err(Error::Connecting(ConnectionError::ConnectionClosed(
 				ConnectionClose {
 					error_code: TransportErrorCode::CONNECTION_REFUSED,
@@ -581,6 +588,7 @@ mod test {
 				.connect_pinned(
 					format!("quic://{}", server.local_address()?),
 					key_pair.certificate(),
+					None,
 				)
 				.await?
 				.accept::<()>()

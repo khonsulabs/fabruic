@@ -176,7 +176,6 @@ impl ResolvesClientCert for CertificateResolver {
 impl CertificateResolver {
 	/// Builds a new [`CertificateResolver`].
 	fn new(key_pair: KeyPair) -> Arc<Self> {
-		// build a `rustls::sign::CertifiedKey`
 		Arc::new(Self(key_pair.into_rustls()))
 	}
 }

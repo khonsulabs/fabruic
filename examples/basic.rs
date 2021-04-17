@@ -108,7 +108,7 @@ async fn main() -> Result<()> {
 				println!("[client:{}] Bound to {}", index, client.local_address()?);
 
 				let connection = client
-					.connect_pinned(address, &certificate)
+					.connect_pinned(address, &certificate, None)
 					.await?
 					.accept::<()>()
 					.await?;

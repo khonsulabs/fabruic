@@ -481,37 +481,36 @@ mod test {
 	#[tokio::test]
 	async fn address() -> Result<()> {
 		let mut builder = Builder::new();
-		let _ = builder.set_address(([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], 5000).into());
-		let endpoint = builder.build()?;
 
-		assert_eq!(
-			"[::ffff:127.0.0.1]:5000".parse::<SocketAddr>()?,
-			endpoint.local_address()?,
-		);
+		let address = ([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], 5000).into();
+		let _ = builder.set_address(address);
+		assert_eq!(builder.address(), &address);
+
+		let endpoint = builder.build()?;
+		assert_eq!(endpoint.local_address()?, address);
 
 		Ok(())
 	}
 
 	#[tokio::test]
-	async fn ca_key_pair() -> Result<()> {
+	async fn server_certificate() -> Result<()> {
 		let key_pair = KeyPair::new_self_signed("localhost");
 
 		// build client
-		let mut builder = Builder::new();
-		Dangerous::add_ca(&mut builder, key_pair.certificate().clone());
-		let client = builder.build()?;
+		let client = Builder::new().build()?;
 
 		// build server
 		let mut builder = Builder::new();
-		let _ = builder.set_server_key_pair(Some(key_pair));
+		let _ = builder.set_server_key_pair(Some(key_pair.clone()));
 		let mut server = builder.build()?;
 
 		// test connection
 		let _connection = client
-			.connect(format!(
-				"quic://localhost:{}",
-				server.local_address()?.port()
-			))
+			.connect_pinned(
+				server.local_address()?.to_string(),
+				key_pair.certificate(),
+				None,
+			)
 			.await?
 			.accept::<()>()
 			.await?;
@@ -572,8 +571,60 @@ mod test {
 	#[tokio::test]
 	async fn protocols() -> Result<()> {
 		let mut builder = Builder::new();
-		let _ = builder.set_protocols([b"test".to_vec()]);
+
+		let protocols = [b"test".to_vec()];
+		let _ = builder.set_protocols(protocols.clone());
+		assert_eq!(builder.protocols(), protocols);
+
 		let _endpoint = builder.build()?;
+
+		Ok(())
+	}
+
+	#[tokio::test]
+	async fn protocols_compatible() -> Result<()> {
+		let key_pair = KeyPair::new_self_signed("test");
+		let protocols = [b"test".to_vec()];
+
+		// build client
+		let mut builder = Builder::new();
+		let _ = builder.set_protocols(protocols.clone());
+		let client = builder.build()?;
+
+		// build server
+		let mut builder = Builder::new();
+		let _ = builder.set_protocols(protocols.clone());
+		let mut server = builder.build()?;
+
+		// connect with server
+		let mut connecting = client
+			.connect_pinned(
+				server.local_address()?.to_string(),
+				key_pair.certificate(),
+				None,
+			)
+			.await?;
+		assert_eq!(
+			protocols[0],
+			connecting.protocol().await?.expect("no protocol found")
+		);
+		let connection = connecting.accept::<()>().await?;
+		assert_eq!(
+			protocols[0],
+			connection.protocol().expect("no protocol found")
+		);
+
+		// receive connection from client
+		let mut connecting = server.next().await.expect("client dropped");
+		assert_eq!(
+			protocols[0],
+			connecting.protocol().await?.expect("no protocol found")
+		);
+		let connection = connecting.accept::<()>().await?;
+		assert_eq!(
+			protocols[0],
+			connection.protocol().expect("no protocol found")
+		);
 
 		Ok(())
 	}
