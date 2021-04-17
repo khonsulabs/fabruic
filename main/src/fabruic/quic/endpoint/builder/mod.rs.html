@@ -632,6 +632,57 @@
 <span id="629">629</span>
 <span id="630">630</span>
 <span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
+<span id="653">653</span>
+<span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
+<span id="662">662</span>
+<span id="663">663</span>
+<span id="664">664</span>
+<span id="665">665</span>
+<span id="666">666</span>
+<span id="667">667</span>
+<span id="668">668</span>
+<span id="669">669</span>
+<span id="670">670</span>
+<span id="671">671</span>
+<span id="672">672</span>
+<span id="673">673</span>
+<span id="674">674</span>
+<span id="675">675</span>
+<span id="676">676</span>
+<span id="677">677</span>
+<span id="678">678</span>
+<span id="679">679</span>
+<span id="680">680</span>
+<span id="681">681</span>
+<span id="682">682</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! [`Endpoint`] builder.</span>
 
@@ -1096,10 +1147,14 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">test</span> {
+	<span class="kw">use</span> <span class="ident">std::task::Poll</span>;
+
 	<span class="kw">use</span> <span class="ident">anyhow::Result</span>;
 	<span class="kw">use</span> <span class="ident">futures_util::StreamExt</span>;
+	<span class="kw">use</span> <span class="ident">quinn</span>::{<span class="ident">ConnectionClose</span>, <span class="ident">ConnectionError</span>};
 
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+	<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::Error</span>;
 
 	<span class="attribute">#[<span class="ident">tokio::test</span>]</span>
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
@@ -1142,7 +1197,7 @@
 		<span class="comment">// test connection</span>
 		<span class="kw">let</span> <span class="ident">_connection</span> <span class="op">=</span> <span class="ident">client</span>
 			.<span class="ident">connect_pinned</span>(
-				<span class="ident">server</span>.<span class="ident">local_address</span>()<span class="question-mark">?</span>.<span class="ident">to_string</span>(),
+				<span class="macro">format!</span>(<span class="string">&quot;quic://{}&quot;</span>, <span class="ident">server</span>.<span class="ident">local_address</span>()<span class="question-mark">?</span>),
 				<span class="ident">key_pair</span>.<span class="ident">certificate</span>(),
 				<span class="prelude-val">None</span>,
 			)
@@ -1152,7 +1207,7 @@
 		<span class="kw">let</span> <span class="ident">_connection</span> <span class="op">=</span> <span class="ident">server</span>
 			.<span class="ident">next</span>()
 			.<span class="kw">await</span>
-			.<span class="ident">expect</span>(<span class="string">&quot;client dropped&quot;</span>)
+			.<span class="ident">expect</span>(<span class="string">&quot;server dropped&quot;</span>)
 			.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
 			.<span class="kw">await</span><span class="question-mark">?</span>;
 
@@ -1187,7 +1242,7 @@
 		<span class="kw">let</span> <span class="ident">connection</span> <span class="op">=</span> <span class="ident">server</span>
 			.<span class="ident">next</span>()
 			.<span class="kw">await</span>
-			.<span class="ident">expect</span>(<span class="string">&quot;client dropped&quot;</span>)
+			.<span class="ident">expect</span>(<span class="string">&quot;server dropped&quot;</span>)
 			.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
 			.<span class="kw">await</span><span class="question-mark">?</span>;
 
@@ -1228,13 +1283,15 @@
 
 		<span class="comment">// build server</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">Builder::new</span>();
-		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">set_protocols</span>(<span class="ident">protocols</span>.<span class="ident">clone</span>());
+		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>
+			.<span class="ident">set_server_key_pair</span>(<span class="prelude-val">Some</span>(<span class="ident">key_pair</span>.<span class="ident">clone</span>()))
+			.<span class="ident">set_protocols</span>(<span class="ident">protocols</span>.<span class="ident">clone</span>());
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">build</span>()<span class="question-mark">?</span>;
 
 		<span class="comment">// connect with server</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">connecting</span> <span class="op">=</span> <span class="ident">client</span>
 			.<span class="ident">connect_pinned</span>(
-				<span class="ident">server</span>.<span class="ident">local_address</span>()<span class="question-mark">?</span>.<span class="ident">to_string</span>(),
+				<span class="macro">format!</span>(<span class="string">&quot;quic://{}&quot;</span>, <span class="ident">server</span>.<span class="ident">local_address</span>()<span class="question-mark">?</span>),
 				<span class="ident">key_pair</span>.<span class="ident">certificate</span>(),
 				<span class="prelude-val">None</span>,
 			)
@@ -1250,7 +1307,7 @@
 		);
 
 		<span class="comment">// receive connection from client</span>
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">connecting</span> <span class="op">=</span> <span class="ident">server</span>.<span class="ident">next</span>().<span class="kw">await</span>.<span class="ident">expect</span>(<span class="string">&quot;client dropped&quot;</span>);
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">connecting</span> <span class="op">=</span> <span class="ident">server</span>.<span class="ident">next</span>().<span class="kw">await</span>.<span class="ident">expect</span>(<span class="string">&quot;server dropped&quot;</span>);
 		<span class="macro">assert_eq!</span>(
 			<span class="ident">protocols</span>[<span class="number">0</span>],
 			<span class="ident">connecting</span>.<span class="ident">protocol</span>().<span class="kw">await</span><span class="question-mark">?</span>.<span class="ident">expect</span>(<span class="string">&quot;no protocol found&quot;</span>)
@@ -1260,6 +1317,51 @@
 			<span class="ident">protocols</span>[<span class="number">0</span>],
 			<span class="ident">connection</span>.<span class="ident">protocol</span>().<span class="ident">expect</span>(<span class="string">&quot;no protocol found&quot;</span>)
 		);
+
+		<span class="prelude-val">Ok</span>(())
+	}
+
+	<span class="attribute">#[<span class="ident">tokio::test</span>]</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">protocols_incompatible</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">key_pair</span> <span class="op">=</span> <span class="ident">KeyPair::new_self_signed</span>(<span class="string">&quot;test&quot;</span>);
+
+		<span class="comment">// build client</span>
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">Builder::new</span>();
+		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">set_protocols</span>([<span class="string">b&quot;test1&quot;</span>.<span class="ident">to_vec</span>()]);
+		<span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">build</span>()<span class="question-mark">?</span>;
+
+		<span class="comment">// build server</span>
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">Builder::new</span>();
+		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>
+			.<span class="ident">set_server_key_pair</span>(<span class="prelude-val">Some</span>(<span class="ident">key_pair</span>.<span class="ident">clone</span>()))
+			.<span class="ident">set_protocols</span>([<span class="string">b&quot;test2&quot;</span>.<span class="ident">to_vec</span>()]);
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">build</span>()<span class="question-mark">?</span>;
+
+		<span class="comment">// connect with server</span>
+		<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">client</span>
+			.<span class="ident">connect_pinned</span>(
+				<span class="macro">format!</span>(<span class="string">&quot;quic://{}&quot;</span>, <span class="ident">server</span>.<span class="ident">local_address</span>()<span class="question-mark">?</span>),
+				<span class="ident">key_pair</span>.<span class="ident">certificate</span>(),
+				<span class="prelude-val">None</span>,
+			)
+			.<span class="kw">await</span><span class="question-mark">?</span>
+			.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
+			.<span class="kw">await</span>;
+		<span class="comment">// check result</span>
+		<span class="macro">assert!</span>(<span class="macro">matches!</span>(
+			<span class="ident">result</span>,
+			<span class="prelude-val">Err</span>(<span class="ident">Error::Connecting</span>(<span class="ident">ConnectionError::ConnectionClosed</span>(<span class="ident">ConnectionClose</span> {
+				<span class="ident">error_code</span>,
+				<span class="ident">frame_type</span>: <span class="prelude-val">None</span>,
+				<span class="ident">reason</span>
+			}))) <span class="kw">if</span> (<span class="ident">reason</span>.<span class="ident">as_ref</span>() <span class="op">=</span><span class="op">=</span> <span class="string">b&quot;peer doesn&#39;t support any known protocol&quot;</span>)
+				<span class="op">&amp;&amp;</span> <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">error_code</span>) <span class="op">=</span><span class="op">=</span> <span class="string">&quot;Code::crypto(78)&quot;</span>));
+
+		<span class="comment">// on protocol mismatch, the server receives nothing</span>
+		<span class="macro">assert!</span>(<span class="macro">matches!</span>(
+			<span class="ident">allochronic_util::poll</span>(<span class="ident">server</span>.<span class="ident">next</span>()).<span class="kw">await</span>,
+			<span class="ident">Poll::Pending</span>
+		));
 
 		<span class="prelude-val">Ok</span>(())
 	}
