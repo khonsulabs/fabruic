@@ -27,7 +27,8 @@ jobs:
 
       - name: Run doc tests
         run: |
-          cargo test --workspace --doc --all-features
+          rustup toolchain install nightly --profile minimal --allow-downgrade
+          cargo +nightly test --workspace --doc --all-features
 
   lint:
     runs-on: ubuntu-latest
@@ -38,7 +39,7 @@ jobs:
 
       - name: Install nightly Rust
         run: |
-          rustup toolchain install nightly --profile minimal --component llvm-tools-preview --allow-downgrade
+          rustup toolchain install nightly --profile minimal --component clippy --allow-downgrade
           rustup default nightly
 
       - name: Run Clippy
