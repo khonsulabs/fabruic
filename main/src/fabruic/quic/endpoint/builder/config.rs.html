@@ -175,19 +175,27 @@
 <span id="172">172</span>
 <span id="173">173</span>
 <span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="doccomment">//! Persistent configuration shared between the [`Builder`](crate::Builder) and</span>
-<span class="doccomment">//! the [`Endpoint`](crate::Endpoint).</span>
+<span class="doccomment">//! Persistent configuration shared between [`Builder`](crate::Builder) and</span>
+<span class="doccomment">//! [`Endpoint`](crate::Endpoint).</span>
 
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">ops::Deref</span>, <span class="ident">sync::Arc</span>};
 
 <span class="kw">use</span> <span class="ident">quinn</span>::{<span class="ident">ClientConfig</span>, <span class="ident">ClientConfigBuilder</span>, <span class="ident">TransportConfig</span>};
 <span class="kw">use</span> <span class="ident">rustls</span>::{<span class="ident">sign::CertifiedKey</span>, <span class="ident">ResolvesClientCert</span>, <span class="ident">RootCertStore</span>, <span class="ident">SignatureScheme</span>};
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Certificate</span>, <span class="ident">PrivateKey</span>, <span class="ident">Store</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Certificate</span>, <span class="ident">KeyPair</span>, <span class="ident">Store</span>};
 
-<span class="doccomment">/// Persistent configuration shared between the [`Builder`](crate::Builder) and</span>
-<span class="doccomment">/// the [`Endpoint`](crate::Endpoint).</span>
+<span class="doccomment">/// Persistent configuration shared between [`Builder`](crate::Builder) and</span>
+<span class="doccomment">/// [`Endpoint`](crate::Endpoint).</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::quic::endpoint</span>) <span class="kw">struct</span> <span class="ident">Config</span> {
 	<span class="doccomment">/// Storing the default [`TransportConfig`].</span>
@@ -203,24 +211,22 @@
 <span class="kw">impl</span> <span class="ident">Config</span> {
 	<span class="doccomment">/// Builds a new [`Config`].</span>
 	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-		<span class="comment">// build transport</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">transport</span> <span class="op">=</span> <span class="ident">TransportConfig::default</span>();
 
 		<span class="comment">// set transport defaults</span>
+		<span class="comment">// TODO: research other settings</span>
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">transport</span>
 			<span class="comment">// TODO: research if this is necessary, it improves privacy, but may hurt network</span>
 			<span class="comment">// providers?</span>
 			.<span class="ident">allow_spin</span>(<span class="bool-val">false</span>)
 			<span class="comment">// we don&#39;t support unordered for now</span>
 			.<span class="ident">datagram_receive_buffer_size</span>(<span class="prelude-val">None</span>)
-			<span class="comment">// TODO: handle uni streams</span>
+			<span class="comment">// for compatibility with WebRTC, we won&#39;t be using uni-directional streams</span>
 			.<span class="ident">max_concurrent_uni_streams</span>(<span class="number">0</span>)
 			.<span class="ident">expect</span>(<span class="string">&quot;can&#39;t be bigger then `VarInt`&quot;</span>);
 
-		<span class="kw">let</span> <span class="ident">transport</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">transport</span>);
-
 		<span class="self">Self</span> {
-			<span class="ident">transport</span>,
+			<span class="ident">transport</span>: <span class="ident">Arc::new</span>(<span class="ident">transport</span>),
 			<span class="ident">protocols</span>: <span class="ident">Vec::new</span>(),
 			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
 			<span class="ident">trust_dns</span>: <span class="bool-val">true</span>,
@@ -237,71 +243,55 @@
 		<span class="self">self</span>.<span class="ident">protocols</span> <span class="op">=</span> <span class="ident">protocols</span>.<span class="ident">into</span>();
 	}
 
-	<span class="doccomment">/// Returns the configured protocols.</span>
-	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">protocols</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">protocols</span>
+	<span class="doccomment">/// Returns the configured application-layer protocols.</span>
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">protocols</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>] {
+		<span class="self">self</span>.<span class="ident">protocols</span>.<span class="ident">as_slice</span>()
 	}
 
-	<span class="doccomment">/// Forces [`Endpoint::connect`](crate::Endpoint::connect) to use</span>
-	<span class="doccomment">/// [`trust-dns`](trust_dns_resolver).</span>
+	<span class="doccomment">/// Controls the use of [`trust-dns`](trust_dns_resolver) for</span>
+	<span class="doccomment">/// [`Endpoint::connect`](crate::Endpoint::connect).</span>
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">doc</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)))]</span>
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">set_trust_dns</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">enable</span>: <span class="ident">bool</span>) {
+		<span class="self">self</span>.<span class="ident">trust_dns</span> <span class="op">=</span> <span class="ident">enable</span>;
+	}
+
+	<span class="doccomment">/// Disables the use of [`trust-dns`](trust_dns_resolver) for</span>
+	<span class="doccomment">/// [`Endpoint::connect`](crate::Endpoint::connect) despite the activates</span>
+	<span class="doccomment">/// crate features.</span>
 	<span class="attribute">#[<span class="ident">cfg_attr</span>(
 		<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>),
 		<span class="ident">allow</span>(<span class="ident">clippy::unused_self</span>, <span class="ident">unused_variables</span>)
 	)]</span>
-	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">set_trust_dns</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">trust_dns</span>: <span class="ident">bool</span>) {
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">disable_trust_dns</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
 		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
 		{
-			<span class="self">self</span>.<span class="ident">trust_dns</span> <span class="op">=</span> <span class="ident">trust_dns</span>;
+			<span class="self">self</span>.<span class="ident">trust_dns</span> <span class="op">=</span> <span class="bool-val">false</span>;
 		}
 	}
 
 	<span class="doccomment">/// Returns if [`trust-dns`](trust_dns_resolver) is enabled.</span>
-	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
-	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">doc</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)))]</span>
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::quic::endpoint</span>) <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">trust_dns</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-		<span class="self">self</span>.<span class="ident">trust_dns</span>
+		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
+		<span class="kw">return</span> <span class="self">self</span>.<span class="ident">trust_dns</span>;
+		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>))]</span>
+		<span class="bool-val">false</span>
 	}
 
 	<span class="doccomment">/// Builds a new [`ClientConfig`] with this [`Config`] and adds</span>
-	<span class="doccomment">/// `certificates` to the CA store.</span>
+	<span class="doccomment">/// [`Certificate`]s to the CA store.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Panics</span>
-	<span class="doccomment">/// Panics if the given [`Certificate`] is invalid. Can&#39;t happen if the</span>
-	<span class="doccomment">/// [`Certificate`] was properly validated through</span>
-	<span class="doccomment">/// [`Certificate::from_der`].</span>
+	<span class="doccomment">/// Panics if the given [`KeyPair`] or [`Certificate`]s are invalid. Can&#39;t</span>
+	<span class="doccomment">/// happen if they were properly validated through [`KeyPair::from_parts`]</span>
+	<span class="doccomment">/// or [`Certificate::from_der`].</span>
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="kw">crate</span><span class="ident">::quic::endpoint</span>) <span class="kw">fn</span> <span class="ident">new_client</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">certificates</span>: <span class="kw">impl</span> <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Certificate</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span>,
 		<span class="ident">store</span>: <span class="ident">Store</span>,
-		<span class="ident">client_cert</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">Certificate</span>, <span class="ident">PrivateKey</span>)<span class="op">&gt;</span>,
+		<span class="ident">client_key_pair</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">KeyPair</span><span class="op">&gt;</span>,
 	) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ClientConfig</span> {
-		<span class="comment">// build client</span>
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">ClientConfig::default</span>();
-
-		<span class="comment">// get inner rustls `ClientConfig`</span>
-		<span class="kw">let</span> <span class="ident">crypto</span> <span class="op">=</span> <span class="ident">Arc::get_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">client</span>.<span class="ident">crypto</span>).<span class="ident">expect</span>(<span class="string">&quot;failed to build `ClientConfig`&quot;</span>);
-
-		<span class="kw">match</span> <span class="ident">store</span> {
-			<span class="comment">// remove the defaults set by Quinn</span>
-			<span class="ident">Store::Empty</span> <span class="op">=</span><span class="op">&gt;</span> {
-				<span class="ident">crypto</span>.<span class="ident">root_store</span> <span class="op">=</span> <span class="ident">RootCertStore::empty</span>();
-				<span class="ident">crypto</span>.<span class="ident">ct_logs</span> <span class="op">=</span> <span class="prelude-val">None</span>;
-			}
-			<span class="comment">// is set correctly by Quinn by default</span>
-			<span class="ident">Store::Os</span> <span class="op">=</span><span class="op">&gt;</span> (),
-			<span class="ident">Store::Embedded</span> <span class="op">=</span><span class="op">&gt;</span> {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">store</span> <span class="op">=</span> <span class="ident">RootCertStore::empty</span>();
-				<span class="ident">store</span>.<span class="ident">add_server_trust_anchors</span>(<span class="kw-2">&amp;</span><span class="ident">webpki_roots::TLS_SERVER_ROOTS</span>);
-				<span class="ident">crypto</span>.<span class="ident">root_store</span> <span class="op">=</span> <span class="ident">store</span>;
-			}
-		}
-
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">certificate</span>, <span class="ident">private_key</span>)) <span class="op">=</span> <span class="ident">client_cert</span> {
-			<span class="ident">crypto</span>.<span class="ident">client_auth_cert_resolver</span> <span class="op">=</span> <span class="ident">CertificateResolver::new</span>(<span class="ident">certificate</span>, <span class="ident">private_key</span>);
-		}
-
-		<span class="comment">// build client builder</span>
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">ClientConfigBuilder::new</span>(<span class="ident">client</span>);
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">ClientConfigBuilder::default</span>();
 
 		<span class="comment">// add protocols</span>
 		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">protocols</span>.<span class="ident">is_empty</span>() {
@@ -309,14 +299,43 @@
 			<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">protocols</span>(<span class="kw-2">&amp;</span><span class="ident">protocols</span>);
 		}
 
-		<span class="comment">// add CAs</span>
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">build</span>();
+
+		<span class="comment">// get inner rustls `ClientConfig`</span>
+		{
+			<span class="kw">let</span> <span class="ident">crypto</span> <span class="op">=</span> <span class="ident">Arc::get_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">client</span>.<span class="ident">crypto</span>).<span class="ident">expect</span>(<span class="string">&quot;failed to build `ClientConfig`&quot;</span>);
+
+			<span class="comment">// set default root certificates</span>
+			<span class="kw">match</span> <span class="ident">store</span> {
+				<span class="comment">// remove the defaults set by Quinn</span>
+				<span class="ident">Store::Empty</span> <span class="op">=</span><span class="op">&gt;</span> {
+					<span class="ident">crypto</span>.<span class="ident">root_store</span> <span class="op">=</span> <span class="ident">RootCertStore::empty</span>();
+					<span class="ident">crypto</span>.<span class="ident">ct_logs</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+				}
+				<span class="comment">// is set correctly by Quinn by default</span>
+				<span class="ident">Store::Os</span> <span class="op">=</span><span class="op">&gt;</span> (),
+				<span class="comment">// insert `webpki-roots`</span>
+				<span class="ident">Store::Embedded</span> <span class="op">=</span><span class="op">&gt;</span> {
+					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">store</span> <span class="op">=</span> <span class="ident">RootCertStore::empty</span>();
+					<span class="ident">store</span>.<span class="ident">add_server_trust_anchors</span>(<span class="kw-2">&amp;</span><span class="ident">webpki_roots::TLS_SERVER_ROOTS</span>);
+					<span class="ident">crypto</span>.<span class="ident">root_store</span> <span class="op">=</span> <span class="ident">store</span>;
+				}
+			}
+
+			<span class="comment">// insert client certificate</span>
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">key_pair</span>) <span class="op">=</span> <span class="ident">client_key_pair</span> {
+				<span class="ident">crypto</span>.<span class="ident">client_auth_cert_resolver</span> <span class="op">=</span> <span class="ident">CertificateResolver::new</span>(<span class="ident">key_pair</span>);
+			}
+		}
+
+		<span class="comment">// add root certificates</span>
 		<span class="kw">for</span> <span class="ident">certificate</span> <span class="kw">in</span> <span class="ident">certificates</span> {
 			<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">client</span>
 				.<span class="ident">add_certificate_authority</span>(<span class="ident">certificate</span>.<span class="ident">as_quinn</span>())
 				.<span class="ident">expect</span>(<span class="string">&quot;`Certificate` couldn&#39;t be added as a CA&quot;</span>);
 		}
 
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">build</span>();
+		<span class="comment">// set transport</span>
 		<span class="ident">client</span>.<span class="ident">transport</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">transport</span>();
 
 		<span class="ident">client</span>
@@ -342,12 +361,9 @@
 
 <span class="kw">impl</span> <span class="ident">CertificateResolver</span> {
 	<span class="doccomment">/// Builds a new [`CertificateResolver`].</span>
-	<span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">certificate</span>: <span class="ident">Certificate</span>, <span class="ident">private_key</span>: <span class="ident">PrivateKey</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-		<span class="ident">Arc::new</span>(<span class="self">Self</span>(<span class="ident">CertifiedKey::new</span>(
-			<span class="macro">vec!</span>[<span class="ident">certificate</span>.<span class="ident">into_rustls</span>()],
-			<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
-			<span class="ident">Arc::new</span>(<span class="ident">private_key</span>.<span class="ident">into_rustls</span>()),
-		)))
+	<span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">key_pair</span>: <span class="ident">KeyPair</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+		<span class="comment">// build a `rustls::sign::CertifiedKey`</span>
+		<span class="ident">Arc::new</span>(<span class="self">Self</span>(<span class="ident">key_pair</span>.<span class="ident">into_rustls</span>()))
 	}
 }
 </pre></div>
