@@ -466,6 +466,7 @@ mod test {
 	use anyhow::Result;
 	use futures_util::StreamExt;
 	use quinn::{ConnectionClose, ConnectionError};
+	use quinn_proto::TransportError;
 	use trust_dns_proto::error::ProtoErrorKind;
 	use trust_dns_resolver::error::ResolveErrorKind;
 
@@ -663,6 +664,7 @@ mod test {
 			.await?
 			.accept::<()>()
 			.await;
+
 		// check result
 		assert!(matches!(
 			result,
@@ -671,7 +673,7 @@ mod test {
 				frame_type: None,
 				reason
 			}))) if (reason.as_ref() == b"peer doesn't support any known protocol")
-				&& format!("{:?}", error_code) == "Code::crypto(78)"));
+				&& error_code.to_string() == "the cryptographic handshake failed: error 120"));
 
 		// on protocol mismatch, the server receives nothing
 		assert!(matches!(
@@ -726,5 +728,82 @@ mod test {
 		}
 
 		panic!("unexpected result: {:?}", result)
+	}
+
+	#[tokio::test]
+	async fn store_embedded() -> Result<()> {
+		let mut builder = Builder::new();
+		let _ = builder
+			.set_address(([0; 8], 0).into())
+			.set_protocols([b"h3-29".to_vec()])
+			.disable_trust_dns();
+
+		assert_eq!(builder.store(), Store::Embedded);
+
+		let endpoint = builder.build()?;
+
+		assert!(endpoint
+			.connect("https://cloudflare-quic.com:443")
+			.await?
+			.accept::<()>()
+			.await
+			.is_ok());
+
+		Ok(())
+	}
+
+	#[tokio::test]
+	async fn store_os() -> Result<()> {
+		let mut builder = Builder::new();
+		let _ = builder
+			.set_address(([0; 8], 0).into())
+			.set_protocols([b"h3-29".to_vec()])
+			.set_store(Store::Os)
+			.disable_trust_dns();
+
+		assert_eq!(builder.store(), Store::Os);
+
+		let endpoint = builder.build()?;
+
+		assert!(endpoint
+			.connect("https://cloudflare-quic.com:443")
+			.await?
+			.accept::<()>()
+			.await
+			.is_ok());
+
+		Ok(())
+	}
+
+	#[tokio::test]
+	async fn store_empty() -> Result<()> {
+		let mut builder = Builder::new();
+		let _ = builder
+			.set_address(([0; 8], 0).into())
+			.set_protocols([b"h3-29".to_vec()])
+			.set_store(Store::Empty)
+			.disable_trust_dns();
+
+		assert_eq!(builder.store(), Store::Empty);
+
+		let endpoint = builder.build()?;
+
+		let result = endpoint
+			.connect("https://cloudflare-quic.com:443")
+			.await?
+			.accept::<()>()
+			.await;
+
+		// check result
+		assert!(matches!(
+				result,
+				Err(Error::Connecting(ConnectionError::TransportError(TransportError {
+					code,
+					frame: None,
+					reason
+				}))) if (reason == "invalid certificate: UnknownIssuer")
+					&& code.to_string() == "the cryptographic handshake failed: error 42"));
+
+		Ok(())
 	}
 }

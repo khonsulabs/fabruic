@@ -192,7 +192,7 @@ impl Endpoint {
 	/// [`trust-dns`](trust_dns_resolver):
 	/// - all system configurations are ignored
 	/// - Cloudflare DNS is used as the name server
-	/// - DNSSEC is used
+	/// - DNSSEC is enforced
 	/// - DOH is used
 	/// - IPv4 is preferred over IPv6
 	///
