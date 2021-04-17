@@ -55,15 +55,14 @@ impl Endpoint {
 	}
 
 	/// Builds a new [`Endpoint`] from raw [`quinn`] types. Must be called from
-	/// inside the Tokio [`Runtime`](tokio::runtime::Runtime).
+	/// inside a Tokio [`Runtime`](tokio::runtime::Runtime).
 	///
 	/// # Errors
 	/// [`error::Builder`] if the socket couldn't be bound to the given
 	/// `address`.
 	///
 	/// # Panics
-	/// If not called from inside the Tokio
-	/// [`Runtime`](tokio::runtime::Runtime).
+	/// If not called from inside a Tokio [`Runtime`](tokio::runtime::Runtime).
 	fn new(
 		address: SocketAddr,
 		client: ClientConfig,
@@ -112,7 +111,7 @@ impl Endpoint {
 	}
 
 	/// Simplified version of creating a client. See [`Builder`] for more
-	/// sophisticated configuration. Must be called from inside the Tokio
+	/// sophisticated configuration. Must be called from inside a Tokio
 	/// [`Runtime`](tokio::runtime::Runtime).
 	///
 	/// # Notes
@@ -124,8 +123,7 @@ impl Endpoint {
 	/// `address`.
 	///
 	/// # Panics
-	/// If not called from inside the Tokio
-	/// [`Runtime`](tokio::runtime::Runtime).
+	/// If not called from inside a Tokio [`Runtime`](tokio::runtime::Runtime).
 	pub fn new_client() -> Result<Self, error::Endpoint> {
 		Builder::new()
 			.build()
@@ -133,7 +131,7 @@ impl Endpoint {
 	}
 
 	/// Simplified version of creating a server. See [`Builder`] for more
-	/// sophisticated configuration. Must be called from inside the Tokio
+	/// sophisticated configuration. Must be called from inside a Tokio
 	/// [`Runtime`](tokio::runtime::Runtime).
 	///
 	/// # Errors
@@ -144,8 +142,7 @@ impl Endpoint {
 	/// - if the given [`KeyPair`] or [`Certificate`]s are invalid - can't
 	///   happen if they were properly validated through [`KeyPair::from_parts`]
 	///   or [`Certificate::from_der`]
-	/// - if not called from inside the Tokio
-	///   [`Runtime`](tokio::runtime::Runtime)
+	/// - if not called from inside a Tokio [`Runtime`](tokio::runtime::Runtime)
 	pub fn new_server(port: u16, key_pair: KeyPair) -> Result<Self, error::Endpoint> {
 		let mut builder = Builder::new();
 		#[cfg(not(feature = "test"))]

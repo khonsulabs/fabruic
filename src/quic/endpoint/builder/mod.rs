@@ -336,8 +336,8 @@ impl Builder {
 		self.store
 	}
 
-	/// Consumes [`Builder`] to build [`Endpoint`]. Must be called from inside
-	/// the Tokio [`Runtime`](tokio::runtime::Runtime).
+	/// Consumes [`Builder`] to build [`Endpoint`]. Must be called from inside a
+	/// Tokio [`Runtime`](tokio::runtime::Runtime).
 	///
 	/// # Errors
 	/// [`error::Builder`] if the socket couldn't be bound to the given
@@ -347,8 +347,7 @@ impl Builder {
 	/// - if the given [`KeyPair`]s or [`Certificate`]s are invalid - can't
 	///   happen if they were properly validated through [`KeyPair::from_parts`]
 	///   or [`Certificate::from_der`]
-	/// - if not called from inside the Tokio
-	///   [`Runtime`](tokio::runtime::Runtime)
+	/// - if not called from inside a Tokio [`Runtime`](tokio::runtime::Runtime)
 	pub fn build(self) -> Result<Endpoint, error::Builder> {
 		match {
 			// build client
@@ -466,7 +465,6 @@ mod test {
 	use futures_util::StreamExt;
 
 	use super::*;
-	use crate::KeyPair;
 
 	#[tokio::test]
 	async fn default() -> Result<()> {

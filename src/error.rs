@@ -19,10 +19,10 @@ pub use x509_parser::{error::X509Error, nom::Err};
 /// [`Result`](std::result::Result) type for this [`crate`].
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
-/// Error binding the socket during construction of
-/// [`Endpoint`](crate::Endpoint) with a [`Builder`](crate::Builder).
+/// Error binding socket during construction of [`Endpoint`](crate::Endpoint)
+/// with a [`Builder`](crate::Builder).
 #[derive(Debug, Error)]
-#[error("Error binding the socket during construction of `Endpoint`")]
+#[error("Error binding socket during construction of `Endpoint`")]
 pub struct Builder {
 	/// The error binding [`Endpoint`](crate::Endpoint).
 	pub error: Endpoint,
@@ -30,10 +30,9 @@ pub struct Builder {
 	pub builder: crate::Builder,
 }
 
-/// Error binding the socket during construction of
-/// [`Endpoint`](crate::Endpoint).
+/// Error binding socket during construction of [`Endpoint`](crate::Endpoint).
 #[derive(Debug, Error)]
-#[error("Error binding the socket during construction of `Endpoint`")]
+#[error("Error binding socket during construction of `Endpoint`")]
 pub struct Endpoint(pub IoError);
 
 /// [`Error`](std::error::Error) for this [`crate`].
