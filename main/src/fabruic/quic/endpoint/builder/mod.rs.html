@@ -731,6 +731,85 @@
 <span id="728">728</span>
 <span id="729">729</span>
 <span id="730">730</span>
+<span id="731">731</span>
+<span id="732">732</span>
+<span id="733">733</span>
+<span id="734">734</span>
+<span id="735">735</span>
+<span id="736">736</span>
+<span id="737">737</span>
+<span id="738">738</span>
+<span id="739">739</span>
+<span id="740">740</span>
+<span id="741">741</span>
+<span id="742">742</span>
+<span id="743">743</span>
+<span id="744">744</span>
+<span id="745">745</span>
+<span id="746">746</span>
+<span id="747">747</span>
+<span id="748">748</span>
+<span id="749">749</span>
+<span id="750">750</span>
+<span id="751">751</span>
+<span id="752">752</span>
+<span id="753">753</span>
+<span id="754">754</span>
+<span id="755">755</span>
+<span id="756">756</span>
+<span id="757">757</span>
+<span id="758">758</span>
+<span id="759">759</span>
+<span id="760">760</span>
+<span id="761">761</span>
+<span id="762">762</span>
+<span id="763">763</span>
+<span id="764">764</span>
+<span id="765">765</span>
+<span id="766">766</span>
+<span id="767">767</span>
+<span id="768">768</span>
+<span id="769">769</span>
+<span id="770">770</span>
+<span id="771">771</span>
+<span id="772">772</span>
+<span id="773">773</span>
+<span id="774">774</span>
+<span id="775">775</span>
+<span id="776">776</span>
+<span id="777">777</span>
+<span id="778">778</span>
+<span id="779">779</span>
+<span id="780">780</span>
+<span id="781">781</span>
+<span id="782">782</span>
+<span id="783">783</span>
+<span id="784">784</span>
+<span id="785">785</span>
+<span id="786">786</span>
+<span id="787">787</span>
+<span id="788">788</span>
+<span id="789">789</span>
+<span id="790">790</span>
+<span id="791">791</span>
+<span id="792">792</span>
+<span id="793">793</span>
+<span id="794">794</span>
+<span id="795">795</span>
+<span id="796">796</span>
+<span id="797">797</span>
+<span id="798">798</span>
+<span id="799">799</span>
+<span id="800">800</span>
+<span id="801">801</span>
+<span id="802">802</span>
+<span id="803">803</span>
+<span id="804">804</span>
+<span id="805">805</span>
+<span id="806">806</span>
+<span id="807">807</span>
+<span id="808">808</span>
+<span id="809">809</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! [`Endpoint`] builder.</span>
 
@@ -1200,6 +1279,7 @@
 	<span class="kw">use</span> <span class="ident">anyhow::Result</span>;
 	<span class="kw">use</span> <span class="ident">futures_util::StreamExt</span>;
 	<span class="kw">use</span> <span class="ident">quinn</span>::{<span class="ident">ConnectionClose</span>, <span class="ident">ConnectionError</span>};
+	<span class="kw">use</span> <span class="ident">quinn_proto::TransportError</span>;
 	<span class="kw">use</span> <span class="ident">trust_dns_proto::error::ProtoErrorKind</span>;
 	<span class="kw">use</span> <span class="ident">trust_dns_resolver::error::ResolveErrorKind</span>;
 
@@ -1397,6 +1477,7 @@
 			.<span class="kw">await</span><span class="question-mark">?</span>
 			.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
 			.<span class="kw">await</span>;
+
 		<span class="comment">// check result</span>
 		<span class="macro">assert!</span>(<span class="macro">matches!</span>(
 			<span class="ident">result</span>,
@@ -1405,7 +1486,7 @@
 				<span class="ident">frame_type</span>: <span class="prelude-val">None</span>,
 				<span class="ident">reason</span>
 			}))) <span class="kw">if</span> (<span class="ident">reason</span>.<span class="ident">as_ref</span>() <span class="op">=</span><span class="op">=</span> <span class="string">b&quot;peer doesn&#39;t support any known protocol&quot;</span>)
-				<span class="op">&amp;&amp;</span> <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">error_code</span>) <span class="op">=</span><span class="op">=</span> <span class="string">&quot;Code::crypto(78)&quot;</span>));
+				<span class="op">&amp;&amp;</span> <span class="ident">error_code</span>.<span class="ident">to_string</span>() <span class="op">=</span><span class="op">=</span> <span class="string">&quot;the cryptographic handshake failed: error 120&quot;</span>));
 
 		<span class="comment">// on protocol mismatch, the server receives nothing</span>
 		<span class="macro">assert!</span>(<span class="macro">matches!</span>(
@@ -1460,6 +1541,83 @@
 		}
 
 		<span class="macro">panic!</span>(<span class="string">&quot;unexpected result: {:?}&quot;</span>, <span class="ident">result</span>)
+	}
+
+	<span class="attribute">#[<span class="ident">tokio::test</span>]</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">store_embedded</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">Builder::new</span>();
+		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>
+			.<span class="ident">set_address</span>(([<span class="number">0</span>; <span class="number">8</span>], <span class="number">0</span>).<span class="ident">into</span>())
+			.<span class="ident">set_protocols</span>([<span class="string">b&quot;h3-29&quot;</span>.<span class="ident">to_vec</span>()])
+			.<span class="ident">disable_trust_dns</span>();
+
+		<span class="macro">assert_eq!</span>(<span class="ident">builder</span>.<span class="ident">store</span>(), <span class="ident">Store::Embedded</span>);
+
+		<span class="kw">let</span> <span class="ident">endpoint</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">build</span>()<span class="question-mark">?</span>;
+
+		<span class="macro">assert!</span>(<span class="ident">endpoint</span>
+			.<span class="ident">connect</span>(<span class="string">&quot;https://cloudflare-quic.com:443&quot;</span>)
+			.<span class="kw">await</span><span class="question-mark">?</span>
+			.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
+			.<span class="kw">await</span>
+			.<span class="ident">is_ok</span>());
+
+		<span class="prelude-val">Ok</span>(())
+	}
+
+	<span class="attribute">#[<span class="ident">tokio::test</span>]</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">store_os</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">Builder::new</span>();
+		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>
+			.<span class="ident">set_address</span>(([<span class="number">0</span>; <span class="number">8</span>], <span class="number">0</span>).<span class="ident">into</span>())
+			.<span class="ident">set_protocols</span>([<span class="string">b&quot;h3-29&quot;</span>.<span class="ident">to_vec</span>()])
+			.<span class="ident">set_store</span>(<span class="ident">Store::Os</span>)
+			.<span class="ident">disable_trust_dns</span>();
+
+		<span class="macro">assert_eq!</span>(<span class="ident">builder</span>.<span class="ident">store</span>(), <span class="ident">Store::Os</span>);
+
+		<span class="kw">let</span> <span class="ident">endpoint</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">build</span>()<span class="question-mark">?</span>;
+
+		<span class="macro">assert!</span>(<span class="ident">endpoint</span>
+			.<span class="ident">connect</span>(<span class="string">&quot;https://cloudflare-quic.com:443&quot;</span>)
+			.<span class="kw">await</span><span class="question-mark">?</span>
+			.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
+			.<span class="kw">await</span>
+			.<span class="ident">is_ok</span>());
+
+		<span class="prelude-val">Ok</span>(())
+	}
+
+	<span class="attribute">#[<span class="ident">tokio::test</span>]</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">store_empty</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">Builder::new</span>();
+		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>
+			.<span class="ident">set_address</span>(([<span class="number">0</span>; <span class="number">8</span>], <span class="number">0</span>).<span class="ident">into</span>())
+			.<span class="ident">set_protocols</span>([<span class="string">b&quot;h3-29&quot;</span>.<span class="ident">to_vec</span>()])
+			.<span class="ident">set_store</span>(<span class="ident">Store::Empty</span>)
+			.<span class="ident">disable_trust_dns</span>();
+
+		<span class="macro">assert_eq!</span>(<span class="ident">builder</span>.<span class="ident">store</span>(), <span class="ident">Store::Empty</span>);
+
+		<span class="kw">let</span> <span class="ident">endpoint</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">build</span>()<span class="question-mark">?</span>;
+
+		<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">endpoint</span>
+			.<span class="ident">connect</span>(<span class="string">&quot;https://cloudflare-quic.com:443&quot;</span>)
+			.<span class="kw">await</span><span class="question-mark">?</span>
+			.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
+			.<span class="kw">await</span>;
+
+		<span class="comment">// check result</span>
+		<span class="macro">assert!</span>(<span class="macro">matches!</span>(
+				<span class="ident">result</span>,
+				<span class="prelude-val">Err</span>(<span class="ident">Error::Connecting</span>(<span class="ident">ConnectionError::TransportError</span>(<span class="ident">TransportError</span> {
+					<span class="ident">code</span>,
+					<span class="ident">frame</span>: <span class="prelude-val">None</span>,
+					<span class="ident">reason</span>
+				}))) <span class="kw">if</span> (<span class="ident">reason</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;invalid certificate: UnknownIssuer&quot;</span>)
+					<span class="op">&amp;&amp;</span> <span class="ident">code</span>.<span class="ident">to_string</span>() <span class="op">=</span><span class="op">=</span> <span class="string">&quot;the cryptographic handshake failed: error 42&quot;</span>));
+
+		<span class="prelude-val">Ok</span>(())
 	}
 }
 </pre></div>
