@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../index.html">top level</a> - <a href="index.html">src/quic</a> - task.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-17 14:25:55</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-17 16:05:14</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -71,9 +71,9 @@
 <div class="line"><span id="50" class="lineNum"><a href="#50">50</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="51" class="lineNum"><a href="#51">51</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Builds a new empty [`Task`] that is already closed. This is useful to</span></div>
 <div class="line"><span id="52" class="lineNum"><a href="#52">52</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// not have to wrap [`Task`] in another [`Option`].</span></div>
-<div class="line"><span id="53" class="lineNum"><a href="#53">53</a></span><span class="counterCov">112</span><span class="lineCov">	pub(super) fn empty() -&gt; Self {</span></div>
-<div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterCov">112</span><span class="lineCov">		Self(Arc::new(Mutex::new(None)))</span></div>
-<div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterCov">112</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="53" class="lineNum"><a href="#53">53</a></span><span class="counterCov">114</span><span class="lineCov">	pub(super) fn empty() -&gt; Self {</span></div>
+<div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterCov">114</span><span class="lineCov">		Self(Arc::new(Mutex::new(None)))</span></div>
+<div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterCov">114</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="56" class="lineNum"><a href="#56">56</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 <div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;R, S&gt; Task&lt;R, S&gt; {</span></div>
@@ -108,12 +108,12 @@
 <div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;R, S&gt; Future for &amp;Task&lt;R, S&gt; {</span></div>
 <div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterUnCov"></span><span class="lineUnCov">	type Output = Result&lt;R&gt;;</span></div>
 <div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterCov">306</span><span class="lineCov">	fn poll(self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Self::Output&gt; {</span></div>
+<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterCov">303</span><span class="lineCov">	fn poll(self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Self::Output&gt; {</span></div>
 <div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// save the lock in a separate variable to be able to drop it</span></div>
-<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterCov">306</span><span class="lineCov">		let mut inner = self.0.lock();</span></div>
+<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterCov">303</span><span class="lineCov">		let mut inner = self.0.lock();</span></div>
 <div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterCov">306</span><span class="lineCov">		if let Some(Inner { handle, .. }) = inner.as_mut() {</span></div>
-<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">304</span><span class="lineCov">			if let Poll::Ready(result) = handle.poll_unpin(cx) {</span></div>
+<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterCov">303</span><span class="lineCov">		if let Some(Inner { handle, .. }) = inner.as_mut() {</span></div>
+<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">301</span><span class="lineCov">			if let Poll::Ready(result) = handle.poll_unpin(cx) {</span></div>
 <div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterUnCov"></span><span class="lineUnCov">				// drop inner, `close` might be called simultaneously, so we don&#39;t handle this</span></div>
 <div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">202</span><span class="lineCov">				let _inner = inner.take();</span></div>
 <div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">202</span><span class="lineCov">				// drop `Mutex` before doing anything rash (parking_lot `Mutex` can&#39;t be</span></div>
@@ -127,12 +127,12 @@
 <div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterCov">1</span><span class="lineCov">					Err(panic) =&gt; panic::resume_unwind(panic),</span></div>
 <div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterUnCov"></span><span class="lineUnCov">				}</span></div>
 <div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterUnCov"></span><span class="lineUnCov">			} else {</span></div>
-<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterCov">102</span><span class="lineCov">				Poll::Pending</span></div>
+<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterCov">99</span><span class="lineCov">				Poll::Pending</span></div>
 <div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterUnCov"></span><span class="lineUnCov">			}</span></div>
 <div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
 <div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterCov">2</span><span class="lineCov">			Poll::Ready(Err(Error::AlreadyClosed))</span></div>
 <div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterCov">305</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterCov">302</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 <div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterUnCov"></span><span class="lineUnCov">#[cfg(test)]</span></div>
