@@ -41,9 +41,9 @@ Otherwise <a href="https://doc.rust-lang.org/nightly/std/net/addr/trait.ToSocket
 <p>The following settings are used when using
 <a href="trust_dns_resolver"><code>trust-dns</code></a>:</p>
 <ul>
-<li>all system configurations are ignored</li>
+<li>all system configurations are ignored, see <a href="struct.Builder.html#method.set_hosts_file" title="Builder::set_hosts_file"><code>Builder::set_hosts_file</code></a></li>
 <li>Cloudflare with DoH is used as the name server</li>
-<li>DNSSEC is enabled</li>
+<li>DNSSEC is enabled, see <a href="struct.Builder.html#method.set_dnssec" title="Builder::set_dnssec"><code>Builder::set_dnssec</code></a></li>
 <li>IPv6 is preferred over IPv4 if the bound socket is IPv6</li>
 </ul>
 <h1 id="errors-2" class="section-header"><a href="#errors-2">Errors</a></h1>

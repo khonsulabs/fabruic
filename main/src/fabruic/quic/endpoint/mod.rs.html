@@ -808,9 +808,9 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// The following settings are used when using</span>
 	<span class="doccomment">/// [`trust-dns`](trust_dns_resolver):</span>
-	<span class="doccomment">/// - all system configurations are ignored</span>
+	<span class="doccomment">/// - all system configurations are ignored, see [`Builder::set_hosts_file`]</span>
 	<span class="doccomment">/// - Cloudflare with DoH is used as the name server</span>
-	<span class="doccomment">/// - DNSSEC is enabled</span>
+	<span class="doccomment">/// - DNSSEC is enabled, see [`Builder::set_dnssec`]</span>
 	<span class="doccomment">/// - IPv6 is preferred over IPv4 if the bound socket is IPv6</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
@@ -934,7 +934,7 @@
 			<span class="comment">// build `Resolver` options</span>
 			<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">ResolverOpts</span> {
 				<span class="ident">ip_strategy</span>,
-				<span class="ident">use_hosts_file</span>: <span class="bool-val">false</span>,
+				<span class="ident">use_hosts_file</span>: <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">hosts_file</span>(),
 				<span class="ident">validate</span>: <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">dnssec</span>(),
 				..<span class="ident">ResolverOpts::default</span>()
 			};
