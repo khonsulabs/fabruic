@@ -9,12 +9,12 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../index.html">top level</a> - <a href="index.html">src/quic</a> - task.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-18 12:47:44</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-18 22:47:05</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
 <div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">86</span><span class="linesTotal">95</span><span class="linesPercentage lineHi">90.5 %</span></div>
-<div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">40</span><span class="funsTotal">49</span><span class="funsPercentage funMed">81.6 %</span></div>
+<div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">38</span><span class="funsTotal">49</span><span class="funsPercentage funMed">77.6 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
 </div>
@@ -34,7 +34,7 @@
 <div class="line"><span id="13" class="lineNum"><a href="#13">13</a></span><span class="counterUnCov"></span><span class="lineUnCov">use parking_lot::Mutex;</span></div>
 <div class="line"><span id="14" class="lineNum"><a href="#14">14</a></span><span class="counterUnCov"></span><span class="lineUnCov">use tokio::task::{JoinError, JoinHandle};</span></div>
 <div class="line"><span id="15" class="lineNum"><a href="#15">15</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="16" class="lineNum"><a href="#16">16</a></span><span class="counterUnCov"></span><span class="lineUnCov">use crate::{Error, Result};</span></div>
+<div class="line"><span id="16" class="lineNum"><a href="#16">16</a></span><span class="counterUnCov"></span><span class="lineUnCov">use crate::{error, Result};</span></div>
 <div class="line"><span id="17" class="lineNum"><a href="#17">17</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="18" class="lineNum"><a href="#18">18</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Wrapper to abort tasks when they are dropped.</span></div>
 <div class="line"><span id="19" class="lineNum"><a href="#19">19</a></span><span class="counterNoCov">0</span><span class="lineNoCov">#[derive(Debug)]</span></div>
@@ -79,7 +79,7 @@
 <div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;R, S&gt; Task&lt;R, S&gt; {</span></div>
 <div class="line"><span id="59" class="lineNum"><a href="#59">59</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Shuts down the [`Task`] by sending the close signal. Futher calls to</span></div>
 <div class="line"><span id="60" class="lineNum"><a href="#60">60</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`close`](Self::close) or [`poll`](Future::poll)ing the [`Task`] will</span></div>
-<div class="line"><span id="61" class="lineNum"><a href="#61">61</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// result in [`Error::AlreadyClosed`].</span></div>
+<div class="line"><span id="61" class="lineNum"><a href="#61">61</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// result in [`error::AlreadyClosed`].</span></div>
 <div class="line"><span id="62" class="lineNum"><a href="#62">62</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
 <div class="line"><span id="63" class="lineNum"><a href="#63">63</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Notes</span></div>
 <div class="line"><span id="64" class="lineNum"><a href="#64">64</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// The user is responsible to handle close messages through the</span></div>
@@ -87,7 +87,7 @@
 <div class="line"><span id="66" class="lineNum"><a href="#66">66</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
 <div class="line"><span id="67" class="lineNum"><a href="#67">67</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Panics</span></div>
 <div class="line"><span id="68" class="lineNum"><a href="#68">68</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Will propagate any panics that happened in the task.</span></div>
-<div class="line"><span id="69" class="lineNum"><a href="#69">69</a></span><span class="counterCov">407</span><span class="lineCov">	pub(super) async fn close(&amp;self, message: S) -&gt; Result&lt;R&gt; {</span></div>
+<div class="line"><span id="69" class="lineNum"><a href="#69">69</a></span><span class="counterCov">407</span><span class="lineCov">	pub(super) async fn close(&amp;self, message: S) -&gt; Result&lt;R, error::AlreadyClosed&gt; {</span></div>
 <div class="line"><span id="70" class="lineNum"><a href="#70">70</a></span><span class="counterCov">407</span><span class="lineCov">		if let Some(Inner { handle, close }) = self.0.lock().take() {</span></div>
 <div class="line"><span id="71" class="lineNum"><a href="#71">71</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// task could have finished and dropped the receiver, it&#39;s also possible that</span></div>
 <div class="line"><span id="72" class="lineNum"><a href="#72">72</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// the receiver got dropped otherwise, in any case, not our problem</span></div>
@@ -100,20 +100,20 @@
 <div class="line"><span id="79" class="lineNum"><a href="#79">79</a></span><span class="counterCov">1</span><span class="lineCov">				Err(panic) =&gt; panic::resume_unwind(panic),</span></div>
 <div class="line"><span id="80" class="lineNum"><a href="#80">80</a></span><span class="counterUnCov"></span><span class="lineUnCov">			}</span></div>
 <div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
-<div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterCov">2</span><span class="lineCov">			Err(Error::AlreadyClosed)</span></div>
+<div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterCov">2</span><span class="lineCov">			Err(error::AlreadyClosed)</span></div>
 <div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
 <div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterCov">406</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 <div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;R, S&gt; Future for &amp;Task&lt;R, S&gt; {</span></div>
-<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterUnCov"></span><span class="lineUnCov">	type Output = Result&lt;R&gt;;</span></div>
+<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterUnCov"></span><span class="lineUnCov">	type Output = Result&lt;R, error::AlreadyClosed&gt;;</span></div>
 <div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterCov">303</span><span class="lineCov">	fn poll(self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Self::Output&gt; {</span></div>
+<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterCov">304</span><span class="lineCov">	fn poll(self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Self::Output&gt; {</span></div>
 <div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// save the lock in a separate variable to be able to drop it</span></div>
-<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterCov">303</span><span class="lineCov">		let mut inner = self.0.lock();</span></div>
+<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterCov">304</span><span class="lineCov">		let mut inner = self.0.lock();</span></div>
 <div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterCov">303</span><span class="lineCov">		if let Some(Inner { handle, .. }) = inner.as_mut() {</span></div>
-<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">301</span><span class="lineCov">			if let Poll::Ready(result) = handle.poll_unpin(cx) {</span></div>
+<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterCov">304</span><span class="lineCov">		if let Some(Inner { handle, .. }) = inner.as_mut() {</span></div>
+<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">302</span><span class="lineCov">			if let Poll::Ready(result) = handle.poll_unpin(cx) {</span></div>
 <div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterUnCov"></span><span class="lineUnCov">				// drop inner, `close` might be called simultaneously, so we don&#39;t handle this</span></div>
 <div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">202</span><span class="lineCov">				let _inner = inner.take();</span></div>
 <div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">202</span><span class="lineCov">				// drop `Mutex` before doing anything rash (parking_lot `Mutex` can&#39;t be</span></div>
@@ -127,12 +127,12 @@
 <div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterCov">1</span><span class="lineCov">					Err(panic) =&gt; panic::resume_unwind(panic),</span></div>
 <div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterUnCov"></span><span class="lineUnCov">				}</span></div>
 <div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterUnCov"></span><span class="lineUnCov">			} else {</span></div>
-<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterCov">99</span><span class="lineCov">				Poll::Pending</span></div>
+<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterCov">100</span><span class="lineCov">				Poll::Pending</span></div>
 <div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterUnCov"></span><span class="lineUnCov">			}</span></div>
 <div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
-<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterCov">2</span><span class="lineCov">			Poll::Ready(Err(Error::AlreadyClosed))</span></div>
+<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterCov">2</span><span class="lineCov">			Poll::Ready(Err(error::AlreadyClosed))</span></div>
 <div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterCov">302</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterCov">303</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 <div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterUnCov"></span><span class="lineUnCov">#[cfg(test)]</span></div>
@@ -143,85 +143,86 @@
 <div class="line"><span id="122" class="lineNum"><a href="#122">122</a></span><span class="counterUnCov"></span><span class="lineUnCov">	use futures_util::StreamExt;</span></div>
 <div class="line"><span id="123" class="lineNum"><a href="#123">123</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="124" class="lineNum"><a href="#124">124</a></span><span class="counterUnCov"></span><span class="lineUnCov">	use super::Task;</span></div>
-<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
-<div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterCov">1</span><span class="lineCov">	async fn task() -&gt; Result&lt;()&gt; {</span></div>
-<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterCov">1</span><span class="lineCov">		let (sender, receiver) = flume::unbounded();</span></div>
-<div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterCov">1</span><span class="lineCov">		let (tester_sender, tester_receiver) = flume::unbounded();</span></div>
-<div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterCov">1</span><span class="lineCov">		let (shutdown_sender, mut shutdown_receiver) = oneshot::channel();</span></div>
-<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
-<div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterCov">1</span><span class="lineCov">		let task = Task::new(</span></div>
-<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterCov">1</span><span class="lineCov">			async move {</span></div>
-<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterCov">1</span><span class="lineCov">				let mut receiver = receiver.into_stream();</span></div>
-<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterCov">100</span><span class="lineCov">				while let Some(message) = select!(</span></div>
-<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterCov">100</span><span class="lineCov">					message: &amp;mut receiver =&gt; message,</span></div>
-<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterCov">1</span><span class="lineCov">					_: &amp;mut shutdown_receiver =&gt; None,</span></div>
-<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterUnCov"></span><span class="lineUnCov">				) {</span></div>
-<div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterUnCov"></span><span class="lineUnCov">					// send back our messages</span></div>
-<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterCov">100</span><span class="lineCov">					tester_sender.send(message)?;</span></div>
-<div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterUnCov"></span><span class="lineUnCov">				}</span></div>
-<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterUnCov"></span><span class="lineUnCov">				// return `true`</span></div>
-<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterCov">1</span><span class="lineCov">				Result::&lt;_, Error&gt;::Ok(true)</span></div>
-<div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterCov">1</span><span class="lineCov">			},</span></div>
-<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterCov">1</span><span class="lineCov">			shutdown_sender,</span></div>
-<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterCov">1</span><span class="lineCov">		);</span></div>
-<div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// send a 100 messages</span></div>
-<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterCov">100</span><span class="lineCov">		for item in 0_usize..100 {</span></div>
-<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterCov">100</span><span class="lineCov">			sender.send(item)?;</span></div>
-<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// validate our returned value</span></div>
-<div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterCov">1</span><span class="lineCov">		assert_eq!(true, task.close(()).await??);</span></div>
-<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// validate that `close` has properly closed</span></div>
-<div class="line"><span id="158" class="lineNum"><a href="#158">158</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!((&amp;task).await, Err(crate::Error::AlreadyClosed)));</span></div>
-<div class="line"><span id="159" class="lineNum"><a href="#159">159</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="160" class="lineNum"><a href="#160">160</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// validate that we correctly sent all messages before shutting down</span></div>
-<div class="line"><span id="161" class="lineNum"><a href="#161">161</a></span><span class="counterCov">1</span><span class="lineCov">		let mut tester_receiver = tester_receiver.into_stream();</span></div>
-<div class="line"><span id="162" class="lineNum"><a href="#162">162</a></span><span class="counterCov">1</span><span class="lineCov">		let mut validate = 0;</span></div>
-<div class="line"><span id="163" class="lineNum"><a href="#163">163</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="164" class="lineNum"><a href="#164">164</a></span><span class="counterCov">101</span><span class="lineCov">		while let Some(item) = tester_receiver.next().await {</span></div>
-<div class="line"><span id="165" class="lineNum"><a href="#165">165</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			assert_eq!(validate, item);</span></div>
-<div class="line"><span id="166" class="lineNum"><a href="#166">166</a></span><span class="counterCov">100</span><span class="lineCov">			validate += 1;</span></div>
-<div class="line"><span id="167" class="lineNum"><a href="#167">167</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="168" class="lineNum"><a href="#168">168</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="169" class="lineNum"><a href="#169">169</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
-<div class="line"><span id="170" class="lineNum"><a href="#170">170</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="171" class="lineNum"><a href="#171">171</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="172" class="lineNum"><a href="#172">172</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
-<div class="line"><span id="173" class="lineNum"><a href="#173">173</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[should_panic = &quot;test&quot;]</span></div>
-<div class="line"><span id="174" class="lineNum"><a href="#174">174</a></span><span class="counterCov">1</span><span class="lineCov">	async fn panic_poll() {</span></div>
-<div class="line"><span id="175" class="lineNum"><a href="#175">175</a></span><span class="counterCov">1</span><span class="lineCov">		let (shutdown_sender, _) = oneshot::channel::&lt;()&gt;();</span></div>
-<div class="line"><span id="176" class="lineNum"><a href="#176">176</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
-<div class="line"><span id="177" class="lineNum"><a href="#177">177</a></span><span class="counterCov">1</span><span class="lineCov">		let task = Task::new(</span></div>
-<div class="line"><span id="178" class="lineNum"><a href="#178">178</a></span><span class="counterCov">1</span><span class="lineCov">			async move {</span></div>
-<div class="line"><span id="179" class="lineNum"><a href="#179">179</a></span><span class="counterCov">1</span><span class="lineCov">				panic!(&quot;test&quot;);</span></div>
-<div class="line"><span id="180" class="lineNum"><a href="#180">180</a></span><span class="counterCov">1</span><span class="lineCov">			},</span></div>
-<div class="line"><span id="181" class="lineNum"><a href="#181">181</a></span><span class="counterCov">1</span><span class="lineCov">			shutdown_sender,</span></div>
-<div class="line"><span id="182" class="lineNum"><a href="#182">182</a></span><span class="counterCov">1</span><span class="lineCov">		);</span></div>
-<div class="line"><span id="183" class="lineNum"><a href="#183">183</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="184" class="lineNum"><a href="#184">184</a></span><span class="counterCov">1</span><span class="lineCov">		(&amp;task).await.expect(&quot;should panic before unwrapping&quot;);</span></div>
-<div class="line"><span id="185" class="lineNum"><a href="#185">185</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
-<div class="line"><span id="186" class="lineNum"><a href="#186">186</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="187" class="lineNum"><a href="#187">187</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
-<div class="line"><span id="188" class="lineNum"><a href="#188">188</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[should_panic = &quot;test&quot;]</span></div>
-<div class="line"><span id="189" class="lineNum"><a href="#189">189</a></span><span class="counterCov">1</span><span class="lineCov">	async fn panic_close() {</span></div>
-<div class="line"><span id="190" class="lineNum"><a href="#190">190</a></span><span class="counterCov">1</span><span class="lineCov">		let (shutdown_sender, _) = oneshot::channel();</span></div>
-<div class="line"><span id="191" class="lineNum"><a href="#191">191</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
-<div class="line"><span id="192" class="lineNum"><a href="#192">192</a></span><span class="counterCov">1</span><span class="lineCov">		let task = Task::new(</span></div>
-<div class="line"><span id="193" class="lineNum"><a href="#193">193</a></span><span class="counterCov">1</span><span class="lineCov">			async move {</span></div>
-<div class="line"><span id="194" class="lineNum"><a href="#194">194</a></span><span class="counterCov">1</span><span class="lineCov">				panic!(&quot;test&quot;);</span></div>
-<div class="line"><span id="195" class="lineNum"><a href="#195">195</a></span><span class="counterCov">1</span><span class="lineCov">			},</span></div>
-<div class="line"><span id="196" class="lineNum"><a href="#196">196</a></span><span class="counterCov">1</span><span class="lineCov">			shutdown_sender,</span></div>
-<div class="line"><span id="197" class="lineNum"><a href="#197">197</a></span><span class="counterCov">1</span><span class="lineCov">		);</span></div>
-<div class="line"><span id="198" class="lineNum"><a href="#198">198</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="199" class="lineNum"><a href="#199">199</a></span><span class="counterCov">1</span><span class="lineCov">		task.close(())</span></div>
-<div class="line"><span id="200" class="lineNum"><a href="#200">200</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.await</span></div>
-<div class="line"><span id="201" class="lineNum"><a href="#201">201</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.expect(&quot;should panic before unwrapping&quot;);</span></div>
-<div class="line"><span id="202" class="lineNum"><a href="#202">202</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
-<div class="line"><span id="203" class="lineNum"><a href="#203">203</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterUnCov"></span><span class="lineUnCov">	use crate::error;</span></div>
+<div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterCov">1</span><span class="lineCov">	async fn task() -&gt; Result&lt;()&gt; {</span></div>
+<div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterCov">1</span><span class="lineCov">		let (sender, receiver) = flume::unbounded();</span></div>
+<div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterCov">1</span><span class="lineCov">		let (tester_sender, tester_receiver) = flume::unbounded();</span></div>
+<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterCov">1</span><span class="lineCov">		let (shutdown_sender, mut shutdown_receiver) = oneshot::channel();</span></div>
+<div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterCov">1</span><span class="lineCov">		let task = Task::new(</span></div>
+<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterCov">1</span><span class="lineCov">			async move {</span></div>
+<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterCov">1</span><span class="lineCov">				let mut receiver = receiver.into_stream();</span></div>
+<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterCov">100</span><span class="lineCov">				while let Some(message) = select!(</span></div>
+<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterCov">100</span><span class="lineCov">					message: &amp;mut receiver =&gt; message,</span></div>
+<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterCov">1</span><span class="lineCov">					_: &amp;mut shutdown_receiver =&gt; None,</span></div>
+<div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterUnCov"></span><span class="lineUnCov">				) {</span></div>
+<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterUnCov"></span><span class="lineUnCov">					// send back our messages</span></div>
+<div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterCov">100</span><span class="lineCov">					tester_sender.send(message)?;</span></div>
+<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterUnCov"></span><span class="lineUnCov">				}</span></div>
+<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterUnCov"></span><span class="lineUnCov">				// return `true`</span></div>
+<div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterCov">1</span><span class="lineCov">				Result::&lt;_, Error&gt;::Ok(true)</span></div>
+<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterCov">1</span><span class="lineCov">			},</span></div>
+<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterCov">1</span><span class="lineCov">			shutdown_sender,</span></div>
+<div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterCov">1</span><span class="lineCov">		);</span></div>
+<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// send a 100 messages</span></div>
+<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterCov">100</span><span class="lineCov">		for item in 0_usize..100 {</span></div>
+<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterCov">100</span><span class="lineCov">			sender.send(item)?;</span></div>
+<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
+<div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// validate our returned value</span></div>
+<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterCov">1</span><span class="lineCov">		assert_eq!(true, task.close(()).await??);</span></div>
+<div class="line"><span id="158" class="lineNum"><a href="#158">158</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// validate that `close` has properly closed</span></div>
+<div class="line"><span id="159" class="lineNum"><a href="#159">159</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!((&amp;task).await, Err(error::AlreadyClosed)));</span></div>
+<div class="line"><span id="160" class="lineNum"><a href="#160">160</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="161" class="lineNum"><a href="#161">161</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// validate that we correctly sent all messages before shutting down</span></div>
+<div class="line"><span id="162" class="lineNum"><a href="#162">162</a></span><span class="counterCov">1</span><span class="lineCov">		let mut tester_receiver = tester_receiver.into_stream();</span></div>
+<div class="line"><span id="163" class="lineNum"><a href="#163">163</a></span><span class="counterCov">1</span><span class="lineCov">		let mut validate = 0;</span></div>
+<div class="line"><span id="164" class="lineNum"><a href="#164">164</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="165" class="lineNum"><a href="#165">165</a></span><span class="counterCov">101</span><span class="lineCov">		while let Some(item) = tester_receiver.next().await {</span></div>
+<div class="line"><span id="166" class="lineNum"><a href="#166">166</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			assert_eq!(validate, item);</span></div>
+<div class="line"><span id="167" class="lineNum"><a href="#167">167</a></span><span class="counterCov">100</span><span class="lineCov">			validate += 1;</span></div>
+<div class="line"><span id="168" class="lineNum"><a href="#168">168</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
+<div class="line"><span id="169" class="lineNum"><a href="#169">169</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="170" class="lineNum"><a href="#170">170</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
+<div class="line"><span id="171" class="lineNum"><a href="#171">171</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="172" class="lineNum"><a href="#172">172</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="173" class="lineNum"><a href="#173">173</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="174" class="lineNum"><a href="#174">174</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[should_panic = &quot;test&quot;]</span></div>
+<div class="line"><span id="175" class="lineNum"><a href="#175">175</a></span><span class="counterCov">1</span><span class="lineCov">	async fn panic_poll() {</span></div>
+<div class="line"><span id="176" class="lineNum"><a href="#176">176</a></span><span class="counterCov">1</span><span class="lineCov">		let (shutdown_sender, _) = oneshot::channel::&lt;()&gt;();</span></div>
+<div class="line"><span id="177" class="lineNum"><a href="#177">177</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="178" class="lineNum"><a href="#178">178</a></span><span class="counterCov">1</span><span class="lineCov">		let task = Task::new(</span></div>
+<div class="line"><span id="179" class="lineNum"><a href="#179">179</a></span><span class="counterCov">1</span><span class="lineCov">			async move {</span></div>
+<div class="line"><span id="180" class="lineNum"><a href="#180">180</a></span><span class="counterCov">1</span><span class="lineCov">				panic!(&quot;test&quot;);</span></div>
+<div class="line"><span id="181" class="lineNum"><a href="#181">181</a></span><span class="counterCov">1</span><span class="lineCov">			},</span></div>
+<div class="line"><span id="182" class="lineNum"><a href="#182">182</a></span><span class="counterCov">1</span><span class="lineCov">			shutdown_sender,</span></div>
+<div class="line"><span id="183" class="lineNum"><a href="#183">183</a></span><span class="counterCov">1</span><span class="lineCov">		);</span></div>
+<div class="line"><span id="184" class="lineNum"><a href="#184">184</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="185" class="lineNum"><a href="#185">185</a></span><span class="counterCov">1</span><span class="lineCov">		(&amp;task).await.expect(&quot;should panic before unwrapping&quot;);</span></div>
+<div class="line"><span id="186" class="lineNum"><a href="#186">186</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
+<div class="line"><span id="187" class="lineNum"><a href="#187">187</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="188" class="lineNum"><a href="#188">188</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="189" class="lineNum"><a href="#189">189</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[should_panic = &quot;test&quot;]</span></div>
+<div class="line"><span id="190" class="lineNum"><a href="#190">190</a></span><span class="counterCov">1</span><span class="lineCov">	async fn panic_close() {</span></div>
+<div class="line"><span id="191" class="lineNum"><a href="#191">191</a></span><span class="counterCov">1</span><span class="lineCov">		let (shutdown_sender, _) = oneshot::channel();</span></div>
+<div class="line"><span id="192" class="lineNum"><a href="#192">192</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="193" class="lineNum"><a href="#193">193</a></span><span class="counterCov">1</span><span class="lineCov">		let task = Task::new(</span></div>
+<div class="line"><span id="194" class="lineNum"><a href="#194">194</a></span><span class="counterCov">1</span><span class="lineCov">			async move {</span></div>
+<div class="line"><span id="195" class="lineNum"><a href="#195">195</a></span><span class="counterCov">1</span><span class="lineCov">				panic!(&quot;test&quot;);</span></div>
+<div class="line"><span id="196" class="lineNum"><a href="#196">196</a></span><span class="counterCov">1</span><span class="lineCov">			},</span></div>
+<div class="line"><span id="197" class="lineNum"><a href="#197">197</a></span><span class="counterCov">1</span><span class="lineCov">			shutdown_sender,</span></div>
+<div class="line"><span id="198" class="lineNum"><a href="#198">198</a></span><span class="counterCov">1</span><span class="lineCov">		);</span></div>
+<div class="line"><span id="199" class="lineNum"><a href="#199">199</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="200" class="lineNum"><a href="#200">200</a></span><span class="counterCov">1</span><span class="lineCov">		task.close(())</span></div>
+<div class="line"><span id="201" class="lineNum"><a href="#201">201</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.await</span></div>
+<div class="line"><span id="202" class="lineNum"><a href="#202">202</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.expect(&quot;should panic before unwrapping&quot;);</span></div>
+<div class="line"><span id="203" class="lineNum"><a href="#203">203</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
+<div class="line"><span id="204" class="lineNum"><a href="#204">204</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 </div>
 </body>
 </html>
