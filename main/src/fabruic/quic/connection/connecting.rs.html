@@ -60,7 +60,7 @@
 <span class="kw">use</span> <span class="ident">quinn::NewConnection</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">de::DeserializeOwned</span>, <span class="ident">Serialize</span>};
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Connection</span>, <span class="ident">Error</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">error</span>, <span class="ident">Connection</span>, <span class="prelude-ty">Result</span>};
 
 <span class="doccomment">/// Represent&#39;s an intermediate state to build a [`Connection`].</span>
 <span class="attribute">#[<span class="ident">must_use</span> <span class="op">=</span> <span class="string">&quot;`Connecting` does nothing unless accepted with `Connecting::accept`&quot;</span>]</span>
@@ -77,23 +77,23 @@
 	<span class="doccomment">/// [`Builder::set_protocols`](crate::Builder::set_protocols).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// [`Error::Connecting`] if the [`Connection`] failed to be established.</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">protocol</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="doccomment">/// [`error::Connecting`] if the [`Connection`] failed to be established.</span>
+	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">protocol</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">error::Connecting</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="number">0</span>
 			.<span class="ident">handshake_data</span>()
 			.<span class="kw">await</span>
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">data</span><span class="op">|</span> <span class="ident">data</span>.<span class="ident">protocol</span>)
-			.<span class="ident">map_err</span>(<span class="ident">Error::Connecting</span>)
+			.<span class="ident">map_err</span>(<span class="ident">error::Connecting</span>)
 	}
 
 	<span class="doccomment">/// Accept the [`Connection`] with the given `T` as the type negotiator for</span>
 	<span class="doccomment">/// new streams.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// [`Error::Connecting`] if the [`Connection`] failed to be established.</span>
+	<span class="doccomment">/// [`error::Connecting`] if the [`Connection`] failed to be established.</span>
 	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">accept</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">DeserializeOwned</span> <span class="op">+</span> <span class="ident">Serialize</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
 		<span class="self">self</span>,
-	) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Connection</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Connection</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">error::Connecting</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="number">0</span>
 			.<span class="kw">await</span>
 			.<span class="ident">map</span>(
@@ -103,7 +103,7 @@
 				     ..
 				 }<span class="op">|</span> <span class="ident">Connection::new</span>(<span class="ident">connection</span>, <span class="ident">bi_streams</span>),
 			)
-			.<span class="ident">map_err</span>(<span class="ident">Error::Connecting</span>)
+			.<span class="ident">map_err</span>(<span class="ident">error::Connecting</span>)
 	}
 }
 </pre></div>

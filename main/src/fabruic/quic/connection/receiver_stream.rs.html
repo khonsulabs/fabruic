@@ -180,13 +180,14 @@
 	<span class="ident">task</span>::{<span class="ident">Context</span>, <span class="ident">Poll</span>},
 };
 
+<span class="kw">use</span> <span class="ident">bincode::ErrorKind</span>;
 <span class="kw">use</span> <span class="ident">bytes</span>::{<span class="ident">Buf</span>, <span class="ident">BufMut</span>, <span class="ident">BytesMut</span>};
 <span class="kw">use</span> <span class="ident">futures_util</span>::{<span class="ident">stream::Stream</span>, <span class="ident">FutureExt</span>};
 <span class="kw">use</span> <span class="ident">pin_project::pin_project</span>;
-<span class="kw">use</span> <span class="ident">quinn</span>::{<span class="ident">Chunk</span>, <span class="ident">RecvStream</span>, <span class="ident">VarInt</span>};
+<span class="kw">use</span> <span class="ident">quinn</span>::{<span class="ident">Chunk</span>, <span class="ident">ReadError</span>, <span class="ident">RecvStream</span>, <span class="ident">VarInt</span>};
 <span class="kw">use</span> <span class="ident">serde::de::DeserializeOwned</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Error</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">error</span>, <span class="prelude-ty">Result</span>};
 
 <span class="doccomment">/// Wrapper around [`RecvStream`] providing framing and deserialization.</span>
 <span class="attribute">#[<span class="ident">pin_project</span>]</span>
@@ -226,11 +227,11 @@
 	<span class="doccomment">/// Calls [`RecvStream::stop`](quinn::generic::RecvStream::stop).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// [`Error::AlreadyClosed`] if it was already closed.</span>
-	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">stop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="doccomment">/// [`error::AlreadyClosed`] if it was already closed.</span>
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">stop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">error::AlreadyClosed</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">stream</span>
 			.<span class="ident">stop</span>(<span class="ident">VarInt::from_u32</span>(<span class="number">0</span>))
-			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">_error</span><span class="op">|</span> <span class="ident">Error::AlreadyClosed</span>)
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">_error</span><span class="op">|</span> <span class="ident">error::AlreadyClosed</span>)
 	}
 
 	<span class="doccomment">/// [`Poll`](std::future::Future::poll)s [`RecvStream`] for the next</span>
@@ -238,8 +239,8 @@
 	<span class="doccomment">/// [`Stream`] is finished.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// [`Error::Read`] on failure to read from the [`RecvStream`].</span>
-	<span class="kw">fn</span> <span class="ident">poll</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="doccomment">/// [`ReadError`] on failure to read from the [`RecvStream`].</span>
+	<span class="kw">fn</span> <span class="ident">poll</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>()<span class="op">&gt;</span>, <span class="ident">ReadError</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">stream</span>
 			.<span class="ident">read_chunk</span>(<span class="ident">usize::MAX</span>, <span class="bool-val">true</span>)
 			.<span class="ident">poll_unpin</span>(<span class="ident">cx</span>)
@@ -250,7 +251,6 @@
 					<span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">put</span>(<span class="ident">bytes</span>);
 				})
 			})
-			.<span class="ident">map_err</span>(<span class="ident">Error::Read</span>)
 	}
 
 	<span class="doccomment">/// Check if we currently have enough data to build</span>
@@ -275,9 +275,9 @@
 	<span class="doccomment">/// there isn&#39;t enough data to extract [`length`](Self::length) yet.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// [`Error::Deserialize`] if `data` failed to be</span>
+	<span class="doccomment">/// [`ErrorKind`] if `data` failed to be</span>
 	<span class="doccomment">/// [`Deserialize`](serde::Deserialize)d.</span>
-	<span class="kw">fn</span> <span class="ident">deserialize</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">length</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">deserialize</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">length</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>, <span class="ident">ErrorKind</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">len</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="ident">length</span> {
 			<span class="comment">// split off the correct amount of data</span>
 			<span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">split_to</span>(<span class="ident">length</span>).<span class="ident">reader</span>();
@@ -289,7 +289,7 @@
 			<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
 			<span class="ident">bincode::deserialize_from</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">M</span><span class="op">&gt;</span>(<span class="ident">data</span>)
 				.<span class="ident">map</span>(<span class="prelude-val">Some</span>)
-				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">error</span><span class="op">|</span> <span class="ident">Error::Deserialize</span>(<span class="kw-2">*</span><span class="ident">error</span>))
+				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">error</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">error</span>)
 		} <span class="kw">else</span> {
 			<span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
 		}
@@ -297,7 +297,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">DeserializeOwned</span><span class="op">&gt;</span> <span class="ident">Stream</span> <span class="kw">for</span> <span class="ident">ReceiverStream</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
-	<span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">error::Receiver</span><span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">poll_next</span>(<span class="kw-2">mut</span> <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="ident">::Item</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">use</span> <span class="ident">futures_util::ready</span>;

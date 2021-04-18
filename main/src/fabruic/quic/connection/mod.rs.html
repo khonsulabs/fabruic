@@ -200,12 +200,6 @@
 <span id="197">197</span>
 <span id="198">198</span>
 <span id="199">199</span>
-<span id="200">200</span>
-<span id="201">201</span>
-<span id="202">202</span>
-<span id="203">203</span>
-<span id="204">204</span>
-<span id="205">205</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! [`Connection`]s hold a connection to a peer in an</span>
 <span class="doccomment">//! [`Endpoint`](crate::Endpoint).</span>
@@ -248,7 +242,7 @@
 <span class="kw">use</span> <span class="ident">stream::Stream</span>;
 
 <span class="kw">use</span> <span class="kw">super</span><span class="ident">::Task</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Certificate</span>, <span class="ident">Error</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">error</span>, <span class="ident">Certificate</span>, <span class="prelude-ty">Result</span>};
 
 <span class="doccomment">/// Represents an open connection. Receives [`Incoming`] through [`Stream`].</span>
 <span class="attribute">#[<span class="ident">pin_project</span>]</span>
@@ -257,9 +251,10 @@
 	<span class="doccomment">/// Initiate new connections or close socket.</span>
 	<span class="ident">connection</span>: <span class="ident">quinn::Connection</span>,
 	<span class="doccomment">/// Receive incoming streams.</span>
-	<span class="ident">receiver</span>: <span class="ident">RecvStream</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">Incoming</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="ident">receiver</span>:
+		<span class="ident">RecvStream</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">quinn::SendStream</span>, <span class="ident">quinn::RecvStream</span>), <span class="ident">error::Connection</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// [`Task`] handling new incoming streams.</span>
-	<span class="ident">task</span>: <span class="ident">Task</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="ident">task</span>: <span class="ident">Task</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
 	<span class="doccomment">/// Type for type negotiation for new streams.</span>
 	<span class="ident">types</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 }
@@ -268,8 +263,9 @@
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
 		<span class="ident">f</span>.<span class="ident">debug_struct</span>(<span class="string">&quot;Connection&quot;</span>)
 			.<span class="ident">field</span>(<span class="string">&quot;connection&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">connection</span>)
-			.<span class="ident">field</span>(<span class="string">&quot;receiver&quot;</span>, <span class="kw-2">&amp;</span><span class="string">&quot;RecvStream&lt;Result&lt;Incoming&gt;&gt;&quot;</span>)
+			.<span class="ident">field</span>(<span class="string">&quot;receiver&quot;</span>, <span class="kw-2">&amp;</span><span class="string">&quot;RecvStream&quot;</span>)
 			.<span class="ident">field</span>(<span class="string">&quot;task&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">task</span>)
+			.<span class="ident">field</span>(<span class="string">&quot;types&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">types</span>)
 			.<span class="ident">finish</span>()
 	}
 }
@@ -289,22 +285,14 @@
 					<span class="ident">connecting</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">bi_streams</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">connecting</span>,
 					<span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">shutdown_receiver</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
 				} {
-					<span class="kw">match</span> <span class="ident">connecting</span> {
-						<span class="prelude-val">Ok</span>((<span class="ident">incoming_sender</span>, <span class="ident">incoming_receiver</span>)) <span class="op">=</span><span class="op">&gt;</span>
-							<span class="kw">if</span> <span class="ident">sender</span>
-								.<span class="ident">send</span>(<span class="ident">Incoming::new</span>(<span class="ident">incoming_sender</span>, <span class="ident">incoming_receiver</span>))
-								.<span class="ident">is_err</span>()
-							{
-								<span class="comment">// if there is no receiver, it means that we dropped the last</span>
-								<span class="comment">// `Connection`</span>
-								<span class="kw">break</span>;
-							},
+					<span class="kw">let</span> <span class="ident">incoming</span> <span class="op">=</span> <span class="ident">connecting</span>.<span class="ident">map_err</span>(<span class="ident">error::Connection</span>);
 
-						<span class="prelude-val">Err</span>(<span class="ident">error</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::ReceiveStream</span>(<span class="ident">error</span>)),
+					<span class="kw">if</span> <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">incoming</span>).<span class="ident">is_err</span>() {
+						<span class="comment">// if there is no receiver, it means that we dropped the last</span>
+						<span class="comment">// `Connection`</span>
+						<span class="kw">break</span>;
 					}
 				}
-
-				<span class="prelude-val">Ok</span>(())
 			},
 			<span class="ident">shutdown_sender</span>,
 		);
@@ -324,17 +312,17 @@
 	<span class="doccomment">/// receiving and `type` to send this information to the receiver.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// - [`Error::OpenStream`] if opening a stream failed</span>
-	<span class="doccomment">/// - [`Error::Serialize`] if `type` failed to be serialized</span>
-	<span class="doccomment">/// - [`Error::Send`] if `type` failed to be sent</span>
+	<span class="doccomment">/// - [`error::Stream::Open`] if opening a stream failed</span>
+	<span class="doccomment">/// - [`error::Stream::Sender`] if sending the type information to the peer</span>
+	<span class="doccomment">///   failed, see [`error::Sender`] for more details</span>
 	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">open_stream</span><span class="op">&lt;</span>
 		<span class="ident">S</span>: <span class="ident">DeserializeOwned</span> <span class="op">+</span> <span class="ident">Serialize</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 		<span class="ident">R</span>: <span class="ident">DeserializeOwned</span> <span class="op">+</span> <span class="ident">Serialize</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="op">&gt;</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">r#type</span>: <span class="kw-2">&amp;</span><span class="ident">T</span>,
-	) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>, <span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
-		<span class="kw">let</span> (<span class="ident">sender</span>, <span class="ident">receiver</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">connection</span>.<span class="ident">open_bi</span>().<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="ident">Error::OpenStream</span>)<span class="question-mark">?</span>;
+	) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>, <span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>), <span class="ident">error::Stream</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> (<span class="ident">sender</span>, <span class="ident">receiver</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">connection</span>.<span class="ident">open_bi</span>().<span class="kw">await</span><span class="question-mark">?</span>;
 
 		<span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">Sender::new</span>(<span class="ident">sender</span>);
 		<span class="kw">let</span> <span class="ident">receiver</span> <span class="op">=</span> <span class="ident">Receiver::new</span>(<span class="ident">ReceiverStream::new</span>(<span class="ident">receiver</span>));
@@ -375,10 +363,9 @@
 	<span class="doccomment">/// finish first.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// - [`Error::ReceiveStream`] if the connection was lost</span>
-	<span class="doccomment">/// - [`Error::AlreadyClosed`] if it was already closed</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">close_incoming</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">task</span>.<span class="ident">close</span>(()).<span class="kw">await</span><span class="question-mark">?</span>
+	<span class="doccomment">/// [`error::AlreadyClosed`] if it was already closed.</span>
+	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">close_incoming</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">error::AlreadyClosed</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">task</span>.<span class="ident">close</span>(()).<span class="kw">await</span>
 	}
 
 	<span class="doccomment">/// Close the [`Connection`] immediately.</span>
@@ -387,22 +374,23 @@
 	<span class="doccomment">/// [`Receiver`] can&#39;t be gracefully closed from the receiving end.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// - [`Error::ReceiveStream`] if the connection was lost</span>
-	<span class="doccomment">/// - [`Error::AlreadyClosed`] if it was already closed</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">close</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="doccomment">/// [`error::AlreadyClosed`] if it was already closed.</span>
+	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">close</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">error::AlreadyClosed</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">connection</span>.<span class="ident">close</span>(<span class="ident">VarInt::from_u32</span>(<span class="number">0</span>), <span class="kw-2">&amp;</span>[]);
-		(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">task</span>).<span class="kw">await</span><span class="question-mark">?</span>
+		(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">task</span>).<span class="kw">await</span>
 	}
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">DeserializeOwned</span> <span class="op">+</span> <span class="ident">Serialize</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">Stream</span> <span class="kw">for</span> <span class="ident">Connection</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-	<span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">Incoming</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Incoming</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">error::Connection</span><span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">poll_next</span>(<span class="kw-2">mut</span> <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="ident">::Item</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">receiver</span>.<span class="ident">is_terminated</span>() {
 			<span class="ident">Poll::Ready</span>(<span class="prelude-val">None</span>)
 		} <span class="kw">else</span> {
-			<span class="self">self</span>.<span class="ident">receiver</span>.<span class="ident">poll_next_unpin</span>(<span class="ident">cx</span>)
+			<span class="self">self</span>.<span class="ident">receiver</span>
+				.<span class="ident">poll_next_unpin</span>(<span class="ident">cx</span>)
+				.<span class="ident">map_ok</span>(<span class="op">|</span>(<span class="ident">sender</span>, <span class="ident">receiver</span>)<span class="op">|</span> <span class="ident">Incoming::new</span>(<span class="ident">sender</span>, <span class="ident">receiver</span>))
 		}
 	}
 }

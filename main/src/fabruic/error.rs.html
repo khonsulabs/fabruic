@@ -167,6 +167,35 @@
 <span id="164">164</span>
 <span id="165">165</span>
 <span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy::exhaustive_structs</span>)]</span>
@@ -189,21 +218,135 @@
 <span class="doccomment">/// [`Result`](std::result::Result) type for this [`crate`].</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span> <span class="op">=</span> <span class="ident">Error</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>;
 
+<span class="doccomment">/// Attempting to close something that is already closed.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
+<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;This is already closed&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AlreadyClosed</span>;
+
 <span class="doccomment">/// Error binding socket during construction of [`Endpoint`](crate::Endpoint)</span>
-<span class="doccomment">/// with a [`Builder`](crate::Builder).</span>
+<span class="doccomment">/// with [`Builder::build`](crate::Builder::build).</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
-<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error binding socket during construction of `Endpoint`&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error binding socket during construction of `Endpoint`: {error}&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Builder</span> {
 	<span class="doccomment">/// The error binding [`Endpoint`](crate::Endpoint).</span>
-	<span class="kw">pub</span> <span class="ident">error</span>: <span class="ident">Endpoint</span>,
+	<span class="attribute">#[<span class="ident">source</span>]</span>
+	<span class="kw">pub</span> <span class="ident">error</span>: <span class="ident">IoError</span>,
 	<span class="doccomment">/// Recovered [`Builder`](crate::Builder) for re-use.</span>
 	<span class="kw">pub</span> <span class="ident">builder</span>: <span class="kw">crate</span><span class="ident">::Builder</span>,
 }
 
-<span class="doccomment">/// Error binding socket during construction of [`Endpoint`](crate::Endpoint).</span>
+<span class="doccomment">/// Error connecting to a server with</span>
+<span class="doccomment">/// [`Endpoint::connect`](crate::Endpoint::connect).</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
-<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error binding socket during construction of `Endpoint`&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Endpoint</span>(<span class="kw">pub</span> <span class="ident">IoError</span>);
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Connect</span> {
+	<span class="doccomment">/// The passed [`Certificate`](crate::Certificate) has multiple domains,</span>
+	<span class="doccomment">/// this is not supported with</span>
+	<span class="doccomment">/// [`Endpoint::connect_pinned`](crate::Endpoint::connect_pinned).</span>
+	<span class="attribute">#[<span class="ident">error</span>(
+		<span class="string">&quot;Using a `Certificate` with multiple domains for connecting with a pinned server \
+		 certificate is not supported&quot;</span>
+	)]</span>
+	<span class="ident">MultipleDomains</span>,
+	<span class="doccomment">/// Failed to parse URL.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error parsing URL: {0}&quot;</span>)]</span>
+	<span class="ident">ParseUrl</span>(<span class="ident">UrlParseError</span>),
+	<span class="doccomment">/// URL didn&#39;t contain a domain.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;URL without a domain is invalid&quot;</span>)]</span>
+	<span class="ident">Domain</span>,
+	<span class="doccomment">/// URL didn&#39;t contain a port.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;URL without a port is invalid&quot;</span>)]</span>
+	<span class="ident">Port</span>,
+	<span class="doccomment">/// Failed to parse domain.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error parsing domain: {0}&quot;</span>)]</span>
+	<span class="ident">ParseDomain</span>(<span class="ident">UrlParseError</span>),
+	<span class="doccomment">/// Failed to resolve domain with [`trust-dns`](trust_dns_resolver).</span>
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">doc</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)))]</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error resolving domain with trust-dns: {0}&quot;</span>)]</span>
+	<span class="ident">TrustDns</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">ResolveError</span><span class="op">&gt;</span>),
+	<span class="doccomment">/// Failed to resolve domain with</span>
+	<span class="doccomment">/// [`ToSocketAddrs`](std::net::ToSocketAddrs).</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error resolving domain with `ToSocketAddrs`: {0}&quot;</span>)]</span>
+	<span class="ident">StdDns</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">IoError</span>),
+	<span class="doccomment">/// Found no IP address for that domain.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Found no IP address for that domain&quot;</span>)]</span>
+	<span class="ident">NoIp</span>,
+	<span class="doccomment">/// Configuration needed to connect to a server is faulty.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error in configuration to connect to server: {0}&quot;</span>)]</span>
+	<span class="ident">Config</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">ConnectError</span>),
+}
+
+<span class="doccomment">/// Error receiving connection from peer with [`Stream`](futures_util::Stream)</span>
+<span class="doccomment">/// on from [`Connection`](crate::Connection).</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
+<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error receiving connection from peer: {0}&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Connection</span>(<span class="kw">pub</span> <span class="ident">ConnectionError</span>);
+
+<span class="doccomment">/// Error completing connection with peer with</span>
+<span class="doccomment">/// [`Incoming::type`](crate::Incoming::type) or</span>
+<span class="doccomment">/// [`Incoming::accept`](crate::Incoming::accept).</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
+<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error completing connection with peer: {0}&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Connecting</span>(<span class="kw">pub</span> <span class="ident">ConnectionError</span>);
+
+<span class="doccomment">/// Error opening a new stream to peer with</span>
+<span class="doccomment">/// [`Connection::open_stream`](crate::Connection::open_stream).</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Stream</span> {
+	<span class="doccomment">/// Opening a new stream with</span>
+	<span class="doccomment">/// [`Connection::open_stream`](crate::Connection::open_stream) failed.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error opening a new stream to peer: {0}&quot;</span>)]</span>
+	<span class="ident">Open</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">ConnectionError</span>),
+	<span class="doccomment">/// Sending the type information to peer failed.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error sending type information to peer: {0}&quot;</span>)]</span>
+	<span class="ident">Sender</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">Sender</span>),
+}
+
+<span class="doccomment">/// Error receiving type information from [`Incoming`](crate::Incoming) stream.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Incoming</span> {
+	<span class="doccomment">/// Failed receiving type information from [`Incoming`](crate::Incoming)</span>
+	<span class="doccomment">/// stream.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error receiving type information from `Incoming` stream: {0}&quot;</span>)]</span>
+	<span class="ident">Receiver</span>(<span class="ident">Receiver</span>),
+	<span class="doccomment">/// [`Incoming`](crate::Incoming) was closed before type information could</span>
+	<span class="doccomment">/// be received.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Incoming stream was closed&quot;</span>)]</span>
+	<span class="ident">Closed</span>,
+}
+
+<span class="doccomment">/// Error receiving a message from a [`Receiver`](crate::Receiver).</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Receiver</span> {
+	<span class="doccomment">/// Failed to read from a [`Receiver`](crate::Receiver).</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error reading from `Receiver`: {0}&quot;</span>)]</span>
+	<span class="ident">Read</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">ReadError</span>),
+	<span class="doccomment">/// Failed to [`Deserialize`](serde::Deserialize) a message from a</span>
+	<span class="doccomment">/// [`Receiver`](crate::Receiver).</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error deserializing a message from `Receiver`: {0}&quot;</span>)]</span>
+	<span class="ident">Deserialize</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">ErrorKind</span>),
+}
+
+<span class="doccomment">/// Error sending a message to a [`Sender`](crate::Sender).</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Sender</span> {
+	<span class="doccomment">/// Failed to [`Serialize`](serde::Serialize) a message for a</span>
+	<span class="doccomment">/// [`Sender`](crate::Sender).</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error serializing a message to `Sender`: {0}&quot;</span>)]</span>
+	<span class="ident">Serialize</span>(<span class="ident">ErrorKind</span>),
+	<span class="doccomment">/// Failed to write to a [`Sender`](crate::Sender).</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error writing to `Sender`: {0}&quot;</span>)]</span>
+	<span class="ident">Write</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">WriteError</span>),
+	<span class="doccomment">/// [`Sender`] is closed.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
+	<span class="ident">Closed</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">AlreadyClosed</span>),
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">ErrorKind</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Sender</span> {
+	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">error</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">ErrorKind</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+		<span class="self">Self</span><span class="ident">::Serialize</span>(<span class="kw-2">*</span><span class="ident">error</span>)
+	}
+}
 
 <span class="doccomment">/// [`Error`](std::error::Error) for this [`crate`].</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
@@ -237,91 +380,6 @@
 	<span class="doccomment">/// Failed to parse the given private key.</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed parsing private key&quot;</span>)]</span>
 	<span class="ident">ParsePrivateKey</span>,
-	<span class="doccomment">/// Parsing a [`SocketAddr`](std::net::SocketAddr) from a [`str`] failed.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed parsing socket: {0}&quot;</span>)]</span>
-	<span class="ident">ParseAddress</span>(<span class="ident">AddrParseError</span>),
-	<span class="doccomment">/// Failed to parse URL.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error parsing URL: {0}&quot;</span>)]</span>
-	<span class="ident">ParseUrl</span>(<span class="ident">UrlParseError</span>),
-	<span class="doccomment">/// URL didn&#39;t contain a domain.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;URL without a domain is invalid&quot;</span>)]</span>
-	<span class="ident">Domain</span>,
-	<span class="doccomment">/// URL didn&#39;t contain a port.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;URL without a port is invalid&quot;</span>)]</span>
-	<span class="ident">Port</span>,
-	<span class="doccomment">/// Failed to resolve domain to IP address with</span>
-	<span class="doccomment">/// [`trust-dns`](trust_dns_resolver).</span>
-	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
-	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">doc</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)))]</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error resolving domain with trust-dns: {0}&quot;</span>)]</span>
-	<span class="ident">ResolveTrustDns</span>(<span class="ident">Box</span><span class="op">&lt;</span><span class="ident">ResolveError</span><span class="op">&gt;</span>),
-	<span class="doccomment">/// Failed to resolve domain to IP address with</span>
-	<span class="doccomment">/// [`ToSocketAddrs`](std::net::ToSocketAddrs).</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error resolving domain with `ToSocketAddrs`: {0}&quot;</span>)]</span>
-	<span class="ident">ResolveStdDns</span>(<span class="ident">IoError</span>),
-	<span class="doccomment">/// Found no IP address for that domain.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Found no IP address for that domain&quot;</span>)]</span>
-	<span class="ident">NoIp</span>,
-	<span class="doccomment">/// Returned by [`Endpoint::local_address`](crate::Endpoint::local_address)</span>
-	<span class="doccomment">/// when failing to aquire the local address.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to aquire local address: {0}&quot;</span>)]</span>
-	<span class="ident">LocalAddress</span>(<span class="ident">IoError</span>),
-	<span class="doccomment">/// Attempting to close something that is already closed.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;This is already closed&quot;</span>)]</span>
-	<span class="ident">AlreadyClosed</span>,
-	<span class="doccomment">/// Returned by</span>
-	<span class="doccomment">/// [`Endpoint::connect_pinned`](crate::Endpoint::connect_pinned) if</span>
-	<span class="doccomment">/// the passed [`Certificate`](crate::Certificate) has multiple domains.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Using a `Certificate` with multiple domains for direction connection is invalid&quot;</span>)]</span>
-	<span class="ident">MultipleDomains</span>,
-	<span class="doccomment">/// Returned by [`Endpoint::connect`](crate::Endpoint::connect) if</span>
-	<span class="doccomment">/// configuration needed to connect to a peer is faulty.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error in configuration to connect to a peer: {0}&quot;</span>)]</span>
-	<span class="ident">ConnectConfig</span>(<span class="ident">ConnectError</span>),
-	<span class="doccomment">/// Returned by [`Connecting::accept`](crate::Connecting::accept) if</span>
-	<span class="doccomment">/// connecting to the peer failed.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error on connecting to a remote address: {0}&quot;</span>)]</span>
-	<span class="ident">Connecting</span>(<span class="ident">ConnectionError</span>),
-	<span class="doccomment">/// Returned by [`Connection`](crate::Connection)</span>
-	<span class="doccomment">/// [`Stream`](futures_util::stream::Stream) when receiving a new stream</span>
-	<span class="doccomment">/// failed.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error on receiving a new stream: {0}&quot;</span>)]</span>
-	<span class="ident">ReceiveStream</span>(<span class="ident">ConnectionError</span>),
-	<span class="doccomment">/// Returned by [`Connection::open_stream`](crate::Connection::open_stream)</span>
-	<span class="doccomment">/// if opening a stream failed.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error on opening a stream: {0}&quot;</span>)]</span>
-	<span class="ident">OpenStream</span>(<span class="ident">ConnectionError</span>),
-	<span class="doccomment">/// Returned by [`Sender::finish`](crate::Sender::finish) if</span>
-	<span class="doccomment">/// [`Sender`](crate::Sender) failed to write into the stream.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error writing to a stream: {0}&quot;</span>)]</span>
-	<span class="ident">Write</span>(<span class="ident">WriteError</span>),
-	<span class="doccomment">/// Returned by [`Sender::finish`](crate::Sender::finish) if</span>
-	<span class="doccomment">/// [`Sender`](crate::Sender) failed to finish a stream.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error finishing a stream: {0}&quot;</span>)]</span>
-	<span class="ident">Finish</span>(<span class="ident">WriteError</span>),
-	<span class="doccomment">/// Returned by [`Sender::send`](crate::Sender::send) if the stream was</span>
-	<span class="doccomment">/// closed by [`Sender::finish`](crate::Sender::finish) or the</span>
-	<span class="doccomment">/// [`Connection`](crate::Connection) or [`Endpoint`](crate::Endpoint) was</span>
-	<span class="doccomment">/// closed or dropped.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Stream was closed&quot;</span>)]</span>
-	<span class="ident">Send</span>,
-	<span class="doccomment">/// Returned by [`Sender::send`](crate::Sender::send) if</span>
-	<span class="doccomment">/// [`serialization`](serde::Serialize) failed.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error serializing to a stream: {0}&quot;</span>)]</span>
-	<span class="ident">Serialize</span>(<span class="ident">ErrorKind</span>),
-	<span class="doccomment">/// Returned by [`Receiver::close`](crate::Receiver::close) if</span>
-	<span class="doccomment">/// [`Receiver`](crate::Receiver) failed to read from a stream.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error reading from a stream: {0}&quot;</span>)]</span>
-	<span class="ident">Read</span>(<span class="ident">ReadError</span>),
-	<span class="doccomment">/// Returned by [`Receiver::finish`](crate::Receiver::finish) if</span>
-	<span class="doccomment">/// [`Receiver`](crate::Receiver) failed to</span>
-	<span class="doccomment">/// [`deserialize`](serde::Deserialize) from a stream.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error deserializing from a stream: {0}&quot;</span>)]</span>
-	<span class="ident">Deserialize</span>(<span class="ident">ErrorKind</span>),
-	<span class="doccomment">/// Returned by [`Incoming::type`](crate::Incoming::type) if the peer</span>
-	<span class="doccomment">/// closed the stream before sending the type.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Stream was closed before sending a type&quot;</span>)]</span>
-	<span class="ident">NoType</span>,
 }
 
 <span class="doccomment">/// Possible certificate parsing errors.</span>

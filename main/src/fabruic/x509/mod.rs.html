@@ -220,9 +220,9 @@
 	}
 
 	<span class="doccomment">/// Builds a new [`KeyPair`] from the given [`Certificate`] and</span>
-	<span class="doccomment">/// [`PrivateKey`].</span>
+	<span class="doccomment">/// [`PrivateKey`]. Will validate if they pair up correctly.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Will validate if they pair up, for extended validation see</span>
+	<span class="doccomment">/// This presumes that [`Certificate`] and [`PrivateKey`] are valid, see</span>
 	<span class="doccomment">/// [`Certificate::from_der`] and [`PrivateKey::from_der`].</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>

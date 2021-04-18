@@ -17,7 +17,8 @@ Receives incoming <a href="struct.Connection.html"><code>Connection</code></a>s 
 <a href="struct.Incoming.html#method.accept"><code>accept_stream</code></a>.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.KeyPair.html" title="fabruic::KeyPair struct">KeyPair</a></td><td class="docblock-short"><p>A key-pair, consisting of a <a href="struct.Certificate.html" title="Certificate"><code>Certificate</code></a> and <a href="struct.PrivateKey.html" title="PrivateKey"><code>PrivateKey</code></a>.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.PrivateKey.html" title="fabruic::PrivateKey struct">PrivateKey</a></td><td class="docblock-short"><p>A private key.</p>
-</td></tr><tr class="module-item"><td><a class="struct" href="struct.Receiver.html" title="fabruic::Receiver struct">Receiver</a></td><td class="docblock-short"><p>Used to receive data from a stream.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.Receiver.html" title="fabruic::Receiver struct">Receiver</a></td><td class="docblock-short"><p>Used to receive data from a stream. Will stop receiving message if
+deserialization failed.</p>
 </td></tr><tr class="module-item"><td><a class="struct" href="struct.Sender.html" title="fabruic::Sender struct">Sender</a></td><td class="docblock-short"><p>Used to send data to a stream.</p>
 </td></tr></table><h2 id="enums" class="section-header"><a href="#enums">Enums</a></h2>
 <table><tr class="module-item"><td><a class="enum" href="enum.Store.html" title="fabruic::Store enum">Store</a></td><td class="docblock-short"><p>Configuration option for <a href="struct.Builder.html#method.set_store" title="Builder::set_store"><code>Builder::set_store</code></a>.</p>

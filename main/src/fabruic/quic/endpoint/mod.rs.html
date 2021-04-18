@@ -615,6 +615,83 @@
 <span id="612">612</span>
 <span id="613">613</span>
 <span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
+<span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
+<span id="653">653</span>
+<span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
+<span id="662">662</span>
+<span id="663">663</span>
+<span id="664">664</span>
+<span id="665">665</span>
+<span id="666">666</span>
+<span id="667">667</span>
+<span id="668">668</span>
+<span id="669">669</span>
+<span id="670">670</span>
+<span id="671">671</span>
+<span id="672">672</span>
+<span id="673">673</span>
+<span id="674">674</span>
+<span id="675">675</span>
+<span id="676">676</span>
+<span id="677">677</span>
+<span id="678">678</span>
+<span id="679">679</span>
+<span id="680">680</span>
+<span id="681">681</span>
+<span id="682">682</span>
+<span id="683">683</span>
+<span id="684">684</span>
+<span id="685">685</span>
+<span id="686">686</span>
+<span id="687">687</span>
+<span id="688">688</span>
+<span id="689">689</span>
+<span id="690">690</span>
+<span id="691">691</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Starting point to create a QUIC enabled network socket.</span>
 
@@ -622,8 +699,10 @@
 
 <span class="kw">use</span> <span class="ident">std</span>::{
 	<span class="ident">fmt</span>::{<span class="self">self</span>, <span class="ident">Debug</span>, <span class="ident">Formatter</span>},
+	<span class="ident">io::Error</span>,
 	<span class="ident">net</span>::{<span class="ident">SocketAddr</span>, <span class="ident">ToSocketAddrs</span>},
 	<span class="ident">pin::Pin</span>,
+	<span class="ident">sync::Arc</span>,
 	<span class="ident">task</span>::{<span class="ident">Context</span>, <span class="ident">Poll</span>},
 };
 
@@ -639,34 +718,45 @@
 <span class="kw">use</span> <span class="ident">url</span>::{<span class="ident">Host</span>, <span class="ident">Url</span>};
 
 <span class="kw">use</span> <span class="kw">super</span><span class="ident">::Task</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">error</span>, <span class="ident">Certificate</span>, <span class="ident">Connecting</span>, <span class="ident">Error</span>, <span class="ident">KeyPair</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">error</span>, <span class="ident">Certificate</span>, <span class="ident">Connecting</span>, <span class="ident">KeyPair</span>, <span class="prelude-ty">Result</span>};
 
 <span class="doccomment">/// Represents a socket using the QUIC protocol to communicate with peers.</span>
 <span class="doccomment">/// Receives incoming [`Connection`](crate::Connection)s through [`Stream`].</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Endpoint</span> {
-	<span class="doccomment">/// Initiate new connections or close socket.</span>
+	<span class="doccomment">/// Initiate new [`Connection`](crate::Connection)s or close [`Endpoint`].</span>
 	<span class="ident">endpoint</span>: <span class="ident">quinn::Endpoint</span>,
-	<span class="doccomment">/// Receiving new incoming connections.</span>
+	<span class="doccomment">/// Receiving new incoming [`Connection`](crate::Connection)s.</span>
 	<span class="ident">receiver</span>: <span class="ident">RecvStream</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">Connecting</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Task handle handling new incoming connections.</span>
 	<span class="ident">task</span>: <span class="ident">Task</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
-	<span class="doccomment">/// Persistent configuration to build new [`ClientConfig`]</span>
-	<span class="ident">config</span>: <span class="ident">Config</span>,
+	<span class="doccomment">/// Persistent configuration from [`Builder`] to build new [`ClientConfig`]s</span>
+	<span class="doccomment">/// and [`trust-dns`](trust_dns_resolver) queries.</span>
+	<span class="ident">config</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Config</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">Endpoint</span> {
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
 		<span class="ident">f</span>.<span class="ident">debug_struct</span>(<span class="string">&quot;Server&quot;</span>)
 			.<span class="ident">field</span>(<span class="string">&quot;endpoint&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">endpoint</span>)
-			.<span class="ident">field</span>(<span class="string">&quot;receiver&quot;</span>, <span class="kw-2">&amp;</span><span class="string">&quot;RecvStream&lt;Connection&gt;&quot;</span>)
+			.<span class="ident">field</span>(<span class="string">&quot;receiver&quot;</span>, <span class="kw-2">&amp;</span><span class="string">&quot;RecvStream&quot;</span>)
 			.<span class="ident">field</span>(<span class="string">&quot;task&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">task</span>)
+			.<span class="ident">field</span>(<span class="string">&quot;config&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">config</span>)
 			.<span class="ident">finish</span>()
 	}
 }
 
 <span class="kw">impl</span> <span class="ident">Endpoint</span> {
 	<span class="doccomment">/// Builds a new [`Builder`]. See [`Builder`] methods for defaults.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Examples</span>
+	<span class="doccomment">/// ```</span>
+	<span class="doccomment">/// # #[tokio::main] async fn main() -&gt; anyhow::Result&lt;()&gt; {</span>
+	<span class="doccomment">/// use fabruic::Endpoint;</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let endpoint = Endpoint::builder().build()?;</span>
+	<span class="doccomment">/// # Ok(()) }</span>
+	<span class="doccomment">/// ```</span>
 	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">builder</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Builder</span> {
 		<span class="ident">Builder::new</span>()
@@ -676,7 +766,7 @@
 	<span class="doccomment">/// inside a Tokio [`Runtime`](tokio::runtime::Runtime).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// [`error::Builder`] if the socket couldn&#39;t be bound to the given</span>
+	<span class="doccomment">/// [`std::io::Error`] if the socket couldn&#39;t be bound to the given</span>
 	<span class="doccomment">/// `address`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Panics</span>
@@ -686,29 +776,30 @@
 		<span class="ident">client</span>: <span class="ident">ClientConfig</span>,
 		<span class="ident">server</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ServerConfig</span><span class="op">&gt;</span>,
 		<span class="ident">config</span>: <span class="ident">Config</span>,
-	) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">error::Endpoint</span><span class="op">&gt;</span> {
+	) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
 		<span class="comment">// configure endpoint for server and client</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">endpoint_builder</span> <span class="op">=</span> <span class="ident">quinn::Endpoint::builder</span>();
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">endpoint_builder</span>.<span class="ident">default_client_config</span>(<span class="ident">client</span>);
 
-		<span class="comment">// client don&#39;t need a server configuration</span>
+		<span class="comment">// server configuration is optional</span>
 		<span class="kw">let</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">server</span>.<span class="ident">map_or</span>(<span class="bool-val">false</span>, <span class="op">|</span><span class="ident">server</span><span class="op">|</span> {
 			<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">endpoint_builder</span>.<span class="ident">listen</span>(<span class="ident">server</span>);
 			<span class="bool-val">true</span>
 		});
 
 		<span class="comment">// build endpoint</span>
-		<span class="kw">let</span> (<span class="ident">endpoint</span>, <span class="ident">incoming</span>) <span class="op">=</span> <span class="ident">endpoint_builder</span>.<span class="ident">bind</span>(<span class="kw-2">&amp;</span><span class="ident">address</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">error</span><span class="op">|</span> {
-			<span class="ident">error::Endpoint</span>(<span class="kw">match</span> <span class="ident">error</span> {
-				<span class="ident">EndpointError::Socket</span>(<span class="ident">error</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">error</span>,
-			})
-		})<span class="question-mark">?</span>;
+		<span class="kw">let</span> (<span class="ident">endpoint</span>, <span class="ident">incoming</span>) <span class="op">=</span>
+			<span class="ident">endpoint_builder</span>
+				.<span class="ident">bind</span>(<span class="kw-2">&amp;</span><span class="ident">address</span>)
+				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">error</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">error</span> {
+					<span class="ident">EndpointError::Socket</span>(<span class="ident">error</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">error</span>,
+				})<span class="question-mark">?</span>;
 
 		<span class="comment">// create channels that will receive incoming `Connection`s</span>
 		<span class="kw">let</span> (<span class="ident">sender</span>, <span class="ident">receiver</span>) <span class="op">=</span> <span class="ident">flume::unbounded</span>();
 		<span class="kw">let</span> <span class="ident">receiver</span> <span class="op">=</span> <span class="ident">receiver</span>.<span class="ident">into_stream</span>();
 
-		<span class="comment">// only servers will have a running task</span>
+		<span class="comment">// only servers need to deal with incoming connections</span>
 		<span class="kw">let</span> <span class="ident">task</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">server</span> {
 			<span class="comment">// spawn task handling incoming `Connection`s</span>
 			<span class="kw">let</span> (<span class="ident">shutdown_sender</span>, <span class="ident">shutdown_receiver</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
@@ -724,44 +815,61 @@
 			<span class="ident">endpoint</span>,
 			<span class="ident">receiver</span>,
 			<span class="ident">task</span>,
-			<span class="ident">config</span>,
+			<span class="ident">config</span>: <span class="ident">Arc::new</span>(<span class="ident">config</span>),
 		})
 	}
 
 	<span class="doccomment">/// Simplified version of creating a client. See [`Builder`] for more</span>
-	<span class="doccomment">/// sophisticated configuration. Must be called from inside a Tokio</span>
+	<span class="doccomment">/// sophisticated configuration options. Must be called from inside a Tokio</span>
 	<span class="doccomment">/// [`Runtime`](tokio::runtime::Runtime).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Notes</span>
-	<span class="doccomment">/// This configuration will not be able to receive new</span>
+	<span class="doccomment">/// This configuration will not be able to receive incoming</span>
 	<span class="doccomment">/// [`Connection`](crate::Connection)s.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// [`error::Builder`] if the socket couldn&#39;t be bound to the given</span>
+	<span class="doccomment">/// [`std::io::Error`] if the socket couldn&#39;t be bound to the given</span>
 	<span class="doccomment">/// `address`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Panics</span>
 	<span class="doccomment">/// If not called from inside a Tokio [`Runtime`](tokio::runtime::Runtime).</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_client</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">error::Endpoint</span><span class="op">&gt;</span> {
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Examples</span>
+	<span class="doccomment">/// ```</span>
+	<span class="doccomment">/// # #[tokio::main] async fn main() -&gt; anyhow::Result&lt;()&gt; {</span>
+	<span class="doccomment">/// use fabruic::Endpoint;</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let endpoint = Endpoint::new_client()?;</span>
+	<span class="doccomment">/// # Ok(()) }</span>
+	<span class="doccomment">/// ```</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_client</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
 		<span class="ident">Builder::new</span>()
 			.<span class="ident">build</span>()
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">error::Builder</span> { <span class="ident">error</span>, .. }<span class="op">|</span> <span class="ident">error</span>)
 	}
 
 	<span class="doccomment">/// Simplified version of creating a server. See [`Builder`] for more</span>
-	<span class="doccomment">/// sophisticated configuration. Must be called from inside a Tokio</span>
+	<span class="doccomment">/// sophisticated configuration options. Must be called from inside a Tokio</span>
 	<span class="doccomment">/// [`Runtime`](tokio::runtime::Runtime).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// [`error::Builder`] if the socket couldn&#39;t be bound to the given</span>
+	<span class="doccomment">/// [`std::io::Error`] if the socket couldn&#39;t be bound to the given</span>
 	<span class="doccomment">/// `address`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Panics</span>
-	<span class="doccomment">/// - if the given [`KeyPair`] or [`Certificate`]s are invalid - can&#39;t</span>
-	<span class="doccomment">///   happen if they were properly validated through [`KeyPair::from_parts`]</span>
-	<span class="doccomment">///   or [`Certificate::from_der`]</span>
+	<span class="doccomment">/// - if the given [`KeyPair`] is invalid - can&#39;t happen if properly</span>
+	<span class="doccomment">///   validated through [`KeyPair::from_parts`]</span>
 	<span class="doccomment">/// - if not called from inside a Tokio [`Runtime`](tokio::runtime::Runtime)</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_server</span>(<span class="ident">port</span>: <span class="ident">u16</span>, <span class="ident">key_pair</span>: <span class="ident">KeyPair</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">error::Endpoint</span><span class="op">&gt;</span> {
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Examples</span>
+	<span class="doccomment">/// ```</span>
+	<span class="doccomment">/// # #[tokio::main] async fn main() -&gt; anyhow::Result&lt;()&gt; {</span>
+	<span class="doccomment">/// use fabruic::{Endpoint, KeyPair};</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let endpoint = Endpoint::new_server(0, KeyPair::new_self_signed(&quot;self-signed&quot;))?;</span>
+	<span class="doccomment">/// # Ok(()) }</span>
+	<span class="doccomment">/// ```</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_server</span>(<span class="ident">port</span>: <span class="ident">u16</span>, <span class="ident">key_pair</span>: <span class="ident">KeyPair</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">Builder::new</span>();
 		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;test&quot;</span>))]</span>
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">set_address</span>(([<span class="number">0</span>; <span class="number">8</span>], <span class="ident">port</span>).<span class="ident">into</span>());
@@ -775,7 +883,7 @@
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">error::Builder</span> { <span class="ident">error</span>, .. }<span class="op">|</span> <span class="ident">error</span>)
 	}
 
-	<span class="doccomment">/// Handle incoming connections. Accessed through [`Stream`] of</span>
+	<span class="doccomment">/// Handle incoming connections. Accessed through [`Stream`] in</span>
 	<span class="doccomment">/// [`Endpoint`].</span>
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">incoming</span>(
 		<span class="kw-2">mut</span> <span class="ident">incoming</span>: <span class="ident">quinn::Incoming</span>,
@@ -795,7 +903,7 @@
 
 	<span class="doccomment">/// Establishes a new [`Connection`](crate::Connection) to a server. The</span>
 	<span class="doccomment">/// servers [`Certificate`] will be validated aggainst the root certificate</span>
-	<span class="doccomment">/// store together with the domain.</span>
+	<span class="doccomment">/// store and the domain in the URL.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Attempts to resolve the IP from the given URL. Uses</span>
 	<span class="doccomment">/// [`trust-dns`](trust_dns_resolver) by default if the crate feature &lt;span</span>
@@ -804,8 +912,10 @@
 	<span class="doccomment">/// 80%; line-height: 1.2;&quot; &gt;&lt;code&gt;trust-dns&lt;/code&gt;&lt;/span&gt; is enabled.</span>
 	<span class="doccomment">/// Otherwise [`ToSocketAddrs`] is used.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// See [`Builder::disable_trust_dns`] for more control.</span>
+	<span class="doccomment">/// See [`Builder::set_trust_dns`] or [`Builder::disable_trust_dns`] for</span>
+	<span class="doccomment">/// more control.</span>
 	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Notes</span>
 	<span class="doccomment">/// The following settings are used when using</span>
 	<span class="doccomment">/// [`trust-dns`](trust_dns_resolver):</span>
 	<span class="doccomment">/// - all system configurations are ignored, see [`Builder::set_hosts_file`]</span>
@@ -814,79 +924,115 @@
 	<span class="doccomment">/// - IPv6 is preferred over IPv4 if the bound socket is IPv6</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// - [`Error::ParseUrl`] if the URL couldn&#39;t be parsed</span>
-	<span class="doccomment">/// - [`Error::Domain`] if the URL didn&#39;t contain a domain</span>
-	<span class="doccomment">/// - [`Error::Port`] if the URL didn&#39;t contain a port</span>
-	<span class="doccomment">/// - [`Error::ResolveTrustDns`] if the URL couldn&#39;t be resolved to an IP</span>
+	<span class="doccomment">/// - [`error::Connect::ParseUrl`] if the URL couldn&#39;t be parsed</span>
+	<span class="doccomment">/// - [`error::Connect::Domain`] if the URL didn&#39;t contain a domain</span>
+	<span class="doccomment">/// - [`error::Connect::Port`] if the URL didn&#39;t contain a port</span>
+	<span class="doccomment">/// - [`error::Connect::ParseDomain`] if the domain couldn&#39;t be parsed</span>
+	<span class="doccomment">/// - [`error::Connect::TrustDns`] if the URL couldn&#39;t be resolved to an IP</span>
 	<span class="doccomment">///   address with [`trust-dns`](trust_dns_resolver)</span>
-	<span class="doccomment">/// - [`Error::ResolveStdDns`] if the URL couldn&#39;t be resolved to an IP</span>
+	<span class="doccomment">/// - [`error::Connect::StdDns`] if the URL couldn&#39;t be resolved to an IP</span>
 	<span class="doccomment">///   address with [`ToSocketAddrs`]</span>
-	<span class="doccomment">/// - [`Error::ConnectConfig`] if configuration needed to connect to a peer</span>
-	<span class="doccomment">///   is faulty</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">connect</span><span class="op">&lt;</span><span class="ident">U</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">url</span>: <span class="ident">U</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Connecting</span><span class="op">&gt;</span> {
+	<span class="doccomment">/// - [`error::Connect::NoIp`] if no IP address was found for that domain</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Examples</span>
+	<span class="doccomment">/// ```</span>
+	<span class="doccomment">/// # #[tokio::main] async fn main() -&gt; anyhow::Result&lt;()&gt; {</span>
+	<span class="doccomment">/// use fabruic::Endpoint;</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let endpoint = Endpoint::new_client()?;</span>
+	<span class="doccomment">/// // not going to actually work because `localhost` can&#39;t have a valid certificate</span>
+	<span class="doccomment">/// let connecting = endpoint.connect(&quot;quic://localhost:443&quot;).await?;</span>
+	<span class="doccomment">/// # Ok(()) }</span>
+	<span class="doccomment">/// ```</span>
+	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">connect</span><span class="op">&lt;</span><span class="ident">U</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">url</span>: <span class="ident">U</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Connecting</span>, <span class="ident">error::Connect</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> (<span class="ident">address</span>, <span class="ident">domain</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">resolve_domain</span>(<span class="ident">url</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
 		<span class="prelude-val">Ok</span>(<span class="ident">Connecting::new</span>(
 			<span class="self">self</span>.<span class="ident">endpoint</span>
 				.<span class="ident">connect</span>(<span class="kw-2">&amp;</span><span class="ident">address</span>, <span class="kw-2">&amp;</span><span class="ident">domain</span>)
-				.<span class="ident">map_err</span>(<span class="ident">Error::ConnectConfig</span>)<span class="question-mark">?</span>,
+				.<span class="ident">map_err</span>(<span class="ident">error::Connect::Config</span>)<span class="question-mark">?</span>,
 		))
 	}
 
-	<span class="doccomment">/// Establishes a new [`Connection`](crate::Connection) to a server. The</span>
-	<span class="doccomment">/// root certificate store will be ignored and the given [`Certificate`]</span>
-	<span class="doccomment">/// will validate the server.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// This method is intended for direct connection to a known server.</span>
-	<span class="doccomment">/// Multiple domain names in the [`Certificate`] aren&#39;t supported.</span>
+	<span class="doccomment">/// Establishes a new [`Connection`](crate::Connection) to a server.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// See [`connect`](Self::connect) for more information on host name</span>
 	<span class="doccomment">/// resolution.</span>
 	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Notes</span>
+	<span class="doccomment">/// The root certificate store will be ignored and the given [`Certificate`]</span>
+	<span class="doccomment">/// will validate the server.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// A client certificate [`KeyPair`] set with</span>
+	<span class="doccomment">/// [`Builder::set_client_key_pair`] will be ignored, use `client_key_pair`</span>
+	<span class="doccomment">/// to add a client certificate to this connection.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This method is intended for direct connection to a known server, the</span>
+	<span class="doccomment">/// domain name in the URL is not checked against the [`Certificate`].</span>
+	<span class="doccomment">/// Multiple domain names in the [`Certificate`] aren&#39;t supported.</span>
+	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// - [`Error::MultipleDomains`] if multiple domains are used in this</span>
-	<span class="doccomment">///   [`Certificate`]</span>
-	<span class="doccomment">/// - [`Error::ParseUrl`] if the URL couldn&#39;t be parsed</span>
-	<span class="doccomment">/// - [`Error::Domain`] if the URL didn&#39;t contain a domain</span>
-	<span class="doccomment">/// - [`Error::Port`] if the URL didn&#39;t contain a port</span>
-	<span class="doccomment">/// - [`Error::ResolveTrustDns`] if the URL couldn&#39;t be resolved to an IP</span>
+	<span class="doccomment">/// - [`error::Connect::MultipleDomains`] if multiple domains are present in</span>
+	<span class="doccomment">///   the [`Certificate`], which isn&#39;t supported</span>
+	<span class="doccomment">/// - [`error::Connect::ParseUrl`] if the URL couldn&#39;t be parsed</span>
+	<span class="doccomment">/// - [`error::Connect::Domain`] if the URL didn&#39;t contain a domain</span>
+	<span class="doccomment">/// - [`error::Connect::Port`] if the URL didn&#39;t contain a port</span>
+	<span class="doccomment">/// - [`error::Connect::ParseDomain`] if the domain couldn&#39;t be parsed</span>
+	<span class="doccomment">/// - [`error::Connect::TrustDns`] if the URL couldn&#39;t be resolved to an IP</span>
 	<span class="doccomment">///   address with [`trust-dns`](trust_dns_resolver)</span>
-	<span class="doccomment">/// - [`Error::ResolveStdDns`] if the URL couldn&#39;t be resolved to an IP</span>
+	<span class="doccomment">/// - [`error::Connect::StdDns`] if the URL couldn&#39;t be resolved to an IP</span>
 	<span class="doccomment">///   address with [`ToSocketAddrs`]</span>
-	<span class="doccomment">/// - [`Error::ConnectConfig`] if configuration needed to connect to a peer</span>
-	<span class="doccomment">///   is faulty</span>
+	<span class="doccomment">/// - [`error::Connect::NoIp`] if no IP address was found for that domain</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Panics</span>
-	<span class="doccomment">/// Panics if the given [`Certificate`] is invalid. Can&#39;t happen if the</span>
-	<span class="doccomment">/// [`Certificate`] was properly validated through</span>
-	<span class="doccomment">/// [`Certificate::from_der`].</span>
+	<span class="doccomment">/// Panics if the given [`Certificate`] or [`KeyPair`] are invalid. Can&#39;t</span>
+	<span class="doccomment">/// happen if they were properly validated through [`Certificate::from_der`]</span>
+	<span class="doccomment">/// or [`KeyPair::from_parts`].</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Examples</span>
+	<span class="doccomment">/// ```</span>
+	<span class="doccomment">/// # #[tokio::main] async fn main() -&gt; anyhow::Result&lt;()&gt; {</span>
+	<span class="doccomment">/// use fabruic::Endpoint;</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let endpoint = Endpoint::new_client()?;</span>
+	<span class="doccomment">/// // the server certificate has to be important from somewhere else</span>
+	<span class="doccomment">/// # let (server_certificate, _) = fabruic::KeyPair::new_self_signed(&quot;localhost&quot;).into_parts();</span>
+	<span class="doccomment">/// let connecting = endpoint</span>
+	<span class="doccomment">/// 	.connect_pinned(&quot;quic://localhost:443&quot;, &amp;server_certificate, None)</span>
+	<span class="doccomment">/// 	.await?;</span>
+	<span class="doccomment">/// # Ok(()) }</span>
+	<span class="doccomment">/// ```</span>
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::unwrap_in_result</span>)]</span>
 	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">connect_pinned</span><span class="op">&lt;</span><span class="ident">U</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">url</span>: <span class="ident">U</span>,
 		<span class="ident">server_certificate</span>: <span class="kw-2">&amp;</span><span class="ident">Certificate</span>,
 		<span class="ident">client_key_pair</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">KeyPair</span><span class="op">&gt;</span>,
-	) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Connecting</span><span class="op">&gt;</span> {
+	) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Connecting</span>, <span class="ident">error::Connect</span><span class="op">&gt;</span> {
+		<span class="comment">// check `Certificate` for a domain</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">domains</span> <span class="op">=</span> <span class="ident">server_certificate</span>.<span class="ident">domains</span>().<span class="ident">into_iter</span>();
 		<span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="ident">domains</span>
 			.<span class="ident">next</span>()
 			.<span class="ident">expect</span>(<span class="string">&quot;`Certificate` contained no valid domains&quot;</span>);
 
+		<span class="comment">// multiple domains aren&#39;t supported</span>
 		<span class="kw">if</span> <span class="ident">domains</span>.<span class="ident">next</span>().<span class="ident">is_some</span>() {
-			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::MultipleDomains</span>);
+			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">error::Connect::MultipleDomains</span>);
 		}
 
+		<span class="comment">// resolve URL</span>
 		<span class="kw">let</span> (<span class="ident">address</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">resolve_domain</span>(<span class="ident">url</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
+		<span class="comment">// build client configuration</span>
+		<span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span>
+			<span class="self">self</span>.<span class="ident">config</span>
+				.<span class="ident">new_client</span>(<span class="prelude-val">Some</span>(<span class="ident">server_certificate</span>), <span class="ident">Store::Empty</span>, <span class="ident">client_key_pair</span>);
+
+		<span class="comment">// connet</span>
 		<span class="kw">let</span> <span class="ident">connecting</span> <span class="op">=</span> <span class="self">self</span>
 			.<span class="ident">endpoint</span>
-			.<span class="ident">connect_with</span>(
-				<span class="self">self</span>.<span class="ident">config</span>
-					.<span class="ident">new_client</span>(<span class="prelude-val">Some</span>(<span class="ident">server_certificate</span>), <span class="ident">Store::Empty</span>, <span class="ident">client_key_pair</span>),
-				<span class="kw-2">&amp;</span><span class="ident">address</span>,
-				<span class="kw-2">&amp;</span><span class="ident">domain</span>,
-			)
-			.<span class="ident">map_err</span>(<span class="ident">Error::ConnectConfig</span>)<span class="question-mark">?</span>;
+			.<span class="ident">connect_with</span>(<span class="ident">client</span>, <span class="kw-2">&amp;</span><span class="ident">address</span>, <span class="kw-2">&amp;</span><span class="ident">domain</span>)
+			.<span class="ident">map_err</span>(<span class="ident">error::Connect::Config</span>)<span class="question-mark">?</span>;
 
 		<span class="prelude-val">Ok</span>(<span class="ident">Connecting::new</span>(<span class="ident">connecting</span>))
 	}
@@ -895,22 +1041,27 @@
 	<span class="doccomment">/// more details.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// - [`Error::ParseUrl`] if the URL couldn&#39;t be parsed</span>
-	<span class="doccomment">/// - [`Error::Domain`] if the URL didn&#39;t contain a domain</span>
-	<span class="doccomment">/// - [`Error::Port`] if the URL didn&#39;t contain a port</span>
-	<span class="doccomment">/// - [`Error::ResolveTrustDns`] if the URL couldn&#39;t be resolved to an IP</span>
+	<span class="doccomment">/// - [`error::Connect::ParseUrl`] if the URL couldn&#39;t be parsed</span>
+	<span class="doccomment">/// - [`error::Connect::Domain`] if the URL didn&#39;t contain a domain</span>
+	<span class="doccomment">/// - [`error::Connect::Port`] if the URL didn&#39;t contain a port</span>
+	<span class="doccomment">/// - [`error::Connect::ParseDomain`] if the domain couldn&#39;t be parsed</span>
+	<span class="doccomment">/// - [`error::Connect::TrustDns`] if the URL couldn&#39;t be resolved to an IP</span>
 	<span class="doccomment">///   address with [`trust-dns`](trust_dns_resolver)</span>
-	<span class="doccomment">/// - [`Error::ResolveStdDns`] if the URL couldn&#39;t be resolved to an IP</span>
+	<span class="doccomment">/// - [`error::Connect::StdDns`] if the URL couldn&#39;t be resolved to an IP</span>
 	<span class="doccomment">///   address with [`ToSocketAddrs`]</span>
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">resolve_domain</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">url</span>: <span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">SocketAddr</span>, <span class="ident">String</span>)<span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="ident">Url::parse</span>(<span class="ident">url</span>.<span class="ident">as_ref</span>()).<span class="ident">map_err</span>(<span class="ident">Error::ParseUrl</span>)<span class="question-mark">?</span>;
+	<span class="doccomment">/// - [`error::Connect::NoIp`] if no IP address was found for that domain</span>
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">resolve_domain</span>(
+		<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">url</span>: <span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>,
+	) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">SocketAddr</span>, <span class="ident">String</span>), <span class="ident">error::Connect</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="ident">Url::parse</span>(<span class="ident">url</span>.<span class="ident">as_ref</span>()).<span class="ident">map_err</span>(<span class="ident">error::Connect::ParseUrl</span>)<span class="question-mark">?</span>;
 		<span class="comment">// url removes known default ports, we don&#39;t actually want to accept known</span>
-		<span class="comment">// schemes, but this is proabably not intended behaviour</span>
-		<span class="kw">let</span> <span class="ident">port</span> <span class="op">=</span> <span class="ident">url</span>.<span class="ident">port_or_known_default</span>().<span class="ident">ok_or</span>(<span class="ident">Error::Port</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="ident">url</span>.<span class="ident">host_str</span>().<span class="ident">ok_or</span>(<span class="ident">Error::Domain</span>)<span class="question-mark">?</span>;
+		<span class="comment">// scheme&#39;s, but this is probably not intended behaviour</span>
+		<span class="kw">let</span> <span class="ident">port</span> <span class="op">=</span> <span class="ident">url</span>.<span class="ident">port_or_known_default</span>().<span class="ident">ok_or</span>(<span class="ident">error::Connect::Port</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="ident">url</span>.<span class="ident">host_str</span>().<span class="ident">ok_or</span>(<span class="ident">error::Connect::Domain</span>)<span class="question-mark">?</span>;
 		<span class="comment">// url doesn&#39;t parse IP addresses unless the schema is known, which doesn&#39;t</span>
 		<span class="comment">// work for &quot;quic://&quot; for example</span>
-		<span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">Host::parse</span>(<span class="ident">domain</span>).<span class="ident">map_err</span>(<span class="ident">Error::ParseUrl</span>)<span class="question-mark">?</span> {
+		<span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">Host::parse</span>(<span class="ident">domain</span>).<span class="ident">map_err</span>(<span class="ident">error::Connect::ParseDomain</span>)<span class="question-mark">?</span> {
 			<span class="ident">Host::Domain</span>(<span class="ident">domain</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">domain</span>,
 			<span class="ident">Host::Ipv4</span>(<span class="ident">ip</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">SocketAddr::from</span>((<span class="ident">ip</span>, <span class="ident">port</span>)), <span class="ident">ip</span>.<span class="ident">to_string</span>())),
 			<span class="ident">Host::Ipv6</span>(<span class="ident">ip</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">SocketAddr::from</span>((<span class="ident">ip</span>, <span class="ident">port</span>)), <span class="ident">ip</span>.<span class="ident">to_string</span>())),
@@ -942,31 +1093,24 @@
 			<span class="comment">// build the `Resolver`</span>
 			<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
 			<span class="kw">let</span> <span class="ident">resolver</span> <span class="op">=</span> <span class="ident">TokioAsyncResolver::tokio</span>(<span class="ident">ResolverConfig::cloudflare_https</span>(), <span class="ident">opts</span>)
-				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">error</span><span class="op">|</span> <span class="ident">Error::ResolveTrustDns</span>(<span class="ident">Box::new</span>(<span class="ident">error</span>)))<span class="question-mark">?</span>;
+				.<span class="ident">map_err</span>(<span class="ident">Box::new</span>)<span class="question-mark">?</span>;
 			<span class="comment">// query the IP</span>
 			<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
-			<span class="kw">let</span> <span class="ident">ip</span> <span class="op">=</span> <span class="ident">resolver</span>
-				.<span class="ident">lookup_ip</span>(<span class="ident">domain</span>.<span class="ident">clone</span>())
-				.<span class="kw">await</span>
-				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">error</span><span class="op">|</span> <span class="ident">Error::ResolveTrustDns</span>(<span class="ident">Box::new</span>(<span class="ident">error</span>)))<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">ip</span> <span class="op">=</span> <span class="ident">resolver</span>.<span class="ident">lookup_ip</span>(<span class="ident">domain</span>.<span class="ident">clone</span>()).<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="ident">Box::new</span>)<span class="question-mark">?</span>;
 
 			<span class="comment">// take the first IP found</span>
 			<span class="comment">// TODO: retry connection on other found IPs</span>
-			<span class="kw">let</span> <span class="ident">ip</span> <span class="op">=</span> <span class="ident">ip</span>.<span class="ident">into_iter</span>().<span class="ident">next</span>().<span class="ident">ok_or</span>(<span class="ident">Error::NoIp</span>)<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">ip</span> <span class="op">=</span> <span class="ident">ip</span>.<span class="ident">into_iter</span>().<span class="ident">next</span>().<span class="ident">ok_or</span>(<span class="ident">error::Connect::NoIp</span>)<span class="question-mark">?</span>;
 
 			<span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">SocketAddr::from</span>((<span class="ident">ip</span>, <span class="ident">port</span>)), <span class="ident">domain</span>));
 		}
 
-		<span class="comment">// TODO: configure executor</span>
+		<span class="comment">// TODO: configurable executor</span>
 		<span class="kw">let</span> <span class="ident">address</span> <span class="op">=</span> {
 			<span class="comment">// `ToSocketAddrs` needs a port</span>
 			<span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;{}:{}&quot;</span>, <span class="ident">domain</span>, <span class="ident">port</span>);
 			<span class="ident">tokio::task::spawn_blocking</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> {
-				<span class="ident">domain</span>
-					.<span class="ident">to_socket_addrs</span>()
-					.<span class="ident">map_err</span>(<span class="ident">Error::ResolveStdDns</span>)<span class="question-mark">?</span>
-					.<span class="ident">next</span>()
-					.<span class="ident">ok_or</span>(<span class="ident">Error::NoIp</span>)
+				<span class="ident">domain</span>.<span class="ident">to_socket_addrs</span>()<span class="question-mark">?</span>.<span class="ident">next</span>().<span class="ident">ok_or</span>(<span class="ident">error::Connect::NoIp</span>)
 			})
 			.<span class="kw">await</span>
 			.<span class="ident">expect</span>(<span class="string">&quot;Resolving domain panicked&quot;</span>)<span class="question-mark">?</span>
@@ -978,9 +1122,19 @@
 	<span class="doccomment">/// Get the local [`SocketAddr`] the underlying socket is bound to.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// [`Error::LocalAddress`] if aquiring the local address failed.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">local_address</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">SocketAddr</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">endpoint</span>.<span class="ident">local_addr</span>().<span class="ident">map_err</span>(<span class="ident">Error::LocalAddress</span>)
+	<span class="doccomment">/// [`std::io::Error`] if aquiring the local address failed.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Examples</span>
+	<span class="doccomment">/// ```</span>
+	<span class="doccomment">/// # #[tokio::main] async fn main() -&gt; anyhow::Result&lt;()&gt; {</span>
+	<span class="doccomment">/// use fabruic::Endpoint;</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let endpoint = Endpoint::new_client()?;</span>
+	<span class="doccomment">/// assert!(endpoint.local_address().is_ok());</span>
+	<span class="doccomment">/// # Ok(()) }</span>
+	<span class="doccomment">/// ```</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">local_address</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">SocketAddr</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">endpoint</span>.<span class="ident">local_addr</span>()
 	}
 
 	<span class="doccomment">/// Close all of this [`Endpoint`]&#39;s [`Connection`](crate::Connection)s</span>
@@ -992,11 +1146,11 @@
 	<span class="doccomment">/// [`wait_idle`](Self::wait_idle).</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// [`Error::AlreadyClosed`] if it was already closed.</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">close</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="doccomment">/// [`error::AlreadyClosed`] if it was already closed.</span>
+	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">close</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">error::AlreadyClosed</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">endpoint</span>.<span class="ident">close</span>(<span class="ident">VarInt::from_u32</span>(<span class="number">0</span>), <span class="kw-2">&amp;</span>[]);
-		<span class="comment">// we only want to wait until it&#39;s actually closed, it might already be closed</span>
-		<span class="comment">// by `close_incoming` or by starting as a client</span>
+		<span class="comment">// wait until it&#39;s actually closed, it might already be closed by</span>
+		<span class="comment">// `close_incoming` or by starting as a client</span>
 		(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">task</span>).<span class="kw">await</span>
 	}
 
@@ -1005,8 +1159,8 @@
 	<span class="doccomment">/// with a listener.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
-	<span class="doccomment">/// [`Error::AlreadyClosed`] if it was already closed.</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">close_incoming</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="doccomment">/// [`error::AlreadyClosed`] if it was already closed.</span>
+	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">close_incoming</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">error::AlreadyClosed</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">task</span>.<span class="ident">close</span>(()).<span class="kw">await</span>
 	}
 
@@ -1101,7 +1255,7 @@
 			.<span class="kw">await</span><span class="question-mark">?</span>;
 
 		<span class="comment">// closing the client/server will close all connection immediately</span>
-		<span class="macro">assert!</span>(<span class="macro">matches!</span>(<span class="ident">client</span>.<span class="ident">close</span>().<span class="kw">await</span>, <span class="prelude-val">Err</span>(<span class="ident">Error::AlreadyClosed</span>)));
+		<span class="macro">assert!</span>(<span class="macro">matches!</span>(<span class="ident">client</span>.<span class="ident">close</span>().<span class="kw">await</span>, <span class="prelude-val">Err</span>(<span class="ident">error::AlreadyClosed</span>)));
 		<span class="ident">server</span>.<span class="ident">close</span>().<span class="kw">await</span><span class="question-mark">?</span>;
 
 		<span class="comment">// connecting to a closed server shouldn&#39;t work</span>
@@ -1111,7 +1265,7 @@
 				.<span class="kw">await</span><span class="question-mark">?</span>
 				.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
 				.<span class="kw">await</span>,
-			<span class="prelude-val">Err</span>(<span class="ident">Error::Connecting</span>(<span class="ident">ConnectionError::LocallyClosed</span>))
+			<span class="prelude-val">Err</span>(<span class="ident">error::Connecting</span>(<span class="ident">ConnectionError::LocallyClosed</span>))
 		));
 
 		<span class="comment">// waiting for a new connection on a closed server shouldn&#39;t work</span>
@@ -1149,12 +1303,12 @@
 		<span class="comment">// client never accepts incoming connections</span>
 		<span class="macro">assert!</span>(<span class="macro">matches!</span>(
 			<span class="ident">client</span>.<span class="ident">close_incoming</span>().<span class="kw">await</span>,
-			<span class="prelude-val">Err</span>(<span class="ident">Error::AlreadyClosed</span>)
+			<span class="prelude-val">Err</span>(<span class="ident">error::AlreadyClosed</span>)
 		));
 		<span class="ident">server</span>.<span class="ident">close_incoming</span>().<span class="kw">await</span><span class="question-mark">?</span>;
 		<span class="macro">assert!</span>(<span class="macro">matches!</span>(
 			<span class="ident">server</span>.<span class="ident">close_incoming</span>().<span class="kw">await</span>,
-			<span class="prelude-val">Err</span>(<span class="ident">Error::AlreadyClosed</span>)
+			<span class="prelude-val">Err</span>(<span class="ident">error::AlreadyClosed</span>)
 		));
 
 		<span class="comment">// connecting to a server that refuses new `Connection`s shouldn&#39;t work</span>
@@ -1165,7 +1319,7 @@
 			.<span class="kw">await</span>;
 		<span class="macro">assert!</span>(<span class="macro">matches!</span>(
 			<span class="ident">result</span>,
-			<span class="prelude-val">Err</span>(<span class="ident">Error::Connecting</span>(<span class="ident">ConnectionError::ConnectionClosed</span>(
+			<span class="prelude-val">Err</span>(<span class="ident">error::Connecting</span>(<span class="ident">ConnectionError::ConnectionClosed</span>(
 				<span class="ident">ConnectionClose</span> {
 					<span class="ident">error_code</span>: <span class="ident">TransportErrorCode::CONNECTION_REFUSED</span>,
 					<span class="ident">frame_type</span>: <span class="prelude-val">None</span>,
@@ -1183,7 +1337,7 @@
 			<span class="kw">let</span> <span class="ident">_server_stream</span> <span class="op">=</span> <span class="ident">server_connection</span>
 				.<span class="ident">next</span>()
 				.<span class="kw">await</span>
-				.<span class="ident">expect</span>(<span class="string">&quot;client dropped&quot;</span>)
+				.<span class="ident">expect</span>(<span class="string">&quot;client dropped&quot;</span>)<span class="question-mark">?</span>
 				.<span class="ident">accept</span>::<span class="op">&lt;</span>(), ()<span class="op">&gt;</span>();
 			<span class="ident">sender</span>.<span class="ident">finish</span>().<span class="kw">await</span><span class="question-mark">?</span>;
 		}

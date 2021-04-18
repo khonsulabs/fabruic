@@ -940,6 +940,51 @@
 <span id="937">937</span>
 <span id="938">938</span>
 <span id="939">939</span>
+<span id="940">940</span>
+<span id="941">941</span>
+<span id="942">942</span>
+<span id="943">943</span>
+<span id="944">944</span>
+<span id="945">945</span>
+<span id="946">946</span>
+<span id="947">947</span>
+<span id="948">948</span>
+<span id="949">949</span>
+<span id="950">950</span>
+<span id="951">951</span>
+<span id="952">952</span>
+<span id="953">953</span>
+<span id="954">954</span>
+<span id="955">955</span>
+<span id="956">956</span>
+<span id="957">957</span>
+<span id="958">958</span>
+<span id="959">959</span>
+<span id="960">960</span>
+<span id="961">961</span>
+<span id="962">962</span>
+<span id="963">963</span>
+<span id="964">964</span>
+<span id="965">965</span>
+<span id="966">966</span>
+<span id="967">967</span>
+<span id="968">968</span>
+<span id="969">969</span>
+<span id="970">970</span>
+<span id="971">971</span>
+<span id="972">972</span>
+<span id="973">973</span>
+<span id="974">974</span>
+<span id="975">975</span>
+<span id="976">976</span>
+<span id="977">977</span>
+<span id="978">978</span>
+<span id="979">979</span>
+<span id="980">980</span>
+<span id="981">981</span>
+<span id="982">982</span>
+<span id="983">983</span>
+<span id="984">984</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! [`Endpoint`] builder.</span>
 
@@ -1022,7 +1067,8 @@
 
 	<span class="doccomment">/// Set&#39;s the [`SocketAddr`] to bind to.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Default is &quot;\[::\]:0&quot;.</span>
+	<span class="doccomment">/// # Default</span>
+	<span class="doccomment">/// `[::\]:0`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">/// ```</span>
@@ -1062,10 +1108,12 @@
 	<span class="doccomment">/// Set a server certificate [`KeyPair`], use [`None`] to</span>
 	<span class="doccomment">/// remove any server certificate.</span>
 	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Default</span>
+	<span class="doccomment">/// [`None`].</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Notes</span>
 	<span class="doccomment">/// [`Endpoint`] won&#39;t listen to any incoming</span>
 	<span class="doccomment">/// [`Connection`](crate::Connection)s without a server certificate.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Default is [`None`].</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">/// ```</span>
@@ -1101,7 +1149,8 @@
 	<span class="doccomment">/// Set a client certificate [`KeyPair`], use [`None`] to</span>
 	<span class="doccomment">/// remove any client certificate.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Default is [`None`].</span>
+	<span class="doccomment">/// # Default</span>
+	<span class="doccomment">/// [`None`].</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">/// ```</span>
@@ -1140,7 +1189,8 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// See [`Connection::protocol`](crate::Connection::protocol).</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Default contains no protocols.</span>
+	<span class="doccomment">/// # Default</span>
+	<span class="doccomment">/// No protocols.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">/// ```</span>
@@ -1176,7 +1226,8 @@
 	<span class="doccomment">/// Controls the use of [`trust-dns`](trust_dns_resolver) for</span>
 	<span class="doccomment">/// [`Endpoint::connect`].</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Default is [`true`] if the crate feature &lt;span</span>
+	<span class="doccomment">/// # Default</span>
+	<span class="doccomment">/// [`true`] if the crate feature &lt;span</span>
 	<span class="doccomment">///   class=&quot;module-item stab portability&quot;</span>
 	<span class="doccomment">///   style=&quot;display: inline; border-radius: 3px; padding: 2px; font-size:</span>
 	<span class="doccomment">/// 80%; line-height: 1.2;&quot; &gt;&lt;code&gt;trust-dns&lt;/code&gt;&lt;/span&gt; is enabled.</span>
@@ -1198,7 +1249,8 @@
 	<span class="doccomment">/// Disables the use of [`trust-dns`](trust_dns_resolver) for</span>
 	<span class="doccomment">/// [`Endpoint::connect`] despite the activated crate feature.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Default is enabled if the crate feature &lt;span</span>
+	<span class="doccomment">/// # Default</span>
+	<span class="doccomment">/// Not disabled if the crate feature &lt;span</span>
 	<span class="doccomment">///   class=&quot;module-item stab portability&quot;</span>
 	<span class="doccomment">///   style=&quot;display: inline; border-radius: 3px; padding: 2px; font-size:</span>
 	<span class="doccomment">/// 80%; line-height: 1.2;&quot; &gt;&lt;code&gt;trust-dns&lt;/code&gt;&lt;/span&gt; is enabled.</span>
@@ -1241,7 +1293,8 @@
 	<span class="doccomment">/// [`Endpoint::connect`]. This doesn&#39;t affect the</span>
 	<span class="doccomment">/// [`ToSocketAddrs`](std::net::ToSocketAddrs) resolver.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Default is [`true`].</span>
+	<span class="doccomment">/// # Default</span>
+	<span class="doccomment">/// [`true`].</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">/// ```</span>
@@ -1281,7 +1334,8 @@
 	<span class="doccomment">/// in [`Endpoint::connect`]. This doesn&#39;t affect the</span>
 	<span class="doccomment">/// [`ToSocketAddrs`](std::net::ToSocketAddrs) resolver.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Default is [`false`]. Only affects UNIX like OS&#39;s.</span>
+	<span class="doccomment">/// # Default</span>
+	<span class="doccomment">/// [`false`]. Only affects UNIX like OS&#39;s.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">/// ```</span>
@@ -1321,7 +1375,8 @@
 	<span class="doccomment">/// Set&#39;s the default root certificate store. See [`Store`] for more</span>
 	<span class="doccomment">/// details.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Default is [`Store::Embedded`].</span>
+	<span class="doccomment">/// # Default</span>
+	<span class="doccomment">/// [`Store::Embedded`].</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Examples</span>
 	<span class="doccomment">/// ```</span>
@@ -1371,6 +1426,15 @@
 	<span class="doccomment">///   happen if they were properly validated through [`KeyPair::from_parts`]</span>
 	<span class="doccomment">///   or [`Certificate::from_der`]</span>
 	<span class="doccomment">/// - if not called from inside a Tokio [`Runtime`](tokio::runtime::Runtime)</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Examples</span>
+	<span class="doccomment">/// ```</span>
+	<span class="doccomment">/// # #[tokio::main] async fn main() -&gt; anyhow::Result&lt;()&gt; {</span>
+	<span class="doccomment">/// use fabruic::Builder;</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// let endpoint = Builder::new().build()?;</span>
+	<span class="doccomment">/// # Ok(()) }</span>
+	<span class="doccomment">/// ```</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Endpoint</span>, <span class="ident">error::Builder</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> {
 			<span class="comment">// build client</span>
@@ -1494,7 +1558,6 @@
 	<span class="kw">use</span> <span class="ident">trust_dns_resolver::error::ResolveErrorKind</span>;
 
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-	<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::Error</span>;
 
 	<span class="attribute">#[<span class="ident">tokio::test</span>]</span>
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
@@ -1534,7 +1597,7 @@
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">set_server_key_pair</span>(<span class="prelude-val">Some</span>(<span class="ident">key_pair</span>.<span class="ident">clone</span>()));
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">build</span>()<span class="question-mark">?</span>;
 
-		<span class="comment">// test connection</span>
+		<span class="comment">// test connection to server</span>
 		<span class="kw">let</span> <span class="ident">_connection</span> <span class="op">=</span> <span class="ident">client</span>
 			.<span class="ident">connect_pinned</span>(
 				<span class="macro">format!</span>(<span class="string">&quot;quic://{}&quot;</span>, <span class="ident">server</span>.<span class="ident">local_address</span>()<span class="question-mark">?</span>),
@@ -1544,6 +1607,8 @@
 			.<span class="kw">await</span><span class="question-mark">?</span>
 			.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
 			.<span class="kw">await</span><span class="question-mark">?</span>;
+
+		<span class="comment">// test receiving client on server</span>
 		<span class="kw">let</span> <span class="ident">_connection</span> <span class="op">=</span> <span class="ident">server</span>
 			.<span class="ident">next</span>()
 			.<span class="kw">await</span>
@@ -1570,7 +1635,7 @@
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">set_server_key_pair</span>(<span class="prelude-val">Some</span>(<span class="ident">server_key_pair</span>));
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">build</span>()<span class="question-mark">?</span>;
 
-		<span class="comment">// test connection</span>
+		<span class="comment">// test connection to server</span>
 		<span class="kw">let</span> <span class="ident">_connection</span> <span class="op">=</span> <span class="ident">client</span>
 			.<span class="ident">connect</span>(<span class="macro">format!</span>(
 				<span class="string">&quot;quic://localhost:{}&quot;</span>,
@@ -1579,6 +1644,8 @@
 			.<span class="kw">await</span><span class="question-mark">?</span>
 			.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
 			.<span class="kw">await</span><span class="question-mark">?</span>;
+
+		<span class="comment">// test receiving client on server</span>
 		<span class="kw">let</span> <span class="ident">connection</span> <span class="op">=</span> <span class="ident">server</span>
 			.<span class="ident">next</span>()
 			.<span class="kw">await</span>
@@ -1586,7 +1653,7 @@
 			.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>()
 			.<span class="kw">await</span><span class="question-mark">?</span>;
 
-		<span class="comment">// test client certificate</span>
+		<span class="comment">// validate client certificate</span>
 		<span class="macro">assert_eq!</span>(
 			[<span class="ident">client_key_pair</span>.<span class="ident">into_parts</span>().<span class="number">0</span>],
 			<span class="ident">connection</span>
@@ -1636,10 +1703,14 @@
 				<span class="prelude-val">None</span>,
 			)
 			.<span class="kw">await</span><span class="question-mark">?</span>;
+
+		<span class="comment">// check protocol on `Connecting`</span>
 		<span class="macro">assert_eq!</span>(
 			<span class="ident">protocols</span>[<span class="number">0</span>],
 			<span class="ident">connecting</span>.<span class="ident">protocol</span>().<span class="kw">await</span><span class="question-mark">?</span>.<span class="ident">expect</span>(<span class="string">&quot;no protocol found&quot;</span>)
 		);
+
+		<span class="comment">// check protocol on `Connection`</span>
 		<span class="kw">let</span> <span class="ident">connection</span> <span class="op">=</span> <span class="ident">connecting</span>.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>().<span class="kw">await</span><span class="question-mark">?</span>;
 		<span class="macro">assert_eq!</span>(
 			<span class="ident">protocols</span>[<span class="number">0</span>],
@@ -1648,10 +1719,14 @@
 
 		<span class="comment">// receive connection from client</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">connecting</span> <span class="op">=</span> <span class="ident">server</span>.<span class="ident">next</span>().<span class="kw">await</span>.<span class="ident">expect</span>(<span class="string">&quot;server dropped&quot;</span>);
+
+		<span class="comment">// check protocol on `Connecting`</span>
 		<span class="macro">assert_eq!</span>(
 			<span class="ident">protocols</span>[<span class="number">0</span>],
 			<span class="ident">connecting</span>.<span class="ident">protocol</span>().<span class="kw">await</span><span class="question-mark">?</span>.<span class="ident">expect</span>(<span class="string">&quot;no protocol found&quot;</span>)
 		);
+
+		<span class="comment">// check protocol on `Connection`</span>
 		<span class="kw">let</span> <span class="ident">connection</span> <span class="op">=</span> <span class="ident">connecting</span>.<span class="ident">accept</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>().<span class="kw">await</span><span class="question-mark">?</span>;
 		<span class="macro">assert_eq!</span>(
 			<span class="ident">protocols</span>[<span class="number">0</span>],
@@ -1691,7 +1766,7 @@
 		<span class="comment">// check result</span>
 		<span class="macro">assert!</span>(<span class="macro">matches!</span>(
 			<span class="ident">result</span>,
-			<span class="prelude-val">Err</span>(<span class="ident">Error::Connecting</span>(<span class="ident">ConnectionError::ConnectionClosed</span>(<span class="ident">ConnectionClose</span> {
+			<span class="prelude-val">Err</span>(<span class="ident">error::Connecting</span>(<span class="ident">ConnectionError::ConnectionClosed</span>(<span class="ident">ConnectionClose</span> {
 				<span class="ident">error_code</span>,
 				<span class="ident">frame_type</span>: <span class="prelude-val">None</span>,
 				<span class="ident">reason</span>
@@ -1730,6 +1805,7 @@
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">disable_trust_dns</span>();
 		<span class="kw">let</span> <span class="ident">endpoint</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">build</span>()<span class="question-mark">?</span>;
 
+		<span class="comment">// TODO: find a better target without DNSSEC support then Google</span>
 		<span class="macro">assert!</span>(<span class="ident">endpoint</span>.<span class="ident">connect</span>(<span class="string">&quot;https://google.com&quot;</span>).<span class="kw">await</span>.<span class="ident">is_ok</span>());
 
 		<span class="prelude-val">Ok</span>(())
@@ -1741,6 +1817,7 @@
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">disable_trust_dns</span>();
 		<span class="kw">let</span> <span class="ident">endpoint</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">build</span>()<span class="question-mark">?</span>;
 
+		<span class="comment">// TODO: find a better target with DNSSEC support then Cloudflare</span>
 		<span class="macro">assert!</span>(<span class="ident">endpoint</span>.<span class="ident">connect</span>(<span class="string">&quot;https://cloudflare.com&quot;</span>).<span class="kw">await</span>.<span class="ident">is_ok</span>());
 
 		<span class="prelude-val">Ok</span>(())
@@ -1750,10 +1827,11 @@
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">trust_dns_fail</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">endpoint</span> <span class="op">=</span> <span class="ident">Builder::new</span>().<span class="ident">build</span>()<span class="question-mark">?</span>;
 
-		<span class="comment">// has no DNSSEC records and therefore should fail</span>
+		<span class="comment">// TODO: find a better target without DNSSEC support then Google</span>
 		<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">endpoint</span>.<span class="ident">connect</span>(<span class="string">&quot;https://google.com&quot;</span>).<span class="kw">await</span>;
 
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">Error::ResolveTrustDns</span>(<span class="ident">error</span>)) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">result</span> {
+		<span class="comment">// target has no DNSSEC records</span>
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">error::Connect::TrustDns</span>(<span class="ident">error</span>)) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">result</span> {
 			<span class="kw">if</span> <span class="kw">let</span> <span class="ident">ResolveErrorKind::Proto</span>(<span class="ident">error</span>) <span class="op">=</span> <span class="ident">error</span>.<span class="ident">kind</span>() {
 				<span class="kw">if</span> <span class="kw">let</span> <span class="ident">ProtoErrorKind::RrsigsNotPresent</span> { .. } <span class="op">=</span> <span class="ident">error</span>.<span class="ident">kind</span>() {
 					<span class="kw">return</span> <span class="prelude-val">Ok</span>(());
@@ -1761,6 +1839,7 @@
 			}
 		}
 
+		<span class="comment">// any other error or `Ok` should fail the test</span>
 		<span class="macro">panic!</span>(<span class="string">&quot;unexpected result: {:?}&quot;</span>, <span class="ident">result</span>)
 	}
 
@@ -1784,6 +1863,7 @@
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">set_dnssec</span>(<span class="bool-val">false</span>);
 		<span class="kw">let</span> <span class="ident">endpoint</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">build</span>()<span class="question-mark">?</span>;
 
+		<span class="comment">// TODO: find a better target without DNSSEC support then Google</span>
 		<span class="macro">assert!</span>(<span class="ident">endpoint</span>.<span class="ident">connect</span>(<span class="string">&quot;https://google.com&quot;</span>).<span class="kw">await</span>.<span class="ident">is_ok</span>());
 
 		<span class="prelude-val">Ok</span>(())
@@ -1807,7 +1887,9 @@
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">store_embedded</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">Builder::new</span>();
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>
+			<span class="comment">// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing connection</span>
 			.<span class="ident">set_address</span>(([<span class="number">0</span>; <span class="number">8</span>], <span class="number">0</span>).<span class="ident">into</span>())
+			<span class="comment">// QUIC is comptaible with HTTP/3 to establish a connection only</span>
 			.<span class="ident">set_protocols</span>([<span class="string">b&quot;h3-29&quot;</span>.<span class="ident">to_vec</span>()])
 			.<span class="ident">disable_trust_dns</span>();
 
@@ -1815,6 +1897,7 @@
 
 		<span class="kw">let</span> <span class="ident">endpoint</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">build</span>()<span class="question-mark">?</span>;
 
+		<span class="comment">// TODO: find a better target to test our root certificate store against</span>
 		<span class="macro">assert!</span>(<span class="ident">endpoint</span>
 			.<span class="ident">connect</span>(<span class="string">&quot;https://cloudflare-quic.com:443&quot;</span>)
 			.<span class="kw">await</span><span class="question-mark">?</span>
@@ -1829,7 +1912,10 @@
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">store_os</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">Builder::new</span>();
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>
+			<span class="comment">// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing connection</span>
 			.<span class="ident">set_address</span>(([<span class="number">0</span>; <span class="number">8</span>], <span class="number">0</span>).<span class="ident">into</span>())
+			<span class="comment">// QUIC is comptaible with HTTP/3 to establish a connection only</span>
+			.<span class="ident">set_protocols</span>([<span class="string">b&quot;h3-29&quot;</span>.<span class="ident">to_vec</span>()])
 			.<span class="ident">set_protocols</span>([<span class="string">b&quot;h3-29&quot;</span>.<span class="ident">to_vec</span>()])
 			.<span class="ident">set_store</span>(<span class="ident">Store::Os</span>)
 			.<span class="ident">disable_trust_dns</span>();
@@ -1838,6 +1924,7 @@
 
 		<span class="kw">let</span> <span class="ident">endpoint</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">build</span>()<span class="question-mark">?</span>;
 
+		<span class="comment">// TODO: find a better target to test our root certificate store against</span>
 		<span class="macro">assert!</span>(<span class="ident">endpoint</span>
 			.<span class="ident">connect</span>(<span class="string">&quot;https://cloudflare-quic.com:443&quot;</span>)
 			.<span class="kw">await</span><span class="question-mark">?</span>
@@ -1852,7 +1939,9 @@
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">store_empty</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">Builder::new</span>();
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>
+			<span class="comment">// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing connection</span>
 			.<span class="ident">set_address</span>(([<span class="number">0</span>; <span class="number">8</span>], <span class="number">0</span>).<span class="ident">into</span>())
+			<span class="comment">// QUIC is comptaible with HTTP/3 to establish a connection only</span>
 			.<span class="ident">set_protocols</span>([<span class="string">b&quot;h3-29&quot;</span>.<span class="ident">to_vec</span>()])
 			.<span class="ident">set_store</span>(<span class="ident">Store::Empty</span>)
 			.<span class="ident">disable_trust_dns</span>();
@@ -1861,6 +1950,7 @@
 
 		<span class="kw">let</span> <span class="ident">endpoint</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">build</span>()<span class="question-mark">?</span>;
 
+		<span class="comment">// TODO: find a better target to test our root certificate store against</span>
 		<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">endpoint</span>
 			.<span class="ident">connect</span>(<span class="string">&quot;https://cloudflare-quic.com:443&quot;</span>)
 			.<span class="kw">await</span><span class="question-mark">?</span>
@@ -1870,7 +1960,7 @@
 		<span class="comment">// check result</span>
 		<span class="macro">assert!</span>(<span class="macro">matches!</span>(
 				<span class="ident">result</span>,
-				<span class="prelude-val">Err</span>(<span class="ident">Error::Connecting</span>(<span class="ident">ConnectionError::TransportError</span>(<span class="ident">TransportError</span> {
+				<span class="prelude-val">Err</span>(<span class="ident">error::Connecting</span>(<span class="ident">ConnectionError::TransportError</span>(<span class="ident">TransportError</span> {
 					<span class="ident">code</span>,
 					<span class="ident">frame</span>: <span class="prelude-val">None</span>,
 					<span class="ident">reason</span>
