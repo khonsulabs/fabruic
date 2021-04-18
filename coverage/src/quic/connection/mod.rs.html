@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-18 12:34:33</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-18 12:47:44</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -210,13 +210,13 @@
 <div class="line"><span id="189" class="lineNum"><a href="#189">189</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;T: DeserializeOwned + Serialize + Send + &#39;static&gt; Stream for Connection&lt;T&gt; {</span></div>
 <div class="line"><span id="190" class="lineNum"><a href="#190">190</a></span><span class="counterUnCov"></span><span class="lineUnCov">	type Item = Incoming&lt;T&gt;;</span></div>
 <div class="line"><span id="191" class="lineNum"><a href="#191">191</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="192" class="lineNum"><a href="#192">192</a></span><span class="counterCov">187</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
-<div class="line"><span id="193" class="lineNum"><a href="#193">193</a></span><span class="counterCov">187</span><span class="lineCov">		if self.receiver.is_terminated() {</span></div>
+<div class="line"><span id="192" class="lineNum"><a href="#192">192</a></span><span class="counterCov">176</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
+<div class="line"><span id="193" class="lineNum"><a href="#193">193</a></span><span class="counterCov">176</span><span class="lineCov">		if self.receiver.is_terminated() {</span></div>
 <div class="line"><span id="194" class="lineNum"><a href="#194">194</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Poll::Ready(None)</span></div>
 <div class="line"><span id="195" class="lineNum"><a href="#195">195</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
-<div class="line"><span id="196" class="lineNum"><a href="#196">196</a></span><span class="counterCov">187</span><span class="lineCov">			self.receiver.poll_next_unpin(cx)</span></div>
+<div class="line"><span id="196" class="lineNum"><a href="#196">196</a></span><span class="counterCov">176</span><span class="lineCov">			self.receiver.poll_next_unpin(cx)</span></div>
 <div class="line"><span id="197" class="lineNum"><a href="#197">197</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="198" class="lineNum"><a href="#198">198</a></span><span class="counterCov">187</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="198" class="lineNum"><a href="#198">198</a></span><span class="counterCov">176</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="199" class="lineNum"><a href="#199">199</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 <div class="line"><span id="200" class="lineNum"><a href="#200">200</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="201" class="lineNum"><a href="#201">201</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;T: DeserializeOwned + Serialize + Send + &#39;static&gt; FusedStream for Connection&lt;T&gt; {</span></div>

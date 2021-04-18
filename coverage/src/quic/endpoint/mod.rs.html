@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-18 12:34:33</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-18 12:47:44</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -211,9 +211,9 @@
 <div class="line"><span id="190" class="lineNum"><a href="#190">190</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
 <div class="line"><span id="191" class="lineNum"><a href="#191">191</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// The following settings are used when using</span></div>
 <div class="line"><span id="192" class="lineNum"><a href="#192">192</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`trust-dns`](trust_dns_resolver):</span></div>
-<div class="line"><span id="193" class="lineNum"><a href="#193">193</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - all system configurations are ignored</span></div>
+<div class="line"><span id="193" class="lineNum"><a href="#193">193</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - all system configurations are ignored, see [`Builder::set_hosts_file`]</span></div>
 <div class="line"><span id="194" class="lineNum"><a href="#194">194</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - Cloudflare with DoH is used as the name server</span></div>
-<div class="line"><span id="195" class="lineNum"><a href="#195">195</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - DNSSEC is enabled</span></div>
+<div class="line"><span id="195" class="lineNum"><a href="#195">195</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - DNSSEC is enabled, see [`Builder::set_dnssec`]</span></div>
 <div class="line"><span id="196" class="lineNum"><a href="#196">196</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - IPv6 is preferred over IPv4 if the bound socket is IPv6</span></div>
 <div class="line"><span id="197" class="lineNum"><a href="#197">197</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
 <div class="line"><span id="198" class="lineNum"><a href="#198">198</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
@@ -337,7 +337,7 @@
 <div class="line"><span id="316" class="lineNum"><a href="#316">316</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// build `Resolver` options</span></div>
 <div class="line"><span id="317" class="lineNum"><a href="#317">317</a></span><span class="counterCov">3</span><span class="lineCov">			let opts = ResolverOpts {</span></div>
 <div class="line"><span id="318" class="lineNum"><a href="#318">318</a></span><span class="counterCov">3</span><span class="lineCov">				ip_strategy,</span></div>
-<div class="line"><span id="319" class="lineNum"><a href="#319">319</a></span><span class="counterCov">3</span><span class="lineCov">				use_hosts_file: false,</span></div>
+<div class="line"><span id="319" class="lineNum"><a href="#319">319</a></span><span class="counterCov">3</span><span class="lineCov">				use_hosts_file: self.config.hosts_file(),</span></div>
 <div class="line"><span id="320" class="lineNum"><a href="#320">320</a></span><span class="counterCov">3</span><span class="lineCov">				validate: self.config.dnssec(),</span></div>
 <div class="line"><span id="321" class="lineNum"><a href="#321">321</a></span><span class="counterCov">3</span><span class="lineCov">				..ResolverOpts::default()</span></div>
 <div class="line"><span id="322" class="lineNum"><a href="#322">322</a></span><span class="counterCov">3</span><span class="lineCov">			};</span></div>
