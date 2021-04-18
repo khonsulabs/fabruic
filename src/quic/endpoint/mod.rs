@@ -305,7 +305,7 @@ impl Endpoint {
 				TokioAsyncResolver,
 			};
 
-			// ip strategy depends on the current socket
+			// IP strategy depends on the current socket
 			let ip_strategy = if let Ok(true) = self.local_address().map(|socket| socket.is_ipv6())
 			{
 				LookupIpStrategy::Ipv6thenIpv4
@@ -317,7 +317,7 @@ impl Endpoint {
 			let opts = ResolverOpts {
 				ip_strategy,
 				use_hosts_file: false,
-				validate: true,
+				validate: self.config.dnssec(),
 				..ResolverOpts::default()
 			};
 
@@ -333,6 +333,7 @@ impl Endpoint {
 				.map_err(|error| Error::ResolveTrustDns(Box::new(error)))?;
 
 			// take the first IP found
+			// TODO: retry connection on other found IPs
 			let ip = ip.into_iter().next().ok_or(Error::NoIp)?;
 
 			return Ok((SocketAddr::from((ip, port)), domain));

@@ -20,6 +20,10 @@ pub(in crate::quic::endpoint) struct Config {
 	#[cfg(feature = "trust-dns")]
 	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	trust_dns: bool,
+	/// Enables DNSSEC validation for [`trust-dns`](trust_dns_resolver).
+	#[cfg(feature = "trust-dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
+	dnssec: bool,
 }
 
 impl Config {
@@ -44,6 +48,8 @@ impl Config {
 			protocols: Vec::new(),
 			#[cfg(feature = "trust-dns")]
 			trust_dns: true,
+			#[cfg(feature = "trust-dns")]
+			dnssec: true,
 		}
 	}
 
@@ -90,6 +96,20 @@ impl Config {
 		return self.trust_dns;
 		#[cfg(not(feature = "trust-dns"))]
 		false
+	}
+
+	/// Controls DNSSEC validation for [`trust-dns`](trust_dns_resolver).
+	#[cfg(feature = "trust-dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
+	pub(super) fn set_dnssec(&mut self, enable: bool) {
+		self.dnssec = enable;
+	}
+
+	/// Returns if DNSSEC is enabled for [`trust-dns`](trust_dns_resolver).
+	#[cfg(feature = "trust-dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
+	pub(in crate::quic::endpoint) const fn dnssec(&self) -> bool {
+		self.dnssec
 	}
 
 	/// Builds a new [`ClientConfig`] with this [`Config`] and adds

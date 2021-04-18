@@ -294,6 +294,46 @@ impl Builder {
 		self.config.trust_dns()
 	}
 
+	/// Controls DNSSEC validation for [`trust-dns`](trust_dns_resolver) in
+	/// [`Endpoint::connect`]. This doesn't affect the
+	/// [`ToSocketAddrs`](std::net::ToSocketAddrs) resolver.
+	///
+	/// Default is [`true`].
+	///
+	/// # Examples
+	/// ```
+	/// use fabruic::Builder;
+	///
+	/// let mut builder = Builder::new();
+	/// builder.set_dnssec(false);
+	/// ```
+	#[cfg(feature = "trust-dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
+	pub fn set_dnssec(&mut self, enable: bool) -> &mut Self {
+		self.config.set_dnssec(enable);
+		self
+	}
+
+	/// Returns if DNSSEC is enabled for [`trust-dns`](trust_dns_resolver).
+	///
+	/// See [`set_dnssec`](Self::set_dnssec).
+	///
+	/// # Examples
+	/// ```
+	/// use fabruic::Builder;
+	///
+	/// let mut builder = Builder::new();
+	///
+	/// builder.set_dnssec(true);
+	/// assert_eq!(builder.dnssec(), true);
+	/// ```
+	#[must_use]
+	#[cfg(feature = "trust-dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
+	pub const fn dnssec(&self) -> bool {
+		self.config.dnssec()
+	}
+
 	/// Set's the default root certificate store. See [`Store`] for more
 	/// details.
 	///
@@ -701,12 +741,23 @@ mod test {
 	}
 
 	#[tokio::test]
+	async fn trust_dns_disabled() -> Result<()> {
+		let mut builder = Builder::new();
+		let _ = builder.disable_trust_dns();
+		let endpoint = builder.build()?;
+
+		assert!(endpoint.connect("https://google.com").await.is_ok());
+
+		Ok(())
+	}
+
+	#[tokio::test]
 	async fn trust_dns_success() -> Result<()> {
 		let mut builder = Builder::new();
 		let _ = builder.disable_trust_dns();
 		let endpoint = builder.build()?;
 
-		assert!(endpoint.connect("https://one.one.one.one").await.is_ok());
+		assert!(endpoint.connect("https://cloudflare.com").await.is_ok());
 
 		Ok(())
 	}
@@ -715,8 +766,8 @@ mod test {
 	async fn trust_dns_fail() -> Result<()> {
 		let endpoint = Builder::new().build()?;
 
-		// has broken DNSSEC records and therefore should fail
-		let result = endpoint.connect("https://one.one.one.one").await;
+		// has no DNSSEC records and therefore should fail
+		let result = endpoint.connect("https://google.com").await;
 
 		if let Err(Error::ResolveTrustDns(error)) = &result {
 			if let ResolveErrorKind::Proto(error) = error.kind() {
@@ -727,6 +778,31 @@ mod test {
 		}
 
 		panic!("unexpected result: {:?}", result)
+	}
+
+	#[test]
+	fn dnssec() {
+		let mut builder = Builder::new();
+
+		// default
+		assert!(builder.dnssec());
+
+		let _ = builder.set_dnssec(false);
+		assert!(!builder.dnssec());
+
+		let _ = builder.set_dnssec(true);
+		assert!(builder.dnssec());
+	}
+
+	#[tokio::test]
+	async fn dnssec_disabled() -> Result<()> {
+		let mut builder = Builder::new();
+		let _ = builder.set_dnssec(false);
+		let endpoint = builder.build()?;
+
+		assert!(endpoint.connect("https://google.com").await.is_ok());
+
+		Ok(())
 	}
 
 	#[tokio::test]
