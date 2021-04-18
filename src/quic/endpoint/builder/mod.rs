@@ -610,7 +610,7 @@ mod test {
 		let _ = builder.set_server_key_pair(Some(key_pair.clone()));
 		let mut server = builder.build()?;
 
-		// test connection
+		// test connection to server
 		let _connection = client
 			.connect_pinned(
 				format!("quic://{}", server.local_address()?),
@@ -620,6 +620,8 @@ mod test {
 			.await?
 			.accept::<()>()
 			.await?;
+
+		// test receiving client on server
 		let _connection = server
 			.next()
 			.await
@@ -646,7 +648,7 @@ mod test {
 		let _ = builder.set_server_key_pair(Some(server_key_pair));
 		let mut server = builder.build()?;
 
-		// test connection
+		// test connection to server
 		let _connection = client
 			.connect(format!(
 				"quic://localhost:{}",
@@ -655,6 +657,8 @@ mod test {
 			.await?
 			.accept::<()>()
 			.await?;
+
+		// test receiving client on server
 		let connection = server
 			.next()
 			.await
@@ -662,7 +666,7 @@ mod test {
 			.accept::<()>()
 			.await?;
 
-		// test client certificate
+		// validate client certificate
 		assert_eq!(
 			[client_key_pair.into_parts().0],
 			connection
@@ -712,10 +716,14 @@ mod test {
 				None,
 			)
 			.await?;
+
+		// check protocol on `Connecting`
 		assert_eq!(
 			protocols[0],
 			connecting.protocol().await?.expect("no protocol found")
 		);
+
+		// check protocol on `Connection`
 		let connection = connecting.accept::<()>().await?;
 		assert_eq!(
 			protocols[0],
@@ -724,10 +732,14 @@ mod test {
 
 		// receive connection from client
 		let mut connecting = server.next().await.expect("server dropped");
+
+		// check protocol on `Connecting`
 		assert_eq!(
 			protocols[0],
 			connecting.protocol().await?.expect("no protocol found")
 		);
+
+		// check protocol on `Connection`
 		let connection = connecting.accept::<()>().await?;
 		assert_eq!(
 			protocols[0],
@@ -806,6 +818,7 @@ mod test {
 		let _ = builder.disable_trust_dns();
 		let endpoint = builder.build()?;
 
+		// TODO: find a better target without DNSSEC support then Google
 		assert!(endpoint.connect("https://google.com").await.is_ok());
 
 		Ok(())
@@ -817,6 +830,7 @@ mod test {
 		let _ = builder.disable_trust_dns();
 		let endpoint = builder.build()?;
 
+		// TODO: find a better target with DNSSEC support then Cloudflare
 		assert!(endpoint.connect("https://cloudflare.com").await.is_ok());
 
 		Ok(())
@@ -826,9 +840,10 @@ mod test {
 	async fn trust_dns_fail() -> Result<()> {
 		let endpoint = Builder::new().build()?;
 
-		// has no DNSSEC records and therefore should fail
+		// TODO: find a better target without DNSSEC support then Google
 		let result = endpoint.connect("https://google.com").await;
 
+		// target has no DNSSEC records
 		if let Err(error::Connect::TrustDns(error)) = &result {
 			if let ResolveErrorKind::Proto(error) = error.kind() {
 				if let ProtoErrorKind::RrsigsNotPresent { .. } = error.kind() {
@@ -837,6 +852,7 @@ mod test {
 			}
 		}
 
+		// any other error or `Ok` should fail the test
 		panic!("unexpected result: {:?}", result)
 	}
 
@@ -860,6 +876,7 @@ mod test {
 		let _ = builder.set_dnssec(false);
 		let endpoint = builder.build()?;
 
+		// TODO: find a better target without DNSSEC support then Google
 		assert!(endpoint.connect("https://google.com").await.is_ok());
 
 		Ok(())
@@ -883,7 +900,9 @@ mod test {
 	async fn store_embedded() -> Result<()> {
 		let mut builder = Builder::new();
 		let _ = builder
+			// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing connection
 			.set_address(([0; 8], 0).into())
+			// QUIC is comptaible with HTTP/3 to establish a connection only
 			.set_protocols([b"h3-29".to_vec()])
 			.disable_trust_dns();
 
@@ -891,6 +910,7 @@ mod test {
 
 		let endpoint = builder.build()?;
 
+		// TODO: find a better target to test our root certificate store against
 		assert!(endpoint
 			.connect("https://cloudflare-quic.com:443")
 			.await?
@@ -905,7 +925,10 @@ mod test {
 	async fn store_os() -> Result<()> {
 		let mut builder = Builder::new();
 		let _ = builder
+			// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing connection
 			.set_address(([0; 8], 0).into())
+			// QUIC is comptaible with HTTP/3 to establish a connection only
+			.set_protocols([b"h3-29".to_vec()])
 			.set_protocols([b"h3-29".to_vec()])
 			.set_store(Store::Os)
 			.disable_trust_dns();
@@ -914,6 +937,7 @@ mod test {
 
 		let endpoint = builder.build()?;
 
+		// TODO: find a better target to test our root certificate store against
 		assert!(endpoint
 			.connect("https://cloudflare-quic.com:443")
 			.await?
@@ -928,7 +952,9 @@ mod test {
 	async fn store_empty() -> Result<()> {
 		let mut builder = Builder::new();
 		let _ = builder
+			// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing connection
 			.set_address(([0; 8], 0).into())
+			// QUIC is comptaible with HTTP/3 to establish a connection only
 			.set_protocols([b"h3-29".to_vec()])
 			.set_store(Store::Empty)
 			.disable_trust_dns();
@@ -937,6 +963,7 @@ mod test {
 
 		let endpoint = builder.build()?;
 
+		// TODO: find a better target to test our root certificate store against
 		let result = endpoint
 			.connect("https://cloudflare-quic.com:443")
 			.await?
