@@ -20,9 +20,9 @@ pub use x509_parser::{error::X509Error, nom::Err};
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 /// Error binding socket during construction of [`Endpoint`](crate::Endpoint)
-/// with a [`Builder`](crate::Builder).
+/// with [`Builder::build`](crate::Builder::build).
 #[derive(Debug, Error)]
-#[error("Error binding socket during construction of `Endpoint`")]
+#[error("Error binding socket during construction of `Endpoint`: {error}")]
 pub struct Builder {
 	/// The error binding [`Endpoint`](crate::Endpoint).
 	pub error: Endpoint,
@@ -32,8 +32,50 @@ pub struct Builder {
 
 /// Error binding socket during construction of [`Endpoint`](crate::Endpoint).
 #[derive(Debug, Error)]
-#[error("Error binding socket during construction of `Endpoint`")]
+#[error("Error binding socket during construction of `Endpoint`: {0}")]
 pub struct Endpoint(pub IoError);
+
+/// Error connecting to a server with
+/// [`Endpoint::connect`](crate::Endpoint::connect).
+#[derive(Debug, Error)]
+#[error("Error connecting to server: {0}")]
+pub enum Connect {
+	/// The passed [`Certificate`](crate::Certificate) has multiple domains,
+	/// this is not supported with
+	/// [`Endpoint::connect_pinned`](crate::Endpoint::connect_pinned).
+	#[error(
+		"Using a `Certificate` with multiple domains for connecting with a pinned server \
+		 certificate is not supported"
+	)]
+	MultipleDomains,
+	/// Failed to parse URL.
+	#[error("Error parsing URL: {0}")]
+	ParseUrl(UrlParseError),
+	/// URL didn't contain a domain.
+	#[error("URL without a domain is invalid")]
+	Domain,
+	/// URL didn't contain a port.
+	#[error("URL without a port is invalid")]
+	Port,
+	/// Failed to parse domain.
+	#[error("Error parsing domain: {0}")]
+	ParseDomain(UrlParseError),
+	/// Failed to resolve domain with [`trust-dns`](trust_dns_resolver).
+	#[cfg(feature = "trust-dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
+	#[error("Error resolving domain with trust-dns: {0}")]
+	TrustDns(Box<ResolveError>),
+	/// Failed to resolve domain with
+	/// [`ToSocketAddrs`](std::net::ToSocketAddrs).
+	#[error("Error resolving domain with `ToSocketAddrs`: {0}")]
+	StdDns(IoError),
+	/// Found no IP address for that domain.
+	#[error("Found no IP address for that domain")]
+	NoIp,
+	/// Configuration needed to connect to a server is faulty.
+	#[error("Error in configuration to connect to a peer: {0}")]
+	Config(ConnectError),
+}
 
 /// [`Error`](std::error::Error) for this [`crate`].
 #[derive(Debug, Error)]
@@ -67,31 +109,6 @@ pub enum Error {
 	/// Failed to parse the given private key.
 	#[error("Failed parsing private key")]
 	ParsePrivateKey,
-	/// Parsing a [`SocketAddr`](std::net::SocketAddr) from a [`str`] failed.
-	#[error("Failed parsing socket: {0}")]
-	ParseAddress(AddrParseError),
-	/// Failed to parse URL.
-	#[error("Error parsing URL: {0}")]
-	ParseUrl(UrlParseError),
-	/// URL didn't contain a domain.
-	#[error("URL without a domain is invalid")]
-	Domain,
-	/// URL didn't contain a port.
-	#[error("URL without a port is invalid")]
-	Port,
-	/// Failed to resolve domain to IP address with
-	/// [`trust-dns`](trust_dns_resolver).
-	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
-	#[error("Error resolving domain with trust-dns: {0}")]
-	ResolveTrustDns(Box<ResolveError>),
-	/// Failed to resolve domain to IP address with
-	/// [`ToSocketAddrs`](std::net::ToSocketAddrs).
-	#[error("Error resolving domain with `ToSocketAddrs`: {0}")]
-	ResolveStdDns(IoError),
-	/// Found no IP address for that domain.
-	#[error("Found no IP address for that domain")]
-	NoIp,
 	/// Returned by [`Endpoint::local_address`](crate::Endpoint::local_address)
 	/// when failing to aquire the local address.
 	#[error("Failed to aquire local address: {0}")]
@@ -99,15 +116,6 @@ pub enum Error {
 	/// Attempting to close something that is already closed.
 	#[error("This is already closed")]
 	AlreadyClosed,
-	/// Returned by
-	/// [`Endpoint::connect_pinned`](crate::Endpoint::connect_pinned) if
-	/// the passed [`Certificate`](crate::Certificate) has multiple domains.
-	#[error("Using a `Certificate` with multiple domains for direction connection is invalid")]
-	MultipleDomains,
-	/// Returned by [`Endpoint::connect`](crate::Endpoint::connect) if
-	/// configuration needed to connect to a peer is faulty.
-	#[error("Error in configuration to connect to a peer: {0}")]
-	ConnectConfig(ConnectError),
 	/// Returned by [`Connecting::accept`](crate::Connecting::accept) if
 	/// connecting to the peer failed.
 	#[error("Error on connecting to a remote address: {0}")]

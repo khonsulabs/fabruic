@@ -6,6 +6,7 @@ use std::{
 	fmt::{self, Debug, Formatter},
 	net::{SocketAddr, ToSocketAddrs},
 	pin::Pin,
+	sync::Arc,
 	task::{Context, Poll},
 };
 
@@ -27,28 +28,39 @@ use crate::{error, Certificate, Connecting, Error, KeyPair, Result};
 /// Receives incoming [`Connection`](crate::Connection)s through [`Stream`].
 #[derive(Clone)]
 pub struct Endpoint {
-	/// Initiate new connections or close socket.
+	/// Initiate new [`Connection`](crate::Connection)s or close [`Endpoint`].
 	endpoint: quinn::Endpoint,
-	/// Receiving new incoming connections.
+	/// Receiving new incoming [`Connection`](crate::Connection)s.
 	receiver: RecvStream<'static, Connecting>,
 	/// Task handle handling new incoming connections.
 	task: Task<()>,
-	/// Persistent configuration to build new [`ClientConfig`]
-	config: Config,
+	/// Persistent configuration from [`Builder`] to build new [`ClientConfig`]s
+	/// and [`trust-dns`](trust_dns_resolver) queries.
+	config: Arc<Config>,
 }
 
 impl Debug for Endpoint {
 	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
 		f.debug_struct("Server")
 			.field("endpoint", &self.endpoint)
-			.field("receiver", &"RecvStream<Connection>")
+			.field("receiver", &"RecvStream<Connecting>")
 			.field("task", &self.task)
+			.field("config", &self.config)
 			.finish()
 	}
 }
 
 impl Endpoint {
 	/// Builds a new [`Builder`]. See [`Builder`] methods for defaults.
+	///
+	/// # Examples
+	/// ```
+	/// # #[tokio::main] async fn main() -> anyhow::Result<()> {
+	/// use fabruic::Endpoint;
+	///
+	/// let endpoint = Endpoint::builder().build()?;
+	/// # Ok(()) }
+	/// ```
 	#[must_use]
 	pub fn builder() -> Builder {
 		Builder::new()
@@ -58,7 +70,7 @@ impl Endpoint {
 	/// inside a Tokio [`Runtime`](tokio::runtime::Runtime).
 	///
 	/// # Errors
-	/// [`error::Builder`] if the socket couldn't be bound to the given
+	/// [`error::Endpoint`] if the socket couldn't be bound to the given
 	/// `address`.
 	///
 	/// # Panics
@@ -73,7 +85,7 @@ impl Endpoint {
 		let mut endpoint_builder = quinn::Endpoint::builder();
 		let _ = endpoint_builder.default_client_config(client);
 
-		// client don't need a server configuration
+		// server configuration is optional
 		let server = server.map_or(false, |server| {
 			let _ = endpoint_builder.listen(server);
 			true
@@ -90,7 +102,7 @@ impl Endpoint {
 		let (sender, receiver) = flume::unbounded();
 		let receiver = receiver.into_stream();
 
-		// only servers will have a running task
+		// only servers need to deal with incoming connections
 		let task = if server {
 			// spawn task handling incoming `Connection`s
 			let (shutdown_sender, shutdown_receiver) = oneshot::channel();
@@ -106,24 +118,33 @@ impl Endpoint {
 			endpoint,
 			receiver,
 			task,
-			config,
+			config: Arc::new(config),
 		})
 	}
 
 	/// Simplified version of creating a client. See [`Builder`] for more
-	/// sophisticated configuration. Must be called from inside a Tokio
+	/// sophisticated configuration options. Must be called from inside a Tokio
 	/// [`Runtime`](tokio::runtime::Runtime).
 	///
 	/// # Notes
-	/// This configuration will not be able to receive new
+	/// This configuration will not be able to receive incoming
 	/// [`Connection`](crate::Connection)s.
 	///
 	/// # Errors
-	/// [`error::Builder`] if the socket couldn't be bound to the given
+	/// [`error::Endpoint`] if the socket couldn't be bound to the given
 	/// `address`.
 	///
 	/// # Panics
 	/// If not called from inside a Tokio [`Runtime`](tokio::runtime::Runtime).
+	///
+	/// # Examples
+	/// ```
+	/// # #[tokio::main] async fn main() -> anyhow::Result<()> {
+	/// use fabruic::Endpoint;
+	///
+	/// let endpoint = Endpoint::new_client()?;
+	/// # Ok(()) }
+	/// ```
 	pub fn new_client() -> Result<Self, error::Endpoint> {
 		Builder::new()
 			.build()
@@ -131,18 +152,26 @@ impl Endpoint {
 	}
 
 	/// Simplified version of creating a server. See [`Builder`] for more
-	/// sophisticated configuration. Must be called from inside a Tokio
+	/// sophisticated configuration options. Must be called from inside a Tokio
 	/// [`Runtime`](tokio::runtime::Runtime).
 	///
 	/// # Errors
-	/// [`error::Builder`] if the socket couldn't be bound to the given
+	/// [`error::Endpoint`] if the socket couldn't be bound to the given
 	/// `address`.
 	///
 	/// # Panics
-	/// - if the given [`KeyPair`] or [`Certificate`]s are invalid - can't
-	///   happen if they were properly validated through [`KeyPair::from_parts`]
-	///   or [`Certificate::from_der`]
+	/// - if the given [`KeyPair`] is invalid - can't happen if properly
+	///   validated through [`KeyPair::from_parts`]
 	/// - if not called from inside a Tokio [`Runtime`](tokio::runtime::Runtime)
+	///
+	/// # Examples
+	/// ```
+	/// # #[tokio::main] async fn main() -> anyhow::Result<()> {
+	/// use fabruic::{Endpoint, KeyPair};
+	///
+	/// let endpoint = Endpoint::new_server(0, KeyPair::new_self_signed("self-signed"))?;
+	/// # Ok(()) }
+	/// ```
 	pub fn new_server(port: u16, key_pair: KeyPair) -> Result<Self, error::Endpoint> {
 		let mut builder = Builder::new();
 		#[cfg(not(feature = "test"))]
@@ -157,7 +186,7 @@ impl Endpoint {
 			.map_err(|error::Builder { error, .. }| error)
 	}
 
-	/// Handle incoming connections. Accessed through [`Stream`] of
+	/// Handle incoming connections. Accessed through [`Stream`] in
 	/// [`Endpoint`].
 	async fn incoming(
 		mut incoming: quinn::Incoming,
@@ -177,7 +206,7 @@ impl Endpoint {
 
 	/// Establishes a new [`Connection`](crate::Connection) to a server. The
 	/// servers [`Certificate`] will be validated aggainst the root certificate
-	/// store together with the domain.
+	/// store and the domain in the URL.
 	///
 	/// Attempts to resolve the IP from the given URL. Uses
 	/// [`trust-dns`](trust_dns_resolver) by default if the crate feature <span
@@ -186,8 +215,10 @@ impl Endpoint {
 	/// 80%; line-height: 1.2;" ><code>trust-dns</code></span> is enabled.
 	/// Otherwise [`ToSocketAddrs`] is used.
 	///
-	/// See [`Builder::disable_trust_dns`] for more control.
+	/// See [`Builder::set_trust_dns`] or [`Builder::disable_trust_dns`] for
+	/// more control.
 	///
+	/// # Notes
 	/// The following settings are used when using
 	/// [`trust-dns`](trust_dns_resolver):
 	/// - all system configurations are ignored, see [`Builder::set_hosts_file`]
@@ -196,22 +227,33 @@ impl Endpoint {
 	/// - IPv6 is preferred over IPv4 if the bound socket is IPv6
 	///
 	/// # Errors
-	/// - [`Error::ParseUrl`] if the URL couldn't be parsed
-	/// - [`Error::Domain`] if the URL didn't contain a domain
-	/// - [`Error::Port`] if the URL didn't contain a port
-	/// - [`Error::ResolveTrustDns`] if the URL couldn't be resolved to an IP
+	/// - [`error::Connect::ParseUrl`] if the URL couldn't be parsed
+	/// - [`error::Connect::Domain`] if the URL didn't contain a domain
+	/// - [`error::Connect::Port`] if the URL didn't contain a port
+	/// - [`error::Connect::ParseDomain`] if the domain couldn't be parsed
+	/// - [`error::Connect::TrustDns`] if the URL couldn't be resolved to an IP
 	///   address with [`trust-dns`](trust_dns_resolver)
-	/// - [`Error::ResolveStdDns`] if the URL couldn't be resolved to an IP
+	/// - [`error::Connect::StdDns`] if the URL couldn't be resolved to an IP
 	///   address with [`ToSocketAddrs`]
-	/// - [`Error::ConnectConfig`] if configuration needed to connect to a peer
-	///   is faulty
-	pub async fn connect<U: AsRef<str>>(&self, url: U) -> Result<Connecting> {
+	/// - [`error::Connect::NoIp`] if no IP address was found for that domain
+	///
+	/// # Examples
+	/// ```
+	/// # #[tokio::main] async fn main() -> anyhow::Result<()> {
+	/// use fabruic::Endpoint;
+	///
+	/// let endpoint = Endpoint::new_client()?;
+	/// // not going to actually work because `localhost` can't have a valid certificate
+	/// let connecting = endpoint.connect("quic://localhost:443").await?;
+	/// # Ok(()) }
+	/// ```
+	pub async fn connect<U: AsRef<str>>(&self, url: U) -> Result<Connecting, error::Connect> {
 		let (address, domain) = self.resolve_domain(url).await?;
 
 		Ok(Connecting::new(
 			self.endpoint
 				.connect(&address, &domain)
-				.map_err(Error::ConnectConfig)?,
+				.map_err(error::Connect::Config)?,
 		))
 	}
 
@@ -219,56 +261,61 @@ impl Endpoint {
 	/// root certificate store will be ignored and the given [`Certificate`]
 	/// will validate the server.
 	///
-	/// This method is intended for direct connection to a known server.
-	/// Multiple domain names in the [`Certificate`] aren't supported.
-	///
 	/// See [`connect`](Self::connect) for more information on host name
 	/// resolution.
 	///
+	/// # Notes
+	/// This method is intended for direct connection to a known server, the
+	/// domain name of the [`Certificate`] may deviate from the URL. Multiple
+	/// domain names in the [`Certificate`] aren't supported.
+	///
 	/// # Errors
-	/// - [`Error::MultipleDomains`] if multiple domains are used in this
-	///   [`Certificate`]
-	/// - [`Error::ParseUrl`] if the URL couldn't be parsed
-	/// - [`Error::Domain`] if the URL didn't contain a domain
-	/// - [`Error::Port`] if the URL didn't contain a port
-	/// - [`Error::ResolveTrustDns`] if the URL couldn't be resolved to an IP
+	/// - [`error::Connect::MultipleDomains`] if multiple domains are present in
+	///   the [`Certificate`], which isn't supported
+	/// - [`error::Connect::ParseUrl`] if the URL couldn't be parsed
+	/// - [`error::Connect::Domain`] if the URL didn't contain a domain
+	/// - [`error::Connect::Port`] if the URL didn't contain a port
+	/// - [`error::Connect::ParseDomain`] if the domain couldn't be parsed
+	/// - [`error::Connect::TrustDns`] if the URL couldn't be resolved to an IP
 	///   address with [`trust-dns`](trust_dns_resolver)
-	/// - [`Error::ResolveStdDns`] if the URL couldn't be resolved to an IP
+	/// - [`error::Connect::StdDns`] if the URL couldn't be resolved to an IP
 	///   address with [`ToSocketAddrs`]
-	/// - [`Error::ConnectConfig`] if configuration needed to connect to a peer
-	///   is faulty
+	/// - [`error::Connect::NoIp`] if no IP address was found for that domain
 	///
 	/// # Panics
-	/// Panics if the given [`Certificate`] is invalid. Can't happen if the
-	/// [`Certificate`] was properly validated through
-	/// [`Certificate::from_der`].
+	/// Panics if the given [`KeyPair`] or [`Certificate`] are invalid. Can't
+	/// happen if they were properly validated through [`KeyPair::from_parts`]
+	/// or [`Certificate::from_der`].
 	#[allow(clippy::unwrap_in_result)]
 	pub async fn connect_pinned<U: AsRef<str>>(
 		&self,
 		url: U,
 		server_certificate: &Certificate,
 		client_key_pair: Option<KeyPair>,
-	) -> Result<Connecting> {
+	) -> Result<Connecting, error::Connect> {
+		// check `Certificate` for a domain
 		let mut domains = server_certificate.domains().into_iter();
 		let domain = domains
 			.next()
 			.expect("`Certificate` contained no valid domains");
 
+		// multiple domains aren't supported
 		if domains.next().is_some() {
-			return Err(Error::MultipleDomains);
+			return Err(error::Connect::MultipleDomains);
 		}
 
+		// resolve URL
 		let (address, _) = self.resolve_domain(url).await?;
+
+		// build client configuration
+		let client =
+			self.config
+				.new_client(Some(server_certificate), Store::Empty, client_key_pair);
 
 		let connecting = self
 			.endpoint
-			.connect_with(
-				self.config
-					.new_client(Some(server_certificate), Store::Empty, client_key_pair),
-				&address,
-				&domain,
-			)
-			.map_err(Error::ConnectConfig)?;
+			.connect_with(client, &address, &domain)
+			.map_err(error::Connect::Config)?;
 
 		Ok(Connecting::new(connecting))
 	}
@@ -277,22 +324,27 @@ impl Endpoint {
 	/// more details.
 	///
 	/// # Errors
-	/// - [`Error::ParseUrl`] if the URL couldn't be parsed
-	/// - [`Error::Domain`] if the URL didn't contain a domain
-	/// - [`Error::Port`] if the URL didn't contain a port
-	/// - [`Error::ResolveTrustDns`] if the URL couldn't be resolved to an IP
+	/// - [`error::Connect::ParseUrl`] if the URL couldn't be parsed
+	/// - [`error::Connect::Domain`] if the URL didn't contain a domain
+	/// - [`error::Connect::Port`] if the URL didn't contain a port
+	/// - [`error::Connect::ParseDomain`] if the domain couldn't be parsed
+	/// - [`error::Connect::TrustDns`] if the URL couldn't be resolved to an IP
 	///   address with [`trust-dns`](trust_dns_resolver)
-	/// - [`Error::ResolveStdDns`] if the URL couldn't be resolved to an IP
+	/// - [`error::Connect::StdDns`] if the URL couldn't be resolved to an IP
 	///   address with [`ToSocketAddrs`]
-	async fn resolve_domain(&self, url: impl AsRef<str>) -> Result<(SocketAddr, String)> {
-		let url = Url::parse(url.as_ref()).map_err(Error::ParseUrl)?;
+	/// - [`error::Connect::NoIp`] if no IP address was found for that domain
+	async fn resolve_domain(
+		&self,
+		url: impl AsRef<str>,
+	) -> Result<(SocketAddr, String), error::Connect> {
+		let url = Url::parse(url.as_ref()).map_err(error::Connect::ParseUrl)?;
 		// url removes known default ports, we don't actually want to accept known
 		// schemes, but this is proabably not intended behaviour
-		let port = url.port_or_known_default().ok_or(Error::Port)?;
-		let domain = url.host_str().ok_or(Error::Domain)?;
+		let port = url.port_or_known_default().ok_or(error::Connect::Port)?;
+		let domain = url.host_str().ok_or(error::Connect::Domain)?;
 		// url doesn't parse IP addresses unless the schema is known, which doesn't
 		// work for "quic://" for example
-		let domain = match Host::parse(domain).map_err(Error::ParseUrl)? {
+		let domain = match Host::parse(domain).map_err(error::Connect::ParseDomain)? {
 			Host::Domain(domain) => domain,
 			Host::Ipv4(ip) => return Ok((SocketAddr::from((ip, port)), ip.to_string())),
 			Host::Ipv6(ip) => return Ok((SocketAddr::from((ip, port)), ip.to_string())),
@@ -324,17 +376,17 @@ impl Endpoint {
 			// build the `Resolver`
 			#[allow(box_pointers)]
 			let resolver = TokioAsyncResolver::tokio(ResolverConfig::cloudflare_https(), opts)
-				.map_err(|error| Error::ResolveTrustDns(Box::new(error)))?;
+				.map_err(|error| error::Connect::TrustDns(Box::new(error)))?;
 			// query the IP
 			#[allow(box_pointers)]
 			let ip = resolver
 				.lookup_ip(domain.clone())
 				.await
-				.map_err(|error| Error::ResolveTrustDns(Box::new(error)))?;
+				.map_err(|error| error::Connect::TrustDns(Box::new(error)))?;
 
 			// take the first IP found
 			// TODO: retry connection on other found IPs
-			let ip = ip.into_iter().next().ok_or(Error::NoIp)?;
+			let ip = ip.into_iter().next().ok_or(error::Connect::NoIp)?;
 
 			return Ok((SocketAddr::from((ip, port)), domain));
 		}
@@ -346,9 +398,9 @@ impl Endpoint {
 			tokio::task::spawn_blocking(move || {
 				domain
 					.to_socket_addrs()
-					.map_err(Error::ResolveStdDns)?
+					.map_err(error::Connect::StdDns)?
 					.next()
-					.ok_or(Error::NoIp)
+					.ok_or(error::Connect::NoIp)
 			})
 			.await
 			.expect("Resolving domain panicked")?

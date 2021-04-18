@@ -79,7 +79,8 @@ impl Builder {
 
 	/// Set's the [`SocketAddr`] to bind to.
 	///
-	/// Default is "\[::\]:0".
+	/// # Default
+	/// `[::\]:0`.
 	///
 	/// # Examples
 	/// ```
@@ -119,10 +120,12 @@ impl Builder {
 	/// Set a server certificate [`KeyPair`], use [`None`] to
 	/// remove any server certificate.
 	///
+	/// # Default
+	/// [`None`].
+	///
+	/// # Notes
 	/// [`Endpoint`] won't listen to any incoming
 	/// [`Connection`](crate::Connection)s without a server certificate.
-	///
-	/// Default is [`None`].
 	///
 	/// # Examples
 	/// ```
@@ -158,7 +161,8 @@ impl Builder {
 	/// Set a client certificate [`KeyPair`], use [`None`] to
 	/// remove any client certificate.
 	///
-	/// Default is [`None`].
+	/// # Default
+	/// [`None`].
 	///
 	/// # Examples
 	/// ```
@@ -197,7 +201,8 @@ impl Builder {
 	///
 	/// See [`Connection::protocol`](crate::Connection::protocol).
 	///
-	/// Default contains no protocols.
+	/// # Default
+	/// No protocols.
 	///
 	/// # Examples
 	/// ```
@@ -233,7 +238,8 @@ impl Builder {
 	/// Controls the use of [`trust-dns`](trust_dns_resolver) for
 	/// [`Endpoint::connect`].
 	///
-	/// Default is [`true`] if the crate feature <span
+	/// # Default
+	/// [`true`] if the crate feature <span
 	///   class="module-item stab portability"
 	///   style="display: inline; border-radius: 3px; padding: 2px; font-size:
 	/// 80%; line-height: 1.2;" ><code>trust-dns</code></span> is enabled.
@@ -255,7 +261,8 @@ impl Builder {
 	/// Disables the use of [`trust-dns`](trust_dns_resolver) for
 	/// [`Endpoint::connect`] despite the activated crate feature.
 	///
-	/// Default is enabled if the crate feature <span
+	/// # Default
+	/// Not disabled if the crate feature <span
 	///   class="module-item stab portability"
 	///   style="display: inline; border-radius: 3px; padding: 2px; font-size:
 	/// 80%; line-height: 1.2;" ><code>trust-dns</code></span> is enabled.
@@ -298,7 +305,8 @@ impl Builder {
 	/// [`Endpoint::connect`]. This doesn't affect the
 	/// [`ToSocketAddrs`](std::net::ToSocketAddrs) resolver.
 	///
-	/// Default is [`true`].
+	/// # Default
+	/// [`true`].
 	///
 	/// # Examples
 	/// ```
@@ -338,7 +346,8 @@ impl Builder {
 	/// in [`Endpoint::connect`]. This doesn't affect the
 	/// [`ToSocketAddrs`](std::net::ToSocketAddrs) resolver.
 	///
-	/// Default is [`false`]. Only affects UNIX like OS's.
+	/// # Default
+	/// [`false`]. Only affects UNIX like OS's.
 	///
 	/// # Examples
 	/// ```
@@ -378,7 +387,8 @@ impl Builder {
 	/// Set's the default root certificate store. See [`Store`] for more
 	/// details.
 	///
-	/// Default is [`Store::Embedded`].
+	/// # Default
+	/// [`Store::Embedded`].
 	///
 	/// # Examples
 	/// ```
@@ -428,6 +438,15 @@ impl Builder {
 	///   happen if they were properly validated through [`KeyPair::from_parts`]
 	///   or [`Certificate::from_der`]
 	/// - if not called from inside a Tokio [`Runtime`](tokio::runtime::Runtime)
+	///
+	/// # Examples
+	/// ```
+	/// # #[tokio::main] async fn main() -> anyhow::Result<()> {
+	/// use fabruic::Builder;
+	///
+	/// let endpoint = Builder::new().build()?;
+	/// # Ok(()) }
+	/// ```
 	pub fn build(self) -> Result<Endpoint, error::Builder> {
 		match {
 			// build client
@@ -810,7 +829,7 @@ mod test {
 		// has no DNSSEC records and therefore should fail
 		let result = endpoint.connect("https://google.com").await;
 
-		if let Err(Error::ResolveTrustDns(error)) = &result {
+		if let Err(error::Connect::TrustDns(error)) = &result {
 			if let ResolveErrorKind::Proto(error) = error.kind() {
 				if let ProtoErrorKind::RrsigsNotPresent { .. } = error.kind() {
 					return Ok(());

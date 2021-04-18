@@ -42,9 +42,9 @@ impl KeyPair {
 	}
 
 	/// Builds a new [`KeyPair`] from the given [`Certificate`] and
-	/// [`PrivateKey`].
+	/// [`PrivateKey`]. Will validate if they pair up correctly.
 	///
-	/// Will validate if they pair up, for extended validation see
+	/// This presumes that [`Certificate`] and [`PrivateKey`] are valid, see
 	/// [`Certificate::from_der`] and [`PrivateKey::from_der`].
 	///
 	/// # Errors
