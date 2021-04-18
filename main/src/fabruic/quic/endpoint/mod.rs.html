@@ -614,6 +614,7 @@
 <span id="611">611</span>
 <span id="612">612</span>
 <span id="613">613</span>
+<span id="614">614</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Starting point to create a QUIC enabled network socket.</span>
 
@@ -922,7 +923,7 @@
 				<span class="ident">TokioAsyncResolver</span>,
 			};
 
-			<span class="comment">// ip strategy depends on the current socket</span>
+			<span class="comment">// IP strategy depends on the current socket</span>
 			<span class="kw">let</span> <span class="ident">ip_strategy</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">local_address</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">socket</span><span class="op">|</span> <span class="ident">socket</span>.<span class="ident">is_ipv6</span>())
 			{
 				<span class="ident">LookupIpStrategy::Ipv6thenIpv4</span>
@@ -934,7 +935,7 @@
 			<span class="kw">let</span> <span class="ident">opts</span> <span class="op">=</span> <span class="ident">ResolverOpts</span> {
 				<span class="ident">ip_strategy</span>,
 				<span class="ident">use_hosts_file</span>: <span class="bool-val">false</span>,
-				<span class="ident">validate</span>: <span class="bool-val">true</span>,
+				<span class="ident">validate</span>: <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">dnssec</span>(),
 				..<span class="ident">ResolverOpts::default</span>()
 			};
 
@@ -950,6 +951,7 @@
 				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">error</span><span class="op">|</span> <span class="ident">Error::ResolveTrustDns</span>(<span class="ident">Box::new</span>(<span class="ident">error</span>)))<span class="question-mark">?</span>;
 
 			<span class="comment">// take the first IP found</span>
+			<span class="comment">// TODO: retry connection on other found IPs</span>
 			<span class="kw">let</span> <span class="ident">ip</span> <span class="op">=</span> <span class="ident">ip</span>.<span class="ident">into_iter</span>().<span class="ident">next</span>().<span class="ident">ok_or</span>(<span class="ident">Error::NoIp</span>)<span class="question-mark">?</span>;
 
 			<span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">SocketAddr::from</span>((<span class="ident">ip</span>, <span class="ident">port</span>)), <span class="ident">domain</span>));
