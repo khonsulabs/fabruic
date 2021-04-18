@@ -19,26 +19,26 @@ pub use x509_parser::{error::X509Error, nom::Err};
 /// [`Result`](std::result::Result) type for this [`crate`].
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
+/// Attempting to close something that is already closed.
+#[derive(Clone, Copy, Debug, Error)]
+#[error("This is already closed")]
+pub struct AlreadyClosed;
+
 /// Error binding socket during construction of [`Endpoint`](crate::Endpoint)
 /// with [`Builder::build`](crate::Builder::build).
 #[derive(Debug, Error)]
 #[error("Error binding socket during construction of `Endpoint`: {error}")]
 pub struct Builder {
 	/// The error binding [`Endpoint`](crate::Endpoint).
-	pub error: Endpoint,
+	#[source]
+	pub error: IoError,
 	/// Recovered [`Builder`](crate::Builder) for re-use.
 	pub builder: crate::Builder,
 }
 
-/// Error binding socket during construction of [`Endpoint`](crate::Endpoint).
-#[derive(Debug, Error)]
-#[error("Error binding socket during construction of `Endpoint`: {0}")]
-pub struct Endpoint(pub IoError);
-
 /// Error connecting to a server with
 /// [`Endpoint::connect`](crate::Endpoint::connect).
 #[derive(Debug, Error)]
-#[error("Error connecting to server: {0}")]
 pub enum Connect {
 	/// The passed [`Certificate`](crate::Certificate) has multiple domains,
 	/// this is not supported with
@@ -64,17 +64,89 @@ pub enum Connect {
 	#[cfg(feature = "trust-dns")]
 	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	#[error("Error resolving domain with trust-dns: {0}")]
-	TrustDns(Box<ResolveError>),
+	TrustDns(#[from] Box<ResolveError>),
 	/// Failed to resolve domain with
 	/// [`ToSocketAddrs`](std::net::ToSocketAddrs).
 	#[error("Error resolving domain with `ToSocketAddrs`: {0}")]
-	StdDns(IoError),
+	StdDns(#[from] IoError),
 	/// Found no IP address for that domain.
 	#[error("Found no IP address for that domain")]
 	NoIp,
 	/// Configuration needed to connect to a server is faulty.
-	#[error("Error in configuration to connect to a peer: {0}")]
-	Config(ConnectError),
+	#[error("Error in configuration to connect to server: {0}")]
+	Config(#[from] ConnectError),
+}
+
+/// Error receiving connection from peer with [`Stream`](futures_util::Stream)
+/// on from [`Connection`](crate::Connection).
+#[derive(Debug, Error)]
+#[error("Error receiving connection from peer: {0}")]
+pub struct Connection(pub ConnectionError);
+
+/// Error completing connection with peer with
+/// [`Incoming::type`](crate::Incoming::type) or
+/// [`Incoming::accept`](crate::Incoming::accept).
+#[derive(Debug, Error)]
+#[error("Error completing connection with peer: {0}")]
+pub struct Connecting(pub ConnectionError);
+
+/// Error opening a new stream to peer with
+/// [`Connection::open_stream`](crate::Connection::open_stream).
+#[derive(Debug, Error)]
+pub enum Stream {
+	/// Opening a new stream with
+	/// [`Connection::open_stream`](crate::Connection::open_stream) failed.
+	#[error("Error opening a new stream to peer: {0}")]
+	Open(#[from] ConnectionError),
+	/// Sending the type information to peer failed.
+	#[error("Error sending type information to peer: {0}")]
+	Sender(#[from] Sender),
+}
+
+/// Error receiving type information from [`Incoming`](crate::Incoming) stream.
+#[derive(Debug, Error)]
+pub enum Incoming {
+	/// Failed receiving type information from [`Incoming`](crate::Incoming)
+	/// stream.
+	#[error("Error receiving type information from `Incoming` stream: {0}")]
+	Receiver(Receiver),
+	/// [`Incoming`](crate::Incoming) was closed before type information could
+	/// be received.
+	#[error("Incoming stream was closed")]
+	Closed,
+}
+
+/// Error receiving a message from a [`Receiver`](crate::Receiver).
+#[derive(Debug, Error)]
+pub enum Receiver {
+	/// Failed to read from a [`Receiver`](crate::Receiver).
+	#[error("Error reading from `Receiver`: {0}")]
+	Read(#[from] ReadError),
+	/// Failed to [`Deserialize`](serde::Deserialize) a message from a
+	/// [`Receiver`](crate::Receiver).
+	#[error("Error deserializing a message from `Receiver`: {0}")]
+	Deserialize(#[from] ErrorKind),
+}
+
+/// Error sending a message to a [`Sender`](crate::Sender).
+#[derive(Debug, Error)]
+pub enum Sender {
+	/// Failed to [`Serialize`](serde::Serialize) a message for a
+	/// [`Sender`](crate::Sender).
+	#[error("Error serializing a message to `Sender`: {0}")]
+	Serialize(ErrorKind),
+	/// Failed to write to a [`Sender`](crate::Sender).
+	#[error("Error writing to `Sender`: {0}")]
+	Write(#[from] WriteError),
+	/// [`Sender`] is closed.
+	#[error(transparent)]
+	Closed(#[from] AlreadyClosed),
+}
+
+impl From<Box<ErrorKind>> for Sender {
+	fn from(error: Box<ErrorKind>) -> Self {
+		Self::Serialize(*error)
+	}
 }
 
 /// [`Error`](std::error::Error) for this [`crate`].
@@ -109,57 +181,6 @@ pub enum Error {
 	/// Failed to parse the given private key.
 	#[error("Failed parsing private key")]
 	ParsePrivateKey,
-	/// Returned by [`Endpoint::local_address`](crate::Endpoint::local_address)
-	/// when failing to aquire the local address.
-	#[error("Failed to aquire local address: {0}")]
-	LocalAddress(IoError),
-	/// Attempting to close something that is already closed.
-	#[error("This is already closed")]
-	AlreadyClosed,
-	/// Returned by [`Connecting::accept`](crate::Connecting::accept) if
-	/// connecting to the peer failed.
-	#[error("Error on connecting to a remote address: {0}")]
-	Connecting(ConnectionError),
-	/// Returned by [`Connection`](crate::Connection)
-	/// [`Stream`](futures_util::stream::Stream) when receiving a new stream
-	/// failed.
-	#[error("Error on receiving a new stream: {0}")]
-	ReceiveStream(ConnectionError),
-	/// Returned by [`Connection::open_stream`](crate::Connection::open_stream)
-	/// if opening a stream failed.
-	#[error("Error on opening a stream: {0}")]
-	OpenStream(ConnectionError),
-	/// Returned by [`Sender::finish`](crate::Sender::finish) if
-	/// [`Sender`](crate::Sender) failed to write into the stream.
-	#[error("Error writing to a stream: {0}")]
-	Write(WriteError),
-	/// Returned by [`Sender::finish`](crate::Sender::finish) if
-	/// [`Sender`](crate::Sender) failed to finish a stream.
-	#[error("Error finishing a stream: {0}")]
-	Finish(WriteError),
-	/// Returned by [`Sender::send`](crate::Sender::send) if the stream was
-	/// closed by [`Sender::finish`](crate::Sender::finish) or the
-	/// [`Connection`](crate::Connection) or [`Endpoint`](crate::Endpoint) was
-	/// closed or dropped.
-	#[error("Stream was closed")]
-	Send,
-	/// Returned by [`Sender::send`](crate::Sender::send) if
-	/// [`serialization`](serde::Serialize) failed.
-	#[error("Error serializing to a stream: {0}")]
-	Serialize(ErrorKind),
-	/// Returned by [`Receiver::close`](crate::Receiver::close) if
-	/// [`Receiver`](crate::Receiver) failed to read from a stream.
-	#[error("Error reading from a stream: {0}")]
-	Read(ReadError),
-	/// Returned by [`Receiver::finish`](crate::Receiver::finish) if
-	/// [`Receiver`](crate::Receiver) failed to
-	/// [`deserialize`](serde::Deserialize) from a stream.
-	#[error("Error deserializing from a stream: {0}")]
-	Deserialize(ErrorKind),
-	/// Returned by [`Incoming::type`](crate::Incoming::type) if the peer
-	/// closed the stream before sending the type.
-	#[error("Stream was closed before sending a type")]
-	NoType,
 }
 
 /// Possible certificate parsing errors.

@@ -4,6 +4,7 @@ mod builder;
 
 use std::{
 	fmt::{self, Debug, Formatter},
+	io::Error,
 	net::{SocketAddr, ToSocketAddrs},
 	pin::Pin,
 	sync::Arc,
@@ -22,7 +23,7 @@ use quinn::{ClientConfig, EndpointError, ServerConfig, VarInt};
 use url::{Host, Url};
 
 use super::Task;
-use crate::{error, Certificate, Connecting, Error, KeyPair, Result};
+use crate::{error, Certificate, Connecting, KeyPair, Result};
 
 /// Represents a socket using the QUIC protocol to communicate with peers.
 /// Receives incoming [`Connection`](crate::Connection)s through [`Stream`].
@@ -43,7 +44,7 @@ impl Debug for Endpoint {
 	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
 		f.debug_struct("Server")
 			.field("endpoint", &self.endpoint)
-			.field("receiver", &"RecvStream<Connecting>")
+			.field("receiver", &"RecvStream")
 			.field("task", &self.task)
 			.field("config", &self.config)
 			.finish()
@@ -70,7 +71,7 @@ impl Endpoint {
 	/// inside a Tokio [`Runtime`](tokio::runtime::Runtime).
 	///
 	/// # Errors
-	/// [`error::Endpoint`] if the socket couldn't be bound to the given
+	/// [`std::io::Error`] if the socket couldn't be bound to the given
 	/// `address`.
 	///
 	/// # Panics
@@ -80,7 +81,7 @@ impl Endpoint {
 		client: ClientConfig,
 		server: Option<ServerConfig>,
 		config: Config,
-	) -> Result<Self, error::Endpoint> {
+	) -> Result<Self, Error> {
 		// configure endpoint for server and client
 		let mut endpoint_builder = quinn::Endpoint::builder();
 		let _ = endpoint_builder.default_client_config(client);
@@ -92,11 +93,12 @@ impl Endpoint {
 		});
 
 		// build endpoint
-		let (endpoint, incoming) = endpoint_builder.bind(&address).map_err(|error| {
-			error::Endpoint(match error {
-				EndpointError::Socket(error) => error,
-			})
-		})?;
+		let (endpoint, incoming) =
+			endpoint_builder
+				.bind(&address)
+				.map_err(|error| match error {
+					EndpointError::Socket(error) => error,
+				})?;
 
 		// create channels that will receive incoming `Connection`s
 		let (sender, receiver) = flume::unbounded();
@@ -131,7 +133,7 @@ impl Endpoint {
 	/// [`Connection`](crate::Connection)s.
 	///
 	/// # Errors
-	/// [`error::Endpoint`] if the socket couldn't be bound to the given
+	/// [`std::io::Error`] if the socket couldn't be bound to the given
 	/// `address`.
 	///
 	/// # Panics
@@ -145,7 +147,7 @@ impl Endpoint {
 	/// let endpoint = Endpoint::new_client()?;
 	/// # Ok(()) }
 	/// ```
-	pub fn new_client() -> Result<Self, error::Endpoint> {
+	pub fn new_client() -> Result<Self, Error> {
 		Builder::new()
 			.build()
 			.map_err(|error::Builder { error, .. }| error)
@@ -156,7 +158,7 @@ impl Endpoint {
 	/// [`Runtime`](tokio::runtime::Runtime).
 	///
 	/// # Errors
-	/// [`error::Endpoint`] if the socket couldn't be bound to the given
+	/// [`std::io::Error`] if the socket couldn't be bound to the given
 	/// `address`.
 	///
 	/// # Panics
@@ -172,7 +174,7 @@ impl Endpoint {
 	/// let endpoint = Endpoint::new_server(0, KeyPair::new_self_signed("self-signed"))?;
 	/// # Ok(()) }
 	/// ```
-	pub fn new_server(port: u16, key_pair: KeyPair) -> Result<Self, error::Endpoint> {
+	pub fn new_server(port: u16, key_pair: KeyPair) -> Result<Self, Error> {
 		let mut builder = Builder::new();
 		#[cfg(not(feature = "test"))]
 		let _ = builder.set_address(([0; 8], port).into());
@@ -257,17 +259,22 @@ impl Endpoint {
 		))
 	}
 
-	/// Establishes a new [`Connection`](crate::Connection) to a server. The
-	/// root certificate store will be ignored and the given [`Certificate`]
-	/// will validate the server.
+	/// Establishes a new [`Connection`](crate::Connection) to a server.
 	///
 	/// See [`connect`](Self::connect) for more information on host name
 	/// resolution.
 	///
 	/// # Notes
+	/// The root certificate store will be ignored and the given [`Certificate`]
+	/// will validate the server.
+	///
+	/// A client certificate [`KeyPair`] set with
+	/// [`Builder::set_client_key_pair`] will be ignored, use `client_key_pair`
+	/// to add a client certificate to this connection.
+	///
 	/// This method is intended for direct connection to a known server, the
-	/// domain name of the [`Certificate`] may deviate from the URL. Multiple
-	/// domain names in the [`Certificate`] aren't supported.
+	/// domain name in the URL is not checked against the [`Certificate`].
+	/// Multiple domain names in the [`Certificate`] aren't supported.
 	///
 	/// # Errors
 	/// - [`error::Connect::MultipleDomains`] if multiple domains are present in
@@ -283,9 +290,23 @@ impl Endpoint {
 	/// - [`error::Connect::NoIp`] if no IP address was found for that domain
 	///
 	/// # Panics
-	/// Panics if the given [`KeyPair`] or [`Certificate`] are invalid. Can't
-	/// happen if they were properly validated through [`KeyPair::from_parts`]
-	/// or [`Certificate::from_der`].
+	/// Panics if the given [`Certificate`] or [`KeyPair`] are invalid. Can't
+	/// happen if they were properly validated through [`Certificate::from_der`]
+	/// or [`KeyPair::from_parts`].
+	///
+	/// # Examples
+	/// ```
+	/// # #[tokio::main] async fn main() -> anyhow::Result<()> {
+	/// use fabruic::Endpoint;
+	///
+	/// let endpoint = Endpoint::new_client()?;
+	/// // the server certificate has to be important from somewhere else
+	/// # let (server_certificate, _) = fabruic::KeyPair::new_self_signed("localhost").into_parts();
+	/// let connecting = endpoint
+	/// 	.connect_pinned("quic://localhost:443", &server_certificate, None)
+	/// 	.await?;
+	/// # Ok(()) }
+	/// ```
 	#[allow(clippy::unwrap_in_result)]
 	pub async fn connect_pinned<U: AsRef<str>>(
 		&self,
@@ -312,6 +333,7 @@ impl Endpoint {
 			self.config
 				.new_client(Some(server_certificate), Store::Empty, client_key_pair);
 
+		// connet
 		let connecting = self
 			.endpoint
 			.connect_with(client, &address, &domain)
@@ -339,7 +361,7 @@ impl Endpoint {
 	) -> Result<(SocketAddr, String), error::Connect> {
 		let url = Url::parse(url.as_ref()).map_err(error::Connect::ParseUrl)?;
 		// url removes known default ports, we don't actually want to accept known
-		// schemes, but this is proabably not intended behaviour
+		// scheme's, but this is probably not intended behaviour
 		let port = url.port_or_known_default().ok_or(error::Connect::Port)?;
 		let domain = url.host_str().ok_or(error::Connect::Domain)?;
 		// url doesn't parse IP addresses unless the schema is known, which doesn't
@@ -376,13 +398,10 @@ impl Endpoint {
 			// build the `Resolver`
 			#[allow(box_pointers)]
 			let resolver = TokioAsyncResolver::tokio(ResolverConfig::cloudflare_https(), opts)
-				.map_err(|error| error::Connect::TrustDns(Box::new(error)))?;
+				.map_err(Box::new)?;
 			// query the IP
 			#[allow(box_pointers)]
-			let ip = resolver
-				.lookup_ip(domain.clone())
-				.await
-				.map_err(|error| error::Connect::TrustDns(Box::new(error)))?;
+			let ip = resolver.lookup_ip(domain.clone()).await.map_err(Box::new)?;
 
 			// take the first IP found
 			// TODO: retry connection on other found IPs
@@ -391,16 +410,12 @@ impl Endpoint {
 			return Ok((SocketAddr::from((ip, port)), domain));
 		}
 
-		// TODO: configure executor
+		// TODO: configurable executor
 		let address = {
 			// `ToSocketAddrs` needs a port
 			let domain = format!("{}:{}", domain, port);
 			tokio::task::spawn_blocking(move || {
-				domain
-					.to_socket_addrs()
-					.map_err(error::Connect::StdDns)?
-					.next()
-					.ok_or(error::Connect::NoIp)
+				domain.to_socket_addrs()?.next().ok_or(error::Connect::NoIp)
 			})
 			.await
 			.expect("Resolving domain panicked")?
@@ -412,9 +427,19 @@ impl Endpoint {
 	/// Get the local [`SocketAddr`] the underlying socket is bound to.
 	///
 	/// # Errors
-	/// [`Error::LocalAddress`] if aquiring the local address failed.
-	pub fn local_address(&self) -> Result<SocketAddr> {
-		self.endpoint.local_addr().map_err(Error::LocalAddress)
+	/// [`std::io::Error`] if aquiring the local address failed.
+	///
+	/// # Examples
+	/// ```
+	/// # #[tokio::main] async fn main() -> anyhow::Result<()> {
+	/// use fabruic::Endpoint;
+	///
+	/// let endpoint = Endpoint::new_client()?;
+	/// assert!(endpoint.local_address().is_ok());
+	/// # Ok(()) }
+	/// ```
+	pub fn local_address(&self) -> Result<SocketAddr, Error> {
+		self.endpoint.local_addr()
 	}
 
 	/// Close all of this [`Endpoint`]'s [`Connection`](crate::Connection)s
@@ -426,11 +451,11 @@ impl Endpoint {
 	/// [`wait_idle`](Self::wait_idle).
 	///
 	/// # Errors
-	/// [`Error::AlreadyClosed`] if it was already closed.
-	pub async fn close(&self) -> Result<()> {
+	/// [`error::AlreadyClosed`] if it was already closed.
+	pub async fn close(&self) -> Result<(), error::AlreadyClosed> {
 		self.endpoint.close(VarInt::from_u32(0), &[]);
-		// we only want to wait until it's actually closed, it might already be closed
-		// by `close_incoming` or by starting as a client
+		// wait until it's actually closed, it might already be closed by
+		// `close_incoming` or by starting as a client
 		(&self.task).await
 	}
 
@@ -439,8 +464,8 @@ impl Endpoint {
 	/// with a listener.
 	///
 	/// # Errors
-	/// [`Error::AlreadyClosed`] if it was already closed.
-	pub async fn close_incoming(&self) -> Result<()> {
+	/// [`error::AlreadyClosed`] if it was already closed.
+	pub async fn close_incoming(&self) -> Result<(), error::AlreadyClosed> {
 		self.task.close(()).await
 	}
 
@@ -535,7 +560,7 @@ mod test {
 			.await?;
 
 		// closing the client/server will close all connection immediately
-		assert!(matches!(client.close().await, Err(Error::AlreadyClosed)));
+		assert!(matches!(client.close().await, Err(error::AlreadyClosed)));
 		server.close().await?;
 
 		// connecting to a closed server shouldn't work
@@ -545,7 +570,7 @@ mod test {
 				.await?
 				.accept::<()>()
 				.await,
-			Err(Error::Connecting(ConnectionError::LocallyClosed))
+			Err(error::Connecting(ConnectionError::LocallyClosed))
 		));
 
 		// waiting for a new connection on a closed server shouldn't work
@@ -583,12 +608,12 @@ mod test {
 		// client never accepts incoming connections
 		assert!(matches!(
 			client.close_incoming().await,
-			Err(Error::AlreadyClosed)
+			Err(error::AlreadyClosed)
 		));
 		server.close_incoming().await?;
 		assert!(matches!(
 			server.close_incoming().await,
-			Err(Error::AlreadyClosed)
+			Err(error::AlreadyClosed)
 		));
 
 		// connecting to a server that refuses new `Connection`s shouldn't work
@@ -599,7 +624,7 @@ mod test {
 			.await;
 		assert!(matches!(
 			result,
-			Err(Error::Connecting(ConnectionError::ConnectionClosed(
+			Err(error::Connecting(ConnectionError::ConnectionClosed(
 				ConnectionClose {
 					error_code: TransportErrorCode::CONNECTION_REFUSED,
 					frame_type: None,
@@ -617,7 +642,7 @@ mod test {
 			let _server_stream = server_connection
 				.next()
 				.await
-				.expect("client dropped")
+				.expect("client dropped")?
 				.accept::<(), ()>();
 			sender.finish().await?;
 		}

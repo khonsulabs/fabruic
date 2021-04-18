@@ -570,7 +570,6 @@ mod test {
 	use trust_dns_resolver::error::ResolveErrorKind;
 
 	use super::*;
-	use crate::Error;
 
 	#[tokio::test]
 	async fn default() -> Result<()> {
@@ -779,7 +778,7 @@ mod test {
 		// check result
 		assert!(matches!(
 			result,
-			Err(Error::Connecting(ConnectionError::ConnectionClosed(ConnectionClose {
+			Err(error::Connecting(ConnectionError::ConnectionClosed(ConnectionClose {
 				error_code,
 				frame_type: None,
 				reason
@@ -973,7 +972,7 @@ mod test {
 		// check result
 		assert!(matches!(
 				result,
-				Err(Error::Connecting(ConnectionError::TransportError(TransportError {
+				Err(error::Connecting(ConnectionError::TransportError(TransportError {
 					code,
 					frame: None,
 					reason

@@ -4,7 +4,7 @@
 use quinn::NewConnection;
 use serde::{de::DeserializeOwned, Serialize};
 
-use crate::{Connection, Error, Result};
+use crate::{error, Connection, Result};
 
 /// Represent's an intermediate state to build a [`Connection`].
 #[must_use = "`Connecting` does nothing unless accepted with `Connecting::accept`"]
@@ -21,23 +21,23 @@ impl Connecting {
 	/// [`Builder::set_protocols`](crate::Builder::set_protocols).
 	///
 	/// # Errors
-	/// [`Error::Connecting`] if the [`Connection`] failed to be established.
-	pub async fn protocol(&mut self) -> Result<Option<Vec<u8>>> {
+	/// [`error::Connecting`] if the [`Connection`] failed to be established.
+	pub async fn protocol(&mut self) -> Result<Option<Vec<u8>>, error::Connecting> {
 		self.0
 			.handshake_data()
 			.await
 			.map(|data| data.protocol)
-			.map_err(Error::Connecting)
+			.map_err(error::Connecting)
 	}
 
 	/// Accept the [`Connection`] with the given `T` as the type negotiator for
 	/// new streams.
 	///
 	/// # Errors
-	/// [`Error::Connecting`] if the [`Connection`] failed to be established.
+	/// [`error::Connecting`] if the [`Connection`] failed to be established.
 	pub async fn accept<T: DeserializeOwned + Serialize + Send + 'static>(
 		self,
-	) -> Result<Connection<T>> {
+	) -> Result<Connection<T>, error::Connecting> {
 		self.0
 			.await
 			.map(
@@ -47,6 +47,6 @@ impl Connecting {
 				     ..
 				 }| Connection::new(connection, bi_streams),
 			)
-			.map_err(Error::Connecting)
+			.map_err(error::Connecting)
 	}
 }

@@ -46,7 +46,7 @@ async fn main() -> Result<()> {
 					// start listening to new incoming streams
 					// in this example we know there is only 1 incoming stream, so we will not wait
 					// for more
-					let incoming = connection.next().await.expect("no stream found");
+					let incoming = connection.next().await.expect("no stream found")?;
 					connection.close_incoming().await?;
 					println!(
 						"[server] New incoming stream from: {}",
@@ -59,7 +59,7 @@ async fn main() -> Result<()> {
 					// start listening to new incoming messages
 					// in this example we know there is only 1 incoming message, so we will not wait
 					// for more
-					let message = receiver.next().await.expect("no message found");
+					let message = receiver.next().await.expect("no message found")?;
 					println!(
 						"[server] New message from {}: {}",
 						connection.remote_address(),
@@ -133,7 +133,7 @@ async fn main() -> Result<()> {
 				// start listening to new incoming messages
 				// in this example we know there is only 1 incoming message, so we will not wait
 				// for more
-				let message = receiver.next().await.expect("no message found");
+				let message = receiver.next().await.expect("no message found")?;
 				println!(
 					"[client:{}] New message from {}: {}",
 					index,

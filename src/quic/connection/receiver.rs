@@ -11,25 +11,22 @@ use futures_util::{stream::Stream, StreamExt};
 use serde::de::DeserializeOwned;
 
 use super::{ReceiverStream, Task};
-use crate::Result;
+use crate::{error, Result};
 
-/// Used to receive data from a stream.
-///
-///  # Errors
-/// [`Error::Deserialize`](crate::Error) if `data` failed to be
-/// [`Deserialize`](serde::Deserialize)d.
+/// Used to receive data from a stream. Will stop receiving message if
+/// deserialization failed.
 #[derive(Clone)]
 pub struct Receiver<T: 'static> {
 	/// Send [`Deserialize`](serde::Deserialize)d data to the sending task.
-	receiver: flume::r#async::RecvStream<'static, T>,
+	receiver: flume::r#async::RecvStream<'static, Result<T, error::Receiver>>,
 	/// [`Task`] handle that does the receiving from the stream.
-	task: Task<Result<()>>,
+	task: Task<Result<(), error::AlreadyClosed>>,
 }
 
 impl<T> Debug for Receiver<T> {
 	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
 		f.debug_struct("Receiver")
-			.field("receiver", &"RecvStream<T>")
+			.field("receiver", &"RecvStream")
 			.field("task", &self.task)
 			.finish()
 	}
@@ -53,7 +50,7 @@ impl<T> Receiver<T> {
 				/// Help Group Messages
 				enum Message<T> {
 					/// Data arrived from stream.
-					Data(T),
+					Data(Result<T, error::Receiver>),
 					/// [`Receiver`] asked to close.
 					Close,
 				}
@@ -61,13 +58,19 @@ impl<T> Receiver<T> {
 				let mut shutdown = shutdown_receiver;
 
 				while let Some(message) = allochronic_util::select! {
-					message: &mut stream => message.transpose()?.map(Message::Data),
+					message: &mut stream => message.map(Message::Data),
 					shutdown: &mut shutdown => shutdown.ok().map(|_| Message::Close),
 				} {
 					match message {
 						Message::Data(message) => {
+							let failed = message.is_err();
+
 							// the receiver might have been dropped
 							if sender.send(message).is_err() {
+								break;
+							}
+
+							if failed {
 								break;
 							}
 						}
@@ -94,8 +97,8 @@ impl<T> Receiver<T> {
 	/// # Errors
 	/// - [`Error::Read`](crate::Error) if the [`Receiver`] failed to read from
 	///   the stream
-	/// - [`Error::AlreadyClosed`](crate::Error) if it has already been closed
-	pub async fn finish(&self) -> Result<()> {
+	/// - [`error::AlreadyClosed`](crate::Error) if it has already been closed
+	pub async fn finish(&self) -> Result<(), error::AlreadyClosed> {
 		(&self.task).await?
 	}
 
@@ -105,14 +108,14 @@ impl<T> Receiver<T> {
 	/// # Errors
 	/// - [`Error::Read`](crate::Error) if the [`Receiver`] failed to read from
 	///   the stream
-	/// - [`Error::AlreadyClosed`](crate::Error) if it has already been closed
-	pub async fn close(&self) -> Result<()> {
+	/// - [`error::AlreadyClosed`](crate::Error) if it has already been closed
+	pub async fn close(&self) -> Result<(), error::AlreadyClosed> {
 		self.task.close(()).await?
 	}
 }
 
 impl<T> Stream for Receiver<T> {
-	type Item = T;
+	type Item = Result<T, error::Receiver>;
 
 	fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
 		self.receiver.poll_next_unpin(cx)

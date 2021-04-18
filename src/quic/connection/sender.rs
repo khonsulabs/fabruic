@@ -8,7 +8,7 @@ use quinn::{SendStream, VarInt};
 use serde::Serialize;
 
 use super::Task;
-use crate::{Error, Result};
+use crate::{error, Result};
 
 /// Used to send data to a stream.
 #[derive(Clone, Debug)]
@@ -18,7 +18,7 @@ pub struct Sender<T: Serialize> {
 	/// Holds the type to [`Serialize`] too.
 	_type: PhantomData<T>,
 	/// [`Task`] handle that does the sending into the stream.
-	task: Task<Result<()>, Message>,
+	task: Task<Result<(), error::Sender>, Message>,
 }
 
 /// Messages sent to the [`Sender`] task.
@@ -51,18 +51,15 @@ impl<T: Serialize> Sender<T> {
 					shutdown: &mut shutdown => shutdown.ok(),
 				} {
 					match message {
-						Message::Data(bytes) => stream_sender
-							.write_chunk(bytes)
-							.await
-							.map_err(Error::Write)?,
+						Message::Data(bytes) => stream_sender.write_chunk(bytes).await?,
 						Message::Finish => {
-							stream_sender.finish().await.map_err(Error::Finish)?;
+							stream_sender.finish().await?;
 							break;
 						}
 						Message::Close => {
 							stream_sender
 								.reset(VarInt::from_u32(0))
-								.map_err(|_error| Error::AlreadyClosed)?;
+								.map_err(|_error| error::AlreadyClosed)?;
 							break;
 						}
 					}
@@ -83,9 +80,11 @@ impl<T: Serialize> Sender<T> {
 	/// Send `data` into the stream.
 	///
 	/// # Errors
-	/// - [`Error::Serialize`] if `data` failed to be serialized
-	/// - [`Error::Send`] if `data` failed to be sent
-	pub fn send(&self, data: &T) -> Result<()> {
+	/// - [`error::Sender::Serialize`] if `data` failed to be serialized
+	/// - [`error::Sender::Write`] if the [`Sender`] failed to to write to the
+	///   stream
+	/// - [`error::Sender::Closed`] if the [`Sender`] is closed
+	pub fn send(&self, data: &T) -> Result<(), error::Sender> {
 		self.send_any(data)
 	}
 
@@ -93,16 +92,17 @@ impl<T: Serialize> Sender<T> {
 	/// not decoded into the proper type.
 	///
 	/// # Errors
-	/// - [`Error::Serialize`] if `data` failed to be serialized
-	/// - [`Error::Send`] if `data` failed to be sent
-	// TODO: update Clippy
+	/// - [`error::Sender::Serialize`] if `data` failed to be serialized
+	/// - [`error::Sender::Write`] if the [`Sender`] failed to to write to the
+	///   stream
+	/// - [`error::Sender::Closed`] if the [`Sender`] is closed
 	#[allow(clippy::panic_in_result_fn, clippy::unwrap_in_result)]
-	pub(super) fn send_any<A: Serialize>(&self, data: &A) -> Result<()> {
+	pub(super) fn send_any<A: Serialize>(&self, data: &A) -> Result<(), error::Sender> {
 		let mut bytes = BytesMut::new();
 
 		// get size
 		#[allow(box_pointers)]
-		let len = bincode::serialized_size(&data).map_err(|error| Error::Serialize(*error))?;
+		let len = bincode::serialized_size(&data)?;
 		// reserve an appropriate amount of space
 		bytes.reserve(
 			usize::try_from(len)
@@ -117,7 +117,7 @@ impl<T: Serialize> Sender<T> {
 
 		// serialize `data` into `bytes`
 		#[allow(box_pointers)]
-		bincode::serialize_into(&mut bytes, &data).map_err(|error| Error::Serialize(*error))?;
+		bincode::serialize_into(&mut bytes, &data)?;
 
 		// send data to task
 		let bytes = bytes.into_inner().freeze();
@@ -131,7 +131,13 @@ impl<T: Serialize> Sender<T> {
 				.expect("message to long")
 		);
 
-		self.sender.send(bytes).map_err(|_bytes| Error::Send)
+		// if the sender task has been dropped, return it's error
+		if self.sender.send(bytes).is_err() {
+			// TODO: configurable executor
+			futures_executor::block_on(async { (&self.task).await })?
+		} else {
+			Ok(())
+		}
 	}
 
 	/// Shut down the [`Send`] part of the stream gracefully.
@@ -140,11 +146,10 @@ impl<T: Serialize> Sender<T> {
 	/// peer has acknowledged all sent data, retransmitting data as needed.
 	///
 	/// # Errors
-	/// - [`Error::AlreadyClosed`] if it was already finished
-	/// - [`Error::Write`] if the [`Sender`] failed to write to the stream
-	/// - [`Error::Finish`] if the [`finish`](Self::finish) failed to finish the
-	///   stream
-	pub async fn finish(&self) -> Result<()> {
+	/// This can only return [`error::Sender::Closed`] as an [`Err`], if it was
+	/// already closed, but if the [`Sender`] failed to write to the stream it
+	/// will return a queued [`error::Sender::Write`].
+	pub async fn finish(&self) -> Result<(), error::Sender> {
 		self.task.close(Message::Finish).await?
 	}
 
@@ -153,13 +158,10 @@ impl<T: Serialize> Sender<T> {
 	/// To close a [`Sender`] gracefully use [`Sender::finish`].
 	///
 	/// # Errors
-	/// This can only return [`Error::AlreadyClosed`] as an [`Err`], if it was
-	/// already closed, but there could be other errors queued up in the
-	/// [`Sender`]:
-	/// - [`Error::Write`] if the [`Sender`] failed to write to the stream
-	/// - [`Error::Finish`] if the [`finish`](Self::finish) failed to finish the
-	///   stream
-	pub async fn close(&self) -> Result<()> {
+	/// This can only return [`error::Sender::Closed`] as an [`Err`], if it was
+	/// already closed, but if the [`Sender`] failed to write to the stream it
+	/// will return a queued [`error::Sender::Write`].
+	pub async fn close(&self) -> Result<(), error::Sender> {
 		self.task.close(Message::Close).await?
 	}
 }

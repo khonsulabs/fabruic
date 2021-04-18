@@ -13,7 +13,7 @@ use futures_util::FutureExt;
 use parking_lot::Mutex;
 use tokio::task::{JoinError, JoinHandle};
 
-use crate::{Error, Result};
+use crate::{error, Result};
 
 /// Wrapper to abort tasks when they are dropped.
 #[derive(Debug)]
@@ -58,7 +58,7 @@ impl<R> Task<R> {
 impl<R, S> Task<R, S> {
 	/// Shuts down the [`Task`] by sending the close signal. Futher calls to
 	/// [`close`](Self::close) or [`poll`](Future::poll)ing the [`Task`] will
-	/// result in [`Error::AlreadyClosed`].
+	/// result in [`error::AlreadyClosed`].
 	///
 	/// # Notes
 	/// The user is responsible to handle close messages through the
@@ -66,7 +66,7 @@ impl<R, S> Task<R, S> {
 	///
 	/// # Panics
 	/// Will propagate any panics that happened in the task.
-	pub(super) async fn close(&self, message: S) -> Result<R> {
+	pub(super) async fn close(&self, message: S) -> Result<R, error::AlreadyClosed> {
 		if let Some(Inner { handle, close }) = self.0.lock().take() {
 			// task could have finished and dropped the receiver, it's also possible that
 			// the receiver got dropped otherwise, in any case, not our problem
@@ -79,13 +79,13 @@ impl<R, S> Task<R, S> {
 				Err(panic) => panic::resume_unwind(panic),
 			}
 		} else {
-			Err(Error::AlreadyClosed)
+			Err(error::AlreadyClosed)
 		}
 	}
 }
 
 impl<R, S> Future for &Task<R, S> {
-	type Output = Result<R>;
+	type Output = Result<R, error::AlreadyClosed>;
 
 	fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
 		// save the lock in a separate variable to be able to drop it
@@ -109,7 +109,7 @@ impl<R, S> Future for &Task<R, S> {
 				Poll::Pending
 			}
 		} else {
-			Poll::Ready(Err(Error::AlreadyClosed))
+			Poll::Ready(Err(error::AlreadyClosed))
 		}
 	}
 }
@@ -122,6 +122,7 @@ mod test {
 	use futures_util::StreamExt;
 
 	use super::Task;
+	use crate::error;
 
 	#[tokio::test]
 	async fn task() -> Result<()> {
@@ -155,7 +156,7 @@ mod test {
 		// validate our returned value
 		assert_eq!(true, task.close(()).await??);
 		// validate that `close` has properly closed
-		assert!(matches!((&task).await, Err(crate::Error::AlreadyClosed)));
+		assert!(matches!((&task).await, Err(error::AlreadyClosed)));
 
 		// validate that we correctly sent all messages before shutting down
 		let mut tester_receiver = tester_receiver.into_stream();

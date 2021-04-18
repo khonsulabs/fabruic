@@ -39,7 +39,7 @@ use serde::{de::DeserializeOwned, Serialize};
 use stream::Stream;
 
 use super::Task;
-use crate::{Certificate, Error, Result};
+use crate::{error, Certificate, Result};
 
 /// Represents an open connection. Receives [`Incoming`] through [`Stream`].
 #[pin_project]
@@ -48,9 +48,10 @@ pub struct Connection<T: DeserializeOwned + Serialize + Send + 'static> {
 	/// Initiate new connections or close socket.
 	connection: quinn::Connection,
 	/// Receive incoming streams.
-	receiver: RecvStream<'static, Incoming<T>>,
+	receiver:
+		RecvStream<'static, Result<(quinn::SendStream, quinn::RecvStream), error::Connection>>,
 	/// [`Task`] handling new incoming streams.
-	task: Task<Result<()>>,
+	task: Task<()>,
 	/// Type for type negotiation for new streams.
 	types: PhantomData<T>,
 }
@@ -59,8 +60,9 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Debug for Connection<T> {
 	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
 		f.debug_struct("Connection")
 			.field("connection", &self.connection)
-			.field("receiver", &"RecvStream<Result<Incoming>>")
+			.field("receiver", &"RecvStream")
 			.field("task", &self.task)
+			.field("types", &self.types)
 			.finish()
 	}
 }
@@ -80,22 +82,14 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 					connecting: &mut bi_streams => connecting,
 					_: &mut shutdown_receiver => None,
 				} {
-					match connecting {
-						Ok((incoming_sender, incoming_receiver)) =>
-							if sender
-								.send(Incoming::new(incoming_sender, incoming_receiver))
-								.is_err()
-							{
-								// if there is no receiver, it means that we dropped the last
-								// `Connection`
-								break;
-							},
+					let incoming = connecting.map_err(error::Connection);
 
-						Err(error) => return Err(Error::ReceiveStream(error)),
+					if sender.send(incoming).is_err() {
+						// if there is no receiver, it means that we dropped the last
+						// `Connection`
+						break;
 					}
 				}
-
-				Ok(())
 			},
 			shutdown_sender,
 		);
@@ -115,17 +109,17 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 	/// receiving and `type` to send this information to the receiver.
 	///
 	/// # Errors
-	/// - [`Error::OpenStream`] if opening a stream failed
-	/// - [`Error::Serialize`] if `type` failed to be serialized
-	/// - [`Error::Send`] if `type` failed to be sent
+	/// - [`error::Stream::Open`] if opening a stream failed
+	/// - [`error::Stream::Sender`] if sending the type information to the peer
+	///   failed, see [`error::Sender`] for more details
 	pub async fn open_stream<
 		S: DeserializeOwned + Serialize + Send + 'static,
 		R: DeserializeOwned + Serialize + Send + 'static,
 	>(
 		&self,
 		r#type: &T,
-	) -> Result<(Sender<S>, Receiver<R>)> {
-		let (sender, receiver) = self.connection.open_bi().await.map_err(Error::OpenStream)?;
+	) -> Result<(Sender<S>, Receiver<R>), error::Stream> {
+		let (sender, receiver) = self.connection.open_bi().await?;
 
 		let sender = Sender::new(sender);
 		let receiver = Receiver::new(ReceiverStream::new(receiver));
@@ -166,10 +160,9 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 	/// finish first.
 	///
 	/// # Errors
-	/// - [`Error::ReceiveStream`] if the connection was lost
-	/// - [`Error::AlreadyClosed`] if it was already closed
-	pub async fn close_incoming(&self) -> Result<()> {
-		self.task.close(()).await?
+	/// [`error::AlreadyClosed`] if it was already closed.
+	pub async fn close_incoming(&self) -> Result<(), error::AlreadyClosed> {
+		self.task.close(()).await
 	}
 
 	/// Close the [`Connection`] immediately.
@@ -178,22 +171,23 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 	/// [`Receiver`] can't be gracefully closed from the receiving end.
 	///
 	/// # Errors
-	/// - [`Error::ReceiveStream`] if the connection was lost
-	/// - [`Error::AlreadyClosed`] if it was already closed
-	pub async fn close(&self) -> Result<()> {
+	/// [`error::AlreadyClosed`] if it was already closed.
+	pub async fn close(&self) -> Result<(), error::AlreadyClosed> {
 		self.connection.close(VarInt::from_u32(0), &[]);
-		(&self.task).await?
+		(&self.task).await
 	}
 }
 
 impl<T: DeserializeOwned + Serialize + Send + 'static> Stream for Connection<T> {
-	type Item = Incoming<T>;
+	type Item = Result<Incoming<T>, error::Connection>;
 
 	fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
 		if self.receiver.is_terminated() {
 			Poll::Ready(None)
 		} else {
-			self.receiver.poll_next_unpin(cx)
+			self.receiver
+				.poll_next_unpin(cx)
+				.map_ok(|(sender, receiver)| Incoming::new(sender, receiver))
 		}
 	}
 }

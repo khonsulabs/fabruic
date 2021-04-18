@@ -9,13 +9,14 @@ use std::{
 	task::{Context, Poll},
 };
 
+use bincode::ErrorKind;
 use bytes::{Buf, BufMut, BytesMut};
 use futures_util::{stream::Stream, FutureExt};
 use pin_project::pin_project;
-use quinn::{Chunk, RecvStream, VarInt};
+use quinn::{Chunk, ReadError, RecvStream, VarInt};
 use serde::de::DeserializeOwned;
 
-use crate::{Error, Result};
+use crate::{error, Result};
 
 /// Wrapper around [`RecvStream`] providing framing and deserialization.
 #[pin_project]
@@ -55,11 +56,11 @@ impl<M: DeserializeOwned> ReceiverStream<M> {
 	/// Calls [`RecvStream::stop`](quinn::generic::RecvStream::stop).
 	///
 	/// # Errors
-	/// [`Error::AlreadyClosed`] if it was already closed.
-	pub(super) fn stop(&mut self) -> Result<()> {
+	/// [`error::AlreadyClosed`] if it was already closed.
+	pub(super) fn stop(&mut self) -> Result<(), error::AlreadyClosed> {
 		self.stream
 			.stop(VarInt::from_u32(0))
-			.map_err(|_error| Error::AlreadyClosed)
+			.map_err(|_error| error::AlreadyClosed)
 	}
 
 	/// [`Poll`](std::future::Future::poll)s [`RecvStream`] for the next
@@ -67,8 +68,8 @@ impl<M: DeserializeOwned> ReceiverStream<M> {
 	/// [`Stream`] is finished.
 	///
 	/// # Errors
-	/// [`Error::Read`] on failure to read from the [`RecvStream`].
-	fn poll(&mut self, cx: &mut Context<'_>) -> Poll<Result<Option<()>>> {
+	/// [`ReadError`] on failure to read from the [`RecvStream`].
+	fn poll(&mut self, cx: &mut Context<'_>) -> Poll<Result<Option<()>, ReadError>> {
 		self.stream
 			.read_chunk(usize::MAX, true)
 			.poll_unpin(cx)
@@ -79,7 +80,6 @@ impl<M: DeserializeOwned> ReceiverStream<M> {
 					self.buffer.put(bytes);
 				})
 			})
-			.map_err(Error::Read)
 	}
 
 	/// Check if we currently have enough data to build
@@ -104,9 +104,9 @@ impl<M: DeserializeOwned> ReceiverStream<M> {
 	/// there isn't enough data to extract [`length`](Self::length) yet.
 	///
 	/// # Errors
-	/// [`Error::Deserialize`] if `data` failed to be
+	/// [`ErrorKind`] if `data` failed to be
 	/// [`Deserialize`](serde::Deserialize)d.
-	fn deserialize(&mut self, length: usize) -> Result<Option<M>> {
+	fn deserialize(&mut self, length: usize) -> Result<Option<M>, ErrorKind> {
 		if self.buffer.len() >= length {
 			// split off the correct amount of data
 			let data = self.buffer.split_to(length).reader();
@@ -118,7 +118,7 @@ impl<M: DeserializeOwned> ReceiverStream<M> {
 			#[allow(box_pointers)]
 			bincode::deserialize_from::<_, M>(data)
 				.map(Some)
-				.map_err(|error| Error::Deserialize(*error))
+				.map_err(|error| *error)
 		} else {
 			Ok(None)
 		}
@@ -126,7 +126,7 @@ impl<M: DeserializeOwned> ReceiverStream<M> {
 }
 
 impl<M: DeserializeOwned> Stream for ReceiverStream<M> {
-	type Item = Result<M>;
+	type Item = Result<M, error::Receiver>;
 
 	fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
 		use futures_util::ready;
