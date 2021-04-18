@@ -24,6 +24,10 @@ pub(in crate::quic::endpoint) struct Config {
 	#[cfg(feature = "trust-dns")]
 	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	dnssec: bool,
+	/// Enables `/etc/hosts` file support for [`trust-dns`](trust_dns_resolver).
+	#[cfg(feature = "trust-dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
+	hosts_file: bool,
 }
 
 impl Config {
@@ -50,6 +54,8 @@ impl Config {
 			trust_dns: true,
 			#[cfg(feature = "trust-dns")]
 			dnssec: true,
+			#[cfg(feature = "trust-dns")]
+			hosts_file: false,
 		}
 	}
 
@@ -110,6 +116,22 @@ impl Config {
 	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	pub(in crate::quic::endpoint) const fn dnssec(&self) -> bool {
 		self.dnssec
+	}
+
+	/// Controls `/etc/hosts` file support for
+	/// [`trust-dns`](trust_dns_resolver).
+	#[cfg(feature = "trust-dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
+	pub(super) fn set_hosts_file(&mut self, enable: bool) {
+		self.hosts_file = enable;
+	}
+
+	/// Returns if `/etc/hosts` file support is enabled for
+	/// [`trust-dns`](trust_dns_resolver).
+	#[cfg(feature = "trust-dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
+	pub(in crate::quic::endpoint) const fn hosts_file(&self) -> bool {
+		self.hosts_file
 	}
 
 	/// Builds a new [`ClientConfig`] with this [`Config`] and adds

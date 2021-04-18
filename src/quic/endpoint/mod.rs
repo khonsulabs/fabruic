@@ -190,9 +190,9 @@ impl Endpoint {
 	///
 	/// The following settings are used when using
 	/// [`trust-dns`](trust_dns_resolver):
-	/// - all system configurations are ignored
+	/// - all system configurations are ignored, see [`Builder::set_hosts_file`]
 	/// - Cloudflare with DoH is used as the name server
-	/// - DNSSEC is enabled
+	/// - DNSSEC is enabled, see [`Builder::set_dnssec`]
 	/// - IPv6 is preferred over IPv4 if the bound socket is IPv6
 	///
 	/// # Errors
@@ -316,7 +316,7 @@ impl Endpoint {
 			// build `Resolver` options
 			let opts = ResolverOpts {
 				ip_strategy,
-				use_hosts_file: false,
+				use_hosts_file: self.config.hosts_file(),
 				validate: self.config.dnssec(),
 				..ResolverOpts::default()
 			};

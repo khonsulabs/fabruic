@@ -324,14 +324,55 @@ impl Builder {
 	///
 	/// let mut builder = Builder::new();
 	///
-	/// builder.set_dnssec(true);
-	/// assert_eq!(builder.dnssec(), true);
+	/// builder.set_dnssec(false);
+	/// assert_eq!(builder.dnssec(), false);
 	/// ```
 	#[must_use]
 	#[cfg(feature = "trust-dns")]
 	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	pub const fn dnssec(&self) -> bool {
 		self.config.dnssec()
+	}
+
+	/// Controls `/etc/hosts` file support for [`trust-dns`](trust_dns_resolver)
+	/// in [`Endpoint::connect`]. This doesn't affect the
+	/// [`ToSocketAddrs`](std::net::ToSocketAddrs) resolver.
+	///
+	/// Default is [`false`]. Only affects UNIX like OS's.
+	///
+	/// # Examples
+	/// ```
+	/// use fabruic::Builder;
+	///
+	/// let mut builder = Builder::new();
+	/// builder.set_hosts_file(false);
+	/// ```
+	#[cfg(feature = "trust-dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
+	pub fn set_hosts_file(&mut self, enable: bool) -> &mut Self {
+		self.config.set_hosts_file(enable);
+		self
+	}
+
+	/// Returns if `/etc/hosts` file support is enabled for
+	/// [`trust-dns`](trust_dns_resolver).
+	///
+	/// See [`set_dnssec`](Self::set_hosts_file).
+	///
+	/// # Examples
+	/// ```
+	/// use fabruic::Builder;
+	///
+	/// let mut builder = Builder::new();
+	///
+	/// builder.set_hosts_file(true);
+	/// assert_eq!(builder.hosts_file(), true);
+	/// ```
+	#[must_use]
+	#[cfg(feature = "trust-dns")]
+	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
+	pub const fn hosts_file(&self) -> bool {
+		self.config.hosts_file()
 	}
 
 	/// Set's the default root certificate store. See [`Store`] for more
@@ -803,6 +844,20 @@ mod test {
 		assert!(endpoint.connect("https://google.com").await.is_ok());
 
 		Ok(())
+	}
+
+	#[test]
+	fn hosts_file() {
+		let mut builder = Builder::new();
+
+		// default
+		assert!(!builder.hosts_file());
+
+		let _ = builder.set_hosts_file(true);
+		assert!(builder.hosts_file());
+
+		let _ = builder.set_hosts_file(false);
+		assert!(!builder.hosts_file());
 	}
 
 	#[tokio::test]
