@@ -67,9 +67,8 @@ impl Builder {
 			#[cfg(not(feature = "test"))]
 			address: ([0; 8], 0).into(),
 			// while testing always use the default loopback address
-			// equals to `[::ffff:127.0.0.1]:0`
 			#[cfg(feature = "test")]
-			address: ([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], 0).into(),
+			address: ([0, 0, 0, 0, 0, 0, 0, 1], 0).into(),
 			root_certificates: Vec::new(),
 			server_key_pair: None,
 			client_key_pair: None,
@@ -489,7 +488,7 @@ mod test {
 	async fn address() -> Result<()> {
 		let mut builder = Builder::new();
 
-		let address = ([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], 5000).into();
+		let address = ([0, 0, 0, 0, 0, 0, 0, 1], 5000).into();
 		let _ = builder.set_address(address);
 		assert_eq!(builder.address(), &address);
 

@@ -149,7 +149,7 @@ impl Endpoint {
 		let _ = builder.set_address(([0; 8], port).into());
 		// while testing always use the default loopback address
 		#[cfg(feature = "test")]
-		let _ = builder.set_address(([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], port).into());
+		let _ = builder.set_address(([0, 0, 0, 0, 0, 0, 0, 1], port).into());
 		let _ = builder.set_server_key_pair(Some(key_pair));
 
 		builder
@@ -191,8 +191,7 @@ impl Endpoint {
 	/// The following settings are used when using
 	/// [`trust-dns`](trust_dns_resolver):
 	/// - all system configurations are ignored
-	#[allow(clippy::doc_markdown)]
-	/// - Cloudflare with DoT is used as the name server
+	/// - Cloudflare with DoH is used as the name server
 	/// - DNSSEC is enabled
 	/// - IPv6 is preferred over IPv4 if the bound socket is IPv6
 	///
@@ -324,7 +323,7 @@ impl Endpoint {
 
 			// build the `Resolver`
 			#[allow(box_pointers)]
-			let resolver = TokioAsyncResolver::tokio(ResolverConfig::cloudflare_tls(), opts)
+			let resolver = TokioAsyncResolver::tokio(ResolverConfig::cloudflare_https(), opts)
 				.map_err(|error| Error::ResolveTrustDns(Box::new(error)))?;
 			// query the IP
 			#[allow(box_pointers)]
@@ -362,17 +361,7 @@ impl Endpoint {
 	/// # Errors
 	/// [`Error::LocalAddress`] if aquiring the local address failed.
 	pub fn local_address(&self) -> Result<SocketAddr> {
-		let address = self.endpoint.local_addr().map_err(Error::LocalAddress)?;
-
-		#[cfg(not(feature = "test"))]
-		return Ok(address);
-
-		#[cfg(feature = "test")]
-		Ok(if address.ip().is_loopback() {
-			([0, 0, 0, 0, 0, 0xffff, 0x7f00, 1], address.port()).into()
-		} else {
-			address
-		})
+		self.endpoint.local_addr().map_err(Error::LocalAddress)
 	}
 
 	/// Close all of this [`Endpoint`]'s [`Connection`](crate::Connection)s
