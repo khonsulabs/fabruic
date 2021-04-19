@@ -1,5 +1,4 @@
-#![allow(box_pointers)]
-#![allow(clippy::exhaustive_structs)]
+#![allow(box_pointers, clippy::exhaustive_structs)]
 
 //! [`Error`](std::error::Error) for this [`crate`].
 // TODO: error type is becoming too big, split it up

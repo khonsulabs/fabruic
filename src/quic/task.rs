@@ -36,7 +36,6 @@ struct Inner<R, S> {
 
 impl<R> Task<R> {
 	/// Builds a new [`Task`].
-	#[allow(clippy::new_ret_no_self)]
 	pub(super) fn new<T, S>(task: T, close: Sender<S>) -> Task<R, S>
 	where
 		T: Future<Output = R> + Send + 'static,
