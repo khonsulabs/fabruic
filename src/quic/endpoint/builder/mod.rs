@@ -384,8 +384,9 @@ impl Builder {
 		self.config.hosts_file()
 	}
 
-	/// Set's the default root certificate store. See [`Store`] for more
-	/// details.
+	/// Set's the default root certificate store.
+	///
+	/// See [`Store`] for more details.
 	///
 	/// # Default
 	/// [`Store::Embedded`].
@@ -552,10 +553,11 @@ pub enum Store {
 /// Security-sensitive configuration for [`Builder`].
 pub trait Dangerous {
 	/// Set [`Certificate`]s to be added into the root certificate store for
-	/// [`connect`](Endpoint::connect)ing to a server. This is added on
-	/// additionally to the set [`Store`].
+	/// [`connect`](Endpoint::connect)ing to a server. This is added
+	/// additionally to the [`Store`] root certificates and does **not** replace
+	/// them.
 	///
-	/// See [`Builder::set_store`] and [`Store`].
+	/// See [`Builder::set_store`].
 	///
 	/// # Security
 	/// Managing your own root certificate store can make sense if a private CA
@@ -569,13 +571,13 @@ pub trait Dangerous {
 	/// builder.set_store(Store::Empty);
 	/// // CA certificate has to be imported from somewhere else
 	/// # let (ca_certificate, _) = fabruic::KeyPair::new_self_signed("test").into_parts();
-	/// dangerous::Builder::set_ca(&mut builder, [ca_certificate]);
+	/// dangerous::Builder::set_root_certificates(&mut builder, [ca_certificate]);
 	/// ```
-	fn set_ca<C: Into<Vec<Certificate>>>(builder: &mut Self, certificates: C);
+	fn set_root_certificates<C: Into<Vec<Certificate>>>(builder: &mut Self, certificates: C);
 }
 
 impl Dangerous for Builder {
-	fn set_ca<C: Into<Vec<Certificate>>>(builder: &mut Self, certificates: C) {
+	fn set_root_certificates<C: Into<Vec<Certificate>>>(builder: &mut Self, certificates: C) {
 		builder.root_certificates = certificates.into();
 	}
 }
@@ -660,7 +662,7 @@ mod test {
 
 		// build client
 		let mut builder = Builder::new();
-		Dangerous::set_ca(&mut builder, [server_key_pair.certificate().clone()]);
+		Dangerous::set_root_certificates(&mut builder, [server_key_pair.certificate().clone()]);
 		let _ = builder.set_client_key_pair(Some(client_key_pair.clone()));
 		let client = builder.build()?;
 
