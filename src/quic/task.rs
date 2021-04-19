@@ -129,6 +129,27 @@ mod test {
 	use crate::error;
 
 	#[tokio::test]
+	async fn empty() -> Result<()> {
+		let task: Task<()> = Task::empty();
+		assert!(matches!((&task).await, Err(error::AlreadyClosed)));
+
+		Ok(())
+	}
+
+	#[tokio::test]
+	async fn clone() -> Result<()> {
+		let task_1: Task<bool> = Task::new(|_| async move {
+			true
+		});
+		let task_2 = task_1.clone();
+
+		assert!(matches!((&task_1).await, Ok(true)));
+		assert!(matches!((&task_2).await, Err(error::AlreadyClosed)));
+
+		Ok(())
+	}
+
+	#[tokio::test]
 	async fn task() -> Result<()> {
 		let (sender, receiver) = flume::unbounded();
 		let (tester_sender, tester_receiver) = flume::unbounded();
@@ -172,7 +193,7 @@ mod test {
 
 	#[tokio::test]
 	#[should_panic = "test"]
-	async fn panic_poll() {
+	async fn panic_await() {
 		let task: Task<()> = Task::new(|_| async move {
 			panic!("test");
 		});
