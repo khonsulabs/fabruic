@@ -26,7 +26,11 @@ use super::Task;
 use crate::{error, Certificate, Connecting, KeyPair, Result};
 
 /// Represents a socket using the QUIC protocol to communicate with peers.
+///
+/// # Stream
 /// Receives incoming [`Connection`](crate::Connection)s through [`Stream`].
+#[must_use = "doesn't do anything unless polled to receive `Connection`s or opening new ones with \
+              `Endpoint::connect`"]
 #[derive(Clone)]
 pub struct Endpoint {
 	/// Initiate new [`Connection`](crate::Connection)s or close [`Endpoint`].
@@ -62,7 +66,6 @@ impl Endpoint {
 	/// let endpoint = Endpoint::builder().build()?;
 	/// # Ok(()) }
 	/// ```
-	#[must_use]
 	pub fn builder() -> Builder {
 		Builder::new()
 	}
@@ -180,8 +183,8 @@ impl Endpoint {
 		let _ = builder.set_address(([0; 8], port).into());
 		// while testing always use the default loopback address
 		#[cfg(feature = "test")]
-		let _ = builder.set_address(([0, 0, 0, 0, 0, 0, 0, 1], port).into());
-		let _ = builder.set_server_key_pair(Some(key_pair));
+		builder.set_address(([0, 0, 0, 0, 0, 0, 0, 1], port).into());
+		builder.set_server_key_pair(Some(key_pair));
 
 		builder
 			.build()
@@ -492,6 +495,16 @@ impl Endpoint {
 	/// be cleanly shut down. Does not close existing connections or cause
 	/// incoming connections to be rejected. See
 	/// [`close_incoming`](`Self::close_incoming`).
+	///
+	/// # Examples
+	/// ```
+	/// # #[tokio::main] async fn main() -> anyhow::Result<()> {
+	/// use fabruic::Endpoint;
+	///
+	/// let endpoint = Endpoint::new_client()?;
+	/// endpoint.wait_idle().await;
+	/// # Ok(()) }
+	/// ```
 	pub async fn wait_idle(&self) {
 		self.endpoint.wait_idle().await;
 	}

@@ -19,13 +19,12 @@ use crate::{error, Certificate, Endpoint, KeyPair, Result};
 /// use fabruic::{Builder, Store};
 ///
 /// let mut builder = Builder::new();
-/// builder
-/// 	.set_protocols([b"test".to_vec()])
-/// 	.set_store(Store::Os);
-///
+/// builder.set_protocols([b"test".to_vec()]);
+/// builder.set_store(Store::Os);
 /// let endpoint = builder.build()?;
 /// # Ok(()) }
 /// ```
+#[must_use = "doesn't do anything unless `Builder::build` is called"]
 #[derive(Debug)]
 pub struct Builder {
 	/// [`SocketAddr`] for [`Endpoint`](quinn::Endpoint) to bind to.
@@ -59,7 +58,6 @@ impl Builder {
 	/// let mut endpoint = Builder::new().build()?;
 	/// # Ok(()) }
 	/// ```
-	#[must_use]
 	pub fn new() -> Self {
 		let config = Config::new();
 
@@ -91,9 +89,8 @@ impl Builder {
 	/// builder.set_address("[::1]:0".parse()?);
 	/// # Ok(()) }
 	/// ```
-	pub fn set_address(&mut self, address: SocketAddr) -> &mut Self {
+	pub fn set_address(&mut self, address: SocketAddr) {
 		self.address = address;
-		self
 	}
 
 	/// Returns the [`SocketAddr`] to bind to.
@@ -134,9 +131,8 @@ impl Builder {
 	/// let mut builder = Builder::new();
 	/// builder.set_server_key_pair(Some(KeyPair::new_self_signed("test")));
 	/// ```
-	pub fn set_server_key_pair(&mut self, key_pair: Option<KeyPair>) -> &mut Self {
+	pub fn set_server_key_pair(&mut self, key_pair: Option<KeyPair>) {
 		self.server_key_pair = key_pair;
-		self
 	}
 
 	/// Returns the server certificate [`KeyPair`].
@@ -171,9 +167,8 @@ impl Builder {
 	/// let mut builder = Builder::new();
 	/// builder.set_client_key_pair(Some(KeyPair::new_self_signed("test")));
 	/// ```
-	pub fn set_client_key_pair(&mut self, key_pair: Option<KeyPair>) -> &mut Self {
+	pub fn set_client_key_pair(&mut self, key_pair: Option<KeyPair>) {
 		self.client_key_pair = key_pair;
-		self
 	}
 
 	/// Returns the client certificate [`KeyPair`].
@@ -211,9 +206,8 @@ impl Builder {
 	/// let mut builder = Builder::new();
 	/// builder.set_protocols([b"test".to_vec()]);
 	/// ```
-	pub fn set_protocols<P: Into<Vec<Vec<u8>>>>(&mut self, protocols: P) -> &mut Self {
+	pub fn set_protocols<P: Into<Vec<Vec<u8>>>>(&mut self, protocols: P) {
 		self.config.set_protocols(protocols);
-		self
 	}
 
 	/// Returns the set protocols.
@@ -253,9 +247,8 @@ impl Builder {
 	/// ```
 	#[cfg(feature = "trust-dns")]
 	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
-	pub fn set_trust_dns(&mut self, enable: bool) -> &mut Self {
+	pub fn set_trust_dns(&mut self, enable: bool) {
 		self.config.set_trust_dns(enable);
-		self
 	}
 
 	/// Disables the use of [`trust-dns`](trust_dns_resolver) for
@@ -274,9 +267,8 @@ impl Builder {
 	/// let mut builder = Builder::new();
 	/// builder.disable_trust_dns();
 	/// ```
-	pub fn disable_trust_dns(&mut self) -> &mut Self {
+	pub fn disable_trust_dns(&mut self) {
 		self.config.disable_trust_dns();
-		self
 	}
 
 	/// Returns if [`trust-dns`](trust_dns_resolver) is enabled.
@@ -317,9 +309,8 @@ impl Builder {
 	/// ```
 	#[cfg(feature = "trust-dns")]
 	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
-	pub fn set_dnssec(&mut self, enable: bool) -> &mut Self {
+	pub fn set_dnssec(&mut self, enable: bool) {
 		self.config.set_dnssec(enable);
-		self
 	}
 
 	/// Returns if DNSSEC is enabled for [`trust-dns`](trust_dns_resolver).
@@ -358,9 +349,8 @@ impl Builder {
 	/// ```
 	#[cfg(feature = "trust-dns")]
 	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
-	pub fn set_hosts_file(&mut self, enable: bool) -> &mut Self {
+	pub fn set_hosts_file(&mut self, enable: bool) {
 		self.config.set_hosts_file(enable);
-		self
 	}
 
 	/// Returns if `/etc/hosts` file support is enabled for
@@ -398,9 +388,8 @@ impl Builder {
 	/// let mut builder = Builder::new();
 	/// builder.set_store(Store::Os);
 	/// ```
-	pub fn set_store(&mut self, store: Store) -> &mut Self {
+	pub fn set_store(&mut self, store: Store) {
 		self.store = store;
-		self
 	}
 
 	/// Returns the set [`Store`].
@@ -422,7 +411,6 @@ impl Builder {
 	/// builder.set_store(Store::Empty);
 	/// assert_eq!(builder.store(), Store::Empty);
 	/// ```
-	#[must_use]
 	pub const fn store(&self) -> Store {
 		self.store
 	}
@@ -538,6 +526,7 @@ impl ClientCertVerifier for ClientVerifier {
 /// let mut builder = Builder::new();
 /// builder.set_store(Store::Os);
 /// ```
+#[must_use = "doesn't do anything unless passed into `Builder::set_store`"]
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 pub enum Store {
 	/// Empty root certificate store.
@@ -612,7 +601,7 @@ mod test {
 		let mut builder = Builder::new();
 
 		let address = ([0, 0, 0, 0, 0, 0, 0, 1], 5000).into();
-		let _ = builder.set_address(address);
+		builder.set_address(address);
 		assert_eq!(builder.address(), &address);
 
 		let endpoint = builder.build()?;
@@ -630,7 +619,7 @@ mod test {
 
 		// build server
 		let mut builder = Builder::new();
-		let _ = builder.set_server_key_pair(Some(key_pair.clone()));
+		builder.set_server_key_pair(Some(key_pair.clone()));
 		let mut server = builder.build()?;
 
 		// test connection to server
@@ -663,12 +652,12 @@ mod test {
 		// build client
 		let mut builder = Builder::new();
 		Dangerous::set_root_certificates(&mut builder, [server_key_pair.certificate().clone()]);
-		let _ = builder.set_client_key_pair(Some(client_key_pair.clone()));
+		builder.set_client_key_pair(Some(client_key_pair.clone()));
 		let client = builder.build()?;
 
 		// build server
 		let mut builder = Builder::new();
-		let _ = builder.set_server_key_pair(Some(server_key_pair));
+		builder.set_server_key_pair(Some(server_key_pair));
 		let mut server = builder.build()?;
 
 		// test connection to server
@@ -706,7 +695,7 @@ mod test {
 		let mut builder = Builder::new();
 
 		let protocols = [b"test".to_vec()];
-		let _ = builder.set_protocols(protocols.clone());
+		builder.set_protocols(protocols.clone());
 		assert_eq!(builder.protocols(), protocols);
 
 		let _endpoint = builder.build()?;
@@ -721,14 +710,13 @@ mod test {
 
 		// build client
 		let mut builder = Builder::new();
-		let _ = builder.set_protocols(protocols.clone());
+		builder.set_protocols(protocols.clone());
 		let client = builder.build()?;
 
 		// build server
 		let mut builder = Builder::new();
-		let _ = builder
-			.set_server_key_pair(Some(key_pair.clone()))
-			.set_protocols(protocols.clone());
+		builder.set_server_key_pair(Some(key_pair.clone()));
+		builder.set_protocols(protocols.clone());
 		let mut server = builder.build()?;
 
 		// connect with server
@@ -778,14 +766,13 @@ mod test {
 
 		// build client
 		let mut builder = Builder::new();
-		let _ = builder.set_protocols([b"test1".to_vec()]);
+		builder.set_protocols([b"test1".to_vec()]);
 		let client = builder.build()?;
 
 		// build server
 		let mut builder = Builder::new();
-		let _ = builder
-			.set_server_key_pair(Some(key_pair.clone()))
-			.set_protocols([b"test2".to_vec()]);
+		builder.set_server_key_pair(Some(key_pair.clone()));
+		builder.set_protocols([b"test2".to_vec()]);
 		let mut server = builder.build()?;
 
 		// connect with server
@@ -825,20 +812,20 @@ mod test {
 		// default
 		assert!(builder.trust_dns());
 
-		let _ = builder.set_trust_dns(false);
+		builder.set_trust_dns(false);
 		assert!(!builder.trust_dns());
 
-		let _ = builder.set_trust_dns(true);
+		builder.set_trust_dns(true);
 		assert!(builder.trust_dns());
 
-		let _ = builder.disable_trust_dns();
+		builder.disable_trust_dns();
 		assert!(!builder.trust_dns());
 	}
 
 	#[tokio::test]
 	async fn trust_dns_disabled() -> Result<()> {
 		let mut builder = Builder::new();
-		let _ = builder.disable_trust_dns();
+		builder.disable_trust_dns();
 		let endpoint = builder.build()?;
 
 		// TODO: find a better target without DNSSEC support then Google
@@ -850,7 +837,7 @@ mod test {
 	#[tokio::test]
 	async fn trust_dns_success() -> Result<()> {
 		let mut builder = Builder::new();
-		let _ = builder.disable_trust_dns();
+		builder.disable_trust_dns();
 		let endpoint = builder.build()?;
 
 		// TODO: find a better target with DNSSEC support then Cloudflare
@@ -886,17 +873,17 @@ mod test {
 		// default
 		assert!(builder.dnssec());
 
-		let _ = builder.set_dnssec(false);
+		builder.set_dnssec(false);
 		assert!(!builder.dnssec());
 
-		let _ = builder.set_dnssec(true);
+		builder.set_dnssec(true);
 		assert!(builder.dnssec());
 	}
 
 	#[tokio::test]
 	async fn dnssec_disabled() -> Result<()> {
 		let mut builder = Builder::new();
-		let _ = builder.set_dnssec(false);
+		builder.set_dnssec(false);
 		let endpoint = builder.build()?;
 
 		// TODO: find a better target without DNSSEC support then Google
@@ -912,23 +899,28 @@ mod test {
 		// default
 		assert!(!builder.hosts_file());
 
-		let _ = builder.set_hosts_file(true);
+		builder.set_hosts_file(true);
 		assert!(builder.hosts_file());
 
-		let _ = builder.set_hosts_file(false);
+		builder.set_hosts_file(false);
 		assert!(!builder.hosts_file());
 	}
 
 	#[tokio::test]
 	async fn store_embedded() -> Result<()> {
 		let mut builder = Builder::new();
-		let _ = builder
-			// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing connection
-			.set_address(([0; 8], 0).into())
-			// QUIC is comptaible with HTTP/3 to establish a connection only
-			.set_protocols([b"h3-29".to_vec()])
-			.disable_trust_dns();
+		// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing
+		// connection
+		builder.set_address(([0; 8], 0).into());
+		// QUIC is comptaible with HTTP/3 to establish a connection only
+		builder.set_protocols([b"h3-29".to_vec()]);
+		// `cloudflare-quic` doesn't support DNSSEC
+		builder.set_dnssec(false);
 
+		// default
+		assert_eq!(builder.store(), Store::Embedded);
+
+		builder.set_store(Store::Embedded);
 		assert_eq!(builder.store(), Store::Embedded);
 
 		let endpoint = builder.build()?;
@@ -947,15 +939,15 @@ mod test {
 	#[tokio::test]
 	async fn store_os() -> Result<()> {
 		let mut builder = Builder::new();
-		let _ = builder
-			// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing connection
-			.set_address(([0; 8], 0).into())
-			// QUIC is comptaible with HTTP/3 to establish a connection only
-			.set_protocols([b"h3-29".to_vec()])
-			.set_protocols([b"h3-29".to_vec()])
-			.set_store(Store::Os)
-			.disable_trust_dns();
+		// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing
+		// connection
+		builder.set_address(([0; 8], 0).into());
+		// QUIC is comptaible with HTTP/3 to establish a connection only
+		builder.set_protocols([b"h3-29".to_vec()]);
+		// `cloudflare-quic` doesn't support DNSSEC
+		builder.set_dnssec(false);
 
+		builder.set_store(Store::Os);
 		assert_eq!(builder.store(), Store::Os);
 
 		let endpoint = builder.build()?;
@@ -974,14 +966,15 @@ mod test {
 	#[tokio::test]
 	async fn store_empty() -> Result<()> {
 		let mut builder = Builder::new();
-		let _ = builder
-			// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing connection
-			.set_address(([0; 8], 0).into())
-			// QUIC is comptaible with HTTP/3 to establish a connection only
-			.set_protocols([b"h3-29".to_vec()])
-			.set_store(Store::Empty)
-			.disable_trust_dns();
+		// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing
+		// connection
+		builder.set_address(([0; 8], 0).into());
+		// QUIC is comptaible with HTTP/3 to establish a connection only
+		builder.set_protocols([b"h3-29".to_vec()]);
+		// `cloudflare-quic` doesn't support DNSSEC
+		builder.set_dnssec(false);
 
+		builder.set_store(Store::Empty);
 		assert_eq!(builder.store(), Store::Empty);
 
 		let endpoint = builder.build()?;
