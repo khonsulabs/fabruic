@@ -4,7 +4,7 @@
 use quinn::NewConnection;
 use serde::{de::DeserializeOwned, Serialize};
 
-use crate::{error, Connection, Result};
+use crate::{error, Connection};
 
 /// Represent's an intermediate state to build a [`Connection`].
 #[must_use = "`Connecting` does nothing unless accepted with `Connecting::accept`"]

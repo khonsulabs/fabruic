@@ -9,7 +9,7 @@ pub use private_key::PrivateKey;
 use rustls::sign::CertifiedKey;
 use serde::{ser::SerializeStruct, Deserialize, Deserializer, Serializer};
 
-use crate::Result;
+use crate::error;
 
 /// A key-pair, consisting of a [`Certificate`] and [`PrivateKey`].
 #[derive(Clone, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -49,7 +49,10 @@ impl KeyPair {
 	///
 	/// # Errors
 	/// TODO: this doesn't do any validation yet
-	pub fn from_parts(certificate: Certificate, private_key: PrivateKey) -> Result<Self> {
+	pub fn from_parts(
+		certificate: Certificate,
+		private_key: PrivateKey,
+	) -> Result<Self, error::KeyPair> {
 		// TODO: validate if they pair up, see <https://github.com/ctz/rustls/issues/618>
 		Ok(Self {
 			certificate,

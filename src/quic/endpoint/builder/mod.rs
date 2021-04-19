@@ -9,7 +9,7 @@ use rustls::{ClientCertVerified, ClientCertVerifier, DistinguishedNames, TLSErro
 use serde::{Deserialize, Serialize};
 use webpki::DNSName;
 
-use crate::{error, Certificate, Endpoint, KeyPair, Result};
+use crate::{error, Certificate, Endpoint, KeyPair};
 
 /// Helper for constructing an [`Endpoint`].
 ///

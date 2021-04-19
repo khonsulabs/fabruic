@@ -2,11 +2,12 @@
 
 use std::time::Duration;
 
+use error::CertificateError;
 use serde::{Deserialize, Serialize};
 use webpki::EndEntityCert;
 use x509_parser::{certificate::X509Certificate, extensions::GeneralName};
 
-use crate::{error::ParseCertificate, Error, Result};
+use crate::error;
 
 /// A public certificate. You can distribute it freely to peers.
 #[derive(Clone, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
@@ -36,15 +37,15 @@ impl Certificate {
 	/// - [`Error::ExpiredCertificate`] if the certificate has expires
 	/// - [`Error::DomainCertificate`] if the certificate doesn't contain a
 	///   domain name
-	pub fn from_der(certificate: Vec<u8>) -> Result<Self> {
+	pub fn from_der(certificate: Vec<u8>) -> Result<Self, error::Certificate> {
 		// parse certificate with `webpki`, which is what `rustls` uses, which is what
 		// `quinn` uses
 		let _ = match EndEntityCert::from(&certificate) {
 			Ok(parsed) => parsed,
 			Err(error) =>
-				return Err(Error::ParseCertificate {
+				return Err(error::Certificate {
+					error: CertificateError::WebPki(error),
 					certificate,
-					error: ParseCertificate::WebPki(error),
 				}),
 		};
 
@@ -52,16 +53,16 @@ impl Certificate {
 		let (trailing, parsed) = match X509Certificate::from_der(&certificate) {
 			Ok((trailing, bytes)) => (trailing, bytes),
 			Err(error) =>
-				return Err(Error::ParseCertificate {
+				return Err(error::Certificate {
+					error: CertificateError::X509(error),
 					certificate,
-					error: ParseCertificate::X509(error),
 				}),
 		};
 
 		// don't allow trailing bytes
 		if !trailing.is_empty() {
-			return Err(Error::DanglingCertificate {
-				dangling: trailing.to_owned(),
+			return Err(error::Certificate {
+				error: CertificateError::Dangling(trailing.to_owned()),
 				certificate,
 			});
 		}
@@ -75,7 +76,10 @@ impl Certificate {
 				// TODO: log warning that it will expire
 			}
 		} else {
-			return Err(Error::ExpiredCertificate(certificate));
+			return Err(error::Certificate {
+				error: CertificateError::Expired,
+				certificate,
+			});
 		}
 
 		// certificate has to include domain names
@@ -85,7 +89,10 @@ impl Certificate {
 			.filter(|name| !name.1.general_names.is_empty())
 			.is_none()
 		{
-			return Err(Error::DomainCertificate(certificate));
+			return Err(error::Certificate {
+				error: CertificateError::Domain,
+				certificate,
+			});
 		}
 
 		// TODO: extend validation to use something like

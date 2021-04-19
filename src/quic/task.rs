@@ -13,7 +13,7 @@ use futures_util::FutureExt;
 use parking_lot::Mutex;
 use tokio::task::{JoinError, JoinHandle};
 
-use crate::{error, Result};
+use crate::error;
 
 /// Wrapper to abort tasks when they are dropped.
 #[derive(Debug)]
@@ -138,9 +138,7 @@ mod test {
 
 	#[tokio::test]
 	async fn clone() -> Result<()> {
-		let task_1: Task<bool> = Task::new(|_| async move {
-			true
-		});
+		let task_1: Task<bool> = Task::new(|_| async move { true });
 		let task_2 = task_1.clone();
 
 		assert!(matches!((&task_1).await, Ok(true)));

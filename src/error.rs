@@ -3,7 +3,10 @@
 //! [`Error`](std::error::Error) for this [`crate`].
 // TODO: error type is becoming too big, split it up
 
-pub use std::{io::Error as IoError, net::AddrParseError};
+use std::{
+	fmt::{self, Debug, Formatter},
+	io,
+};
 
 pub use bincode::ErrorKind;
 pub use quinn::{ConnectError, ConnectionError, ReadError, WriteError};
@@ -11,15 +14,72 @@ use thiserror::Error;
 #[cfg(feature = "trust-dns")]
 #[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 pub use trust_dns_resolver::error::ResolveError;
-pub use url::ParseError as UrlParseError;
-pub use webpki::Error as WebPkiError;
+pub use url::ParseError;
+pub use webpki::Error;
 pub use x509_parser::{error::X509Error, nom::Err};
+use zeroize::Zeroize;
 
-/// [`Result`](std::result::Result) type for this [`crate`].
-pub type Result<T, E = Error> = std::result::Result<T, E>;
+/// Error constructing [`Certificate`](crate::Certificate) with
+/// [`Certificate::from_der`](crate::Certificate::from_der).
+#[derive(Debug, Error)]
+#[error("Error constructing `Certificate` from bytes: {error}")]
+pub struct Certificate {
+	/// The error.
+	#[source]
+	pub error: CertificateError,
+	/// The bytes used to build the [`Certificate`](crate::Certificate).
+	pub certificate: Vec<u8>,
+}
+
+/// Error constructing [`Certificate`](crate::Certificate) with
+/// [`Certificate::from_der`](crate::Certificate::from_der).
+#[allow(clippy::module_name_repetitions)]
+#[derive(Debug, Error)]
+pub enum CertificateError {
+	/// [`Error`](std::error::Error) returned by [`webpki`].
+	#[error(transparent)]
+	WebPki(Error),
+	/// [`Error`](std::error::Error) returned by [`x509_parser`].
+	#[error(transparent)]
+	X509(Err<X509Error>),
+	/// Bytes passed contain uncorrelated bytes.
+	#[error("Found dangling bytes in `Certificate`")]
+	Dangling(Vec<u8>),
+	/// [`Certificate`](crate::Certificate) has expired.
+	#[error("`Certificate` has expired")]
+	Expired,
+	/// [`Certificate`](crate::Certificate) is missing a domain name.
+	#[error("`Certificate` is missing a domain name")]
+	Domain,
+}
+
+/// Failed to parse the given private key with
+/// [`PrivateKey::from_der`](crate::PrivateKey::from_der).
+#[derive(Clone, Eq, Error, Hash, Ord, PartialEq, PartialOrd, Zeroize)]
+#[error("Failed parsing private key")]
+#[zeroize(drop)]
+pub struct PrivateKey(pub Vec<u8>);
+
+impl Debug for PrivateKey {
+	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+		f.debug_tuple("PrivateKey").field(&"[[redacted]]").finish()
+	}
+}
+
+/// Failed to pair given [`Certificate`](crate::Certificate) and
+/// [`PrivateKey`](crate::PrivateKey) with
+/// [`KeyPair::from_parts`](crate::KeyPair::from_parts).
+#[derive(Clone, Debug, Eq, Error, Hash, Ord, PartialEq, PartialOrd)]
+#[error("Failed pairing `Certificate` and `PrivateKey`")]
+pub struct KeyPair {
+	/// [`Certificate`](crate::Certificate).
+	certificate: crate::Certificate,
+	/// [`PrivateKey`](crate::PrivateKey).
+	private_key: crate::PrivateKey,
+}
 
 /// Attempting to close something that is already closed.
-#[derive(Clone, Copy, Debug, Error)]
+#[derive(Clone, Copy, Debug, Eq, Error, Hash, Ord, PartialEq, PartialOrd)]
 #[error("This is already closed")]
 pub struct AlreadyClosed;
 
@@ -30,7 +90,7 @@ pub struct AlreadyClosed;
 pub struct Builder {
 	/// The error binding [`Endpoint`](crate::Endpoint).
 	#[source]
-	pub error: IoError,
+	pub error: io::Error,
 	/// Recovered [`Builder`](crate::Builder) for re-use.
 	pub builder: crate::Builder,
 }
@@ -49,7 +109,7 @@ pub enum Connect {
 	MultipleDomains,
 	/// Failed to parse URL.
 	#[error("Error parsing URL: {0}")]
-	ParseUrl(UrlParseError),
+	ParseUrl(ParseError),
 	/// URL didn't contain a domain.
 	#[error("URL without a domain is invalid")]
 	Domain,
@@ -58,7 +118,7 @@ pub enum Connect {
 	Port,
 	/// Failed to parse domain.
 	#[error("Error parsing domain: {0}")]
-	ParseDomain(UrlParseError),
+	ParseDomain(ParseError),
 	/// Failed to resolve domain with [`trust-dns`](trust_dns_resolver).
 	#[cfg(feature = "trust-dns")]
 	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
@@ -67,7 +127,7 @@ pub enum Connect {
 	/// Failed to resolve domain with
 	/// [`ToSocketAddrs`](std::net::ToSocketAddrs).
 	#[error("Error resolving domain with `ToSocketAddrs`: {0}")]
-	StdDns(#[from] IoError),
+	StdDns(#[from] io::Error),
 	/// Found no IP address for that domain.
 	#[error("Found no IP address for that domain")]
 	NoIp,
@@ -78,14 +138,14 @@ pub enum Connect {
 
 /// Error receiving connection from peer with [`Stream`](futures_util::Stream)
 /// on from [`Connection`](crate::Connection).
-#[derive(Debug, Error)]
+#[derive(Clone, Debug, Eq, Error, PartialEq)]
 #[error("Error receiving connection from peer: {0}")]
 pub struct Connection(pub ConnectionError);
 
 /// Error completing connection with peer with
 /// [`Incoming::type`](crate::Incoming::type) or
 /// [`Incoming::accept`](crate::Incoming::accept).
-#[derive(Debug, Error)]
+#[derive(Clone, Debug, Eq, Error, PartialEq)]
 #[error("Error completing connection with peer: {0}")]
 pub struct Connecting(pub ConnectionError);
 
@@ -146,49 +206,4 @@ impl From<Box<ErrorKind>> for Sender {
 	fn from(error: Box<ErrorKind>) -> Self {
 		Self::Serialize(*error)
 	}
-}
-
-/// [`Error`](std::error::Error) for this [`crate`].
-#[derive(Debug, Error)]
-pub enum Error {
-	/// Failed to parse the given certificate.
-	#[error("Failed parsing certificate: {error}")]
-	ParseCertificate {
-		/// The certificate passed to
-		/// [`from_der`](crate::Certificate::from_der).
-		certificate: Vec<u8>,
-		/// The parsing error.
-		error: ParseCertificate,
-	},
-	/// Data passed to generate [`Certificate`](crate::Certificate) with
-	/// [`from_der`](crate::Certificate::from_der) found to contain
-	/// uncorrelated bytes.
-	#[error("Found dangling bytes in `Certificate`")]
-	DanglingCertificate {
-		/// The certificate passed to
-		/// [`from_der`](crate::Certificate::from_der).
-		certificate: Vec<u8>,
-		/// The dangling bytes.
-		dangling: Vec<u8>,
-	},
-	/// [`Certificate`](crate::Certificate) has expired.
-	#[error("`Certificate` has expired")]
-	ExpiredCertificate(Vec<u8>),
-	/// [`Certificate`](crate::Certificate) is missing a domain name.
-	#[error("`Certificate` is missing a domain name")]
-	DomainCertificate(Vec<u8>),
-	/// Failed to parse the given private key.
-	#[error("Failed parsing private key")]
-	ParsePrivateKey,
-}
-
-/// Possible certificate parsing errors.
-#[derive(Debug, Error)]
-pub enum ParseCertificate {
-	/// [`Error`](std::error::Error) returned by [`webpki`].
-	#[error(transparent)]
-	WebPki(WebPkiError),
-	/// [`Error`](std::error::Error) returned by [`x509_parser`].
-	#[error(transparent)]
-	X509(Err<X509Error>),
 }

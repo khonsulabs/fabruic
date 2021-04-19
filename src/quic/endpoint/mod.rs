@@ -23,7 +23,7 @@ use quinn::{ClientConfig, EndpointError, ServerConfig, VarInt};
 use url::{Host, Url};
 
 use super::Task;
-use crate::{error, Certificate, Connecting, KeyPair, Result};
+use crate::{error, Certificate, Connecting, KeyPair};
 
 /// Represents a socket using the QUIC protocol to communicate with peers.
 ///

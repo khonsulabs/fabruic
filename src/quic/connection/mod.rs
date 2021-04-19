@@ -38,7 +38,7 @@ use serde::{de::DeserializeOwned, Serialize};
 use stream::Stream;
 
 use super::Task;
-use crate::{error, Certificate, Result};
+use crate::{error, Certificate};
 
 /// Represents an open connection. Receives [`Incoming`] through [`Stream`].
 #[pin_project]

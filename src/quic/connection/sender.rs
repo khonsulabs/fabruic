@@ -7,7 +7,7 @@ use quinn::{SendStream, VarInt};
 use serde::Serialize;
 
 use super::Task;
-use crate::{error, Result};
+use crate::error;
 
 /// Used to send data to a stream.
 #[derive(Clone, Debug)]

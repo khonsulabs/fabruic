@@ -7,7 +7,7 @@ use quinn::{RecvStream, SendStream};
 use serde::{de::DeserializeOwned, Serialize};
 
 use super::ReceiverStream;
-use crate::{error, Receiver, Result, Sender};
+use crate::{error, Receiver, Sender};
 
 /// An intermediate state to define which type to accept in this stream. See
 /// [`accept_stream`](Self::accept).

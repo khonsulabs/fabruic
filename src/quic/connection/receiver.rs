@@ -10,7 +10,7 @@ use futures_util::{stream::Stream, StreamExt};
 use serde::de::DeserializeOwned;
 
 use super::{ReceiverStream, Task};
-use crate::{error, Result};
+use crate::error;
 
 /// Used to receive data from a stream. Will stop receiving message if
 /// deserialization failed.

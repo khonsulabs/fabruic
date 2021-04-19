@@ -6,7 +6,7 @@ use rustls::sign::{self, SigningKey};
 use serde::{Deserialize, Serializer};
 use zeroize::Zeroize;
 
-use crate::{Error, Result};
+use crate::error;
 
 /// A private key.
 ///
@@ -28,13 +28,15 @@ impl PrivateKey {
 	///
 	/// # Errors
 	/// [`Error::ParsePrivateKey`] if the certificate couldn't be parsed.
-	pub fn from_der(private_key: Vec<u8>) -> Result<Self> {
+	pub fn from_der(private_key: Vec<u8>) -> Result<Self, error::PrivateKey> {
 		let private_key = rustls::PrivateKey(private_key);
 
 		#[allow(box_pointers)]
-		let _key = sign::any_supported_type(&private_key).map_err(|_error| Error::ParsePrivateKey)?;
-
-		Ok(Self(Some(private_key.0)))
+		if let Err(_error) = sign::any_supported_type(&private_key) {
+			Err(error::PrivateKey(private_key.0))
+		} else {
+			Ok(Self(Some(private_key.0)))
+		}
 	}
 
 	/// Build [`PrivateKey`] from DER-format. This skips the validation from

@@ -16,7 +16,7 @@ use pin_project::pin_project;
 use quinn::{Chunk, ReadError, RecvStream, VarInt};
 use serde::de::DeserializeOwned;
 
-use crate::{error, Result};
+use crate::error;
 
 /// Wrapper around [`RecvStream`] providing framing and deserialization.
 #[pin_project]
