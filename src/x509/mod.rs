@@ -2,7 +2,7 @@
 
 mod certificate;
 pub mod private_key;
-use std::sync::Arc;
+use std::{convert::TryFrom, sync::Arc};
 
 pub use certificate::Certificate;
 pub use private_key::PrivateKey;
@@ -19,6 +19,16 @@ pub struct KeyPair {
 	/// The secret [`PrivateKey`].
 	#[serde(deserialize_with = "deserialize_private_key")]
 	private_key: PrivateKey,
+}
+
+impl TryFrom<(Certificate, PrivateKey)> for KeyPair {
+	type Error = error::KeyPair;
+
+	fn try_from(
+		(certificate, private_key): (Certificate, PrivateKey),
+	) -> Result<Self, Self::Error> {
+		Self::from_parts(certificate, private_key)
+	}
 }
 
 impl KeyPair {

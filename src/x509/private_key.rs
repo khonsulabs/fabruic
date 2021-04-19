@@ -1,6 +1,9 @@
 //! [`PrivateKey`].
 
-use std::fmt::{self, Debug, Formatter};
+use std::{
+	convert::TryFrom,
+	fmt::{self, Debug, Formatter},
+};
 
 use rustls::sign::{self, SigningKey};
 use serde::{Deserialize, Serializer};
@@ -19,6 +22,14 @@ pub struct PrivateKey(Option<Vec<u8>>);
 impl Debug for PrivateKey {
 	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
 		f.debug_tuple("PrivateKey").field(&"[[redacted]]").finish()
+	}
+}
+
+impl TryFrom<Vec<u8>> for PrivateKey {
+	type Error = error::PrivateKey;
+
+	fn try_from(certificate: Vec<u8>) -> Result<Self, Self::Error> {
+		Self::from_der(certificate)
 	}
 }
 

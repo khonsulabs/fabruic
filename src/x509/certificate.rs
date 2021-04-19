@@ -1,6 +1,6 @@
 //! [`Certificate`].
 
-use std::time::Duration;
+use std::{convert::TryFrom, time::Duration};
 
 use error::CertificateError;
 use serde::{Deserialize, Serialize};
@@ -22,6 +22,14 @@ impl AsRef<[u8]> for Certificate {
 impl From<Certificate> for Vec<u8> {
 	fn from(certificate: Certificate) -> Self {
 		certificate.0
+	}
+}
+
+impl TryFrom<Vec<u8>> for Certificate {
+	type Error = error::Certificate;
+
+	fn try_from(certificate: Vec<u8>) -> Result<Self, Self::Error> {
+		Self::from_der(certificate)
 	}
 }
 
