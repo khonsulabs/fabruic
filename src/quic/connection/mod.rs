@@ -24,7 +24,6 @@ use std::{
 
 pub use connecting::Connecting;
 use flume::r#async::RecvStream;
-use futures_channel::oneshot;
 use futures_util::{
 	stream::{self, FusedStream},
 	StreamExt,
@@ -75,24 +74,20 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 		let receiver = receiver.into_stream();
 
 		// `Task` handling incoming streams
-		let (shutdown_sender, mut shutdown_receiver) = oneshot::channel();
-		let task = Task::new(
-			async move {
-				while let Some(connecting) = allochronic_util::select! {
-					connecting: &mut bi_streams => connecting,
-					_: &mut shutdown_receiver => None,
-				} {
-					let incoming = connecting.map_err(error::Connection);
+		let task = Task::new(|mut shutdown| async move {
+			while let Some(connecting) = allochronic_util::select! {
+				connecting: &mut bi_streams => connecting,
+				_: &mut shutdown => None,
+			} {
+				let incoming = connecting.map_err(error::Connection);
 
-					if sender.send(incoming).is_err() {
-						// if there is no receiver, it means that we dropped the last
-						// `Connection`
-						break;
-					}
+				if sender.send(incoming).is_err() {
+					// if there is no receiver, it means that we dropped the last
+					// `Connection`
+					break;
 				}
-			},
-			shutdown_sender,
-		);
+			}
+		});
 
 		Self {
 			connection,

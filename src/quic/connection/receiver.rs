@@ -6,7 +6,6 @@ use std::{
 	task::{Context, Poll},
 };
 
-use futures_channel::oneshot;
 use futures_util::{stream::Stream, StreamExt};
 use serde::de::DeserializeOwned;
 
@@ -44,47 +43,41 @@ impl<T> Receiver<T> {
 		let receiver = receiver.into_stream();
 
 		// `Task` handling `Receiver`
-		let (shutdown_sender, shutdown_receiver) = oneshot::channel();
-		let task = Task::new(
-			async move {
-				/// Help Group Messages
-				enum Message<T> {
-					/// Data arrived from stream.
-					Data(Result<T, error::Receiver>),
-					/// [`Receiver`] asked to close.
-					Close,
-				}
+		let task = Task::new(|mut shutdown| async move {
+			/// Help Group Messages
+			enum Message<T> {
+				/// Data arrived from stream.
+				Data(Result<T, error::Receiver>),
+				/// [`Receiver`] asked to close.
+				Close,
+			}
 
-				let mut shutdown = shutdown_receiver;
+			while let Some(message) = allochronic_util::select! {
+				message: &mut stream => message.map(Message::Data),
+				shutdown: &mut shutdown => shutdown.ok().map(|_| Message::Close),
+			} {
+				match message {
+					Message::Data(message) => {
+						let failed = message.is_err();
 
-				while let Some(message) = allochronic_util::select! {
-					message: &mut stream => message.map(Message::Data),
-					shutdown: &mut shutdown => shutdown.ok().map(|_| Message::Close),
-				} {
-					match message {
-						Message::Data(message) => {
-							let failed = message.is_err();
-
-							// the receiver might have been dropped
-							if sender.send(message).is_err() {
-								break;
-							}
-
-							if failed {
-								break;
-							}
+						// the receiver might have been dropped
+						if sender.send(message).is_err() {
+							break;
 						}
-						Message::Close => {
-							stream.stop()?;
+
+						if failed {
 							break;
 						}
 					}
+					Message::Close => {
+						stream.stop()?;
+						break;
+					}
 				}
+			}
 
-				Ok(())
-			},
-			shutdown_sender,
-		);
+			Ok(())
+		});
 
 		Self { receiver, task }
 	}

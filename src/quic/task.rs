@@ -8,7 +8,7 @@ use std::{
 	task::{Context, Poll},
 };
 
-use futures_channel::oneshot::Sender;
+use futures_channel::oneshot::{self, Receiver, Sender};
 use futures_util::FutureExt;
 use parking_lot::Mutex;
 use tokio::task::{JoinError, JoinHandle};
@@ -36,15 +36,21 @@ struct Inner<R, S> {
 
 impl<R> Task<R> {
 	/// Builds a new [`Task`].
-	pub(super) fn new<T, S>(task: T, close: Sender<S>) -> Task<R, S>
+	pub(super) fn new<T, F, S>(task: T) -> Task<R, S>
 	where
-		T: Future<Output = R> + Send + 'static,
-		T::Output: Send + 'static,
+		T: FnOnce(Receiver<S>) -> F,
+		F: Future<Output = R> + Send + 'static,
+		F::Output: Send + 'static,
 	{
-		// TODO: configurable executor
-		let handle = tokio::spawn(task);
+		let (sender, receiver) = oneshot::channel();
 
-		Task(Arc::new(Mutex::new(Some(Inner { handle, close }))))
+		// TODO: configurable executor
+		let handle = tokio::spawn(task(receiver));
+
+		Task(Arc::new(Mutex::new(Some(Inner {
+			handle,
+			close: sender,
+		}))))
 	}
 
 	/// Builds a new empty [`Task`] that is already closed. This is useful to
@@ -117,7 +123,6 @@ impl<R, S> Future for &Task<R, S> {
 mod test {
 	use allochronic_util::select;
 	use anyhow::{Error, Result};
-	use futures_channel::oneshot;
 	use futures_util::StreamExt;
 
 	use super::Task;
@@ -127,25 +132,21 @@ mod test {
 	async fn task() -> Result<()> {
 		let (sender, receiver) = flume::unbounded();
 		let (tester_sender, tester_receiver) = flume::unbounded();
-		let (shutdown_sender, mut shutdown_receiver) = oneshot::channel();
 
-		let task = Task::new(
-			async move {
-				let mut receiver = receiver.into_stream();
+		let task = Task::new(|mut shutdown| async move {
+			let mut receiver = receiver.into_stream();
 
-				while let Some(message) = select!(
-					message: &mut receiver => message,
-					_: &mut shutdown_receiver => None,
-				) {
-					// send back our messages
-					tester_sender.send(message)?;
-				}
+			while let Some(message) = select!(
+				message: &mut receiver => message,
+				_: &mut shutdown => None,
+			) {
+				// send back our messages
+				tester_sender.send(message)?;
+			}
 
-				// return `true`
-				Result::<_, Error>::Ok(true)
-			},
-			shutdown_sender,
-		);
+			// return `true`
+			Result::<_, Error>::Ok(true)
+		});
 
 		// send a 100 messages
 		for item in 0_usize..100 {
@@ -172,14 +173,9 @@ mod test {
 	#[tokio::test]
 	#[should_panic = "test"]
 	async fn panic_poll() {
-		let (shutdown_sender, _) = oneshot::channel::<()>();
-
-		let task = Task::new(
-			async move {
-				panic!("test");
-			},
-			shutdown_sender,
-		);
+		let task: Task<()> = Task::new(|_| async move {
+			panic!("test");
+		});
 
 		(&task).await.expect("should panic before unwrapping");
 	}
@@ -187,14 +183,9 @@ mod test {
 	#[tokio::test]
 	#[should_panic = "test"]
 	async fn panic_close() {
-		let (shutdown_sender, _) = oneshot::channel();
-
-		let task = Task::new(
-			async move {
-				panic!("test");
-			},
-			shutdown_sender,
-		);
+		let task = Task::new(|_| async move {
+			panic!("test");
+		});
 
 		task.close(())
 			.await

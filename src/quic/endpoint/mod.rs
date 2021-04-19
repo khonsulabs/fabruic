@@ -14,7 +14,7 @@ use std::{
 use builder::Config;
 pub use builder::{Builder, Dangerous, Store};
 use flume::{r#async::RecvStream, Sender};
-use futures_channel::oneshot::{self, Receiver};
+use futures_channel::oneshot::Receiver;
 use futures_util::{
 	stream::{FusedStream, Stream},
 	StreamExt,
@@ -110,11 +110,7 @@ impl Endpoint {
 		// only servers need to deal with incoming connections
 		let task = if server {
 			// spawn task handling incoming `Connection`s
-			let (shutdown_sender, shutdown_receiver) = oneshot::channel();
-			Task::new(
-				Self::incoming(incoming, sender, shutdown_receiver),
-				shutdown_sender,
-			)
+			Task::new(|shutdown| Self::incoming(incoming, sender, shutdown))
 		} else {
 			Task::empty()
 		};

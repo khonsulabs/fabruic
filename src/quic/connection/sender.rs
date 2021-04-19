@@ -3,7 +3,6 @@
 use std::{convert::TryFrom, marker::PhantomData, mem::size_of};
 
 use bytes::{BufMut, Bytes, BytesMut};
-use futures_channel::oneshot;
 use quinn::{SendStream, VarInt};
 use serde::Serialize;
 
@@ -40,35 +39,31 @@ impl<T: Serialize> Sender<T> {
 		let (sender, receiver) = flume::unbounded();
 
 		// `Task` handling `Sender`
-		let (shutdown_sender, shutdown_receiver) = oneshot::channel();
-		let task = Task::new(
-			async move {
-				let mut receiver = receiver.into_stream();
-				let mut shutdown = shutdown_receiver;
+		let task = Task::new(|shutdown| async move {
+			let mut receiver = receiver.into_stream();
+			let mut shutdown = shutdown;
 
-				while let Some(message) = allochronic_util::select! {
-					message: &mut receiver => message.map(Message::Data),
-					shutdown: &mut shutdown => shutdown.ok(),
-				} {
-					match message {
-						Message::Data(bytes) => stream_sender.write_chunk(bytes).await?,
-						Message::Finish => {
-							stream_sender.finish().await?;
-							break;
-						}
-						Message::Close => {
-							stream_sender
-								.reset(VarInt::from_u32(0))
-								.map_err(|_error| error::AlreadyClosed)?;
-							break;
-						}
+			while let Some(message) = allochronic_util::select! {
+				message: &mut receiver => message.map(Message::Data),
+				shutdown: &mut shutdown => shutdown.ok(),
+			} {
+				match message {
+					Message::Data(bytes) => stream_sender.write_chunk(bytes).await?,
+					Message::Finish => {
+						stream_sender.finish().await?;
+						break;
+					}
+					Message::Close => {
+						stream_sender
+							.reset(VarInt::from_u32(0))
+							.map_err(|_error| error::AlreadyClosed)?;
+						break;
 					}
 				}
+			}
 
-				Ok(())
-			},
-			shutdown_sender,
-		);
+			Ok(())
+		});
 
 		Self {
 			sender,
