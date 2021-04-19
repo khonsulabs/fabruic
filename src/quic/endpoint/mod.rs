@@ -450,21 +450,40 @@ impl Endpoint {
 	/// [`Sender::finish`](crate::Sender::finish) and
 	/// [`wait_idle`](Self::wait_idle).
 	///
-	/// # Errors
-	/// [`error::AlreadyClosed`] if it was already closed.
-	pub async fn close(&self) -> Result<(), error::AlreadyClosed> {
+	/// # Examples
+	/// ```
+	/// # #[tokio::main] async fn main() -> anyhow::Result<()> {
+	/// use fabruic::Endpoint;
+	///
+	/// let endpoint = Endpoint::new_client()?;
+	/// endpoint.close();
+	/// # Ok(()) }
+	/// ```
+	pub async fn close(&self) {
 		self.endpoint.close(VarInt::from_u32(0), &[]);
-		// wait until it's actually closed, it might already be closed by
-		// `close_incoming` or by starting as a client
-		(&self.task).await
+		// we only want to wait until it's actually closed, it might already be closed
+		// by `close_incoming` or by starting as a client
+		let _result = (&self.task).await;
 	}
 
 	/// Prevents any new incoming connections. Already incoming connections will
-	/// finish first. This will always fail if the [`Endpoint`] wasn't started
-	/// with a listener.
+	/// finish first. This will always return [`error::AlreadyClosed`] if the
+	/// [`Endpoint`] wasn't started with a listener.
+	///
+	/// See [`Builder::set_server_key_pair`].
 	///
 	/// # Errors
 	/// [`error::AlreadyClosed`] if it was already closed.
+	///
+	/// # Examples
+	/// ```
+	/// # #[tokio::main] async fn main() -> anyhow::Result<()> {
+	/// use fabruic::{Endpoint, KeyPair};
+	///
+	/// let endpoint = Endpoint::new_server(0, KeyPair::new_self_signed("test"))?;
+	/// assert!(endpoint.close_incoming().await.is_ok());
+	/// # Ok(()) }
+	/// ```
 	pub async fn close_incoming(&self) -> Result<(), error::AlreadyClosed> {
 		self.task.close(()).await
 	}
