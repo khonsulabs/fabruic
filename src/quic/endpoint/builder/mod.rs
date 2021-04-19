@@ -529,6 +529,14 @@ impl ClientCertVerifier for ClientVerifier {
 }
 
 /// Configuration option for [`Builder::set_store`].
+///
+/// # Examples
+/// ```
+/// use fabruic::{Builder, Store};
+///
+/// let mut builder = Builder::new();
+/// builder.set_store(Store::Os);
+/// ```
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 pub enum Store {
 	/// Empty root certificate store.
@@ -552,6 +560,17 @@ pub trait Dangerous {
 	/// # Security
 	/// Managing your own root certificate store can make sense if a private CA
 	/// is used. Otherwise use [`Endpoint::connect_pinned`].
+	///
+	/// # Examples
+	/// ```
+	/// use fabruic::{dangerous, Builder, Store};
+	///
+	/// let mut builder = Builder::new();
+	/// builder.set_store(Store::Empty);
+	/// // CA certificate has to be imported from somewhere else
+	/// # let (ca_certificate, _) = fabruic::KeyPair::new_self_signed("test").into_parts();
+	/// dangerous::Builder::set_ca(&mut builder, [ca_certificate]);
+	/// ```
 	fn set_ca<C: Into<Vec<Certificate>>>(builder: &mut Self, certificates: C);
 }
 

@@ -300,7 +300,7 @@ impl Endpoint {
 	/// use fabruic::Endpoint;
 	///
 	/// let endpoint = Endpoint::new_client()?;
-	/// // the server certificate has to be important from somewhere else
+	/// // the server certificate has to be imported from somewhere else
 	/// # let (server_certificate, _) = fabruic::KeyPair::new_self_signed("localhost").into_parts();
 	/// let connecting = endpoint
 	/// 	.connect_pinned("quic://localhost:443", &server_certificate, None)
