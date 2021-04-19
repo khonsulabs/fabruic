@@ -88,9 +88,7 @@ impl<T> Receiver<T> {
 	/// [`Sender::finish`](crate::Sender::finish) or an error.
 	///
 	/// # Errors
-	/// - [`Error::Read`](crate::Error) if the [`Receiver`] failed to read from
-	///   the stream
-	/// - [`error::AlreadyClosed`](crate::Error) if it has already been closed
+	/// [`error::AlreadyClosed`] if it has already been closed.
 	pub async fn finish(&self) -> Result<(), error::AlreadyClosed> {
 		(&self.task).await?
 	}
@@ -99,9 +97,7 @@ impl<T> Receiver<T> {
 	/// use [`finish`](Self::finish).
 	///
 	/// # Errors
-	/// - [`Error::Read`](crate::Error) if the [`Receiver`] failed to read from
-	///   the stream
-	/// - [`error::AlreadyClosed`](crate::Error) if it has already been closed
+	/// [`error::AlreadyClosed`] if it has already been closed.
 	pub async fn close(&self) -> Result<(), error::AlreadyClosed> {
 		self.task.close(()).await?
 	}

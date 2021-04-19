@@ -30,12 +30,12 @@ impl Certificate {
 	/// validation of a [`Certificate`], it just offers some sane protections.
 	///
 	/// # Errors
-	/// - [`Error::ParseCertificate`] if the certificate couldn't be parsed
-	///
-	/// - [`Error::DanglingCertificate`] if the certificate contained
+	/// - [`CertificateError::WebPki`] or [`CertificateError::X509`] if the
+	///   certificate couldn't be parsed
+	/// - [`CertificateError::Dangling`] if the certificate contained
 	///   uncorrelated bytes
-	/// - [`Error::ExpiredCertificate`] if the certificate has expires
-	/// - [`Error::DomainCertificate`] if the certificate doesn't contain a
+	/// - [`CertificateError::Expired`] if the certificate has expires
+	/// - [`CertificateError::Domain`] if the certificate doesn't contain a
 	///   domain name
 	pub fn from_der(certificate: Vec<u8>) -> Result<Self, error::Certificate> {
 		// parse certificate with `webpki`, which is what `rustls` uses, which is what

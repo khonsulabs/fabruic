@@ -27,7 +27,7 @@ impl PrivateKey {
 	/// validation of a [`PrivateKey`], it just offers some sane protections.
 	///
 	/// # Errors
-	/// [`Error::ParsePrivateKey`] if the certificate couldn't be parsed.
+	/// [`error::PrivateKey`] if the certificate couldn't be parsed.
 	pub fn from_der(private_key: Vec<u8>) -> Result<Self, error::PrivateKey> {
 		let private_key = rustls::PrivateKey(private_key);
 
