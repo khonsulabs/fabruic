@@ -543,8 +543,11 @@ pub enum Store {
 
 /// Security-sensitive configuration for [`Builder`].
 pub trait Dangerous {
-	/// Add [`Certificate`]s into the certificate authority store for
-	/// [`connect`](Endpoint::connect)ing to a server.
+	/// Set [`Certificate`]s to be added into the root certificate store for
+	/// [`connect`](Endpoint::connect)ing to a server. This is added on
+	/// additionally to the set [`Store`].
+	///
+	/// See [`Builder::set_store`] and [`Store`].
 	///
 	/// # Security
 	/// Managing your own root certificate store can make sense if a private CA
