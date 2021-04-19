@@ -301,6 +301,7 @@ impl Endpoint {
 	/// let endpoint = Endpoint::new_client()?;
 	/// // the server certificate has to be imported from somewhere else
 	/// # let (server_certificate, _) = fabruic::KeyPair::new_self_signed("localhost").into_parts();
+	/// # let server_certificate = server_certificate.into_end_entity_certificate();
 	/// let connecting = endpoint
 	/// 	.connect_pinned("quic://localhost:443", &server_certificate, None)
 	/// 	.await?;
@@ -549,7 +550,7 @@ mod test {
 		let _connection = client
 			.connect_pinned(
 				format!("quic://{}", server.local_address()?),
-				key_pair.certificate(),
+				key_pair.end_entity_certificate(),
 				None,
 			)
 			.await?
@@ -576,7 +577,7 @@ mod test {
 		// `wait_idle` should never finish unless these `Connection`s are closed, which
 		// they won't unless they are dropped or explicitly closed
 		let _connection = client
-			.connect_pinned(&address, key_pair.certificate(), None)
+			.connect_pinned(&address, key_pair.end_entity_certificate(), None)
 			.await?
 			.accept::<()>()
 			.await?;
@@ -594,7 +595,7 @@ mod test {
 		// connecting to a closed server shouldn't work
 		assert!(matches!(
 			client
-				.connect_pinned(address, key_pair.certificate(), None)
+				.connect_pinned(address, key_pair.end_entity_certificate(), None)
 				.await?
 				.accept::<()>()
 				.await,
@@ -621,7 +622,7 @@ mod test {
 		// these `Connection`s should still work even if new incoming connections are
 		// refused
 		let client_connection = client
-			.connect_pinned(&address, key_pair.certificate(), None)
+			.connect_pinned(&address, key_pair.end_entity_certificate(), None)
 			.await?
 			.accept::<()>()
 			.await?;
@@ -646,7 +647,7 @@ mod test {
 
 		// connecting to a server that refuses new `Connection`s shouldn't work
 		let result = client
-			.connect_pinned(address, key_pair.certificate(), None)
+			.connect_pinned(address, key_pair.end_entity_certificate(), None)
 			.await?
 			.accept::<()>()
 			.await;
@@ -697,7 +698,7 @@ mod test {
 			let _connection = client
 				.connect_pinned(
 					format!("quic://{}", server.local_address()?),
-					key_pair.certificate(),
+					key_pair.end_entity_certificate(),
 					None,
 				)
 				.await?

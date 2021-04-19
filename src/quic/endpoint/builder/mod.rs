@@ -4,7 +4,7 @@ mod config;
 use std::{fmt::Debug, net::SocketAddr, sync::Arc};
 
 pub(super) use config::Config;
-use quinn::{CertificateChain, ServerConfigBuilder};
+use quinn::ServerConfigBuilder;
 use rustls::{ClientCertVerified, ClientCertVerifier, DistinguishedNames, TLSError};
 use serde::{Deserialize, Serialize};
 use webpki::DNSName;
@@ -464,9 +464,11 @@ impl Builder {
 				let mut server = server.build();
 
 				// set key-pair
-				let chain = CertificateChain::from_certs(Some(key_pair.certificate().as_quinn()));
 				let _ = server
-					.certificate(chain, key_pair.private_key().as_quinn())
+					.certificate(
+						key_pair.certificate_chain().as_quinn(),
+						key_pair.private_key().as_quinn(),
+					)
 					.expect("`CertificateChain` couldn't be verified");
 
 				// get inner rustls `ServerConfig`
@@ -559,7 +561,8 @@ pub trait Dangerous {
 	/// let mut builder = Builder::new();
 	/// builder.set_store(Store::Empty);
 	/// // CA certificate has to be imported from somewhere else
-	/// # let (ca_certificate, _) = fabruic::KeyPair::new_self_signed("test").into_parts();
+	/// # let (server_certificate, _) = fabruic::KeyPair::new_self_signed("localhost").into_parts();
+	/// # let ca_certificate = server_certificate.into_end_entity_certificate();
 	/// dangerous::Builder::set_root_certificates(&mut builder, [ca_certificate]);
 	/// ```
 	fn set_root_certificates<C: Into<Vec<Certificate>>>(builder: &mut Self, certificates: C);
@@ -626,7 +629,7 @@ mod test {
 		let _connection = client
 			.connect_pinned(
 				format!("quic://{}", server.local_address()?),
-				key_pair.certificate(),
+				key_pair.end_entity_certificate(),
 				None,
 			)
 			.await?
@@ -651,7 +654,9 @@ mod test {
 
 		// build client
 		let mut builder = Builder::new();
-		Dangerous::set_root_certificates(&mut builder, [server_key_pair.certificate().clone()]);
+		Dangerous::set_root_certificates(&mut builder, [server_key_pair
+			.end_entity_certificate()
+			.clone()]);
 		builder.set_client_key_pair(Some(client_key_pair.clone()));
 		let client = builder.build()?;
 
@@ -680,11 +685,10 @@ mod test {
 
 		// validate client certificate
 		assert_eq!(
-			[client_key_pair.into_parts().0],
-			connection
+			client_key_pair.certificate_chain(),
+			&connection
 				.peer_identity()
 				.expect("found no client certificate")
-				.as_slice()
 		);
 
 		Ok(())
@@ -723,7 +727,7 @@ mod test {
 		let mut connecting = client
 			.connect_pinned(
 				format!("quic://{}", server.local_address()?),
-				key_pair.certificate(),
+				key_pair.end_entity_certificate(),
 				None,
 			)
 			.await?;
@@ -779,7 +783,7 @@ mod test {
 		let result = client
 			.connect_pinned(
 				format!("quic://{}", server.local_address()?),
-				key_pair.certificate(),
+				key_pair.end_entity_certificate(),
 				None,
 			)
 			.await?

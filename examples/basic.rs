@@ -99,7 +99,7 @@ async fn main() -> Result<()> {
 	// start 100 clients
 	for index in 0..CLIENTS {
 		let address = address.clone();
-		let certificate = key_pair.certificate().clone();
+		let certificate = key_pair.end_entity_certificate().clone();
 
 		tasks.push(
 			tokio::spawn(async move {

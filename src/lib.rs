@@ -78,4 +78,4 @@ pub mod error;
 mod quic;
 
 pub use quic::{Builder, Connecting, Connection, Endpoint, Incoming, Receiver, Sender, Store};
-pub use x509::{Certificate, KeyPair, PrivateKey};
+pub use x509::{Certificate, CertificateChain, KeyPair, PrivateKey};

@@ -45,7 +45,9 @@ impl Certificate {
 	/// - [`CertificateError::Expired`] if the certificate has expires
 	/// - [`CertificateError::Domain`] if the certificate doesn't contain a
 	///   domain name
-	pub fn from_der(certificate: Vec<u8>) -> Result<Self, error::Certificate> {
+	pub fn from_der<C: Into<Vec<u8>>>(certificate: C) -> Result<Self, error::Certificate> {
+		let certificate = certificate.into();
+
 		// parse certificate with `webpki`, which is what `rustls` uses, which is what
 		// `quinn` uses
 		let _ = match EndEntityCert::from(&certificate) {
@@ -110,11 +112,11 @@ impl Certificate {
 	}
 
 	/// Build [`Certificate`] from DER-format. This skips the validation from
-	/// [`from_der`](Self::from_der), which isn't `unsafe`, but will fail
+	/// [`from_der`](Self::from_der), which isn't `unsafe`, but could fail
 	/// nonetheless when used on an [`Endpoint`](crate::Endpoint).
 	#[must_use]
-	pub fn unchecked_from_der(certificate: Vec<u8>) -> Self {
-		Self(certificate)
+	pub fn unchecked_from_der<C: Into<Vec<u8>>>(certificate: C) -> Self {
+		Self(certificate.into())
 	}
 
 	/// # Panics
@@ -145,14 +147,9 @@ impl Certificate {
 			.expect("`Certificate` contained no valid domains")
 	}
 
-	/// Convert into a type [`rustls`] can consume.
-	///
-	/// # Panics
-	/// Panics if [`Certificate`] couldn't be parsed or contained no valid
-	/// domain names. This can't happen if [`Certificate`] is constructed
-	/// correctly from [`from_der`](Self::from_der).
-	pub(crate) fn into_rustls(self) -> rustls::Certificate {
-		rustls::Certificate(self.into())
+	/// Convert from a [`rustls`] type.
+	pub(crate) fn from_rustls(certificate: rustls::Certificate) -> Self {
+		Self::unchecked_from_der(certificate.0)
 	}
 
 	/// Convert into a type [`quinn`] can consume.
@@ -164,18 +161,25 @@ impl Certificate {
 	pub(crate) fn as_quinn(&self) -> quinn::Certificate {
 		quinn::Certificate::from_der(self.as_ref()).expect("`Certificate` couldn't be parsed")
 	}
+
+	/// Convert into a type [`rustls`] can consume.
+	///
+	/// # Panics
+	/// Panics if [`Certificate`] couldn't be parsed or contained no valid
+	/// domain names. This can't happen if [`Certificate`] is constructed
+	/// correctly from [`from_der`](Self::from_der).
+	pub(crate) fn into_rustls(self) -> rustls::Certificate {
+		rustls::Certificate(self.into())
+	}
 }
 
 #[test]
 fn validate() -> anyhow::Result<()> {
 	use crate::KeyPair;
 
-	let (certificate, _) = KeyPair::new_self_signed("test").into_parts();
-
-	assert_eq!(
-		certificate,
-		Certificate::from_der(certificate.clone().into())?
-	);
+	let key_pair = KeyPair::new_self_signed("test");
+	let certificate = key_pair.end_entity_certificate();
+	assert_eq!(certificate, &Certificate::from_der(certificate.as_ref())?);
 
 	Ok(())
 }

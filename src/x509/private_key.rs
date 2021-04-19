@@ -39,8 +39,8 @@ impl PrivateKey {
 	///
 	/// # Errors
 	/// [`error::PrivateKey`] if the certificate couldn't be parsed.
-	pub fn from_der(private_key: Vec<u8>) -> Result<Self, error::PrivateKey> {
-		let private_key = rustls::PrivateKey(private_key);
+	pub fn from_der<P: Into<Vec<u8>>>(private_key: P) -> Result<Self, error::PrivateKey> {
+		let private_key = rustls::PrivateKey(private_key.into());
 
 		#[allow(box_pointers)]
 		if let Err(_error) = sign::any_supported_type(&private_key) {
@@ -51,11 +51,22 @@ impl PrivateKey {
 	}
 
 	/// Build [`PrivateKey`] from DER-format. This skips the validation from
-	/// [`from_der`](Self::from_der), which isn't `unsafe`, but will fail
+	/// [`from_der`](Self::from_der), which isn't `unsafe`, but could fail
 	/// nonetheless when used on an [`Endpoint`](crate::Endpoint).
 	#[must_use]
-	pub fn unchecked_from_der(private_key: Vec<u8>) -> Self {
-		Self(Some(private_key))
+	pub fn unchecked_from_der<P: Into<Vec<u8>>>(private_key: P) -> Self {
+		Self(Some(private_key.into()))
+	}
+
+	/// Convert into a type [`quinn`] can consume.
+	///
+	/// # Panics
+	/// Panics if [`PrivateKey`] couldn't be parsed. This can't happen if
+	/// [`PrivateKey`] is constructed correctly from
+	/// [`from_der`](Self::from_der).
+	pub(crate) fn as_quinn(&self) -> quinn::PrivateKey {
+		quinn::PrivateKey::from_der(Dangerous::as_ref(self))
+			.expect("`PrivateKey` couldn't be parsed")
 	}
 
 	/// Convert into a type [`rustls`] can consume.
@@ -68,17 +79,6 @@ impl PrivateKey {
 	pub(crate) fn into_rustls(self) -> Box<dyn SigningKey> {
 		sign::any_supported_type(&rustls::PrivateKey(Dangerous::into(self)))
 			.expect("`PrivateKey` not compatible with `rustls`")
-	}
-
-	/// Convert into a type [`quinn`] can consume.
-	///
-	/// # Panics
-	/// Panics if [`PrivateKey`] couldn't be parsed. This can't happen if
-	/// [`PrivateKey`] is constructed correctly from
-	/// [`from_der`](Self::from_der).
-	pub(crate) fn as_quinn(&self) -> quinn::PrivateKey {
-		quinn::PrivateKey::from_der(Dangerous::as_ref(self))
-			.expect("`PrivateKey` couldn't be parsed")
 	}
 }
 

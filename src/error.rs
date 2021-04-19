@@ -66,17 +66,26 @@ impl Debug for PrivateKey {
 	}
 }
 
-/// Failed to pair given [`Certificate`](crate::Certificate) and
+/// Failed to pair given [`CertificateChain`](crate::CertificateChain) and
 /// [`PrivateKey`](crate::PrivateKey) with
 /// [`KeyPair::from_parts`](crate::KeyPair::from_parts).
 #[derive(Clone, Debug, Eq, Error, Hash, Ord, PartialEq, PartialOrd)]
 #[error("Failed pairing `Certificate` and `PrivateKey`")]
 pub struct KeyPair {
-	/// [`Certificate`](crate::Certificate).
-	certificate: crate::Certificate,
+	/// [`CertificateChain`](crate::CertificateChain).
+	certificate: crate::CertificateChain,
 	/// [`PrivateKey`](crate::PrivateKey).
 	private_key: crate::PrivateKey,
 }
+
+/// Failed to verify the certificate chain with
+/// [`CertificateChain::from_certificates`].
+///
+/// [`CertificateChain::from_certificates`]:
+/// crate::CertificateChain::from_certificates
+#[derive(Clone, Debug, Eq, Error, Hash, Ord, PartialEq, PartialOrd)]
+#[error("Failed verifiying certificate chhain")]
+pub struct CertificateChain(Vec<crate::Certificate>);
 
 /// Attempting to close something that is already closed.
 #[derive(Clone, Copy, Debug, Eq, Error, Hash, Ord, PartialEq, PartialOrd)]
