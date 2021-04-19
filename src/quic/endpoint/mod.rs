@@ -560,8 +560,8 @@ mod test {
 			.await?;
 
 		// closing the client/server will close all connection immediately
-		assert!(matches!(client.close().await, Err(error::AlreadyClosed)));
-		server.close().await?;
+		client.close().await;
+		server.close().await;
 
 		// connecting to a closed server shouldn't work
 		assert!(matches!(

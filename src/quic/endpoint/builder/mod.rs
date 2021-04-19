@@ -32,7 +32,7 @@ pub struct Builder {
 	address: SocketAddr,
 	/// Custom root [`Certificate`]s.
 	root_certificates: Vec<Certificate>,
-	/// Server certificate ley-pair.
+	/// Server certificate key-pair.
 	server_key_pair: Option<KeyPair>,
 	/// Client certificate key-pair.
 	client_key_pair: Option<KeyPair>,
@@ -543,18 +543,18 @@ pub enum Store {
 
 /// Security-sensitive configuration for [`Builder`].
 pub trait Dangerous {
-	/// Adds a [`Certificate`] into the default certificate authority store for
-	/// [`connection`](Endpoint::connect)ing to a server.
+	/// Add [`Certificate`]s into the certificate authority store for
+	/// [`connect`](Endpoint::connect)ing to a server.
 	///
 	/// # Security
 	/// Managing your own root certificate store can make sense if a private CA
 	/// is used. Otherwise use [`Endpoint::connect_pinned`].
-	fn add_ca(builder: &mut Self, certificate: Certificate);
+	fn set_ca<C: Into<Vec<Certificate>>>(builder: &mut Self, certificates: C);
 }
 
 impl Dangerous for Builder {
-	fn add_ca(builder: &mut Self, certificate: Certificate) {
-		builder.root_certificates.push(certificate);
+	fn set_ca<C: Into<Vec<Certificate>>>(builder: &mut Self, certificates: C) {
+		builder.root_certificates = certificates.into();
 	}
 }
 
@@ -638,7 +638,7 @@ mod test {
 
 		// build client
 		let mut builder = Builder::new();
-		Dangerous::add_ca(&mut builder, server_key_pair.certificate().clone());
+		Dangerous::set_ca(&mut builder, [server_key_pair.certificate().clone()]);
 		let _ = builder.set_client_key_pair(Some(client_key_pair.clone()));
 		let client = builder.build()?;
 

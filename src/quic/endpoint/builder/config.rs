@@ -4,7 +4,10 @@
 use std::{ops::Deref, sync::Arc};
 
 use quinn::{ClientConfig, ClientConfigBuilder, TransportConfig};
-use rustls::{sign::CertifiedKey, ResolvesClientCert, RootCertStore, SignatureScheme};
+use rustls::{
+	sign::CertifiedKey, OwnedTrustAnchor, ResolvesClientCert, RootCertStore, SignatureScheme,
+};
+use webpki::trust_anchor_util;
 
 use crate::{Certificate, KeyPair, Store};
 
@@ -178,17 +181,18 @@ impl Config {
 				}
 			}
 
+			// add custom root certificates
+			let certificates = certificates.into_iter().map(|certificate| {
+				let anchor = trust_anchor_util::cert_der_as_trust_anchor(certificate.as_ref())
+					.expect("`Certificate` couldn't be parsed");
+				OwnedTrustAnchor::from_trust_anchor(&anchor)
+			});
+			crypto.root_store.roots.extend(certificates);
+
 			// insert client certificate
 			if let Some(key_pair) = client_key_pair {
 				crypto.client_auth_cert_resolver = CertificateResolver::new(key_pair);
 			}
-		}
-
-		// add root certificates
-		for certificate in certificates {
-			let _ = client
-				.add_certificate_authority(certificate.as_quinn())
-				.expect("`Certificate` couldn't be added as a CA");
 		}
 
 		// set transport
