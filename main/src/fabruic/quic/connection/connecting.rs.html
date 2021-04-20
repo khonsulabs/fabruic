@@ -60,7 +60,7 @@
 <span class="kw">use</span> <span class="ident">quinn::NewConnection</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">de::DeserializeOwned</span>, <span class="ident">Serialize</span>};
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">error</span>, <span class="ident">Connection</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">error</span>, <span class="ident">Connection</span>};
 
 <span class="doccomment">/// Represent&#39;s an intermediate state to build a [`Connection`].</span>
 <span class="attribute">#[<span class="ident">must_use</span> <span class="op">=</span> <span class="string">&quot;`Connecting` does nothing unless accepted with `Connecting::accept`&quot;</span>]</span>

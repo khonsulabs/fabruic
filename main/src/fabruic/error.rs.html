@@ -196,14 +196,39 @@
 <span id="193">193</span>
 <span id="194">194</span>
 <span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
-<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy::exhaustive_structs</span>)]</span>
+<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">box_pointers</span>, <span class="ident">clippy::exhaustive_structs</span>)]</span>
 
 <span class="doccomment">//! [`Error`](std::error::Error) for this [`crate`].</span>
 <span class="comment">// TODO: error type is becoming too big, split it up</span>
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">io::Error</span> <span class="kw">as</span> <span class="ident">IoError</span>, <span class="ident">net::AddrParseError</span>};
+<span class="kw">use</span> <span class="ident">std</span>::{
+	<span class="ident">fmt</span>::{<span class="self">self</span>, <span class="ident">Debug</span>, <span class="ident">Formatter</span>},
+	<span class="ident">io</span>,
+};
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">bincode::ErrorKind</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">quinn</span>::{<span class="ident">ConnectError</span>, <span class="ident">ConnectionError</span>, <span class="ident">ReadError</span>, <span class="ident">WriteError</span>};
@@ -211,15 +236,81 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">doc</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)))]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">trust_dns_resolver::error::ResolveError</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">url::ParseError</span> <span class="kw">as</span> <span class="ident">UrlParseError</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">webpki::Error</span> <span class="kw">as</span> <span class="ident">WebPkiError</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">url::ParseError</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">webpki::Error</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">x509_parser</span>::{<span class="ident">error::X509Error</span>, <span class="ident">nom::Err</span>};
+<span class="kw">use</span> <span class="ident">zeroize::Zeroize</span>;
 
-<span class="doccomment">/// [`Result`](std::result::Result) type for this [`crate`].</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span> <span class="op">=</span> <span class="ident">Error</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>;
+<span class="doccomment">/// Error constructing [`Certificate`](crate::Certificate) with</span>
+<span class="doccomment">/// [`Certificate::from_der`](crate::Certificate::from_der).</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
+<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error constructing `Certificate` from bytes: {error}&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Certificate</span> {
+	<span class="doccomment">/// The error.</span>
+	<span class="attribute">#[<span class="ident">source</span>]</span>
+	<span class="kw">pub</span> <span class="ident">error</span>: <span class="ident">CertificateError</span>,
+	<span class="doccomment">/// The bytes used to build the [`Certificate`](crate::Certificate).</span>
+	<span class="kw">pub</span> <span class="ident">certificate</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+}
+
+<span class="doccomment">/// Error constructing [`Certificate`](crate::Certificate) with</span>
+<span class="doccomment">/// [`Certificate::from_der`](crate::Certificate::from_der).</span>
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::module_name_repetitions</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">CertificateError</span> {
+	<span class="doccomment">/// [`Error`](std::error::Error) returned by [`webpki`].</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
+	<span class="ident">WebPki</span>(<span class="ident">Error</span>),
+	<span class="doccomment">/// [`Error`](std::error::Error) returned by [`x509_parser`].</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
+	<span class="ident">X509</span>(<span class="prelude-val">Err</span><span class="op">&lt;</span><span class="ident">X509Error</span><span class="op">&gt;</span>),
+	<span class="doccomment">/// Bytes passed contain uncorrelated bytes.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Found dangling bytes in `Certificate`&quot;</span>)]</span>
+	<span class="ident">Dangling</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>),
+	<span class="doccomment">/// [`Certificate`](crate::Certificate) has expired.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;`Certificate` has expired&quot;</span>)]</span>
+	<span class="ident">Expired</span>,
+	<span class="doccomment">/// [`Certificate`](crate::Certificate) is missing a domain name.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;`Certificate` is missing a domain name&quot;</span>)]</span>
+	<span class="ident">Domain</span>,
+}
+
+<span class="doccomment">/// Failed to parse the given private key with</span>
+<span class="doccomment">/// [`PrivateKey::from_der`](crate::PrivateKey::from_der).</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">Error</span>, <span class="ident">Hash</span>, <span class="ident">Ord</span>, <span class="ident">PartialEq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Zeroize</span>)]</span>
+<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed parsing private key&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">zeroize</span>(<span class="ident">drop</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PrivateKey</span>(<span class="kw">pub</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>);
+
+<span class="kw">impl</span> <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">PrivateKey</span> {
+	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
+		<span class="ident">f</span>.<span class="ident">debug_tuple</span>(<span class="string">&quot;PrivateKey&quot;</span>).<span class="ident">field</span>(<span class="kw-2">&amp;</span><span class="string">&quot;[[redacted]]&quot;</span>).<span class="ident">finish</span>()
+	}
+}
+
+<span class="doccomment">/// Failed to pair given [`CertificateChain`](crate::CertificateChain) and</span>
+<span class="doccomment">/// [`PrivateKey`](crate::PrivateKey) with</span>
+<span class="doccomment">/// [`KeyPair::from_parts`](crate::KeyPair::from_parts).</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Eq</span>, <span class="ident">Error</span>, <span class="ident">Hash</span>, <span class="ident">Ord</span>, <span class="ident">PartialEq</span>, <span class="ident">PartialOrd</span>)]</span>
+<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed pairing `Certificate` and `PrivateKey`&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KeyPair</span> {
+	<span class="doccomment">/// [`CertificateChain`](crate::CertificateChain).</span>
+	<span class="ident">certificate</span>: <span class="kw">crate</span><span class="ident">::CertificateChain</span>,
+	<span class="doccomment">/// [`PrivateKey`](crate::PrivateKey).</span>
+	<span class="ident">private_key</span>: <span class="kw">crate</span><span class="ident">::PrivateKey</span>,
+}
+
+<span class="doccomment">/// Failed to verify the certificate chain with</span>
+<span class="doccomment">/// [`CertificateChain::from_certificates`].</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// [`CertificateChain::from_certificates`]:</span>
+<span class="doccomment">/// crate::CertificateChain::from_certificates</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Eq</span>, <span class="ident">Error</span>, <span class="ident">Hash</span>, <span class="ident">Ord</span>, <span class="ident">PartialEq</span>, <span class="ident">PartialOrd</span>)]</span>
+<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed verifiying certificate chhain&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CertificateChain</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">crate</span><span class="ident">::Certificate</span><span class="op">&gt;</span>);
 
 <span class="doccomment">/// Attempting to close something that is already closed.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">Eq</span>, <span class="ident">Error</span>, <span class="ident">Hash</span>, <span class="ident">Ord</span>, <span class="ident">PartialEq</span>, <span class="ident">PartialOrd</span>)]</span>
 <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;This is already closed&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AlreadyClosed</span>;
 
@@ -230,7 +321,7 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Builder</span> {
 	<span class="doccomment">/// The error binding [`Endpoint`](crate::Endpoint).</span>
 	<span class="attribute">#[<span class="ident">source</span>]</span>
-	<span class="kw">pub</span> <span class="ident">error</span>: <span class="ident">IoError</span>,
+	<span class="kw">pub</span> <span class="ident">error</span>: <span class="ident">io::Error</span>,
 	<span class="doccomment">/// Recovered [`Builder`](crate::Builder) for re-use.</span>
 	<span class="kw">pub</span> <span class="ident">builder</span>: <span class="kw">crate</span><span class="ident">::Builder</span>,
 }
@@ -249,7 +340,7 @@
 	<span class="ident">MultipleDomains</span>,
 	<span class="doccomment">/// Failed to parse URL.</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error parsing URL: {0}&quot;</span>)]</span>
-	<span class="ident">ParseUrl</span>(<span class="ident">UrlParseError</span>),
+	<span class="ident">ParseUrl</span>(<span class="ident">ParseError</span>),
 	<span class="doccomment">/// URL didn&#39;t contain a domain.</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;URL without a domain is invalid&quot;</span>)]</span>
 	<span class="ident">Domain</span>,
@@ -258,7 +349,7 @@
 	<span class="ident">Port</span>,
 	<span class="doccomment">/// Failed to parse domain.</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error parsing domain: {0}&quot;</span>)]</span>
-	<span class="ident">ParseDomain</span>(<span class="ident">UrlParseError</span>),
+	<span class="ident">ParseDomain</span>(<span class="ident">ParseError</span>),
 	<span class="doccomment">/// Failed to resolve domain with [`trust-dns`](trust_dns_resolver).</span>
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
 	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">doc</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)))]</span>
@@ -267,7 +358,7 @@
 	<span class="doccomment">/// Failed to resolve domain with</span>
 	<span class="doccomment">/// [`ToSocketAddrs`](std::net::ToSocketAddrs).</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error resolving domain with `ToSocketAddrs`: {0}&quot;</span>)]</span>
-	<span class="ident">StdDns</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">IoError</span>),
+	<span class="ident">StdDns</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">io::Error</span>),
 	<span class="doccomment">/// Found no IP address for that domain.</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Found no IP address for that domain&quot;</span>)]</span>
 	<span class="ident">NoIp</span>,
@@ -278,14 +369,14 @@
 
 <span class="doccomment">/// Error receiving connection from peer with [`Stream`](futures_util::Stream)</span>
 <span class="doccomment">/// on from [`Connection`](crate::Connection).</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Eq</span>, <span class="ident">Error</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error receiving connection from peer: {0}&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Connection</span>(<span class="kw">pub</span> <span class="ident">ConnectionError</span>);
 
 <span class="doccomment">/// Error completing connection with peer with</span>
 <span class="doccomment">/// [`Incoming::type`](crate::Incoming::type) or</span>
 <span class="doccomment">/// [`Incoming::accept`](crate::Incoming::accept).</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Eq</span>, <span class="ident">Error</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Error completing connection with peer: {0}&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Connecting</span>(<span class="kw">pub</span> <span class="ident">ConnectionError</span>);
 
@@ -346,51 +437,6 @@
 	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">error</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">ErrorKind</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="self">Self</span><span class="ident">::Serialize</span>(<span class="kw-2">*</span><span class="ident">error</span>)
 	}
-}
-
-<span class="doccomment">/// [`Error`](std::error::Error) for this [`crate`].</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span> {
-	<span class="doccomment">/// Failed to parse the given certificate.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed parsing certificate: {error}&quot;</span>)]</span>
-	<span class="ident">ParseCertificate</span> {
-		<span class="doccomment">/// The certificate passed to</span>
-		<span class="doccomment">/// [`from_der`](crate::Certificate::from_der).</span>
-		<span class="ident">certificate</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
-		<span class="doccomment">/// The parsing error.</span>
-		<span class="ident">error</span>: <span class="ident">ParseCertificate</span>,
-	},
-	<span class="doccomment">/// Data passed to generate [`Certificate`](crate::Certificate) with</span>
-	<span class="doccomment">/// [`from_der`](crate::Certificate::from_der) found to contain</span>
-	<span class="doccomment">/// uncorrelated bytes.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Found dangling bytes in `Certificate`&quot;</span>)]</span>
-	<span class="ident">DanglingCertificate</span> {
-		<span class="doccomment">/// The certificate passed to</span>
-		<span class="doccomment">/// [`from_der`](crate::Certificate::from_der).</span>
-		<span class="ident">certificate</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
-		<span class="doccomment">/// The dangling bytes.</span>
-		<span class="ident">dangling</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
-	},
-	<span class="doccomment">/// [`Certificate`](crate::Certificate) has expired.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;`Certificate` has expired&quot;</span>)]</span>
-	<span class="ident">ExpiredCertificate</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>),
-	<span class="doccomment">/// [`Certificate`](crate::Certificate) is missing a domain name.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;`Certificate` is missing a domain name&quot;</span>)]</span>
-	<span class="ident">DomainCertificate</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>),
-	<span class="doccomment">/// Failed to parse the given private key.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed parsing private key&quot;</span>)]</span>
-	<span class="ident">ParsePrivateKey</span>,
-}
-
-<span class="doccomment">/// Possible certificate parsing errors.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ParseCertificate</span> {
-	<span class="doccomment">/// [`Error`](std::error::Error) returned by [`webpki`].</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
-	<span class="ident">WebPki</span>(<span class="ident">WebPkiError</span>),
-	<span class="doccomment">/// [`Error`](std::error::Error) returned by [`x509_parser`].</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
-	<span class="ident">X509</span>(<span class="prelude-val">Err</span><span class="op">&lt;</span><span class="ident">X509Error</span><span class="op">&gt;</span>),
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="fabruic" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>

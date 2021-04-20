@@ -175,32 +175,86 @@
 <span id="172">172</span>
 <span id="173">173</span>
 <span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! X509 public key certificate handling.</span>
 
 <span class="kw">mod</span> <span class="ident">certificate</span>;
+<span class="kw">mod</span> <span class="ident">certificate_chain</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">private_key</span>;
-<span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">convert::TryFrom</span>, <span class="ident">sync::Arc</span>};
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">certificate::Certificate</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">certificate_chain::CertificateChain</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">private_key::PrivateKey</span>;
 <span class="kw">use</span> <span class="ident">rustls::sign::CertifiedKey</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">ser::SerializeStruct</span>, <span class="ident">Deserialize</span>, <span class="ident">Deserializer</span>, <span class="ident">Serializer</span>};
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::Result</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::error</span>;
 
-<span class="doccomment">/// A key-pair, consisting of a [`Certificate`] and [`PrivateKey`].</span>
+<span class="doccomment">/// A key-pair, consisting of a [`CertificateChain`] and [`PrivateKey`].</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Deserialize</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>, <span class="ident">Ord</span>, <span class="ident">PartialEq</span>, <span class="ident">PartialOrd</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KeyPair</span> {
-	<span class="doccomment">/// The public [`Certificate`].</span>
-	<span class="ident">certificate</span>: <span class="ident">Certificate</span>,
+	<span class="doccomment">/// The public [`CertificateChain`].</span>
+	<span class="ident">certificate_chain</span>: <span class="ident">CertificateChain</span>,
 	<span class="doccomment">/// The secret [`PrivateKey`].</span>
 	<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deserialize_with</span> <span class="op">=</span> <span class="string">&quot;deserialize_private_key&quot;</span>)]</span>
 	<span class="ident">private_key</span>: <span class="ident">PrivateKey</span>,
 }
 
+<span class="kw">impl</span> <span class="ident">TryFrom</span><span class="op">&lt;</span>(<span class="ident">CertificateChain</span>, <span class="ident">PrivateKey</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">KeyPair</span> {
+	<span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">error::KeyPair</span>;
+
+	<span class="kw">fn</span> <span class="ident">try_from</span>(
+		(<span class="ident">certificate_chain</span>, <span class="ident">private_key</span>): (<span class="ident">CertificateChain</span>, <span class="ident">PrivateKey</span>),
+	) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="self">Self</span><span class="ident">::Error</span><span class="op">&gt;</span> {
+		<span class="self">Self</span><span class="ident">::from_parts</span>(<span class="ident">certificate_chain</span>, <span class="ident">private_key</span>)
+	}
+}
+
 <span class="kw">impl</span> <span class="ident">KeyPair</span> {
-	<span class="doccomment">/// Generate a self signed [`Certificate`].</span>
+	<span class="doccomment">/// Generate a self signed certificate.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_self_signed</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">domain</span>: <span class="ident">S</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
 		<span class="kw">let</span> <span class="ident">key_pair</span> <span class="op">=</span> <span class="ident">rcgen::generate_simple_self_signed</span>([<span class="ident">domain</span>.<span class="ident">into</span>()])
 			.<span class="ident">expect</span>(<span class="string">&quot;`rcgen` failed generating a self-signed certificate&quot;</span>);
@@ -210,35 +264,65 @@
 				.<span class="ident">serialize_der</span>()
 				.<span class="ident">expect</span>(<span class="string">&quot;`rcgen` failed serializing a certificate&quot;</span>),
 		);
+		<span class="kw">let</span> <span class="ident">certificate_chain</span> <span class="op">=</span> <span class="ident">CertificateChain::unchecked_from_certificates</span>([<span class="ident">certificate</span>]);
 
 		<span class="kw">let</span> <span class="ident">private_key</span> <span class="op">=</span> <span class="ident">PrivateKey::unchecked_from_der</span>(<span class="ident">key_pair</span>.<span class="ident">serialize_private_key_der</span>());
 
 		<span class="self">Self</span> {
-			<span class="ident">certificate</span>,
+			<span class="ident">certificate_chain</span>,
 			<span class="ident">private_key</span>,
 		}
 	}
 
-	<span class="doccomment">/// Builds a new [`KeyPair`] from the given [`Certificate`] and</span>
+	<span class="doccomment">/// Builds a new [`KeyPair`] from the given [`CertificateChain`] and</span>
 	<span class="doccomment">/// [`PrivateKey`]. Will validate if they pair up correctly.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// This presumes that [`Certificate`] and [`PrivateKey`] are valid, see</span>
-	<span class="doccomment">/// [`Certificate::from_der`] and [`PrivateKey::from_der`].</span>
+	<span class="doccomment">/// This presumes that [`CertificateChain`] and [`PrivateKey`] are valid,</span>
+	<span class="doccomment">/// see [`CertificateChain::from_certificates`] and</span>
+	<span class="doccomment">/// [`PrivateKey::from_der`].</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Errors</span>
 	<span class="doccomment">/// TODO: this doesn&#39;t do any validation yet</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_parts</span>(<span class="ident">certificate</span>: <span class="ident">Certificate</span>, <span class="ident">private_key</span>: <span class="ident">PrivateKey</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_parts</span>(
+		<span class="ident">certificate_chain</span>: <span class="ident">CertificateChain</span>,
+		<span class="ident">private_key</span>: <span class="ident">PrivateKey</span>,
+	) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">error::KeyPair</span><span class="op">&gt;</span> {
 		<span class="comment">// TODO: validate if they pair up, see &lt;https://github.com/ctz/rustls/issues/618&gt;</span>
 		<span class="prelude-val">Ok</span>(<span class="self">Self</span> {
-			<span class="ident">certificate</span>,
+			<span class="ident">certificate_chain</span>,
 			<span class="ident">private_key</span>,
 		})
 	}
 
-	<span class="doccomment">/// Return the public [`Certificate`] of this [`KeyPair`].</span>
+	<span class="doccomment">/// Build [`KeyPair`] from the given [`CertificateChain`] and</span>
+	<span class="doccomment">/// [`PrivateKey`]. This skips the validation from</span>
+	<span class="doccomment">/// [`from_parts`](Self::from_parts), which isn&#39;t `unsafe`, but could fail</span>
+	<span class="doccomment">/// nonetheless when used on an [`Endpoint`](crate::Endpoint).</span>
 	<span class="attribute">#[<span class="ident">must_use</span>]</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">certificate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Certificate</span> {
-		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">certificate</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unchecked_from_parts</span>(
+		<span class="ident">certificate_chain</span>: <span class="ident">CertificateChain</span>,
+		<span class="ident">private_key</span>: <span class="ident">PrivateKey</span>,
+	) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+		<span class="self">Self</span> {
+			<span class="ident">certificate_chain</span>,
+			<span class="ident">private_key</span>,
+		}
+	}
+
+	<span class="doccomment">/// Return the [`CertificateChain`] of this [`KeyPair`].</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">certificate_chain</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">CertificateChain</span> {
+		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">certificate_chain</span>
+	}
+
+	<span class="doccomment">/// Returns the end-entity [`Certificate`].</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Panics</span>
+	<span class="doccomment">/// If the [`KeyPair`] is invalid. This can&#39;t happen if validated</span>
+	<span class="doccomment">/// through [`from_parts`](Self::from_parts).</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">end_entity_certificate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Certificate</span> {
+		<span class="self">self</span>.<span class="ident">certificate_chain</span>.<span class="ident">end_entity_certificate</span>()
 	}
 
 	<span class="doccomment">/// Return the secret [`PrivateKey`] of this [`KeyPair`].</span>
@@ -250,20 +334,20 @@
 	<span class="doccomment">/// Destructure [`KeyPair`] into it&#39;s owned parts.</span>
 	<span class="attribute">#[<span class="ident">must_use</span>]</span>
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::missing_const_for_fn</span>)]</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_parts</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">Certificate</span>, <span class="ident">PrivateKey</span>) {
-		(<span class="self">self</span>.<span class="ident">certificate</span>, <span class="self">self</span>.<span class="ident">private_key</span>)
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_parts</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">CertificateChain</span>, <span class="ident">PrivateKey</span>) {
+		(<span class="self">self</span>.<span class="ident">certificate_chain</span>, <span class="self">self</span>.<span class="ident">private_key</span>)
 	}
 
 	<span class="doccomment">/// Destructure [`KeyPair`] into it&#39;s borrowed parts.</span>
 	<span class="attribute">#[<span class="ident">must_use</span>]</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">parts</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="kw-2">&amp;</span><span class="ident">Certificate</span>, <span class="kw-2">&amp;</span><span class="ident">PrivateKey</span>) {
-		(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">certificate</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">private_key</span>)
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">parts</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="kw-2">&amp;</span><span class="ident">CertificateChain</span>, <span class="kw-2">&amp;</span><span class="ident">PrivateKey</span>) {
+		(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">certificate_chain</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">private_key</span>)
 	}
 
 	<span class="doccomment">/// Convert into a type [`rustls`] can consume.</span>
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">into_rustls</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CertifiedKey</span> {
 		<span class="ident">CertifiedKey::new</span>(
-			<span class="macro">vec!</span>[<span class="self">self</span>.<span class="ident">certificate</span>.<span class="ident">into_rustls</span>()],
+			<span class="self">self</span>.<span class="ident">certificate_chain</span>.<span class="ident">into_rustls</span>(),
 			<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
 			<span class="ident">Arc::new</span>(<span class="self">self</span>.<span class="ident">private_key</span>.<span class="ident">into_rustls</span>()),
 		)
@@ -290,7 +374,7 @@
 <span class="kw">impl</span> <span class="ident">Dangerous</span> <span class="kw">for</span> <span class="ident">KeyPair</span> {
 	<span class="kw">fn</span> <span class="ident">serialize</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">Serializer</span><span class="op">&gt;</span>(<span class="ident">key_pair</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">serializer</span>: <span class="ident">S</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">S::Ok</span>, <span class="ident">S::Error</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">serializer</span> <span class="op">=</span> <span class="ident">serializer</span>.<span class="ident">serialize_struct</span>(<span class="string">&quot;KeyPair&quot;</span>, <span class="number">2</span>)<span class="question-mark">?</span>;
-		<span class="ident">serializer</span>.<span class="ident">serialize_field</span>(<span class="string">&quot;certificate&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">key_pair</span>.<span class="ident">certificate</span>)<span class="question-mark">?</span>;
+		<span class="ident">serializer</span>.<span class="ident">serialize_field</span>(<span class="string">&quot;certificate_chain&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">key_pair</span>.<span class="ident">certificate_chain</span>)<span class="question-mark">?</span>;
 		<span class="comment">// we can&#39;t directly serialize `PrivateKey`, so instead we serialize it&#39;s</span>
 		<span class="comment">// innards - when deserializing we have to do this in revert and be careful not</span>
 		<span class="comment">// to directly deserialize `PrivateKey`</span>
@@ -344,8 +428,8 @@
 	<span class="kw">let</span> <span class="ident">key_pair</span> <span class="op">=</span> <span class="ident">KeyPair::new_self_signed</span>(<span class="string">&quot;test&quot;</span>);
 	<span class="macro">assert_eq!</span>(
 		<span class="macro">format!</span>(
-			<span class="string">&quot;KeyPair {{ certificate: {:?}, private_key: PrivateKey(\&quot;[[redacted]]\&quot;) }}&quot;</span>,
-			<span class="ident">key_pair</span>.<span class="ident">certificate</span>()
+			<span class="string">&quot;KeyPair {{ certificate_chain: {:?}, private_key: PrivateKey(\&quot;[[redacted]]\&quot;) }}&quot;</span>,
+			<span class="ident">key_pair</span>.<span class="ident">certificate_chain</span>()
 		),
 		<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">key_pair</span>)
 	);
