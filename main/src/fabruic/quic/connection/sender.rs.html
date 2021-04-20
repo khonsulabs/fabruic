@@ -163,17 +163,23 @@
 <span id="160">160</span>
 <span id="161">161</span>
 <span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! [`Sender`] part of a stream.</span>
 
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">convert::TryFrom</span>, <span class="ident">marker::PhantomData</span>, <span class="ident">mem::size_of</span>};
 
 <span class="kw">use</span> <span class="ident">bytes</span>::{<span class="ident">BufMut</span>, <span class="ident">Bytes</span>, <span class="ident">BytesMut</span>};
+<span class="kw">use</span> <span class="ident">futures_channel::oneshot</span>;
 <span class="kw">use</span> <span class="ident">quinn</span>::{<span class="ident">SendStream</span>, <span class="ident">VarInt</span>};
 <span class="kw">use</span> <span class="ident">serde::Serialize</span>;
 
 <span class="kw">use</span> <span class="kw">super</span><span class="ident">::Task</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::error</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">error</span>, <span class="prelude-ty">Result</span>};
 
 <span class="doccomment">/// Used to send data to a stream.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
@@ -205,31 +211,35 @@
 		<span class="kw">let</span> (<span class="ident">sender</span>, <span class="ident">receiver</span>) <span class="op">=</span> <span class="ident">flume::unbounded</span>();
 
 		<span class="comment">// `Task` handling `Sender`</span>
-		<span class="kw">let</span> <span class="ident">task</span> <span class="op">=</span> <span class="ident">Task::new</span>(<span class="op">|</span><span class="ident">shutdown</span><span class="op">|</span> <span class="kw">async</span> <span class="kw">move</span> {
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">receiver</span> <span class="op">=</span> <span class="ident">receiver</span>.<span class="ident">into_stream</span>();
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">shutdown</span> <span class="op">=</span> <span class="ident">shutdown</span>;
+		<span class="kw">let</span> (<span class="ident">shutdown_sender</span>, <span class="ident">shutdown_receiver</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
+		<span class="kw">let</span> <span class="ident">task</span> <span class="op">=</span> <span class="ident">Task::new</span>(
+			<span class="kw">async</span> <span class="kw">move</span> {
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">receiver</span> <span class="op">=</span> <span class="ident">receiver</span>.<span class="ident">into_stream</span>();
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">shutdown</span> <span class="op">=</span> <span class="ident">shutdown_receiver</span>;
 
-			<span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">message</span>) <span class="op">=</span> <span class="macro">allochronic_util::select!</span> {
-				<span class="ident">message</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">receiver</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">message</span>.<span class="ident">map</span>(<span class="ident">Message::Data</span>),
-				<span class="ident">shutdown</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">shutdown</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">shutdown</span>.<span class="ident">ok</span>(),
-			} {
-				<span class="kw">match</span> <span class="ident">message</span> {
-					<span class="ident">Message::Data</span>(<span class="ident">bytes</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">stream_sender</span>.<span class="ident">write_chunk</span>(<span class="ident">bytes</span>).<span class="kw">await</span><span class="question-mark">?</span>,
-					<span class="ident">Message::Finish</span> <span class="op">=</span><span class="op">&gt;</span> {
-						<span class="ident">stream_sender</span>.<span class="ident">finish</span>().<span class="kw">await</span><span class="question-mark">?</span>;
-						<span class="kw">break</span>;
-					}
-					<span class="ident">Message::Close</span> <span class="op">=</span><span class="op">&gt;</span> {
-						<span class="ident">stream_sender</span>
-							.<span class="ident">reset</span>(<span class="ident">VarInt::from_u32</span>(<span class="number">0</span>))
-							.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">_error</span><span class="op">|</span> <span class="ident">error::AlreadyClosed</span>)<span class="question-mark">?</span>;
-						<span class="kw">break</span>;
+				<span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">message</span>) <span class="op">=</span> <span class="macro">allochronic_util::select!</span> {
+					<span class="ident">message</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">receiver</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">message</span>.<span class="ident">map</span>(<span class="ident">Message::Data</span>),
+					<span class="ident">shutdown</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">shutdown</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">shutdown</span>.<span class="ident">ok</span>(),
+				} {
+					<span class="kw">match</span> <span class="ident">message</span> {
+						<span class="ident">Message::Data</span>(<span class="ident">bytes</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">stream_sender</span>.<span class="ident">write_chunk</span>(<span class="ident">bytes</span>).<span class="kw">await</span><span class="question-mark">?</span>,
+						<span class="ident">Message::Finish</span> <span class="op">=</span><span class="op">&gt;</span> {
+							<span class="ident">stream_sender</span>.<span class="ident">finish</span>().<span class="kw">await</span><span class="question-mark">?</span>;
+							<span class="kw">break</span>;
+						}
+						<span class="ident">Message::Close</span> <span class="op">=</span><span class="op">&gt;</span> {
+							<span class="ident">stream_sender</span>
+								.<span class="ident">reset</span>(<span class="ident">VarInt::from_u32</span>(<span class="number">0</span>))
+								.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">_error</span><span class="op">|</span> <span class="ident">error::AlreadyClosed</span>)<span class="question-mark">?</span>;
+							<span class="kw">break</span>;
+						}
 					}
 				}
-			}
 
-			<span class="prelude-val">Ok</span>(())
-		});
+				<span class="prelude-val">Ok</span>(())
+			},
+			<span class="ident">shutdown_sender</span>,
+		);
 
 		<span class="self">Self</span> {
 			<span class="ident">sender</span>,

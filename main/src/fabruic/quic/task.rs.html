@@ -205,15 +205,6 @@
 <span id="202">202</span>
 <span id="203">203</span>
 <span id="204">204</span>
-<span id="205">205</span>
-<span id="206">206</span>
-<span id="207">207</span>
-<span id="208">208</span>
-<span id="209">209</span>
-<span id="210">210</span>
-<span id="211">211</span>
-<span id="212">212</span>
-<span id="213">213</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Wrapper to handle closing async tasks in a concurrent way.</span>
 
@@ -225,12 +216,12 @@
 	<span class="ident">task</span>::{<span class="ident">Context</span>, <span class="ident">Poll</span>},
 };
 
-<span class="kw">use</span> <span class="ident">futures_channel::oneshot</span>::{<span class="self">self</span>, <span class="ident">Receiver</span>, <span class="ident">Sender</span>};
+<span class="kw">use</span> <span class="ident">futures_channel::oneshot::Sender</span>;
 <span class="kw">use</span> <span class="ident">futures_util::FutureExt</span>;
 <span class="kw">use</span> <span class="ident">parking_lot::Mutex</span>;
 <span class="kw">use</span> <span class="ident">tokio::task</span>::{<span class="ident">JoinError</span>, <span class="ident">JoinHandle</span>};
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::error</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">error</span>, <span class="prelude-ty">Result</span>};
 
 <span class="doccomment">/// Wrapper to abort tasks when they are dropped.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
@@ -253,21 +244,16 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> <span class="ident">Task</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Builds a new [`Task`].</span>
-	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">F</span>, <span class="ident">S</span><span class="op">&gt;</span>(<span class="ident">task</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Task</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">S</span><span class="op">&gt;</span>
+	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::new_ret_no_self</span>)]</span>
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">S</span><span class="op">&gt;</span>(<span class="ident">task</span>: <span class="ident">T</span>, <span class="ident">close</span>: <span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Task</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">S</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
-		<span class="ident">T</span>: <span class="ident">FnOnce</span>(<span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">F</span>,
-		<span class="ident">F</span>: <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">R</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-		<span class="ident">F::Output</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="ident">T</span>: <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">R</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="ident">T::Output</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	{
-		<span class="kw">let</span> (<span class="ident">sender</span>, <span class="ident">receiver</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
-
 		<span class="comment">// TODO: configurable executor</span>
-		<span class="kw">let</span> <span class="ident">handle</span> <span class="op">=</span> <span class="ident">tokio::spawn</span>(<span class="ident">task</span>(<span class="ident">receiver</span>));
+		<span class="kw">let</span> <span class="ident">handle</span> <span class="op">=</span> <span class="ident">tokio::spawn</span>(<span class="ident">task</span>);
 
-		<span class="ident">Task</span>(<span class="ident">Arc::new</span>(<span class="ident">Mutex::new</span>(<span class="prelude-val">Some</span>(<span class="ident">Inner</span> {
-			<span class="ident">handle</span>,
-			<span class="ident">close</span>: <span class="ident">sender</span>,
-		}))))
+		<span class="ident">Task</span>(<span class="ident">Arc::new</span>(<span class="ident">Mutex::new</span>(<span class="prelude-val">Some</span>(<span class="ident">Inner</span> { <span class="ident">handle</span>, <span class="ident">close</span> }))))
 	}
 
 	<span class="doccomment">/// Builds a new empty [`Task`] that is already closed. This is useful to</span>
@@ -340,49 +326,35 @@
 <span class="kw">mod</span> <span class="ident">test</span> {
 	<span class="kw">use</span> <span class="ident">allochronic_util::select</span>;
 	<span class="kw">use</span> <span class="ident">anyhow</span>::{<span class="ident">Error</span>, <span class="prelude-ty">Result</span>};
+	<span class="kw">use</span> <span class="ident">futures_channel::oneshot</span>;
 	<span class="kw">use</span> <span class="ident">futures_util::StreamExt</span>;
 
 	<span class="kw">use</span> <span class="kw">super</span><span class="ident">::Task</span>;
 	<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::error</span>;
 
 	<span class="attribute">#[<span class="ident">tokio::test</span>]</span>
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">empty</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">task</span>: <span class="ident">Task</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Task::empty</span>();
-		<span class="macro">assert!</span>(<span class="macro">matches!</span>((<span class="kw-2">&amp;</span><span class="ident">task</span>).<span class="kw">await</span>, <span class="prelude-val">Err</span>(<span class="ident">error::AlreadyClosed</span>)));
-
-		<span class="prelude-val">Ok</span>(())
-	}
-
-	<span class="attribute">#[<span class="ident">tokio::test</span>]</span>
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">clone</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">task_1</span>: <span class="ident">Task</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Task::new</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="kw">async</span> <span class="kw">move</span> { <span class="bool-val">true</span> });
-		<span class="kw">let</span> <span class="ident">task_2</span> <span class="op">=</span> <span class="ident">task_1</span>.<span class="ident">clone</span>();
-
-		<span class="macro">assert!</span>(<span class="macro">matches!</span>((<span class="kw-2">&amp;</span><span class="ident">task_1</span>).<span class="kw">await</span>, <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)));
-		<span class="macro">assert!</span>(<span class="macro">matches!</span>((<span class="kw-2">&amp;</span><span class="ident">task_2</span>).<span class="kw">await</span>, <span class="prelude-val">Err</span>(<span class="ident">error::AlreadyClosed</span>)));
-
-		<span class="prelude-val">Ok</span>(())
-	}
-
-	<span class="attribute">#[<span class="ident">tokio::test</span>]</span>
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">task</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">let</span> (<span class="ident">sender</span>, <span class="ident">receiver</span>) <span class="op">=</span> <span class="ident">flume::unbounded</span>();
 		<span class="kw">let</span> (<span class="ident">tester_sender</span>, <span class="ident">tester_receiver</span>) <span class="op">=</span> <span class="ident">flume::unbounded</span>();
+		<span class="kw">let</span> (<span class="ident">shutdown_sender</span>, <span class="kw-2">mut</span> <span class="ident">shutdown_receiver</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 
-		<span class="kw">let</span> <span class="ident">task</span> <span class="op">=</span> <span class="ident">Task::new</span>(<span class="op">|</span><span class="kw-2">mut</span> <span class="ident">shutdown</span><span class="op">|</span> <span class="kw">async</span> <span class="kw">move</span> {
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">receiver</span> <span class="op">=</span> <span class="ident">receiver</span>.<span class="ident">into_stream</span>();
+		<span class="kw">let</span> <span class="ident">task</span> <span class="op">=</span> <span class="ident">Task::new</span>(
+			<span class="kw">async</span> <span class="kw">move</span> {
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">receiver</span> <span class="op">=</span> <span class="ident">receiver</span>.<span class="ident">into_stream</span>();
 
-			<span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">message</span>) <span class="op">=</span> <span class="macro">select!</span>(
-				<span class="ident">message</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">receiver</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">message</span>,
-				<span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">shutdown</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
-			) {
-				<span class="comment">// send back our messages</span>
-				<span class="ident">tester_sender</span>.<span class="ident">send</span>(<span class="ident">message</span>)<span class="question-mark">?</span>;
-			}
+				<span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">message</span>) <span class="op">=</span> <span class="macro">select!</span>(
+					<span class="ident">message</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">receiver</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">message</span>,
+					<span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">shutdown_receiver</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
+				) {
+					<span class="comment">// send back our messages</span>
+					<span class="ident">tester_sender</span>.<span class="ident">send</span>(<span class="ident">message</span>)<span class="question-mark">?</span>;
+				}
 
-			<span class="comment">// return `true`</span>
-			<span class="prelude-ty">Result</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Error</span><span class="op">&gt;</span><span class="ident">::Ok</span>(<span class="bool-val">true</span>)
-		});
+				<span class="comment">// return `true`</span>
+				<span class="prelude-ty">Result</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Error</span><span class="op">&gt;</span><span class="ident">::Ok</span>(<span class="bool-val">true</span>)
+			},
+			<span class="ident">shutdown_sender</span>,
+		);
 
 		<span class="comment">// send a 100 messages</span>
 		<span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="number">0_usize</span>..<span class="number">100</span> {
@@ -408,10 +380,15 @@
 
 	<span class="attribute">#[<span class="ident">tokio::test</span>]</span>
 	<span class="attribute">#[<span class="ident">should_panic</span> <span class="op">=</span> <span class="string">&quot;test&quot;</span>]</span>
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">panic_await</span>() {
-		<span class="kw">let</span> <span class="ident">task</span>: <span class="ident">Task</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Task::new</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="kw">async</span> <span class="kw">move</span> {
-			<span class="macro">panic!</span>(<span class="string">&quot;test&quot;</span>);
-		});
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">panic_poll</span>() {
+		<span class="kw">let</span> (<span class="ident">shutdown_sender</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>();
+
+		<span class="kw">let</span> <span class="ident">task</span> <span class="op">=</span> <span class="ident">Task::new</span>(
+			<span class="kw">async</span> <span class="kw">move</span> {
+				<span class="macro">panic!</span>(<span class="string">&quot;test&quot;</span>);
+			},
+			<span class="ident">shutdown_sender</span>,
+		);
 
 		(<span class="kw-2">&amp;</span><span class="ident">task</span>).<span class="kw">await</span>.<span class="ident">expect</span>(<span class="string">&quot;should panic before unwrapping&quot;</span>);
 	}
@@ -419,9 +396,14 @@
 	<span class="attribute">#[<span class="ident">tokio::test</span>]</span>
 	<span class="attribute">#[<span class="ident">should_panic</span> <span class="op">=</span> <span class="string">&quot;test&quot;</span>]</span>
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">panic_close</span>() {
-		<span class="kw">let</span> <span class="ident">task</span> <span class="op">=</span> <span class="ident">Task::new</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="kw">async</span> <span class="kw">move</span> {
-			<span class="macro">panic!</span>(<span class="string">&quot;test&quot;</span>);
-		});
+		<span class="kw">let</span> (<span class="ident">shutdown_sender</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
+
+		<span class="kw">let</span> <span class="ident">task</span> <span class="op">=</span> <span class="ident">Task::new</span>(
+			<span class="kw">async</span> <span class="kw">move</span> {
+				<span class="macro">panic!</span>(<span class="string">&quot;test&quot;</span>);
+			},
+			<span class="ident">shutdown_sender</span>,
+		);
 
 		<span class="ident">task</span>.<span class="ident">close</span>(())
 			.<span class="kw">await</span>

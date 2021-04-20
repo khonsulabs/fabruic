@@ -187,7 +187,7 @@
 <span class="kw">use</span> <span class="ident">quinn</span>::{<span class="ident">Chunk</span>, <span class="ident">ReadError</span>, <span class="ident">RecvStream</span>, <span class="ident">VarInt</span>};
 <span class="kw">use</span> <span class="ident">serde::de::DeserializeOwned</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::error</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">error</span>, <span class="prelude-ty">Result</span>};
 
 <span class="doccomment">/// Wrapper around [`RecvStream`] providing framing and deserialization.</span>
 <span class="attribute">#[<span class="ident">pin_project</span>]</span>
