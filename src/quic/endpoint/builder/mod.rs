@@ -914,7 +914,7 @@ mod test {
 	async fn store_embedded() -> Result<()> {
 		let mut builder = Builder::new();
 		// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing
-		// connection
+		// connection, for some reason IPv6 `[::]` doesn't work on GitHub Actions
 		builder.set_address(([0, 0, 0, 0], 0).into());
 		// QUIC is comptaible with HTTP/3 to establish a connection only
 		builder.set_protocols([b"h3-29".to_vec()]);
@@ -929,12 +929,6 @@ mod test {
 
 		let endpoint = builder.build()?;
 
-		endpoint
-			.connect("https://cloudflare-quic.com:443")
-			.await?
-			.accept::<()>()
-			.await
-			.unwrap();
 		// TODO: find a better target to test our root certificate store against
 		assert!(endpoint
 			.connect("https://cloudflare-quic.com:443")
@@ -950,7 +944,7 @@ mod test {
 	async fn store_os() -> Result<()> {
 		let mut builder = Builder::new();
 		// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing
-		// connection
+		// connection, for some reason IPv6 `[::]` doesn't work on GitHub Actions
 		builder.set_address(([0, 0, 0, 0], 0).into());
 		// QUIC is comptaible with HTTP/3 to establish a connection only
 		builder.set_protocols([b"h3-29".to_vec()]);
@@ -977,7 +971,7 @@ mod test {
 	async fn store_empty() -> Result<()> {
 		let mut builder = Builder::new();
 		// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing
-		// connection
+		// connection, for some reason IPv6 `[::]` doesn't work on GitHub Actions
 		builder.set_address(([0, 0, 0, 0], 0).into());
 		// QUIC is comptaible with HTTP/3 to establish a connection only
 		builder.set_protocols([b"h3-29".to_vec()]);
