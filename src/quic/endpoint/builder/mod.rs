@@ -929,6 +929,12 @@ mod test {
 
 		let endpoint = builder.build()?;
 
+		endpoint
+			.connect("https://cloudflare-quic.com:443")
+			.await?
+			.accept::<()>()
+			.await
+			.unwrap();
 		// TODO: find a better target to test our root certificate store against
 		assert!(endpoint
 			.connect("https://cloudflare-quic.com:443")
