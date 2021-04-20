@@ -914,8 +914,8 @@ mod test {
 	async fn store_embedded() -> Result<()> {
 		let mut builder = Builder::new();
 		// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing
-		// connection
-		builder.set_address(([0; 8], 0).into());
+		// connection, for some reason IPv6 `[::]` doesn't work on GitHub Actions
+		builder.set_address(([0, 0, 0, 0], 0).into());
 		// QUIC is comptaible with HTTP/3 to establish a connection only
 		builder.set_protocols([b"h3-29".to_vec()]);
 		// `cloudflare-quic` doesn't support DNSSEC
@@ -944,8 +944,8 @@ mod test {
 	async fn store_os() -> Result<()> {
 		let mut builder = Builder::new();
 		// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing
-		// connection
-		builder.set_address(([0; 8], 0).into());
+		// connection, for some reason IPv6 `[::]` doesn't work on GitHub Actions
+		builder.set_address(([0, 0, 0, 0], 0).into());
 		// QUIC is comptaible with HTTP/3 to establish a connection only
 		builder.set_protocols([b"h3-29".to_vec()]);
 		// `cloudflare-quic` doesn't support DNSSEC
@@ -971,8 +971,8 @@ mod test {
 	async fn store_empty() -> Result<()> {
 		let mut builder = Builder::new();
 		// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing
-		// connection
-		builder.set_address(([0; 8], 0).into());
+		// connection, for some reason IPv6 `[::]` doesn't work on GitHub Actions
+		builder.set_address(([0, 0, 0, 0], 0).into());
 		// QUIC is comptaible with HTTP/3 to establish a connection only
 		builder.set_protocols([b"h3-29".to_vec()]);
 		// `cloudflare-quic` doesn't support DNSSEC
