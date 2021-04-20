@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-18 22:47:05</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-20 11:07:18</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -97,33 +97,33 @@
 <div class="line"><span id="76" class="lineNum"><a href="#76">76</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
 <div class="line"><span id="77" class="lineNum"><a href="#77">77</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Panics</span></div>
 <div class="line"><span id="78" class="lineNum"><a href="#78">78</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// If not called from inside a Tokio [`Runtime`](tokio::runtime::Runtime).</span></div>
-<div class="line"><span id="79" class="lineNum"><a href="#79">79</a></span><span class="counterCov">128</span><span class="lineCov">	fn new(</span></div>
-<div class="line"><span id="80" class="lineNum"><a href="#80">80</a></span><span class="counterCov">128</span><span class="lineCov">		address: SocketAddr,</span></div>
-<div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterCov">128</span><span class="lineCov">		client: ClientConfig,</span></div>
-<div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterCov">128</span><span class="lineCov">		server: Option&lt;ServerConfig&gt;,</span></div>
-<div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterCov">128</span><span class="lineCov">		config: Config,</span></div>
-<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterCov">128</span><span class="lineCov">	) -&gt; Result&lt;Self, Error&gt; {</span></div>
-<div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterCov">128</span><span class="lineCov">		// configure endpoint for server and client</span></div>
-<div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterCov">128</span><span class="lineCov">		let mut endpoint_builder = quinn::Endpoint::builder();</span></div>
-<div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterCov">128</span><span class="lineCov">		let _ = endpoint_builder.default_client_config(client);</span></div>
-<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterCov">128</span><span class="lineCov"></span></div>
-<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterCov">128</span><span class="lineCov">		// server configuration is optional</span></div>
-<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterCov">128</span><span class="lineCov">		let server = server.map_or(false, |server| {</span></div>
+<div class="line"><span id="79" class="lineNum"><a href="#79">79</a></span><span class="counterCov">127</span><span class="lineCov">	fn new(</span></div>
+<div class="line"><span id="80" class="lineNum"><a href="#80">80</a></span><span class="counterCov">127</span><span class="lineCov">		address: SocketAddr,</span></div>
+<div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterCov">127</span><span class="lineCov">		client: ClientConfig,</span></div>
+<div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterCov">127</span><span class="lineCov">		server: Option&lt;ServerConfig&gt;,</span></div>
+<div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterCov">127</span><span class="lineCov">		config: Config,</span></div>
+<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterCov">127</span><span class="lineCov">	) -&gt; Result&lt;Self, Error&gt; {</span></div>
+<div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterCov">127</span><span class="lineCov">		// configure endpoint for server and client</span></div>
+<div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterCov">127</span><span class="lineCov">		let mut endpoint_builder = quinn::Endpoint::builder();</span></div>
+<div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterCov">127</span><span class="lineCov">		let _ = endpoint_builder.default_client_config(client);</span></div>
+<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterCov">127</span><span class="lineCov"></span></div>
+<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterCov">127</span><span class="lineCov">		// server configuration is optional</span></div>
+<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterCov">127</span><span class="lineCov">		let server = server.map_or(false, |server| {</span></div>
 <div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterCov">9</span><span class="lineCov">			let _ = endpoint_builder.listen(server);</span></div>
 <div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterCov">9</span><span class="lineCov">			true</span></div>
-<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterCov">128</span><span class="lineCov">		});</span></div>
+<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterCov">127</span><span class="lineCov">		});</span></div>
 <div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// build endpoint</span></div>
-<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterCov">128</span><span class="lineCov">		let (endpoint, incoming) =</span></div>
-<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">128</span><span class="lineCov">			endpoint_builder</span></div>
-<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">128</span><span class="lineCov">				.bind(&amp;address)</span></div>
-<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterCov">128</span><span class="lineCov">				.map_err(|error| match error {</span></div>
+<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterCov">127</span><span class="lineCov">		let (endpoint, incoming) =</span></div>
+<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">127</span><span class="lineCov">			endpoint_builder</span></div>
+<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">127</span><span class="lineCov">				.bind(&amp;address)</span></div>
+<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterCov">127</span><span class="lineCov">				.map_err(|error| match error {</span></div>
 <div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterNoCov">0</span><span class="lineNoCov">					EndpointError::Socket(error) =&gt; error,</span></div>
-<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterCov">128</span><span class="lineCov">				})?;</span></div>
+<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterCov">127</span><span class="lineCov">				})?;</span></div>
 <div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// create channels that will receive incoming `Connection`s</span></div>
-<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterCov">128</span><span class="lineCov">		let (sender, receiver) = flume::unbounded();</span></div>
-<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterCov">128</span><span class="lineCov">		let receiver = receiver.into_stream();</span></div>
+<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterCov">127</span><span class="lineCov">		let (sender, receiver) = flume::unbounded();</span></div>
+<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterCov">127</span><span class="lineCov">		let receiver = receiver.into_stream();</span></div>
 <div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// only servers need to deal with incoming connections</span></div>
 <div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterCov">128</span><span class="lineCov">		let task = if server {</span></div>
