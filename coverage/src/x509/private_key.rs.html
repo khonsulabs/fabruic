@@ -9,11 +9,11 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../index.html">top level</a> - <a href="index.html">src/x509</a> - private_key.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-20 11:35:55</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-23 04:09:47</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">54</span><span class="linesTotal">58</span><span class="linesPercentage lineHi">93.1 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">62</span><span class="linesTotal">66</span><span class="linesPercentage lineHi">93.9 %</span></div>
 <div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">26</span><span class="funsTotal">52</span><span class="funsPercentage funLow">50.0 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
@@ -161,12 +161,12 @@
 <div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[test]</span></div>
 <div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterCov">1</span><span class="lineCov">	fn validate() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterCov">1</span><span class="lineCov">		let (_, private_key) = KeyPair::new_self_signed(&quot;test&quot;).into_parts();</span></div>
-<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterUnCov"></span><span class="lineUnCov">		assert_eq!(</span></div>
-<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterUnCov"></span><span class="lineUnCov">			private_key,</span></div>
+<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterCov">1</span><span class="lineCov">		assert_eq!(</span></div>
+<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterCov">1</span><span class="lineCov">			private_key,</span></div>
 <div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterCov">1</span><span class="lineCov">			PrivateKey::from_der(Dangerous::into(private_key.clone()))?,</span></div>
-<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterUnCov"></span><span class="lineUnCov">		);</span></div>
-<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterCov">1</span><span class="lineCov">		);</span></div>
+<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
 <div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
@@ -175,7 +175,7 @@
 <div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterCov">1</span><span class="lineCov">		let (_, private_key) = KeyPair::new_self_signed(&quot;test&quot;).into_parts();</span></div>
 <div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
 <div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterCov">1</span><span class="lineCov">		let mut buffer = Vec::new();</span></div>
-<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
 <div class="line"><span id="158" class="lineNum"><a href="#158">158</a></span><span class="counterCov">1</span><span class="lineCov">		Dangerous::serialize(</span></div>
 <div class="line"><span id="159" class="lineNum"><a href="#159">159</a></span><span class="counterCov">1</span><span class="lineCov">			&amp;private_key,</span></div>
 <div class="line"><span id="160" class="lineNum"><a href="#160">160</a></span><span class="counterCov">1</span><span class="lineCov">			&amp;mut Serializer::new(</span></div>
@@ -185,9 +185,9 @@
 <div class="line"><span id="164" class="lineNum"><a href="#164">164</a></span><span class="counterCov">1</span><span class="lineCov">					.allow_trailing_bytes(),</span></div>
 <div class="line"><span id="165" class="lineNum"><a href="#165">165</a></span><span class="counterCov">1</span><span class="lineCov">			),</span></div>
 <div class="line"><span id="166" class="lineNum"><a href="#166">166</a></span><span class="counterCov">1</span><span class="lineCov">		)?;</span></div>
-<div class="line"><span id="167" class="lineNum"><a href="#167">167</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="167" class="lineNum"><a href="#167">167</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
 <div class="line"><span id="168" class="lineNum"><a href="#168">168</a></span><span class="counterCov">1</span><span class="lineCov">		assert_eq!(private_key, bincode::deserialize(&amp;buffer)?);</span></div>
-<div class="line"><span id="169" class="lineNum"><a href="#169">169</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="169" class="lineNum"><a href="#169">169</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
 <div class="line"><span id="170" class="lineNum"><a href="#170">170</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="171" class="lineNum"><a href="#171">171</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="172" class="lineNum"><a href="#172">172</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>

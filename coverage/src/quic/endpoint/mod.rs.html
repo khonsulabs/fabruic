@@ -9,11 +9,11 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-20 11:35:55</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-23 04:09:47</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">234</span><span class="linesTotal">264</span><span class="linesPercentage lineMed">88.6 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">235</span><span class="linesTotal">265</span><span class="linesPercentage lineMed">88.7 %</span></div>
 <div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">64</span><span class="funsTotal">94</span><span class="funsPercentage funLow">68.1 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
@@ -350,15 +350,15 @@
 <div class="line"><span id="329" class="lineNum"><a href="#329">329</a></span><span class="counterCov">109</span><span class="lineCov">		let (address, _) = self.resolve_domain(url).await?;</span></div>
 <div class="line"><span id="330" class="lineNum"><a href="#330">330</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="331" class="lineNum"><a href="#331">331</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// build client configuration</span></div>
-<div class="line"><span id="332" class="lineNum"><a href="#332">332</a></span><span class="counterCov">108</span><span class="lineCov">		let client =</span></div>
-<div class="line"><span id="333" class="lineNum"><a href="#333">333</a></span><span class="counterCov">108</span><span class="lineCov">			self.config</span></div>
-<div class="line"><span id="334" class="lineNum"><a href="#334">334</a></span><span class="counterCov">108</span><span class="lineCov">				.new_client(Some(server_certificate), Store::Empty, client_key_pair);</span></div>
+<div class="line"><span id="332" class="lineNum"><a href="#332">332</a></span><span class="counterCov">109</span><span class="lineCov">		let client =</span></div>
+<div class="line"><span id="333" class="lineNum"><a href="#333">333</a></span><span class="counterCov">109</span><span class="lineCov">			self.config</span></div>
+<div class="line"><span id="334" class="lineNum"><a href="#334">334</a></span><span class="counterCov">109</span><span class="lineCov">				.new_client(Some(server_certificate), Store::Empty, client_key_pair);</span></div>
 <div class="line"><span id="335" class="lineNum"><a href="#335">335</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="336" class="lineNum"><a href="#336">336</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// connet</span></div>
 <div class="line"><span id="337" class="lineNum"><a href="#337">337</a></span><span class="counterCov">109</span><span class="lineCov">		let connecting = self</span></div>
-<div class="line"><span id="338" class="lineNum"><a href="#338">338</a></span><span class="counterCov">108</span><span class="lineCov">			.endpoint</span></div>
-<div class="line"><span id="339" class="lineNum"><a href="#339">339</a></span><span class="counterCov">108</span><span class="lineCov">			.connect_with(client, &amp;address, &amp;domain)</span></div>
-<div class="line"><span id="340" class="lineNum"><a href="#340">340</a></span><span class="counterCov">108</span><span class="lineCov">			.map_err(error::Connect::Config)?;</span></div>
+<div class="line"><span id="338" class="lineNum"><a href="#338">338</a></span><span class="counterCov">109</span><span class="lineCov">			.endpoint</span></div>
+<div class="line"><span id="339" class="lineNum"><a href="#339">339</a></span><span class="counterCov">109</span><span class="lineCov">			.connect_with(client, &amp;address, &amp;domain)</span></div>
+<div class="line"><span id="340" class="lineNum"><a href="#340">340</a></span><span class="counterCov">109</span><span class="lineCov">			.map_err(error::Connect::Config)?;</span></div>
 <div class="line"><span id="341" class="lineNum"><a href="#341">341</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="342" class="lineNum"><a href="#342">342</a></span><span class="counterCov">109</span><span class="lineCov">		Ok(Connecting::new(connecting))</span></div>
 <div class="line"><span id="343" class="lineNum"><a href="#343">343</a></span><span class="counterCov">109</span><span class="lineCov">	}</span></div>
@@ -459,9 +459,9 @@
 <div class="line"><span id="438" class="lineNum"><a href="#438">438</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// assert!(endpoint.local_address().is_ok());</span></div>
 <div class="line"><span id="439" class="lineNum"><a href="#439">439</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Ok(()) }</span></div>
 <div class="line"><span id="440" class="lineNum"><a href="#440">440</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// ```</span></div>
-<div class="line"><span id="441" class="lineNum"><a href="#441">441</a></span><span class="counterCov">216</span><span class="lineCov">	pub fn local_address(&amp;self) -&gt; Result&lt;SocketAddr, Error&gt; {</span></div>
-<div class="line"><span id="442" class="lineNum"><a href="#442">442</a></span><span class="counterCov">216</span><span class="lineCov">		self.endpoint.local_addr()</span></div>
-<div class="line"><span id="443" class="lineNum"><a href="#443">443</a></span><span class="counterCov">216</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="441" class="lineNum"><a href="#441">441</a></span><span class="counterCov">218</span><span class="lineCov">	pub fn local_address(&amp;self) -&gt; Result&lt;SocketAddr, Error&gt; {</span></div>
+<div class="line"><span id="442" class="lineNum"><a href="#442">442</a></span><span class="counterCov">218</span><span class="lineCov">		self.endpoint.local_addr()</span></div>
+<div class="line"><span id="443" class="lineNum"><a href="#443">443</a></span><span class="counterCov">218</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="444" class="lineNum"><a href="#444">444</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="445" class="lineNum"><a href="#445">445</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Close all of this [`Endpoint`]&#39;s [`Connection`](crate::Connection)s</span></div>
 <div class="line"><span id="446" class="lineNum"><a href="#446">446</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// immediately and cease accepting new [`Connection`](crate::Connection)s.</span></div>
@@ -481,7 +481,7 @@
 <div class="line"><span id="460" class="lineNum"><a href="#460">460</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Ok(()) }</span></div>
 <div class="line"><span id="461" class="lineNum"><a href="#461">461</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// ```</span></div>
 <div class="line"><span id="462" class="lineNum"><a href="#462">462</a></span><span class="counterCov">2</span><span class="lineCov">	pub async fn close(&amp;self) {</span></div>
-<div class="line"><span id="463" class="lineNum"><a href="#463">463</a></span><span class="counterUnCov"></span><span class="lineUnCov">		self.endpoint.close(VarInt::from_u32(0), &amp;[]);</span></div>
+<div class="line"><span id="463" class="lineNum"><a href="#463">463</a></span><span class="counterCov">2</span><span class="lineCov">		self.endpoint.close(VarInt::from_u32(0), &amp;[]);</span></div>
 <div class="line"><span id="464" class="lineNum"><a href="#464">464</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// we only want to wait until it&#39;s actually closed, it might already be closed</span></div>
 <div class="line"><span id="465" class="lineNum"><a href="#465">465</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// by `close_incoming` or by starting as a client</span></div>
 <div class="line"><span id="466" class="lineNum"><a href="#466">466</a></span><span class="counterCov">2</span><span class="lineCov">		let _result = (&amp;self.task).await;</span></div>
@@ -557,11 +557,11 @@
 <div class="line"><span id="536" class="lineNum"><a href="#536">536</a></span><span class="counterUnCov"></span><span class="lineUnCov">	use crate::KeyPair;</span></div>
 <div class="line"><span id="537" class="lineNum"><a href="#537">537</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="538" class="lineNum"><a href="#538">538</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[test]</span></div>
-<div class="line"><span id="539" class="lineNum"><a href="#539">539</a></span><span class="counterCov">1</span><span class="lineCov">	fn builder() {</span></div>
-<div class="line"><span id="540" class="lineNum"><a href="#540">540</a></span><span class="counterCov">1</span><span class="lineCov">		let _builder: Builder = Endpoint::builder();</span></div>
-<div class="line"><span id="541" class="lineNum"><a href="#541">541</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="539" class="lineNum"><a href="#539">539</a></span><span class="counterCov">2</span><span class="lineCov">	fn builder() {</span></div>
+<div class="line"><span id="540" class="lineNum"><a href="#540">540</a></span><span class="counterCov">2</span><span class="lineCov">		let _builder: Builder = Endpoint::builder();</span></div>
+<div class="line"><span id="541" class="lineNum"><a href="#541">541</a></span><span class="counterCov">2</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="542" class="lineNum"><a href="#542">542</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="543" class="lineNum"><a href="#543">543</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="543" class="lineNum"><a href="#543">543</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
 <div class="line"><span id="544" class="lineNum"><a href="#544">544</a></span><span class="counterCov">1</span><span class="lineCov">	async fn endpoint() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="545" class="lineNum"><a href="#545">545</a></span><span class="counterCov">1</span><span class="lineCov">		let key_pair = KeyPair::new_self_signed(&quot;test&quot;);</span></div>
 <div class="line"><span id="546" class="lineNum"><a href="#546">546</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
@@ -587,7 +587,7 @@
 <div class="line"><span id="566" class="lineNum"><a href="#566">566</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="567" class="lineNum"><a href="#567">567</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="568" class="lineNum"><a href="#568">568</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="569" class="lineNum"><a href="#569">569</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="569" class="lineNum"><a href="#569">569</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
 <div class="line"><span id="570" class="lineNum"><a href="#570">570</a></span><span class="counterCov">1</span><span class="lineCov">	async fn close() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="571" class="lineNum"><a href="#571">571</a></span><span class="counterCov">1</span><span class="lineCov">		let key_pair = KeyPair::new_self_signed(&quot;test&quot;);</span></div>
 <div class="line"><span id="572" class="lineNum"><a href="#572">572</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
@@ -632,7 +632,7 @@
 <div class="line"><span id="611" class="lineNum"><a href="#611">611</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="612" class="lineNum"><a href="#612">612</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="613" class="lineNum"><a href="#613">613</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="614" class="lineNum"><a href="#614">614</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="614" class="lineNum"><a href="#614">614</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
 <div class="line"><span id="615" class="lineNum"><a href="#615">615</a></span><span class="counterCov">1</span><span class="lineCov">	async fn close_incoming() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="616" class="lineNum"><a href="#616">616</a></span><span class="counterCov">1</span><span class="lineCov">		let key_pair = KeyPair::new_self_signed(&quot;test&quot;);</span></div>
 <div class="line"><span id="617" class="lineNum"><a href="#617">617</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
@@ -706,7 +706,7 @@
 <div class="line"><span id="685" class="lineNum"><a href="#685">685</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="686" class="lineNum"><a href="#686">686</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="687" class="lineNum"><a href="#687">687</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="688" class="lineNum"><a href="#688">688</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="688" class="lineNum"><a href="#688">688</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
 <div class="line"><span id="689" class="lineNum"><a href="#689">689</a></span><span class="counterCov">1</span><span class="lineCov">	async fn wait_idle() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="690" class="lineNum"><a href="#690">690</a></span><span class="counterCov">1</span><span class="lineCov">		let key_pair = KeyPair::new_self_signed(&quot;test&quot;);</span></div>
 <div class="line"><span id="691" class="lineNum"><a href="#691">691</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>

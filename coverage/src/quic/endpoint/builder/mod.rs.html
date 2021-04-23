@@ -9,11 +9,11 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint/builder</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-20 11:35:55</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-04-23 04:09:47</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">383</span><span class="linesTotal">409</span><span class="linesPercentage lineHi">93.6 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">396</span><span class="linesTotal">422</span><span class="linesPercentage lineHi">93.8 %</span></div>
 <div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">82</span><span class="funsTotal">133</span><span class="funsPercentage funLow">61.7 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
@@ -79,22 +79,22 @@
 <div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// let mut endpoint = Builder::new().build()?;</span></div>
 <div class="line"><span id="59" class="lineNum"><a href="#59">59</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Ok(()) }</span></div>
 <div class="line"><span id="60" class="lineNum"><a href="#60">60</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// ```</span></div>
-<div class="line"><span id="61" class="lineNum"><a href="#61">61</a></span><span class="counterCov">131</span><span class="lineCov">	pub fn new() -&gt; Self {</span></div>
-<div class="line"><span id="62" class="lineNum"><a href="#62">62</a></span><span class="counterCov">131</span><span class="lineCov">		let config = Config::new();</span></div>
-<div class="line"><span id="63" class="lineNum"><a href="#63">63</a></span><span class="counterCov">131</span><span class="lineCov"></span></div>
-<div class="line"><span id="64" class="lineNum"><a href="#64">64</a></span><span class="counterCov">131</span><span class="lineCov">		Self {</span></div>
-<div class="line"><span id="65" class="lineNum"><a href="#65">65</a></span><span class="counterCov">131</span><span class="lineCov">			#[cfg(not(feature = &quot;test&quot;))]</span></div>
-<div class="line"><span id="66" class="lineNum"><a href="#66">66</a></span><span class="counterCov">131</span><span class="lineCov">			address: ([0; 8], 0).into(),</span></div>
-<div class="line"><span id="67" class="lineNum"><a href="#67">67</a></span><span class="counterCov">131</span><span class="lineCov">			// while testing always use the default loopback address</span></div>
-<div class="line"><span id="68" class="lineNum"><a href="#68">68</a></span><span class="counterCov">131</span><span class="lineCov">			#[cfg(feature = &quot;test&quot;)]</span></div>
-<div class="line"><span id="69" class="lineNum"><a href="#69">69</a></span><span class="counterCov">131</span><span class="lineCov">			address: ([0, 0, 0, 0, 0, 0, 0, 1], 0).into(),</span></div>
-<div class="line"><span id="70" class="lineNum"><a href="#70">70</a></span><span class="counterCov">131</span><span class="lineCov">			root_certificates: Vec::new(),</span></div>
-<div class="line"><span id="71" class="lineNum"><a href="#71">71</a></span><span class="counterCov">131</span><span class="lineCov">			server_key_pair: None,</span></div>
-<div class="line"><span id="72" class="lineNum"><a href="#72">72</a></span><span class="counterCov">131</span><span class="lineCov">			client_key_pair: None,</span></div>
-<div class="line"><span id="73" class="lineNum"><a href="#73">73</a></span><span class="counterCov">131</span><span class="lineCov">			store: Store::Embedded,</span></div>
-<div class="line"><span id="74" class="lineNum"><a href="#74">74</a></span><span class="counterCov">131</span><span class="lineCov">			config,</span></div>
-<div class="line"><span id="75" class="lineNum"><a href="#75">75</a></span><span class="counterCov">131</span><span class="lineCov">		}</span></div>
-<div class="line"><span id="76" class="lineNum"><a href="#76">76</a></span><span class="counterCov">131</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="61" class="lineNum"><a href="#61">61</a></span><span class="counterCov">132</span><span class="lineCov">	pub fn new() -&gt; Self {</span></div>
+<div class="line"><span id="62" class="lineNum"><a href="#62">62</a></span><span class="counterCov">132</span><span class="lineCov">		let config = Config::new();</span></div>
+<div class="line"><span id="63" class="lineNum"><a href="#63">63</a></span><span class="counterCov">132</span><span class="lineCov"></span></div>
+<div class="line"><span id="64" class="lineNum"><a href="#64">64</a></span><span class="counterCov">132</span><span class="lineCov">		Self {</span></div>
+<div class="line"><span id="65" class="lineNum"><a href="#65">65</a></span><span class="counterCov">132</span><span class="lineCov">			#[cfg(not(feature = &quot;test&quot;))]</span></div>
+<div class="line"><span id="66" class="lineNum"><a href="#66">66</a></span><span class="counterCov">132</span><span class="lineCov">			address: ([0; 8], 0).into(),</span></div>
+<div class="line"><span id="67" class="lineNum"><a href="#67">67</a></span><span class="counterCov">132</span><span class="lineCov">			// while testing always use the default loopback address</span></div>
+<div class="line"><span id="68" class="lineNum"><a href="#68">68</a></span><span class="counterCov">132</span><span class="lineCov">			#[cfg(feature = &quot;test&quot;)]</span></div>
+<div class="line"><span id="69" class="lineNum"><a href="#69">69</a></span><span class="counterCov">132</span><span class="lineCov">			address: ([0, 0, 0, 0, 0, 0, 0, 1], 0).into(),</span></div>
+<div class="line"><span id="70" class="lineNum"><a href="#70">70</a></span><span class="counterCov">132</span><span class="lineCov">			root_certificates: Vec::new(),</span></div>
+<div class="line"><span id="71" class="lineNum"><a href="#71">71</a></span><span class="counterCov">132</span><span class="lineCov">			server_key_pair: None,</span></div>
+<div class="line"><span id="72" class="lineNum"><a href="#72">72</a></span><span class="counterCov">132</span><span class="lineCov">			client_key_pair: None,</span></div>
+<div class="line"><span id="73" class="lineNum"><a href="#73">73</a></span><span class="counterCov">132</span><span class="lineCov">			store: Store::Embedded,</span></div>
+<div class="line"><span id="74" class="lineNum"><a href="#74">74</a></span><span class="counterCov">132</span><span class="lineCov">			config,</span></div>
+<div class="line"><span id="75" class="lineNum"><a href="#75">75</a></span><span class="counterCov">132</span><span class="lineCov">		}</span></div>
+<div class="line"><span id="76" class="lineNum"><a href="#76">76</a></span><span class="counterCov">132</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="77" class="lineNum"><a href="#77">77</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="78" class="lineNum"><a href="#78">78</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Set&#39;s the [`SocketAddr`] to bind to.</span></div>
 <div class="line"><span id="79" class="lineNum"><a href="#79">79</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
@@ -608,19 +608,19 @@
 <div class="line"><span id="587" class="lineNum"><a href="#587">587</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="588" class="lineNum"><a href="#588">588</a></span><span class="counterUnCov"></span><span class="lineUnCov">	use super::*;</span></div>
 <div class="line"><span id="589" class="lineNum"><a href="#589">589</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="590" class="lineNum"><a href="#590">590</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="590" class="lineNum"><a href="#590">590</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
 <div class="line"><span id="591" class="lineNum"><a href="#591">591</a></span><span class="counterCov">1</span><span class="lineCov">	async fn default() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="592" class="lineNum"><a href="#592">592</a></span><span class="counterCov">1</span><span class="lineCov">		let _endpoint = Builder::default().build()?;</span></div>
 <div class="line"><span id="593" class="lineNum"><a href="#593">593</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="594" class="lineNum"><a href="#594">594</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="595" class="lineNum"><a href="#595">595</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="596" class="lineNum"><a href="#596">596</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="596" class="lineNum"><a href="#596">596</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
 <div class="line"><span id="597" class="lineNum"><a href="#597">597</a></span><span class="counterCov">1</span><span class="lineCov">	async fn new() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="598" class="lineNum"><a href="#598">598</a></span><span class="counterCov">1</span><span class="lineCov">		let _endpoint = Builder::new().build()?;</span></div>
 <div class="line"><span id="599" class="lineNum"><a href="#599">599</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="600" class="lineNum"><a href="#600">600</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="601" class="lineNum"><a href="#601">601</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="602" class="lineNum"><a href="#602">602</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="602" class="lineNum"><a href="#602">602</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
 <div class="line"><span id="603" class="lineNum"><a href="#603">603</a></span><span class="counterCov">1</span><span class="lineCov">	async fn address() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="604" class="lineNum"><a href="#604">604</a></span><span class="counterCov">1</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
 <div class="line"><span id="605" class="lineNum"><a href="#605">605</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
@@ -634,7 +634,7 @@
 <div class="line"><span id="613" class="lineNum"><a href="#613">613</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="614" class="lineNum"><a href="#614">614</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="615" class="lineNum"><a href="#615">615</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="616" class="lineNum"><a href="#616">616</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="616" class="lineNum"><a href="#616">616</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
 <div class="line"><span id="617" class="lineNum"><a href="#617">617</a></span><span class="counterCov">1</span><span class="lineCov">	async fn server_certificate() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="618" class="lineNum"><a href="#618">618</a></span><span class="counterCov">1</span><span class="lineCov">		let key_pair = KeyPair::new_self_signed(&quot;localhost&quot;);</span></div>
 <div class="line"><span id="619" class="lineNum"><a href="#619">619</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
@@ -668,7 +668,7 @@
 <div class="line"><span id="647" class="lineNum"><a href="#647">647</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="648" class="lineNum"><a href="#648">648</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="649" class="lineNum"><a href="#649">649</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="650" class="lineNum"><a href="#650">650</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="650" class="lineNum"><a href="#650">650</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
 <div class="line"><span id="651" class="lineNum"><a href="#651">651</a></span><span class="counterCov">1</span><span class="lineCov">	async fn client_certificate() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="652" class="lineNum"><a href="#652">652</a></span><span class="counterCov">1</span><span class="lineCov">		let server_key_pair = KeyPair::new_self_signed(&quot;localhost&quot;);</span></div>
 <div class="line"><span id="653" class="lineNum"><a href="#653">653</a></span><span class="counterCov">1</span><span class="lineCov">		let client_key_pair = KeyPair::new_self_signed(&quot;client&quot;);</span></div>
@@ -715,7 +715,7 @@
 <div class="line"><span id="694" class="lineNum"><a href="#694">694</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="695" class="lineNum"><a href="#695">695</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="696" class="lineNum"><a href="#696">696</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="697" class="lineNum"><a href="#697">697</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="697" class="lineNum"><a href="#697">697</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
 <div class="line"><span id="698" class="lineNum"><a href="#698">698</a></span><span class="counterCov">1</span><span class="lineCov">	async fn protocols() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="699" class="lineNum"><a href="#699">699</a></span><span class="counterCov">1</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
 <div class="line"><span id="700" class="lineNum"><a href="#700">700</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
@@ -728,7 +728,7 @@
 <div class="line"><span id="707" class="lineNum"><a href="#707">707</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="708" class="lineNum"><a href="#708">708</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="709" class="lineNum"><a href="#709">709</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="710" class="lineNum"><a href="#710">710</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="710" class="lineNum"><a href="#710">710</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
 <div class="line"><span id="711" class="lineNum"><a href="#711">711</a></span><span class="counterCov">1</span><span class="lineCov">	async fn protocols_compatible() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="712" class="lineNum"><a href="#712">712</a></span><span class="counterCov">1</span><span class="lineCov">		let key_pair = KeyPair::new_self_signed(&quot;test&quot;);</span></div>
 <div class="line"><span id="713" class="lineNum"><a href="#713">713</a></span><span class="counterCov">1</span><span class="lineCov">		let protocols = [b&quot;test&quot;.to_vec()];</span></div>
@@ -785,7 +785,7 @@
 <div class="line"><span id="764" class="lineNum"><a href="#764">764</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="765" class="lineNum"><a href="#765">765</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="766" class="lineNum"><a href="#766">766</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="767" class="lineNum"><a href="#767">767</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="767" class="lineNum"><a href="#767">767</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
 <div class="line"><span id="768" class="lineNum"><a href="#768">768</a></span><span class="counterCov">1</span><span class="lineCov">	async fn protocols_incompatible() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="769" class="lineNum"><a href="#769">769</a></span><span class="counterCov">1</span><span class="lineCov">		let key_pair = KeyPair::new_self_signed(&quot;test&quot;);</span></div>
 <div class="line"><span id="770" class="lineNum"><a href="#770">770</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
@@ -833,21 +833,21 @@
 <div class="line"><span id="812" class="lineNum"><a href="#812">812</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[test]</span></div>
 <div class="line"><span id="813" class="lineNum"><a href="#813">813</a></span><span class="counterCov">1</span><span class="lineCov">	fn trust_dns() {</span></div>
 <div class="line"><span id="814" class="lineNum"><a href="#814">814</a></span><span class="counterCov">1</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
-<div class="line"><span id="815" class="lineNum"><a href="#815">815</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="816" class="lineNum"><a href="#816">816</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// default</span></div>
+<div class="line"><span id="815" class="lineNum"><a href="#815">815</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="816" class="lineNum"><a href="#816">816</a></span><span class="counterCov">1</span><span class="lineCov">		// default</span></div>
 <div class="line"><span id="817" class="lineNum"><a href="#817">817</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(builder.trust_dns());</span></div>
-<div class="line"><span id="818" class="lineNum"><a href="#818">818</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="818" class="lineNum"><a href="#818">818</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
 <div class="line"><span id="819" class="lineNum"><a href="#819">819</a></span><span class="counterCov">1</span><span class="lineCov">		builder.set_trust_dns(false);</span></div>
 <div class="line"><span id="820" class="lineNum"><a href="#820">820</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(!builder.trust_dns());</span></div>
-<div class="line"><span id="821" class="lineNum"><a href="#821">821</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="821" class="lineNum"><a href="#821">821</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
 <div class="line"><span id="822" class="lineNum"><a href="#822">822</a></span><span class="counterCov">1</span><span class="lineCov">		builder.set_trust_dns(true);</span></div>
 <div class="line"><span id="823" class="lineNum"><a href="#823">823</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(builder.trust_dns());</span></div>
-<div class="line"><span id="824" class="lineNum"><a href="#824">824</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="824" class="lineNum"><a href="#824">824</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
 <div class="line"><span id="825" class="lineNum"><a href="#825">825</a></span><span class="counterCov">1</span><span class="lineCov">		builder.disable_trust_dns();</span></div>
 <div class="line"><span id="826" class="lineNum"><a href="#826">826</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(!builder.trust_dns());</span></div>
 <div class="line"><span id="827" class="lineNum"><a href="#827">827</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="828" class="lineNum"><a href="#828">828</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="829" class="lineNum"><a href="#829">829</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="829" class="lineNum"><a href="#829">829</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
 <div class="line"><span id="830" class="lineNum"><a href="#830">830</a></span><span class="counterCov">1</span><span class="lineCov">	async fn trust_dns_disabled() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="831" class="lineNum"><a href="#831">831</a></span><span class="counterCov">1</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
 <div class="line"><span id="832" class="lineNum"><a href="#832">832</a></span><span class="counterCov">1</span><span class="lineCov">		builder.disable_trust_dns();</span></div>
@@ -859,7 +859,7 @@
 <div class="line"><span id="838" class="lineNum"><a href="#838">838</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="839" class="lineNum"><a href="#839">839</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="840" class="lineNum"><a href="#840">840</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="841" class="lineNum"><a href="#841">841</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="841" class="lineNum"><a href="#841">841</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
 <div class="line"><span id="842" class="lineNum"><a href="#842">842</a></span><span class="counterCov">1</span><span class="lineCov">	async fn trust_dns_success() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="843" class="lineNum"><a href="#843">843</a></span><span class="counterCov">1</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
 <div class="line"><span id="844" class="lineNum"><a href="#844">844</a></span><span class="counterCov">1</span><span class="lineCov">		builder.disable_trust_dns();</span></div>
@@ -871,7 +871,7 @@
 <div class="line"><span id="850" class="lineNum"><a href="#850">850</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="851" class="lineNum"><a href="#851">851</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="852" class="lineNum"><a href="#852">852</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="853" class="lineNum"><a href="#853">853</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="853" class="lineNum"><a href="#853">853</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
 <div class="line"><span id="854" class="lineNum"><a href="#854">854</a></span><span class="counterCov">1</span><span class="lineCov">	async fn trust_dns_fail() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="855" class="lineNum"><a href="#855">855</a></span><span class="counterCov">1</span><span class="lineCov">		let endpoint = Builder::new().build()?;</span></div>
 <div class="line"><span id="856" class="lineNum"><a href="#856">856</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
@@ -894,18 +894,18 @@
 <div class="line"><span id="873" class="lineNum"><a href="#873">873</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[test]</span></div>
 <div class="line"><span id="874" class="lineNum"><a href="#874">874</a></span><span class="counterCov">1</span><span class="lineCov">	fn dnssec() {</span></div>
 <div class="line"><span id="875" class="lineNum"><a href="#875">875</a></span><span class="counterCov">1</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
-<div class="line"><span id="876" class="lineNum"><a href="#876">876</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="877" class="lineNum"><a href="#877">877</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// default</span></div>
+<div class="line"><span id="876" class="lineNum"><a href="#876">876</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="877" class="lineNum"><a href="#877">877</a></span><span class="counterCov">1</span><span class="lineCov">		// default</span></div>
 <div class="line"><span id="878" class="lineNum"><a href="#878">878</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(builder.dnssec());</span></div>
-<div class="line"><span id="879" class="lineNum"><a href="#879">879</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="879" class="lineNum"><a href="#879">879</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
 <div class="line"><span id="880" class="lineNum"><a href="#880">880</a></span><span class="counterCov">1</span><span class="lineCov">		builder.set_dnssec(false);</span></div>
 <div class="line"><span id="881" class="lineNum"><a href="#881">881</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(!builder.dnssec());</span></div>
-<div class="line"><span id="882" class="lineNum"><a href="#882">882</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="882" class="lineNum"><a href="#882">882</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
 <div class="line"><span id="883" class="lineNum"><a href="#883">883</a></span><span class="counterCov">1</span><span class="lineCov">		builder.set_dnssec(true);</span></div>
 <div class="line"><span id="884" class="lineNum"><a href="#884">884</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(builder.dnssec());</span></div>
 <div class="line"><span id="885" class="lineNum"><a href="#885">885</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="886" class="lineNum"><a href="#886">886</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="887" class="lineNum"><a href="#887">887</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="887" class="lineNum"><a href="#887">887</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
 <div class="line"><span id="888" class="lineNum"><a href="#888">888</a></span><span class="counterCov">1</span><span class="lineCov">	async fn dnssec_disabled() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="889" class="lineNum"><a href="#889">889</a></span><span class="counterCov">1</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
 <div class="line"><span id="890" class="lineNum"><a href="#890">890</a></span><span class="counterCov">1</span><span class="lineCov">		builder.set_dnssec(false);</span></div>
@@ -920,18 +920,18 @@
 <div class="line"><span id="899" class="lineNum"><a href="#899">899</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[test]</span></div>
 <div class="line"><span id="900" class="lineNum"><a href="#900">900</a></span><span class="counterCov">1</span><span class="lineCov">	fn hosts_file() {</span></div>
 <div class="line"><span id="901" class="lineNum"><a href="#901">901</a></span><span class="counterCov">1</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
-<div class="line"><span id="902" class="lineNum"><a href="#902">902</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="903" class="lineNum"><a href="#903">903</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// default</span></div>
+<div class="line"><span id="902" class="lineNum"><a href="#902">902</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="903" class="lineNum"><a href="#903">903</a></span><span class="counterCov">1</span><span class="lineCov">		// default</span></div>
 <div class="line"><span id="904" class="lineNum"><a href="#904">904</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(!builder.hosts_file());</span></div>
-<div class="line"><span id="905" class="lineNum"><a href="#905">905</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="905" class="lineNum"><a href="#905">905</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
 <div class="line"><span id="906" class="lineNum"><a href="#906">906</a></span><span class="counterCov">1</span><span class="lineCov">		builder.set_hosts_file(true);</span></div>
 <div class="line"><span id="907" class="lineNum"><a href="#907">907</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(builder.hosts_file());</span></div>
-<div class="line"><span id="908" class="lineNum"><a href="#908">908</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="908" class="lineNum"><a href="#908">908</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
 <div class="line"><span id="909" class="lineNum"><a href="#909">909</a></span><span class="counterCov">1</span><span class="lineCov">		builder.set_hosts_file(false);</span></div>
 <div class="line"><span id="910" class="lineNum"><a href="#910">910</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(!builder.hosts_file());</span></div>
 <div class="line"><span id="911" class="lineNum"><a href="#911">911</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="912" class="lineNum"><a href="#912">912</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="913" class="lineNum"><a href="#913">913</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="913" class="lineNum"><a href="#913">913</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
 <div class="line"><span id="914" class="lineNum"><a href="#914">914</a></span><span class="counterCov">1</span><span class="lineCov">	async fn store_embedded() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="915" class="lineNum"><a href="#915">915</a></span><span class="counterCov">1</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
 <div class="line"><span id="916" class="lineNum"><a href="#916">916</a></span><span class="counterCov">1</span><span class="lineCov">		// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing</span></div>
@@ -961,7 +961,7 @@
 <div class="line"><span id="940" class="lineNum"><a href="#940">940</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="941" class="lineNum"><a href="#941">941</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="942" class="lineNum"><a href="#942">942</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="943" class="lineNum"><a href="#943">943</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="943" class="lineNum"><a href="#943">943</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
 <div class="line"><span id="944" class="lineNum"><a href="#944">944</a></span><span class="counterCov">1</span><span class="lineCov">	async fn store_os() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="945" class="lineNum"><a href="#945">945</a></span><span class="counterCov">1</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
 <div class="line"><span id="946" class="lineNum"><a href="#946">946</a></span><span class="counterCov">1</span><span class="lineCov">		// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing</span></div>
@@ -988,7 +988,7 @@
 <div class="line"><span id="967" class="lineNum"><a href="#967">967</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="968" class="lineNum"><a href="#968">968</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="969" class="lineNum"><a href="#969">969</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="970" class="lineNum"><a href="#970">970</a></span><span class="counterCov">2</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="970" class="lineNum"><a href="#970">970</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
 <div class="line"><span id="971" class="lineNum"><a href="#971">971</a></span><span class="counterCov">1</span><span class="lineCov">	async fn store_empty() -&gt; Result&lt;()&gt; {</span></div>
 <div class="line"><span id="972" class="lineNum"><a href="#972">972</a></span><span class="counterCov">1</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
 <div class="line"><span id="973" class="lineNum"><a href="#973">973</a></span><span class="counterCov">1</span><span class="lineCov">		// `cfg(test)` will use `[::1]` by default, but we need to do an outgoing</span></div>
