@@ -1,14 +1,14 @@
 [package]
 name = "fabruic"
-version = "0.0.1-dev-1"
+version = "0.0.1-dev.2"
 description = "A simple QUIC-based protocol using quinn. Written for PliantDB and Cosmic Verge."
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/khonsulabs/fabruic"
 keywords = ["quic"]
 categories = ["network-programming"]
 edition = "2018"
-resolver = "2"
 
+# resolver = "2" -- causes [package.metadata.docs.rs] to fail when using cargo publish
 [features]
 dangerous = []
 default = []
@@ -35,11 +35,11 @@ rustls = { version = "0.19", default-features = false, features = [
 serde = "1"
 thiserror = "1"
 tokio = { version = "1", features = ["rt-multi-thread"] }
-trust-dns-resolver = { version = "0.20", default-features = false, features = [
+trust-dns-resolver = { version = "0.20", default-features = false, optional = true, features = [
 	"dns-over-https-rustls",
 	"dnssec-ring",
 	"tokio-runtime",
-], optional = true }
+] }
 url = "2"
 webpki = { version = "0.21", default-features = false }
 webpki-roots = "0.21"
