@@ -7,13 +7,13 @@ repository = "https://github.com/khonsulabs/fabruic"
 keywords = ["quic"]
 categories = ["network-programming"]
 edition = "2018"
+resolver = "2"
 
-# resolver = "2" -- causes [package.metadata.docs.rs] to fail when using cargo publish
 [features]
 dangerous = []
 default = []
-trust-dns = ["trust-dns-resolver"]
 test = []
+trust-dns = ["trust-dns-resolver"]
 
 [dependencies]
 allochronic-util = "0.0.1-dev-1"
@@ -58,5 +58,5 @@ codegen-units = 1
 lto = true
 
 [package.metadata.docs.rs]
-all-features = true
+features = ["dangerous", "trust-dns"]
 targets = []
