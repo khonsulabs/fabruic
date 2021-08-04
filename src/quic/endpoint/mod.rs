@@ -527,6 +527,8 @@ impl FusedStream for Endpoint {
 
 #[cfg(test)]
 mod test {
+	use std::str::FromStr;
+
 	use anyhow::Result;
 	use futures_util::StreamExt;
 	use quinn::{ConnectionClose, ConnectionError};
@@ -562,6 +564,30 @@ mod test {
 			.expect("client dropped")
 			.accept::<()>()
 			.await?;
+
+		Ok(())
+	}
+
+	#[tokio::test]
+	async fn port() -> Result<()> {
+		let client = Endpoint::new_client()?;
+
+		assert!(matches!(
+			client.resolve_domain("https://localhost").await,
+			Ok((address, domain))
+			if address == SocketAddr::from_str("[::1]:443")? && domain == "localhost"
+		));
+
+		assert!(matches!(
+			client.resolve_domain("quic://localhost").await,
+			Err(error::Connect::Port)
+		));
+
+		assert!(matches!(
+			client.resolve_domain("quic://localhost:443").await,
+			Ok((address, domain))
+			if address == SocketAddr::from_str("[::1]:443")? && domain == "localhost"
+		));
 
 		Ok(())
 	}
