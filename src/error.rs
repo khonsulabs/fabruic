@@ -145,7 +145,7 @@ pub enum Connect {
 	Config(#[from] ConnectError),
 }
 
-/// Error receiving connection from peer with [`Stream`](futures_util::Stream)
+/// Error receiving stream from peer with [`Stream`](futures_util::Stream)
 /// on from [`Connection`](crate::Connection).
 #[derive(Clone, Debug, Eq, Error, PartialEq)]
 #[error("Error receiving connection from peer: {0}")]
