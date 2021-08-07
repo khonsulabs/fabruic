@@ -173,7 +173,7 @@ mod test {
 		}
 
 		// validate our returned value
-		assert_eq!(true, task.close(()).await??);
+		assert!(task.close(()).await??);
 		// validate that `close` has properly closed
 		assert!(matches!((&task).await, Err(error::AlreadyClosed)));
 
@@ -191,6 +191,8 @@ mod test {
 
 	#[tokio::test]
 	#[should_panic = "test"]
+	// TODO: fix lint (https://github.com/rust-lang/rust-clippy/issues/7438)
+	#[allow(clippy::semicolon_if_nothing_returned)]
 	async fn panic_await() {
 		let task: Task<()> = Task::new(|_| async move {
 			panic!("test");
@@ -201,6 +203,8 @@ mod test {
 
 	#[tokio::test]
 	#[should_panic = "test"]
+	// TODO: fix lint (https://github.com/rust-lang/rust-clippy/issues/7438)
+	#[allow(clippy::semicolon_if_nothing_returned)]
 	async fn panic_close() {
 		let task = Task::new(|_| async move {
 			panic!("test");
