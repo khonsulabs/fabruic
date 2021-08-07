@@ -191,7 +191,7 @@
 <span class="kw">use</span> <span class="ident">error::CertificateError</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 <span class="kw">use</span> <span class="ident">webpki::EndEntityCert</span>;
-<span class="kw">use</span> <span class="ident">x509_parser</span>::{<span class="ident">certificate::X509Certificate</span>, <span class="ident">extensions::GeneralName</span>};
+<span class="kw">use</span> <span class="ident">x509_parser</span>::{<span class="ident">certificate::X509Certificate</span>, <span class="ident">extensions::GeneralName</span>, <span class="ident">prelude::FromDer</span>};
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::error</span>;
 
