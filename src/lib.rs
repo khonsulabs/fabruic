@@ -12,7 +12,6 @@
 	macro_use_extern_crate,
 	meta_variable_misuse,
 	missing_copy_implementations,
-	missing_crate_level_docs,
 	missing_debug_implementations,
 	missing_docs,
 	non_ascii_idents,
