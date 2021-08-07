@@ -5,7 +5,7 @@ use std::{convert::TryFrom, time::Duration};
 use error::CertificateError;
 use serde::{Deserialize, Serialize};
 use webpki::EndEntityCert;
-use x509_parser::{certificate::X509Certificate, extensions::GeneralName};
+use x509_parser::{certificate::X509Certificate, extensions::GeneralName, prelude::FromDer};
 
 use crate::error;
 
