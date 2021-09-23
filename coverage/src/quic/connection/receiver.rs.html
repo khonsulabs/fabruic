@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - receiver.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-09-23 15:26:16</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-09-23 15:46:31</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -73,7 +73,7 @@
 <div class="line"><span id="52" class="lineNum"><a href="#52">52</a></span><span class="counterUnCov"></span><span class="lineUnCov">				Close,</span></div>
 <div class="line"><span id="53" class="lineNum"><a href="#53">53</a></span><span class="counterUnCov"></span><span class="lineUnCov">			}</span></div>
 <div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterCov">2755</span><span class="lineCov">			while let Some(message) = allochronic_util::select! {</span></div>
+<div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterCov">10581</span><span class="lineCov">			while let Some(message) = allochronic_util::select! {</span></div>
 <div class="line"><span id="56" class="lineNum"><a href="#56">56</a></span><span class="counterCov">400</span><span class="lineCov">				message: &amp;mut stream =&gt; message.map(Message::Data),</span></div>
 <div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterCov">1</span><span class="lineCov">				shutdown: &amp;mut shutdown =&gt; shutdown.ok().map(|_| Message::Close),</span></div>
 <div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterUnCov"></span><span class="lineUnCov">			} {</span></div>
@@ -127,9 +127,9 @@
 <div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;T&gt; Stream for Receiver&lt;T&gt; {</span></div>
 <div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterUnCov"></span><span class="lineUnCov">	type Item = Result&lt;T, error::Receiver&gt;;</span></div>
 <div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterCov">400</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
-<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterCov">400</span><span class="lineCov">		self.receiver.poll_next_unpin(cx)</span></div>
-<div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterCov">400</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterCov">399</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
+<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterCov">399</span><span class="lineCov">		self.receiver.poll_next_unpin(cx)</span></div>
+<div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterCov">399</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 </div>
 </body>

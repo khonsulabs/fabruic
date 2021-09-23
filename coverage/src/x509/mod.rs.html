@@ -9,11 +9,11 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../index.html">top level</a> - <a href="index.html">src/x509</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-09-23 15:26:16</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-09-23 15:46:31</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">86</span><span class="linesTotal">113</span><span class="linesPercentage lineMed">76.1 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">85</span><span class="linesTotal">112</span><span class="linesPercentage lineMed">75.9 %</span></div>
 <div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">23</span><span class="funsTotal">68</span><span class="funsPercentage funLow">33.8 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
@@ -151,92 +151,91 @@
 <div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterCov">1</span><span class="lineCov">	pub(crate) fn into_rustls(self) -&gt; CertifiedKey {</span></div>
 <div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterCov">1</span><span class="lineCov">		CertifiedKey::new(</span></div>
 <div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterCov">1</span><span class="lineCov">			self.certificate_chain.into_rustls(),</span></div>
-<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterCov">1</span><span class="lineCov">			#[allow(box_pointers)]</span></div>
-<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterCov">1</span><span class="lineCov">			Arc::new(self.private_key.into_rustls()),</span></div>
-<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterCov">1</span><span class="lineCov">		)</span></div>
-<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
-<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Gives serialization access to [`KeyPair`].</span></div>
-<div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterUnCov"></span><span class="lineUnCov">///</span></div>
-<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// # Security</span></div>
-<div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// This is only dangerous in the sense that you aren&#39;t supposed to leak the</span></div>
-<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// [`PrivateKey`]. Make sure to use this carefully!</span></div>
-<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub trait Dangerous {</span></div>
-<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Serialize with [`serde`].</span></div>
-<div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Security</span></div>
-<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// This is only dangerous in the sense that you aren&#39;t supposed to leak the</span></div>
-<div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`PrivateKey`]. Make sure to use this carefully!</span></div>
-<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
-<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`S::Error`](Serializer::Error) if serialization failed.</span></div>
-<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterUnCov"></span><span class="lineUnCov">	fn serialize&lt;S: Serializer&gt;(key_pair: &amp;Self, serializer: S) -&gt; Result&lt;S::Ok, S::Error&gt;;</span></div>
-<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
-<div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl Dangerous for KeyPair {</span></div>
-<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterCov">1</span><span class="lineCov">	fn serialize&lt;S: Serializer&gt;(key_pair: &amp;Self, serializer: S) -&gt; Result&lt;S::Ok, S::Error&gt; {</span></div>
-<div class="line"><span id="158" class="lineNum"><a href="#158">158</a></span><span class="counterCov">1</span><span class="lineCov">		let mut serializer = serializer.serialize_struct(&quot;KeyPair&quot;, 2)?;</span></div>
-<div class="line"><span id="159" class="lineNum"><a href="#159">159</a></span><span class="counterCov">1</span><span class="lineCov">		serializer.serialize_field(&quot;certificate_chain&quot;, &amp;key_pair.certificate_chain)?;</span></div>
-<div class="line"><span id="160" class="lineNum"><a href="#160">160</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// we can&#39;t directly serialize `PrivateKey`, so instead we serialize it&#39;s</span></div>
-<div class="line"><span id="161" class="lineNum"><a href="#161">161</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// innards - when deserializing we have to do this in revert and be careful not</span></div>
-<div class="line"><span id="162" class="lineNum"><a href="#162">162</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// to directly deserialize `PrivateKey`</span></div>
-<div class="line"><span id="163" class="lineNum"><a href="#163">163</a></span><span class="counterCov">1</span><span class="lineCov">		serializer.serialize_field(</span></div>
-<div class="line"><span id="164" class="lineNum"><a href="#164">164</a></span><span class="counterCov">1</span><span class="lineCov">			&quot;private_key&quot;,</span></div>
-<div class="line"><span id="165" class="lineNum"><a href="#165">165</a></span><span class="counterCov">1</span><span class="lineCov">			private_key::Dangerous::as_ref(&amp;key_pair.private_key),</span></div>
-<div class="line"><span id="166" class="lineNum"><a href="#166">166</a></span><span class="counterCov">1</span><span class="lineCov">		)?;</span></div>
-<div class="line"><span id="167" class="lineNum"><a href="#167">167</a></span><span class="counterCov">1</span><span class="lineCov">		serializer.end()</span></div>
-<div class="line"><span id="168" class="lineNum"><a href="#168">168</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="169" class="lineNum"><a href="#169">169</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
-<div class="line"><span id="170" class="lineNum"><a href="#170">170</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="171" class="lineNum"><a href="#171">171</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Custom [`Deserializer`] for [`PrivateKey`] in [`KeyPair`].</span></div>
-<div class="line"><span id="172" class="lineNum"><a href="#172">172</a></span><span class="counterUnCov"></span><span class="lineUnCov">///</span></div>
-<div class="line"><span id="173" class="lineNum"><a href="#173">173</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// We [`Serialize`](serde::Serialize) [`PrivateKey`] in [`KeyPair`] not</span></div>
-<div class="line"><span id="174" class="lineNum"><a href="#174">174</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// directly, we have to correspondingly do the same when [`Deserialize`]ing.</span></div>
-<div class="line"><span id="175" class="lineNum"><a href="#175">175</a></span><span class="counterUnCov"></span><span class="lineUnCov">#[allow(single_use_lifetimes)]</span></div>
-<div class="line"><span id="176" class="lineNum"><a href="#176">176</a></span><span class="counterCov">1</span><span class="lineCov">fn deserialize_private_key&lt;&#39;de, D&gt;(deserializer: D) -&gt; Result&lt;PrivateKey, D::Error&gt;</span></div>
-<div class="line"><span id="177" class="lineNum"><a href="#177">177</a></span><span class="counterCov">1</span><span class="lineCov">where</span></div>
-<div class="line"><span id="178" class="lineNum"><a href="#178">178</a></span><span class="counterCov">1</span><span class="lineCov">	D: Deserializer&lt;&#39;de&gt;,</span></div>
-<div class="line"><span id="179" class="lineNum"><a href="#179">179</a></span><span class="counterCov">1</span><span class="lineCov">{</span></div>
-<div class="line"><span id="180" class="lineNum"><a href="#180">180</a></span><span class="counterCov">1</span><span class="lineCov">	Ok(PrivateKey::unchecked_from_der(Vec::&lt;u8&gt;::deserialize(</span></div>
-<div class="line"><span id="181" class="lineNum"><a href="#181">181</a></span><span class="counterCov">1</span><span class="lineCov">		deserializer,</span></div>
-<div class="line"><span id="182" class="lineNum"><a href="#182">182</a></span><span class="counterCov">1</span><span class="lineCov">	)?))</span></div>
-<div class="line"><span id="183" class="lineNum"><a href="#183">183</a></span><span class="counterCov">1</span><span class="lineCov">}</span></div>
-<div class="line"><span id="184" class="lineNum"><a href="#184">184</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="185" class="lineNum"><a href="#185">185</a></span><span class="counterCov">1</span><span class="lineCov">#[test]</span></div>
-<div class="line"><span id="186" class="lineNum"><a href="#186">186</a></span><span class="counterCov">1</span><span class="lineCov">fn serialize() -&gt; anyhow::Result&lt;()&gt; {</span></div>
-<div class="line"><span id="187" class="lineNum"><a href="#187">187</a></span><span class="counterCov">1</span><span class="lineCov">	use bincode::{config::DefaultOptions, Options, Serializer};</span></div>
-<div class="line"><span id="188" class="lineNum"><a href="#188">188</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
-<div class="line"><span id="189" class="lineNum"><a href="#189">189</a></span><span class="counterCov">1</span><span class="lineCov">	let key_pair = KeyPair::new_self_signed(&quot;test&quot;);</span></div>
-<div class="line"><span id="190" class="lineNum"><a href="#190">190</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
-<div class="line"><span id="191" class="lineNum"><a href="#191">191</a></span><span class="counterCov">1</span><span class="lineCov">	let mut buffer = Vec::new();</span></div>
-<div class="line"><span id="192" class="lineNum"><a href="#192">192</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
-<div class="line"><span id="193" class="lineNum"><a href="#193">193</a></span><span class="counterCov">1</span><span class="lineCov">	Dangerous::serialize(</span></div>
-<div class="line"><span id="194" class="lineNum"><a href="#194">194</a></span><span class="counterCov">1</span><span class="lineCov">		&amp;key_pair,</span></div>
-<div class="line"><span id="195" class="lineNum"><a href="#195">195</a></span><span class="counterCov">1</span><span class="lineCov">		&amp;mut Serializer::new(</span></div>
-<div class="line"><span id="196" class="lineNum"><a href="#196">196</a></span><span class="counterCov">1</span><span class="lineCov">			&amp;mut buffer,</span></div>
-<div class="line"><span id="197" class="lineNum"><a href="#197">197</a></span><span class="counterCov">1</span><span class="lineCov">			DefaultOptions::default()</span></div>
-<div class="line"><span id="198" class="lineNum"><a href="#198">198</a></span><span class="counterCov">1</span><span class="lineCov">				.with_fixint_encoding()</span></div>
-<div class="line"><span id="199" class="lineNum"><a href="#199">199</a></span><span class="counterCov">1</span><span class="lineCov">				.allow_trailing_bytes(),</span></div>
-<div class="line"><span id="200" class="lineNum"><a href="#200">200</a></span><span class="counterCov">1</span><span class="lineCov">		),</span></div>
-<div class="line"><span id="201" class="lineNum"><a href="#201">201</a></span><span class="counterCov">1</span><span class="lineCov">	)?;</span></div>
-<div class="line"><span id="202" class="lineNum"><a href="#202">202</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="203" class="lineNum"><a href="#203">203</a></span><span class="counterCov">1</span><span class="lineCov">	assert_eq!(key_pair, bincode::deserialize(&amp;buffer)?);</span></div>
-<div class="line"><span id="204" class="lineNum"><a href="#204">204</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="205" class="lineNum"><a href="#205">205</a></span><span class="counterCov">1</span><span class="lineCov">	Ok(())</span></div>
-<div class="line"><span id="206" class="lineNum"><a href="#206">206</a></span><span class="counterCov">1</span><span class="lineCov">}</span></div>
-<div class="line"><span id="207" class="lineNum"><a href="#207">207</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="208" class="lineNum"><a href="#208">208</a></span><span class="counterCov">1</span><span class="lineCov">#[test]</span></div>
-<div class="line"><span id="209" class="lineNum"><a href="#209">209</a></span><span class="counterCov">1</span><span class="lineCov">fn debug() {</span></div>
-<div class="line"><span id="210" class="lineNum"><a href="#210">210</a></span><span class="counterCov">1</span><span class="lineCov">	let key_pair = KeyPair::new_self_signed(&quot;test&quot;);</span></div>
-<div class="line"><span id="211" class="lineNum"><a href="#211">211</a></span><span class="counterCov">1</span><span class="lineCov">	assert_eq!(</span></div>
-<div class="line"><span id="212" class="lineNum"><a href="#212">212</a></span><span class="counterCov">1</span><span class="lineCov">		format!(</span></div>
-<div class="line"><span id="213" class="lineNum"><a href="#213">213</a></span><span class="counterCov">1</span><span class="lineCov">			&quot;KeyPair {{ certificate_chain: {:?}, private_key: PrivateKey(\&quot;[[redacted]]\&quot;) }}&quot;,</span></div>
-<div class="line"><span id="214" class="lineNum"><a href="#214">214</a></span><span class="counterCov">1</span><span class="lineCov">			key_pair.certificate_chain()</span></div>
-<div class="line"><span id="215" class="lineNum"><a href="#215">215</a></span><span class="counterCov">1</span><span class="lineCov">		),</span></div>
-<div class="line"><span id="216" class="lineNum"><a href="#216">216</a></span><span class="counterCov">1</span><span class="lineCov">		format!(&quot;{:?}&quot;, key_pair)</span></div>
-<div class="line"><span id="217" class="lineNum"><a href="#217">217</a></span><span class="counterCov">1</span><span class="lineCov">	);</span></div>
-<div class="line"><span id="218" class="lineNum"><a href="#218">218</a></span><span class="counterCov">1</span><span class="lineCov">}</span></div>
+<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterCov">1</span><span class="lineCov">			Arc::new(self.private_key.into_rustls()),</span></div>
+<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterCov">1</span><span class="lineCov">		)</span></div>
+<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Gives serialization access to [`KeyPair`].</span></div>
+<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterUnCov"></span><span class="lineUnCov">///</span></div>
+<div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// # Security</span></div>
+<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// This is only dangerous in the sense that you aren&#39;t supposed to leak the</span></div>
+<div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// [`PrivateKey`]. Make sure to use this carefully!</span></div>
+<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub trait Dangerous {</span></div>
+<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Serialize with [`serde`].</span></div>
+<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Security</span></div>
+<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// This is only dangerous in the sense that you aren&#39;t supposed to leak the</span></div>
+<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`PrivateKey`]. Make sure to use this carefully!</span></div>
+<div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
+<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`S::Error`](Serializer::Error) if serialization failed.</span></div>
+<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterUnCov"></span><span class="lineUnCov">	fn serialize&lt;S: Serializer&gt;(key_pair: &amp;Self, serializer: S) -&gt; Result&lt;S::Ok, S::Error&gt;;</span></div>
+<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl Dangerous for KeyPair {</span></div>
+<div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterCov">1</span><span class="lineCov">	fn serialize&lt;S: Serializer&gt;(key_pair: &amp;Self, serializer: S) -&gt; Result&lt;S::Ok, S::Error&gt; {</span></div>
+<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterCov">1</span><span class="lineCov">		let mut serializer = serializer.serialize_struct(&quot;KeyPair&quot;, 2)?;</span></div>
+<div class="line"><span id="158" class="lineNum"><a href="#158">158</a></span><span class="counterCov">1</span><span class="lineCov">		serializer.serialize_field(&quot;certificate_chain&quot;, &amp;key_pair.certificate_chain)?;</span></div>
+<div class="line"><span id="159" class="lineNum"><a href="#159">159</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// we can&#39;t directly serialize `PrivateKey`, so instead we serialize it&#39;s</span></div>
+<div class="line"><span id="160" class="lineNum"><a href="#160">160</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// innards - when deserializing we have to do this in revert and be careful not</span></div>
+<div class="line"><span id="161" class="lineNum"><a href="#161">161</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// to directly deserialize `PrivateKey`</span></div>
+<div class="line"><span id="162" class="lineNum"><a href="#162">162</a></span><span class="counterCov">1</span><span class="lineCov">		serializer.serialize_field(</span></div>
+<div class="line"><span id="163" class="lineNum"><a href="#163">163</a></span><span class="counterCov">1</span><span class="lineCov">			&quot;private_key&quot;,</span></div>
+<div class="line"><span id="164" class="lineNum"><a href="#164">164</a></span><span class="counterCov">1</span><span class="lineCov">			private_key::Dangerous::as_ref(&amp;key_pair.private_key),</span></div>
+<div class="line"><span id="165" class="lineNum"><a href="#165">165</a></span><span class="counterCov">1</span><span class="lineCov">		)?;</span></div>
+<div class="line"><span id="166" class="lineNum"><a href="#166">166</a></span><span class="counterCov">1</span><span class="lineCov">		serializer.end()</span></div>
+<div class="line"><span id="167" class="lineNum"><a href="#167">167</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="168" class="lineNum"><a href="#168">168</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="169" class="lineNum"><a href="#169">169</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="170" class="lineNum"><a href="#170">170</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Custom [`Deserializer`] for [`PrivateKey`] in [`KeyPair`].</span></div>
+<div class="line"><span id="171" class="lineNum"><a href="#171">171</a></span><span class="counterUnCov"></span><span class="lineUnCov">///</span></div>
+<div class="line"><span id="172" class="lineNum"><a href="#172">172</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// We [`Serialize`](serde::Serialize) [`PrivateKey`] in [`KeyPair`] not</span></div>
+<div class="line"><span id="173" class="lineNum"><a href="#173">173</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// directly, we have to correspondingly do the same when [`Deserialize`]ing.</span></div>
+<div class="line"><span id="174" class="lineNum"><a href="#174">174</a></span><span class="counterUnCov"></span><span class="lineUnCov">#[allow(single_use_lifetimes)]</span></div>
+<div class="line"><span id="175" class="lineNum"><a href="#175">175</a></span><span class="counterCov">1</span><span class="lineCov">fn deserialize_private_key&lt;&#39;de, D&gt;(deserializer: D) -&gt; Result&lt;PrivateKey, D::Error&gt;</span></div>
+<div class="line"><span id="176" class="lineNum"><a href="#176">176</a></span><span class="counterCov">1</span><span class="lineCov">where</span></div>
+<div class="line"><span id="177" class="lineNum"><a href="#177">177</a></span><span class="counterCov">1</span><span class="lineCov">	D: Deserializer&lt;&#39;de&gt;,</span></div>
+<div class="line"><span id="178" class="lineNum"><a href="#178">178</a></span><span class="counterCov">1</span><span class="lineCov">{</span></div>
+<div class="line"><span id="179" class="lineNum"><a href="#179">179</a></span><span class="counterCov">1</span><span class="lineCov">	Ok(PrivateKey::unchecked_from_der(Vec::&lt;u8&gt;::deserialize(</span></div>
+<div class="line"><span id="180" class="lineNum"><a href="#180">180</a></span><span class="counterCov">1</span><span class="lineCov">		deserializer,</span></div>
+<div class="line"><span id="181" class="lineNum"><a href="#181">181</a></span><span class="counterCov">1</span><span class="lineCov">	)?))</span></div>
+<div class="line"><span id="182" class="lineNum"><a href="#182">182</a></span><span class="counterCov">1</span><span class="lineCov">}</span></div>
+<div class="line"><span id="183" class="lineNum"><a href="#183">183</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="184" class="lineNum"><a href="#184">184</a></span><span class="counterCov">1</span><span class="lineCov">#[test]</span></div>
+<div class="line"><span id="185" class="lineNum"><a href="#185">185</a></span><span class="counterCov">1</span><span class="lineCov">fn serialize() -&gt; anyhow::Result&lt;()&gt; {</span></div>
+<div class="line"><span id="186" class="lineNum"><a href="#186">186</a></span><span class="counterCov">1</span><span class="lineCov">	use bincode::{config::DefaultOptions, Options, Serializer};</span></div>
+<div class="line"><span id="187" class="lineNum"><a href="#187">187</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="188" class="lineNum"><a href="#188">188</a></span><span class="counterCov">1</span><span class="lineCov">	let key_pair = KeyPair::new_self_signed(&quot;test&quot;);</span></div>
+<div class="line"><span id="189" class="lineNum"><a href="#189">189</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="190" class="lineNum"><a href="#190">190</a></span><span class="counterCov">1</span><span class="lineCov">	let mut buffer = Vec::new();</span></div>
+<div class="line"><span id="191" class="lineNum"><a href="#191">191</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="192" class="lineNum"><a href="#192">192</a></span><span class="counterCov">1</span><span class="lineCov">	Dangerous::serialize(</span></div>
+<div class="line"><span id="193" class="lineNum"><a href="#193">193</a></span><span class="counterCov">1</span><span class="lineCov">		&amp;key_pair,</span></div>
+<div class="line"><span id="194" class="lineNum"><a href="#194">194</a></span><span class="counterCov">1</span><span class="lineCov">		&amp;mut Serializer::new(</span></div>
+<div class="line"><span id="195" class="lineNum"><a href="#195">195</a></span><span class="counterCov">1</span><span class="lineCov">			&amp;mut buffer,</span></div>
+<div class="line"><span id="196" class="lineNum"><a href="#196">196</a></span><span class="counterCov">1</span><span class="lineCov">			DefaultOptions::default()</span></div>
+<div class="line"><span id="197" class="lineNum"><a href="#197">197</a></span><span class="counterCov">1</span><span class="lineCov">				.with_fixint_encoding()</span></div>
+<div class="line"><span id="198" class="lineNum"><a href="#198">198</a></span><span class="counterCov">1</span><span class="lineCov">				.allow_trailing_bytes(),</span></div>
+<div class="line"><span id="199" class="lineNum"><a href="#199">199</a></span><span class="counterCov">1</span><span class="lineCov">		),</span></div>
+<div class="line"><span id="200" class="lineNum"><a href="#200">200</a></span><span class="counterCov">1</span><span class="lineCov">	)?;</span></div>
+<div class="line"><span id="201" class="lineNum"><a href="#201">201</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="202" class="lineNum"><a href="#202">202</a></span><span class="counterCov">1</span><span class="lineCov">	assert_eq!(key_pair, bincode::deserialize(&amp;buffer)?);</span></div>
+<div class="line"><span id="203" class="lineNum"><a href="#203">203</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="204" class="lineNum"><a href="#204">204</a></span><span class="counterCov">1</span><span class="lineCov">	Ok(())</span></div>
+<div class="line"><span id="205" class="lineNum"><a href="#205">205</a></span><span class="counterCov">1</span><span class="lineCov">}</span></div>
+<div class="line"><span id="206" class="lineNum"><a href="#206">206</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="207" class="lineNum"><a href="#207">207</a></span><span class="counterCov">1</span><span class="lineCov">#[test]</span></div>
+<div class="line"><span id="208" class="lineNum"><a href="#208">208</a></span><span class="counterCov">1</span><span class="lineCov">fn debug() {</span></div>
+<div class="line"><span id="209" class="lineNum"><a href="#209">209</a></span><span class="counterCov">1</span><span class="lineCov">	let key_pair = KeyPair::new_self_signed(&quot;test&quot;);</span></div>
+<div class="line"><span id="210" class="lineNum"><a href="#210">210</a></span><span class="counterCov">1</span><span class="lineCov">	assert_eq!(</span></div>
+<div class="line"><span id="211" class="lineNum"><a href="#211">211</a></span><span class="counterCov">1</span><span class="lineCov">		format!(</span></div>
+<div class="line"><span id="212" class="lineNum"><a href="#212">212</a></span><span class="counterCov">1</span><span class="lineCov">			&quot;KeyPair {{ certificate_chain: {:?}, private_key: PrivateKey(\&quot;[[redacted]]\&quot;) }}&quot;,</span></div>
+<div class="line"><span id="213" class="lineNum"><a href="#213">213</a></span><span class="counterCov">1</span><span class="lineCov">			key_pair.certificate_chain()</span></div>
+<div class="line"><span id="214" class="lineNum"><a href="#214">214</a></span><span class="counterCov">1</span><span class="lineCov">		),</span></div>
+<div class="line"><span id="215" class="lineNum"><a href="#215">215</a></span><span class="counterCov">1</span><span class="lineCov">		format!(&quot;{:?}&quot;, key_pair)</span></div>
+<div class="line"><span id="216" class="lineNum"><a href="#216">216</a></span><span class="counterCov">1</span><span class="lineCov">	);</span></div>
+<div class="line"><span id="217" class="lineNum"><a href="#217">217</a></span><span class="counterCov">1</span><span class="lineCov">}</span></div>
 </div>
 </body>
 </html>
