@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - receiver.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-08-07 13:24:18</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-09-23 14:25:23</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -73,7 +73,7 @@
 <div class="line"><span id="52" class="lineNum"><a href="#52">52</a></span><span class="counterUnCov"></span><span class="lineUnCov">				Close,</span></div>
 <div class="line"><span id="53" class="lineNum"><a href="#53">53</a></span><span class="counterUnCov"></span><span class="lineUnCov">			}</span></div>
 <div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterCov">6923</span><span class="lineCov">			while let Some(message) = allochronic_util::select! {</span></div>
+<div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterCov">4359</span><span class="lineCov">			while let Some(message) = allochronic_util::select! {</span></div>
 <div class="line"><span id="56" class="lineNum"><a href="#56">56</a></span><span class="counterCov">400</span><span class="lineCov">				message: &amp;mut stream =&gt; message.map(Message::Data),</span></div>
 <div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterCov">1</span><span class="lineCov">				shutdown: &amp;mut shutdown =&gt; shutdown.ok().map(|_| Message::Close),</span></div>
 <div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterUnCov"></span><span class="lineUnCov">			} {</span></div>

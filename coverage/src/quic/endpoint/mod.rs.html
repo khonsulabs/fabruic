@@ -9,11 +9,11 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-08-07 13:24:18</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-09-23 14:25:23</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">270</span><span class="linesTotal">300</span><span class="linesPercentage lineHi">90.0 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">265</span><span class="linesTotal">295</span><span class="linesPercentage lineMed">89.8 %</span></div>
 <div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">67</span><span class="funsTotal">97</span><span class="funsPercentage funLow">69.1 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
@@ -350,15 +350,15 @@
 <div class="line"><span id="329" class="lineNum"><a href="#329">329</a></span><span class="counterCov">109</span><span class="lineCov">		let (address, _) = self.resolve_domain(url).await?;</span></div>
 <div class="line"><span id="330" class="lineNum"><a href="#330">330</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="331" class="lineNum"><a href="#331">331</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// build client configuration</span></div>
-<div class="line"><span id="332" class="lineNum"><a href="#332">332</a></span><span class="counterCov">109</span><span class="lineCov">		let client =</span></div>
-<div class="line"><span id="333" class="lineNum"><a href="#333">333</a></span><span class="counterCov">109</span><span class="lineCov">			self.config</span></div>
-<div class="line"><span id="334" class="lineNum"><a href="#334">334</a></span><span class="counterCov">109</span><span class="lineCov">				.new_client(Some(server_certificate), Store::Empty, client_key_pair);</span></div>
+<div class="line"><span id="332" class="lineNum"><a href="#332">332</a></span><span class="counterCov">108</span><span class="lineCov">		let client =</span></div>
+<div class="line"><span id="333" class="lineNum"><a href="#333">333</a></span><span class="counterCov">108</span><span class="lineCov">			self.config</span></div>
+<div class="line"><span id="334" class="lineNum"><a href="#334">334</a></span><span class="counterCov">108</span><span class="lineCov">				.new_client(Some(server_certificate), Store::Empty, client_key_pair);</span></div>
 <div class="line"><span id="335" class="lineNum"><a href="#335">335</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="336" class="lineNum"><a href="#336">336</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// connet</span></div>
 <div class="line"><span id="337" class="lineNum"><a href="#337">337</a></span><span class="counterCov">109</span><span class="lineCov">		let connecting = self</span></div>
-<div class="line"><span id="338" class="lineNum"><a href="#338">338</a></span><span class="counterCov">109</span><span class="lineCov">			.endpoint</span></div>
-<div class="line"><span id="339" class="lineNum"><a href="#339">339</a></span><span class="counterCov">109</span><span class="lineCov">			.connect_with(client, &amp;address, &amp;domain)</span></div>
-<div class="line"><span id="340" class="lineNum"><a href="#340">340</a></span><span class="counterCov">109</span><span class="lineCov">			.map_err(error::Connect::Config)?;</span></div>
+<div class="line"><span id="338" class="lineNum"><a href="#338">338</a></span><span class="counterCov">108</span><span class="lineCov">			.endpoint</span></div>
+<div class="line"><span id="339" class="lineNum"><a href="#339">339</a></span><span class="counterCov">108</span><span class="lineCov">			.connect_with(client, &amp;address, &amp;domain)</span></div>
+<div class="line"><span id="340" class="lineNum"><a href="#340">340</a></span><span class="counterCov">108</span><span class="lineCov">			.map_err(error::Connect::Config)?;</span></div>
 <div class="line"><span id="341" class="lineNum"><a href="#341">341</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="342" class="lineNum"><a href="#342">342</a></span><span class="counterCov">109</span><span class="lineCov">		Ok(Connecting::new(connecting))</span></div>
 <div class="line"><span id="343" class="lineNum"><a href="#343">343</a></span><span class="counterCov">109</span><span class="lineCov">	}</span></div>
@@ -601,7 +601,7 @@
 <div class="line"><span id="580" class="lineNum"><a href="#580">580</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="581" class="lineNum"><a href="#581">581</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
 <div class="line"><span id="582" class="lineNum"><a href="#582">582</a></span><span class="counterCov">1</span><span class="lineCov">			client.resolve_domain(&quot;quic://localhost&quot;).await,</span></div>
-<div class="line"><span id="583" class="lineNum"><a href="#583">583</a></span><span class="counterCov">1</span><span class="lineCov">			Err(error::Connect::Port)</span></div>
+<div class="line"><span id="583" class="lineNum"><a href="#583">583</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Err(error::Connect::Port)</span></div>
 <div class="line"><span id="584" class="lineNum"><a href="#584">584</a></span><span class="counterUnCov"></span><span class="lineUnCov">		));</span></div>
 <div class="line"><span id="585" class="lineNum"><a href="#585">585</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="586" class="lineNum"><a href="#586">586</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
@@ -646,7 +646,7 @@
 <div class="line"><span id="625" class="lineNum"><a href="#625">625</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.await?</span></div>
 <div class="line"><span id="626" class="lineNum"><a href="#626">626</a></span><span class="counterCov">1</span><span class="lineCov">				.accept::&lt;()&gt;()</span></div>
 <div class="line"><span id="627" class="lineNum"><a href="#627">627</a></span><span class="counterUnCov"></span><span class="lineUnCov">				.await,</span></div>
-<div class="line"><span id="628" class="lineNum"><a href="#628">628</a></span><span class="counterCov">1</span><span class="lineCov">			Err(error::Connecting(ConnectionError::LocallyClosed))</span></div>
+<div class="line"><span id="628" class="lineNum"><a href="#628">628</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Err(error::Connecting(ConnectionError::LocallyClosed))</span></div>
 <div class="line"><span id="629" class="lineNum"><a href="#629">629</a></span><span class="counterUnCov"></span><span class="lineUnCov">		));</span></div>
 <div class="line"><span id="630" class="lineNum"><a href="#630">630</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="631" class="lineNum"><a href="#631">631</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// waiting for a new connection on a closed server shouldn&#39;t work</span></div>
@@ -684,12 +684,12 @@
 <div class="line"><span id="663" class="lineNum"><a href="#663">663</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// client never accepts incoming connections</span></div>
 <div class="line"><span id="664" class="lineNum"><a href="#664">664</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
 <div class="line"><span id="665" class="lineNum"><a href="#665">665</a></span><span class="counterCov">1</span><span class="lineCov">			client.close_incoming().await,</span></div>
-<div class="line"><span id="666" class="lineNum"><a href="#666">666</a></span><span class="counterCov">1</span><span class="lineCov">			Err(error::AlreadyClosed)</span></div>
+<div class="line"><span id="666" class="lineNum"><a href="#666">666</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Err(error::AlreadyClosed)</span></div>
 <div class="line"><span id="667" class="lineNum"><a href="#667">667</a></span><span class="counterUnCov"></span><span class="lineUnCov">		));</span></div>
 <div class="line"><span id="668" class="lineNum"><a href="#668">668</a></span><span class="counterCov">1</span><span class="lineCov">		server.close_incoming().await?;</span></div>
 <div class="line"><span id="669" class="lineNum"><a href="#669">669</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
 <div class="line"><span id="670" class="lineNum"><a href="#670">670</a></span><span class="counterCov">1</span><span class="lineCov">			server.close_incoming().await,</span></div>
-<div class="line"><span id="671" class="lineNum"><a href="#671">671</a></span><span class="counterCov">1</span><span class="lineCov">			Err(error::AlreadyClosed)</span></div>
+<div class="line"><span id="671" class="lineNum"><a href="#671">671</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Err(error::AlreadyClosed)</span></div>
 <div class="line"><span id="672" class="lineNum"><a href="#672">672</a></span><span class="counterUnCov"></span><span class="lineUnCov">		));</span></div>
 <div class="line"><span id="673" class="lineNum"><a href="#673">673</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="674" class="lineNum"><a href="#674">674</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// connecting to a server that refuses new `Connection`s shouldn&#39;t work</span></div>
@@ -703,7 +703,7 @@
 <div class="line"><span id="682" class="lineNum"><a href="#682">682</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Err(error::Connecting(ConnectionError::ConnectionClosed(</span></div>
 <div class="line"><span id="683" class="lineNum"><a href="#683">683</a></span><span class="counterUnCov"></span><span class="lineUnCov">				ConnectionClose {</span></div>
 <div class="line"><span id="684" class="lineNum"><a href="#684">684</a></span><span class="counterUnCov"></span><span class="lineUnCov">					error_code: TransportErrorCode::CONNECTION_REFUSED,</span></div>
-<div class="line"><span id="685" class="lineNum"><a href="#685">685</a></span><span class="counterCov">1</span><span class="lineCov">					frame_type: None,</span></div>
+<div class="line"><span id="685" class="lineNum"><a href="#685">685</a></span><span class="counterUnCov"></span><span class="lineUnCov">					frame_type: None,</span></div>
 <div class="line"><span id="686" class="lineNum"><a href="#686">686</a></span><span class="counterCov">1</span><span class="lineCov">					reason: bytes,</span></div>
 <div class="line"><span id="687" class="lineNum"><a href="#687">687</a></span><span class="counterUnCov"></span><span class="lineUnCov">				}</span></div>
 <div class="line"><span id="688" class="lineNum"><a href="#688">688</a></span><span class="counterCov">1</span><span class="lineCov">			))) if bytes.is_empty()</span></div>
