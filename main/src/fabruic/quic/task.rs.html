@@ -213,8 +213,6 @@
 <span id="213">213</span>
 <span id="214">214</span>
 <span id="215">215</span>
-<span id="216">216</span>
-<span id="217">217</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Wrapper to handle closing async tasks in a concurrent way.</span>
 
 <span class="kw">use</span> <span class="ident">std</span>::{
@@ -294,7 +292,6 @@
 			<span class="comment">// the receiver got dropped otherwise, in any case, not our problem</span>
 			<span class="kw">let</span> <span class="ident">_result</span> <span class="op">=</span> <span class="ident">close</span>.<span class="ident">send</span>(<span class="ident">message</span>);
 
-			<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
 			<span class="kw">match</span> <span class="ident">handle</span>.<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="ident">JoinError::into_panic</span>) {
 				<span class="prelude-val">Ok</span>(<span class="ident">result</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">result</span>),
 				<span class="comment">// propagate any panics</span>
@@ -321,7 +318,6 @@
 				<span class="comment">// poisoned anyway)</span>
 				<span class="ident">drop</span>(<span class="ident">inner</span>);
 
-				<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
 				<span class="kw">match</span> <span class="ident">result</span>.<span class="ident">map_err</span>(<span class="ident">JoinError::into_panic</span>) {
 					<span class="prelude-val">Ok</span>(<span class="ident">result</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Poll::Ready</span>(<span class="prelude-val">Ok</span>(<span class="ident">result</span>)),
 					<span class="comment">// propagate any panics</span>

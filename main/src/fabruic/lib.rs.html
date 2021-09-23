@@ -73,11 +73,6 @@
 <span id="73">73</span>
 <span id="74">74</span>
 <span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
-<span id="78">78</span>
-<span id="79">79</span>
-<span id="80">80</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">deny</span>(<span class="ident">unsafe_code</span>)]</span>
 <span class="attribute">#![<span class="ident">warn</span>(
 	<span class="ident">clippy::cargo</span>,
@@ -88,7 +83,6 @@
 	<span class="ident">rust_2018_idioms</span>
 )]</span>
 <span class="attribute">#![<span class="ident">warn</span>(
-	<span class="ident">box_pointers</span>,
 	<span class="ident">macro_use_extern_crate</span>,
 	<span class="ident">meta_variable_misuse</span>,
 	<span class="ident">missing_copy_implementations</span>,
@@ -114,6 +108,7 @@
 	<span class="ident">clippy::future_not_send</span>,
 	<span class="ident">clippy::implicit_return</span>,
 	<span class="ident">clippy::missing_inline_in_public_items</span>,
+	<span class="ident">clippy::multiple_crate_versions</span>,
 	<span class="ident">clippy::non_ascii_literal</span>,
 	<span class="ident">clippy::pattern_type_mismatch</span>,
 	<span class="ident">clippy::redundant_pub_crate</span>,
@@ -121,8 +116,8 @@
 	<span class="ident">clippy::tabs_in_doc_comments</span>,
 	<span class="ident">clippy::unreachable</span>,
 	<span class="ident">clippy::wildcard_enum_match_arm</span>,
+	<span class="comment">// See: https://github.com/rust-lang/rust/issues/64762</span>
 	<span class="ident">unreachable_pub</span>,
-	<span class="ident">variant_size_differences</span>
 )]</span>
 <span class="attribute">#![<span class="ident">cfg_attr</span>(
 	<span class="ident">doc</span>,
@@ -132,12 +127,7 @@
 )]</span>
 <span class="attribute">#![<span class="ident">cfg_attr</span>(
 	<span class="ident">test</span>,
-	<span class="ident">allow</span>(
-		<span class="ident">box_pointers</span>,
-		<span class="ident">clippy::integer_arithmetic</span>,
-		<span class="ident">clippy::panic</span>,
-		<span class="ident">clippy::panic_in_result_fn</span>
-	)
+	<span class="ident">allow</span>(<span class="ident">clippy::integer_arithmetic</span>, <span class="ident">clippy::panic</span>, <span class="ident">clippy::panic_in_result_fn</span>)
 )]</span>
 
 <span class="doccomment">//! TODO</span>

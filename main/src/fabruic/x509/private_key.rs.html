@@ -174,8 +174,6 @@
 <span id="174">174</span>
 <span id="175">175</span>
 <span id="176">176</span>
-<span id="177">177</span>
-<span id="178">178</span>
 </pre><pre class="rust"><code><span class="doccomment">//! [`PrivateKey`].</span>
 
 <span class="kw">use</span> <span class="ident">std</span>::{
@@ -220,7 +218,6 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_der</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">private_key</span>: <span class="ident">P</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">error::PrivateKey</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">private_key</span> <span class="op">=</span> <span class="ident">rustls::PrivateKey</span>(<span class="ident">private_key</span>.<span class="ident">into</span>());
 
-		<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">_error</span>) <span class="op">=</span> <span class="ident">sign::any_supported_type</span>(<span class="kw-2">&amp;</span><span class="ident">private_key</span>) {
 			<span class="prelude-val">Err</span>(<span class="ident">error::PrivateKey</span>(<span class="ident">private_key</span>.<span class="number">0</span>))
 		} <span class="kw">else</span> {
@@ -253,7 +250,6 @@
 	<span class="doccomment">/// Panics if [`PrivateKey`] couldn&#39;t be parsed. This can&#39;t happen if</span>
 	<span class="doccomment">/// [`PrivateKey`] is constructed correctly from</span>
 	<span class="doccomment">/// [`from_der`](Self::from_der).</span>
-	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">into_rustls</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">SigningKey</span><span class="op">&gt;</span> {
 		<span class="ident">sign::any_supported_type</span>(<span class="kw-2">&amp;</span><span class="ident">rustls::PrivateKey</span>(<span class="ident">Dangerous::into</span>(<span class="self">self</span>)))
 			.<span class="ident">expect</span>(<span class="string">&quot;`PrivateKey` not compatible with `rustls`&quot;</span>)

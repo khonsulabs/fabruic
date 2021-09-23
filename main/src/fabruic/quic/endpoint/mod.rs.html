@@ -742,8 +742,6 @@
 <span id="742">742</span>
 <span id="743">743</span>
 <span id="744">744</span>
-<span id="745">745</span>
-<span id="746">746</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Starting point to create a QUIC enabled network socket.</span>
 
 <span class="kw">mod</span> <span class="ident">builder</span>;
@@ -1142,11 +1140,9 @@
 			};
 
 			<span class="comment">// build the `Resolver`</span>
-			<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
 			<span class="kw">let</span> <span class="ident">resolver</span> <span class="op">=</span> <span class="ident">TokioAsyncResolver::tokio</span>(<span class="ident">ResolverConfig::cloudflare_https</span>(), <span class="ident">opts</span>)
 				.<span class="ident">map_err</span>(<span class="ident">Box::new</span>)<span class="question-mark">?</span>;
 			<span class="comment">// query the IP</span>
-			<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">box_pointers</span>)]</span>
 			<span class="kw">let</span> <span class="ident">ip</span> <span class="op">=</span> <span class="ident">resolver</span>.<span class="ident">lookup_ip</span>(<span class="ident">domain</span>.<span class="ident">clone</span>()).<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="ident">Box::new</span>)<span class="question-mark">?</span>;
 
 			<span class="comment">// take the first IP found</span>
