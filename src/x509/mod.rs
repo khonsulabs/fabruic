@@ -130,7 +130,6 @@ impl KeyPair {
 	pub(crate) fn into_rustls(self) -> CertifiedKey {
 		CertifiedKey::new(
 			self.certificate_chain.into_rustls(),
-			#[allow(box_pointers)]
 			Arc::new(self.private_key.into_rustls()),
 		)
 	}

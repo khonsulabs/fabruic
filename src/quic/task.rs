@@ -77,7 +77,6 @@ impl<R, S> Task<R, S> {
 			// the receiver got dropped otherwise, in any case, not our problem
 			let _result = close.send(message);
 
-			#[allow(box_pointers)]
 			match handle.await.map_err(JoinError::into_panic) {
 				Ok(result) => Ok(result),
 				// propagate any panics
@@ -104,7 +103,6 @@ impl<R, S> Future for &Task<R, S> {
 				// poisoned anyway)
 				drop(inner);
 
-				#[allow(box_pointers)]
 				match result.map_err(JoinError::into_panic) {
 					Ok(result) => Poll::Ready(Ok(result)),
 					// propagate any panics

@@ -115,7 +115,6 @@ impl<M: DeserializeOwned> ReceiverStream<M> {
 
 			// deserialize message
 			// TODO: configure bincode, for example make it bounded
-			#[allow(box_pointers)]
 			bincode::deserialize_from::<_, M>(data)
 				.map(Some)
 				.map_err(|error| *error)

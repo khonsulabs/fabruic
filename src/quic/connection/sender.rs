@@ -96,7 +96,6 @@ impl<T: Serialize> Sender<T> {
 		let mut bytes = BytesMut::new();
 
 		// get size
-		#[allow(box_pointers)]
 		let len = bincode::serialized_size(&data)?;
 		// reserve an appropriate amount of space
 		bytes.reserve(
@@ -111,7 +110,6 @@ impl<T: Serialize> Sender<T> {
 		let mut bytes = bytes.writer();
 
 		// serialize `data` into `bytes`
-		#[allow(box_pointers)]
 		bincode::serialize_into(&mut bytes, &data)?;
 
 		// send data to task

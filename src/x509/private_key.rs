@@ -42,7 +42,6 @@ impl PrivateKey {
 	pub fn from_der<P: Into<Vec<u8>>>(private_key: P) -> Result<Self, error::PrivateKey> {
 		let private_key = rustls::PrivateKey(private_key.into());
 
-		#[allow(box_pointers)]
 		if let Err(_error) = sign::any_supported_type(&private_key) {
 			Err(error::PrivateKey(private_key.0))
 		} else {
@@ -75,7 +74,6 @@ impl PrivateKey {
 	/// Panics if [`PrivateKey`] couldn't be parsed. This can't happen if
 	/// [`PrivateKey`] is constructed correctly from
 	/// [`from_der`](Self::from_der).
-	#[allow(box_pointers)]
 	pub(crate) fn into_rustls(self) -> Box<dyn SigningKey> {
 		sign::any_supported_type(&rustls::PrivateKey(Dangerous::into(self)))
 			.expect("`PrivateKey` not compatible with `rustls`")

@@ -8,7 +8,6 @@
 	rust_2018_idioms
 )]
 #![warn(
-	box_pointers,
 	macro_use_extern_crate,
 	meta_variable_misuse,
 	missing_copy_implementations,
@@ -34,6 +33,7 @@
 	clippy::future_not_send,
 	clippy::implicit_return,
 	clippy::missing_inline_in_public_items,
+	clippy::multiple_crate_versions,
 	clippy::non_ascii_literal,
 	clippy::pattern_type_mismatch,
 	clippy::redundant_pub_crate,
@@ -41,8 +41,8 @@
 	clippy::tabs_in_doc_comments,
 	clippy::unreachable,
 	clippy::wildcard_enum_match_arm,
+	// See: https://github.com/rust-lang/rust/issues/64762
 	unreachable_pub,
-	variant_size_differences
 )]
 #![cfg_attr(
 	doc,
@@ -52,12 +52,7 @@
 )]
 #![cfg_attr(
 	test,
-	allow(
-		box_pointers,
-		clippy::integer_arithmetic,
-		clippy::panic,
-		clippy::panic_in_result_fn
-	)
+	allow(clippy::integer_arithmetic, clippy::panic, clippy::panic_in_result_fn)
 )]
 
 //! TODO

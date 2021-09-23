@@ -396,11 +396,9 @@ impl Endpoint {
 			};
 
 			// build the `Resolver`
-			#[allow(box_pointers)]
 			let resolver = TokioAsyncResolver::tokio(ResolverConfig::cloudflare_https(), opts)
 				.map_err(Box::new)?;
 			// query the IP
-			#[allow(box_pointers)]
 			let ip = resolver.lookup_ip(domain.clone()).await.map_err(Box::new)?;
 
 			// take the first IP found

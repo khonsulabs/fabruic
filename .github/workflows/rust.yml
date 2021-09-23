@@ -45,7 +45,7 @@ jobs:
       - name: Run Clippy
         continue-on-error: true
         run: |
-          cargo clippy --workspace --all-targets --all-features
+          cargo clippy --workspace --all-targets --all-features -- -D warnings
 
       - name: Run rustdoc
         env:
