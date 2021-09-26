@@ -81,7 +81,8 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 			} {
 				let incoming = connecting.map_err(error::Connection);
 
-				if sender.send(incoming).is_err() {
+				let disconnected = incoming.is_err();
+				if sender.send(incoming).is_err() || disconnected {
 					// if there is no receiver, it means that we dropped the last
 					// `Connection`
 					break;
