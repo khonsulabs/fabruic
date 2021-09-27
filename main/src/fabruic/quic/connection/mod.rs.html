@@ -189,6 +189,7 @@
 <span id="189">189</span>
 <span id="190">190</span>
 <span id="191">191</span>
+<span id="192">192</span>
 </pre><pre class="rust"><code><span class="doccomment">//! [`Connection`]s hold a connection to a peer in an</span>
 <span class="doccomment">//! [`Endpoint`](crate::Endpoint).</span>
 <span class="doccomment">//!</span>
@@ -272,7 +273,8 @@
 			} {
 				<span class="kw">let</span> <span class="ident">incoming</span> <span class="op">=</span> <span class="ident">connecting</span>.<span class="ident">map_err</span>(<span class="ident">error::Connection</span>);
 
-				<span class="kw">if</span> <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">incoming</span>).<span class="ident">is_err</span>() {
+				<span class="kw">let</span> <span class="ident">disconnected</span> <span class="op">=</span> <span class="ident">incoming</span>.<span class="ident">is_err</span>();
+				<span class="kw">if</span> <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">incoming</span>).<span class="ident">is_err</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">disconnected</span> {
 					<span class="comment">// if there is no receiver, it means that we dropped the last</span>
 					<span class="comment">// `Connection`</span>
 					<span class="kw">break</span>;
