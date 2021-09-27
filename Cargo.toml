@@ -29,7 +29,7 @@ pin-project = "1"
 quinn = "0.7"
 rcgen = { version = "0.8", default-features = false, optional = true }
 ring = "0.16"
-rustls = { version = "0.19", default-features = false, features = [
+rustls = { version = "0.20", default-features = false, features = [
 	"dangerous_configuration"
 ] }
 serde = "1"
