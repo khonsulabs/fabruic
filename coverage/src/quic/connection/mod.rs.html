@@ -9,11 +9,11 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-09-23 15:46:31</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-09-27 08:13:29</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">59</span><span class="linesTotal">78</span><span class="linesPercentage lineMed">75.6 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">60</span><span class="linesTotal">79</span><span class="linesPercentage lineMed">75.9 %</span></div>
 <div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">20</span><span class="funsTotal">32</span><span class="funsPercentage funLow">62.5 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
@@ -102,114 +102,115 @@
 <div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterUnCov"></span><span class="lineUnCov">			} {</span></div>
 <div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterCov">101</span><span class="lineCov">				let incoming = connecting.map_err(error::Connection);</span></div>
 <div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterCov">101</span><span class="lineCov"></span></div>
-<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterCov">101</span><span class="lineCov">				if sender.send(incoming).is_err() {</span></div>
-<div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterUnCov"></span><span class="lineUnCov">					// if there is no receiver, it means that we dropped the last</span></div>
-<div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterUnCov"></span><span class="lineUnCov">					// `Connection`</span></div>
-<div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterNoCov">0</span><span class="lineNoCov">					break;</span></div>
-<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterCov">101</span><span class="lineCov">				}</span></div>
-<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterUnCov"></span><span class="lineUnCov">			}</span></div>
-<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterCov">216</span><span class="lineCov">		});</span></div>
-<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterCov">216</span><span class="lineCov"></span></div>
-<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterCov">216</span><span class="lineCov">		Self {</span></div>
-<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterCov">216</span><span class="lineCov">			connection,</span></div>
-<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterCov">216</span><span class="lineCov">			receiver,</span></div>
-<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">216</span><span class="lineCov">			task,</span></div>
-<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterCov">216</span><span class="lineCov">			types: PhantomData,</span></div>
-<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">216</span><span class="lineCov">		}</span></div>
-<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">216</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Open a stream on this [`Connection`], allowing to send data back and</span></div>
-<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// forth.</span></div>
-<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Use `S` and `R` to define which type this stream is sending and</span></div>
-<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// receiving and `type` to send this information to the receiver.</span></div>
-<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
-<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`error::Stream::Open`] if opening a stream failed</span></div>
-<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`error::Stream::Sender`] if sending the type information to the peer</span></div>
-<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///   failed, see [`error::Sender`] for more details</span></div>
-<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterCov">101</span><span class="lineCov">	pub async fn open_stream&lt;</span></div>
-<div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterCov">101</span><span class="lineCov">		S: DeserializeOwned + Serialize + Send + &#39;static,</span></div>
-<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterCov">101</span><span class="lineCov">		R: DeserializeOwned + Serialize + Send + &#39;static,</span></div>
-<div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterCov">101</span><span class="lineCov">	&gt;(</span></div>
-<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterCov">101</span><span class="lineCov">		&amp;self,</span></div>
-<div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterCov">101</span><span class="lineCov">		r#type: &amp;T,</span></div>
-<div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterCov">101</span><span class="lineCov">	) -&gt; Result&lt;(Sender&lt;S&gt;, Receiver&lt;R&gt;), error::Stream&gt; {</span></div>
-<div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterCov">101</span><span class="lineCov">		let (sender, receiver) = self.connection.open_bi().await?;</span></div>
-<div class="line"><span id="118" class="lineNum"><a href="#118">118</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="119" class="lineNum"><a href="#119">119</a></span><span class="counterCov">101</span><span class="lineCov">		let sender = Sender::new(sender);</span></div>
-<div class="line"><span id="120" class="lineNum"><a href="#120">120</a></span><span class="counterCov">101</span><span class="lineCov">		let receiver = Receiver::new(ReceiverStream::new(receiver));</span></div>
-<div class="line"><span id="121" class="lineNum"><a href="#121">121</a></span><span class="counterCov">101</span><span class="lineCov"></span></div>
-<div class="line"><span id="122" class="lineNum"><a href="#122">122</a></span><span class="counterCov">101</span><span class="lineCov">		sender.send_any(&amp;r#type)?;</span></div>
-<div class="line"><span id="123" class="lineNum"><a href="#123">123</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="124" class="lineNum"><a href="#124">124</a></span><span class="counterCov">101</span><span class="lineCov">		Ok((sender, receiver))</span></div>
-<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterCov">101</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// The negotiated application protocol. See</span></div>
-<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Builder::set_protocols`](crate::Builder::set_protocols).</span></div>
-<div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[must_use]</span></div>
-<div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterCov">2</span><span class="lineCov">	pub fn protocol(&amp;self) -&gt; Option&lt;Vec&lt;u8&gt;&gt; {</span></div>
-<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterCov">2</span><span class="lineCov">		self.connection</span></div>
-<div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterCov">2</span><span class="lineCov">			.handshake_data()</span></div>
-<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterCov">2</span><span class="lineCov">			.and_then(|data| data.protocol)</span></div>
-<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterCov">2</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Get the peer’s identity, if available.</span></div>
-<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[must_use]</span></div>
-<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterCov">1</span><span class="lineCov">	pub fn peer_identity(&amp;self) -&gt; Option&lt;CertificateChain&gt; {</span></div>
-<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterCov">1</span><span class="lineCov">		self.connection</span></div>
-<div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterCov">1</span><span class="lineCov">			.peer_identity()</span></div>
-<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterCov">1</span><span class="lineCov">			.map(CertificateChain::from_quinn)</span></div>
-<div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// The peer&#39;s address. Clients may change addresses at will, e.g. when</span></div>
-<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// switching to a cellular internet connection.</span></div>
-<div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[must_use]</span></div>
-<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterCov">600</span><span class="lineCov">	pub fn remote_address(&amp;self) -&gt; SocketAddr {</span></div>
-<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterCov">600</span><span class="lineCov">		self.connection.remote_address()</span></div>
-<div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterCov">600</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Prevents any new incoming streams. Already incoming streams will</span></div>
-<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// finish first.</span></div>
-<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
-<div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`error::AlreadyClosed`] if it was already closed.</span></div>
-<div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterCov">200</span><span class="lineCov">	pub async fn close_incoming(&amp;self) -&gt; Result&lt;(), error::AlreadyClosed&gt; {</span></div>
-<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterCov">200</span><span class="lineCov">		self.task.close(()).await</span></div>
-<div class="line"><span id="158" class="lineNum"><a href="#158">158</a></span><span class="counterCov">200</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="159" class="lineNum"><a href="#159">159</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="160" class="lineNum"><a href="#160">160</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Close the [`Connection`] immediately.</span></div>
-<div class="line"><span id="161" class="lineNum"><a href="#161">161</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="162" class="lineNum"><a href="#162">162</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// To close a [`Connection`] gracefully use [`Sender::finish`], the</span></div>
-<div class="line"><span id="163" class="lineNum"><a href="#163">163</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Receiver`] can&#39;t be gracefully closed from the receiving end.</span></div>
-<div class="line"><span id="164" class="lineNum"><a href="#164">164</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="165" class="lineNum"><a href="#165">165</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
-<div class="line"><span id="166" class="lineNum"><a href="#166">166</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`error::AlreadyClosed`] if it was already closed.</span></div>
-<div class="line"><span id="167" class="lineNum"><a href="#167">167</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub async fn close(&amp;self) -&gt; Result&lt;(), error::AlreadyClosed&gt; {</span></div>
-<div class="line"><span id="168" class="lineNum"><a href="#168">168</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.connection.close(VarInt::from_u32(0), &amp;[]);</span></div>
-<div class="line"><span id="169" class="lineNum"><a href="#169">169</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		(&amp;self.task).await</span></div>
-<div class="line"><span id="170" class="lineNum"><a href="#170">170</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
-<div class="line"><span id="171" class="lineNum"><a href="#171">171</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
-<div class="line"><span id="172" class="lineNum"><a href="#172">172</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="173" class="lineNum"><a href="#173">173</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;T: DeserializeOwned + Serialize + Send + &#39;static&gt; Stream for Connection&lt;T&gt; {</span></div>
-<div class="line"><span id="174" class="lineNum"><a href="#174">174</a></span><span class="counterUnCov"></span><span class="lineUnCov">	type Item = Result&lt;Incoming&lt;T&gt;, error::Connection&gt;;</span></div>
-<div class="line"><span id="175" class="lineNum"><a href="#175">175</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="176" class="lineNum"><a href="#176">176</a></span><span class="counterCov">162</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
-<div class="line"><span id="177" class="lineNum"><a href="#177">177</a></span><span class="counterCov">162</span><span class="lineCov">		if self.receiver.is_terminated() {</span></div>
-<div class="line"><span id="178" class="lineNum"><a href="#178">178</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Poll::Ready(None)</span></div>
-<div class="line"><span id="179" class="lineNum"><a href="#179">179</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
-<div class="line"><span id="180" class="lineNum"><a href="#180">180</a></span><span class="counterCov">162</span><span class="lineCov">			self.receiver</span></div>
-<div class="line"><span id="181" class="lineNum"><a href="#181">181</a></span><span class="counterCov">162</span><span class="lineCov">				.poll_next_unpin(cx)</span></div>
-<div class="line"><span id="182" class="lineNum"><a href="#182">182</a></span><span class="counterCov">162</span><span class="lineCov">				.map_ok(|(sender, receiver)| Incoming::new(sender, receiver))</span></div>
-<div class="line"><span id="183" class="lineNum"><a href="#183">183</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="184" class="lineNum"><a href="#184">184</a></span><span class="counterCov">162</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="185" class="lineNum"><a href="#185">185</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
-<div class="line"><span id="186" class="lineNum"><a href="#186">186</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="187" class="lineNum"><a href="#187">187</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;T: DeserializeOwned + Serialize + Send + &#39;static&gt; FusedStream for Connection&lt;T&gt; {</span></div>
-<div class="line"><span id="188" class="lineNum"><a href="#188">188</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	fn is_terminated(&amp;self) -&gt; bool {</span></div>
-<div class="line"><span id="189" class="lineNum"><a href="#189">189</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.receiver.is_terminated()</span></div>
-<div class="line"><span id="190" class="lineNum"><a href="#190">190</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
-<div class="line"><span id="191" class="lineNum"><a href="#191">191</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterCov">101</span><span class="lineCov">				let disconnected = incoming.is_err();</span></div>
+<div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterCov">101</span><span class="lineCov">				if sender.send(incoming).is_err() || disconnected {</span></div>
+<div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterUnCov"></span><span class="lineUnCov">					// if there is no receiver, it means that we dropped the last</span></div>
+<div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterUnCov"></span><span class="lineUnCov">					// `Connection`</span></div>
+<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterNoCov">0</span><span class="lineNoCov">					break;</span></div>
+<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterCov">101</span><span class="lineCov">				}</span></div>
+<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterUnCov"></span><span class="lineUnCov">			}</span></div>
+<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterCov">216</span><span class="lineCov">		});</span></div>
+<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterCov">216</span><span class="lineCov"></span></div>
+<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterCov">216</span><span class="lineCov">		Self {</span></div>
+<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterCov">216</span><span class="lineCov">			connection,</span></div>
+<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">216</span><span class="lineCov">			receiver,</span></div>
+<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterCov">216</span><span class="lineCov">			task,</span></div>
+<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">216</span><span class="lineCov">			types: PhantomData,</span></div>
+<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">216</span><span class="lineCov">		}</span></div>
+<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterCov">216</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Open a stream on this [`Connection`], allowing to send data back and</span></div>
+<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// forth.</span></div>
+<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Use `S` and `R` to define which type this stream is sending and</span></div>
+<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// receiving and `type` to send this information to the receiver.</span></div>
+<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
+<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`error::Stream::Open`] if opening a stream failed</span></div>
+<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`error::Stream::Sender`] if sending the type information to the peer</span></div>
+<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///   failed, see [`error::Sender`] for more details</span></div>
+<div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterCov">101</span><span class="lineCov">	pub async fn open_stream&lt;</span></div>
+<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterCov">101</span><span class="lineCov">		S: DeserializeOwned + Serialize + Send + &#39;static,</span></div>
+<div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterCov">101</span><span class="lineCov">		R: DeserializeOwned + Serialize + Send + &#39;static,</span></div>
+<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterCov">101</span><span class="lineCov">	&gt;(</span></div>
+<div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterCov">101</span><span class="lineCov">		&amp;self,</span></div>
+<div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterCov">101</span><span class="lineCov">		r#type: &amp;T,</span></div>
+<div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterCov">101</span><span class="lineCov">	) -&gt; Result&lt;(Sender&lt;S&gt;, Receiver&lt;R&gt;), error::Stream&gt; {</span></div>
+<div class="line"><span id="118" class="lineNum"><a href="#118">118</a></span><span class="counterCov">101</span><span class="lineCov">		let (sender, receiver) = self.connection.open_bi().await?;</span></div>
+<div class="line"><span id="119" class="lineNum"><a href="#119">119</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="120" class="lineNum"><a href="#120">120</a></span><span class="counterCov">101</span><span class="lineCov">		let sender = Sender::new(sender);</span></div>
+<div class="line"><span id="121" class="lineNum"><a href="#121">121</a></span><span class="counterCov">101</span><span class="lineCov">		let receiver = Receiver::new(ReceiverStream::new(receiver));</span></div>
+<div class="line"><span id="122" class="lineNum"><a href="#122">122</a></span><span class="counterCov">101</span><span class="lineCov"></span></div>
+<div class="line"><span id="123" class="lineNum"><a href="#123">123</a></span><span class="counterCov">101</span><span class="lineCov">		sender.send_any(&amp;r#type)?;</span></div>
+<div class="line"><span id="124" class="lineNum"><a href="#124">124</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterCov">101</span><span class="lineCov">		Ok((sender, receiver))</span></div>
+<div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterCov">101</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// The negotiated application protocol. See</span></div>
+<div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Builder::set_protocols`](crate::Builder::set_protocols).</span></div>
+<div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[must_use]</span></div>
+<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterCov">2</span><span class="lineCov">	pub fn protocol(&amp;self) -&gt; Option&lt;Vec&lt;u8&gt;&gt; {</span></div>
+<div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterCov">2</span><span class="lineCov">		self.connection</span></div>
+<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterCov">2</span><span class="lineCov">			.handshake_data()</span></div>
+<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterCov">2</span><span class="lineCov">			.and_then(|data| data.protocol)</span></div>
+<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterCov">2</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Get the peer’s identity, if available.</span></div>
+<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[must_use]</span></div>
+<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterCov">1</span><span class="lineCov">	pub fn peer_identity(&amp;self) -&gt; Option&lt;CertificateChain&gt; {</span></div>
+<div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterCov">1</span><span class="lineCov">		self.connection</span></div>
+<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterCov">1</span><span class="lineCov">			.peer_identity()</span></div>
+<div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterCov">1</span><span class="lineCov">			.map(CertificateChain::from_quinn)</span></div>
+<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// The peer&#39;s address. Clients may change addresses at will, e.g. when</span></div>
+<div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// switching to a cellular internet connection.</span></div>
+<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[must_use]</span></div>
+<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterCov">600</span><span class="lineCov">	pub fn remote_address(&amp;self) -&gt; SocketAddr {</span></div>
+<div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterCov">600</span><span class="lineCov">		self.connection.remote_address()</span></div>
+<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterCov">600</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Prevents any new incoming streams. Already incoming streams will</span></div>
+<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// finish first.</span></div>
+<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
+<div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`error::AlreadyClosed`] if it was already closed.</span></div>
+<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterCov">200</span><span class="lineCov">	pub async fn close_incoming(&amp;self) -&gt; Result&lt;(), error::AlreadyClosed&gt; {</span></div>
+<div class="line"><span id="158" class="lineNum"><a href="#158">158</a></span><span class="counterCov">200</span><span class="lineCov">		self.task.close(()).await</span></div>
+<div class="line"><span id="159" class="lineNum"><a href="#159">159</a></span><span class="counterCov">200</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="160" class="lineNum"><a href="#160">160</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="161" class="lineNum"><a href="#161">161</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Close the [`Connection`] immediately.</span></div>
+<div class="line"><span id="162" class="lineNum"><a href="#162">162</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="163" class="lineNum"><a href="#163">163</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// To close a [`Connection`] gracefully use [`Sender::finish`], the</span></div>
+<div class="line"><span id="164" class="lineNum"><a href="#164">164</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Receiver`] can&#39;t be gracefully closed from the receiving end.</span></div>
+<div class="line"><span id="165" class="lineNum"><a href="#165">165</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="166" class="lineNum"><a href="#166">166</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
+<div class="line"><span id="167" class="lineNum"><a href="#167">167</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`error::AlreadyClosed`] if it was already closed.</span></div>
+<div class="line"><span id="168" class="lineNum"><a href="#168">168</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub async fn close(&amp;self) -&gt; Result&lt;(), error::AlreadyClosed&gt; {</span></div>
+<div class="line"><span id="169" class="lineNum"><a href="#169">169</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.connection.close(VarInt::from_u32(0), &amp;[]);</span></div>
+<div class="line"><span id="170" class="lineNum"><a href="#170">170</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		(&amp;self.task).await</span></div>
+<div class="line"><span id="171" class="lineNum"><a href="#171">171</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
+<div class="line"><span id="172" class="lineNum"><a href="#172">172</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="173" class="lineNum"><a href="#173">173</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="174" class="lineNum"><a href="#174">174</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;T: DeserializeOwned + Serialize + Send + &#39;static&gt; Stream for Connection&lt;T&gt; {</span></div>
+<div class="line"><span id="175" class="lineNum"><a href="#175">175</a></span><span class="counterUnCov"></span><span class="lineUnCov">	type Item = Result&lt;Incoming&lt;T&gt;, error::Connection&gt;;</span></div>
+<div class="line"><span id="176" class="lineNum"><a href="#176">176</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="177" class="lineNum"><a href="#177">177</a></span><span class="counterCov">170</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
+<div class="line"><span id="178" class="lineNum"><a href="#178">178</a></span><span class="counterCov">170</span><span class="lineCov">		if self.receiver.is_terminated() {</span></div>
+<div class="line"><span id="179" class="lineNum"><a href="#179">179</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Poll::Ready(None)</span></div>
+<div class="line"><span id="180" class="lineNum"><a href="#180">180</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
+<div class="line"><span id="181" class="lineNum"><a href="#181">181</a></span><span class="counterCov">170</span><span class="lineCov">			self.receiver</span></div>
+<div class="line"><span id="182" class="lineNum"><a href="#182">182</a></span><span class="counterCov">170</span><span class="lineCov">				.poll_next_unpin(cx)</span></div>
+<div class="line"><span id="183" class="lineNum"><a href="#183">183</a></span><span class="counterCov">170</span><span class="lineCov">				.map_ok(|(sender, receiver)| Incoming::new(sender, receiver))</span></div>
+<div class="line"><span id="184" class="lineNum"><a href="#184">184</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
+<div class="line"><span id="185" class="lineNum"><a href="#185">185</a></span><span class="counterCov">170</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="186" class="lineNum"><a href="#186">186</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="187" class="lineNum"><a href="#187">187</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="188" class="lineNum"><a href="#188">188</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;T: DeserializeOwned + Serialize + Send + &#39;static&gt; FusedStream for Connection&lt;T&gt; {</span></div>
+<div class="line"><span id="189" class="lineNum"><a href="#189">189</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	fn is_terminated(&amp;self) -&gt; bool {</span></div>
+<div class="line"><span id="190" class="lineNum"><a href="#190">190</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.receiver.is_terminated()</span></div>
+<div class="line"><span id="191" class="lineNum"><a href="#191">191</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
+<div class="line"><span id="192" class="lineNum"><a href="#192">192</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 </div>
 </body>
 </html>

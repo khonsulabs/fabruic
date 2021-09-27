@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-09-23 15:46:31</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-09-27 08:13:29</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -350,15 +350,15 @@
 <div class="line"><span id="329" class="lineNum"><a href="#329">329</a></span><span class="counterCov">109</span><span class="lineCov">		let (address, _) = self.resolve_domain(url).await?;</span></div>
 <div class="line"><span id="330" class="lineNum"><a href="#330">330</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="331" class="lineNum"><a href="#331">331</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// build client configuration</span></div>
-<div class="line"><span id="332" class="lineNum"><a href="#332">332</a></span><span class="counterCov">108</span><span class="lineCov">		let client =</span></div>
-<div class="line"><span id="333" class="lineNum"><a href="#333">333</a></span><span class="counterCov">108</span><span class="lineCov">			self.config</span></div>
-<div class="line"><span id="334" class="lineNum"><a href="#334">334</a></span><span class="counterCov">108</span><span class="lineCov">				.new_client(Some(server_certificate), Store::Empty, client_key_pair);</span></div>
+<div class="line"><span id="332" class="lineNum"><a href="#332">332</a></span><span class="counterCov">109</span><span class="lineCov">		let client =</span></div>
+<div class="line"><span id="333" class="lineNum"><a href="#333">333</a></span><span class="counterCov">109</span><span class="lineCov">			self.config</span></div>
+<div class="line"><span id="334" class="lineNum"><a href="#334">334</a></span><span class="counterCov">109</span><span class="lineCov">				.new_client(Some(server_certificate), Store::Empty, client_key_pair);</span></div>
 <div class="line"><span id="335" class="lineNum"><a href="#335">335</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="336" class="lineNum"><a href="#336">336</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// connet</span></div>
 <div class="line"><span id="337" class="lineNum"><a href="#337">337</a></span><span class="counterCov">109</span><span class="lineCov">		let connecting = self</span></div>
-<div class="line"><span id="338" class="lineNum"><a href="#338">338</a></span><span class="counterCov">108</span><span class="lineCov">			.endpoint</span></div>
-<div class="line"><span id="339" class="lineNum"><a href="#339">339</a></span><span class="counterCov">108</span><span class="lineCov">			.connect_with(client, &amp;address, &amp;domain)</span></div>
-<div class="line"><span id="340" class="lineNum"><a href="#340">340</a></span><span class="counterCov">108</span><span class="lineCov">			.map_err(error::Connect::Config)?;</span></div>
+<div class="line"><span id="338" class="lineNum"><a href="#338">338</a></span><span class="counterCov">109</span><span class="lineCov">			.endpoint</span></div>
+<div class="line"><span id="339" class="lineNum"><a href="#339">339</a></span><span class="counterCov">109</span><span class="lineCov">			.connect_with(client, &amp;address, &amp;domain)</span></div>
+<div class="line"><span id="340" class="lineNum"><a href="#340">340</a></span><span class="counterCov">109</span><span class="lineCov">			.map_err(error::Connect::Config)?;</span></div>
 <div class="line"><span id="341" class="lineNum"><a href="#341">341</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="342" class="lineNum"><a href="#342">342</a></span><span class="counterCov">109</span><span class="lineCov">		Ok(Connecting::new(connecting))</span></div>
 <div class="line"><span id="343" class="lineNum"><a href="#343">343</a></span><span class="counterCov">109</span><span class="lineCov">	}</span></div>
@@ -390,7 +390,7 @@
 <div class="line"><span id="369" class="lineNum"><a href="#369">369</a></span><span class="counterCov">119</span><span class="lineCov">		let domain = match Host::parse(domain).map_err(error::Connect::ParseDomain)? {</span></div>
 <div class="line"><span id="370" class="lineNum"><a href="#370">370</a></span><span class="counterCov">10</span><span class="lineCov">			Host::Domain(domain) =&gt; domain,</span></div>
 <div class="line"><span id="371" class="lineNum"><a href="#371">371</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Host::Ipv4(ip) =&gt; return Ok((SocketAddr::from((ip, port)), ip.to_string())),</span></div>
-<div class="line"><span id="372" class="lineNum"><a href="#372">372</a></span><span class="counterCov">108</span><span class="lineCov">			Host::Ipv6(ip) =&gt; return Ok((SocketAddr::from((ip, port)), ip.to_string())),</span></div>
+<div class="line"><span id="372" class="lineNum"><a href="#372">372</a></span><span class="counterCov">109</span><span class="lineCov">			Host::Ipv6(ip) =&gt; return Ok((SocketAddr::from((ip, port)), ip.to_string())),</span></div>
 <div class="line"><span id="373" class="lineNum"><a href="#373">373</a></span><span class="counterUnCov"></span><span class="lineUnCov">		};</span></div>
 <div class="line"><span id="374" class="lineNum"><a href="#374">374</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="375" class="lineNum"><a href="#375">375</a></span><span class="counterUnCov"></span><span class="lineUnCov">		#[cfg(feature = &quot;trust-dns&quot;)]</span></div>
@@ -441,7 +441,7 @@
 <div class="line"><span id="420" class="lineNum"><a href="#420">420</a></span><span class="counterUnCov"></span><span class="lineUnCov">		};</span></div>
 <div class="line"><span id="421" class="lineNum"><a href="#421">421</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="422" class="lineNum"><a href="#422">422</a></span><span class="counterCov">2</span><span class="lineCov">		Ok((address, domain))</span></div>
-<div class="line"><span id="423" class="lineNum"><a href="#423">423</a></span><span class="counterCov">119</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="423" class="lineNum"><a href="#423">423</a></span><span class="counterCov">120</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="424" class="lineNum"><a href="#424">424</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="425" class="lineNum"><a href="#425">425</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Get the local [`SocketAddr`] the underlying socket is bound to.</span></div>
 <div class="line"><span id="426" class="lineNum"><a href="#426">426</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
