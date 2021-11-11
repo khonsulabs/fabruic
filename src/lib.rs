@@ -37,7 +37,11 @@
 	clippy::non_ascii_literal,
 	clippy::pattern_type_mismatch,
 	clippy::redundant_pub_crate,
+	clippy::separated_literal_suffix,
 	clippy::shadow_reuse,
+	// Currently breaks async
+	clippy::shadow_same,
+	clippy::shadow_unrelated,
 	clippy::tabs_in_doc_comments,
 	clippy::unreachable,
 	clippy::wildcard_enum_match_arm,
@@ -64,7 +68,7 @@ pub mod dangerous {
 	//! Security-sensitive settings are hidden behind these traits. Be careful!
 
 	pub use crate::{
-		quic::Dangerous as Builder,
+		quic::{BuilderDangerous as Builder, Dangerous as Endpoint},
 		x509::{private_key::Dangerous as PrivateKey, Dangerous as KeyPair},
 	};
 }

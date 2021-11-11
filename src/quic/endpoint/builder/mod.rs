@@ -443,6 +443,7 @@ impl Builder {
 				self.root_certificates.iter(),
 				self.store,
 				self.client_key_pair.clone(),
+				false,
 			);
 
 			// build server only if we have a key-pair
@@ -550,6 +551,9 @@ pub trait Dangerous {
 	///
 	/// See [`Builder::set_store`].
 	///
+	/// # Default
+	/// No additional [`Certificate`]s.
+	///
 	/// # Security
 	/// Managing your own root certificate store can make sense if a private CA
 	/// is used. Otherwise use [`Endpoint::connect_pinned`].
@@ -566,11 +570,36 @@ pub trait Dangerous {
 	/// dangerous::Builder::set_root_certificates(&mut builder, [ca_certificate]);
 	/// ```
 	fn set_root_certificates<C: Into<Vec<Certificate>>>(builder: &mut Self, certificates: C);
+
+	/// Returns [`Certificate`]s set to be added into the root certificate
+	/// store.
+	///
+	/// See [`set_root_certificates`](Self::set_root_certificates).
+	///
+	/// # Examples
+	/// ```
+	/// use fabruic::{dangerous, Builder, Store};
+	///
+	/// let mut builder = Builder::new();
+	/// builder.set_store(Store::Empty);
+	/// // CA certificate has to be imported from somewhere else
+	/// # let (server_certificate, _) = fabruic::KeyPair::new_self_signed("localhost").into_parts();
+	/// # let ca_certificate = server_certificate.into_end_entity_certificate();
+	/// dangerous::Builder::set_root_certificates(&mut builder, [ca_certificate.clone()]);
+	/// assert_eq!(dangerous::Builder::root_certificates(&builder), [
+	/// 	ca_certificate
+	/// ]);
+	/// ```
+	fn root_certificates(builder: &Self) -> &[Certificate];
 }
 
 impl Dangerous for Builder {
 	fn set_root_certificates<C: Into<Vec<Certificate>>>(builder: &mut Self, certificates: C) {
 		builder.root_certificates = certificates.into();
+	}
+
+	fn root_certificates(builder: &Self) -> &[Certificate] {
+		&builder.root_certificates
 	}
 }
 

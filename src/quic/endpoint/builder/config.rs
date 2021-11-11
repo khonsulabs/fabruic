@@ -5,9 +5,10 @@ use std::{ops::Deref, sync::Arc};
 
 use quinn::{ClientConfig, ClientConfigBuilder, TransportConfig};
 use rustls::{
-	sign::CertifiedKey, OwnedTrustAnchor, ResolvesClientCert, RootCertStore, SignatureScheme,
+	sign::CertifiedKey, OwnedTrustAnchor, ResolvesClientCert, RootCertStore, ServerCertVerified,
+	ServerCertVerifier, SignatureScheme, TLSError,
 };
-use webpki::trust_anchor_util;
+use webpki::{trust_anchor_util, DNSNameRef};
 
 use crate::{Certificate, KeyPair, Store};
 
@@ -149,6 +150,7 @@ impl Config {
 		certificates: impl IntoIterator<Item = &'a Certificate> + 'a,
 		store: Store,
 		client_key_pair: Option<KeyPair>,
+		disable_server_verification: bool,
 	) -> ClientConfig {
 		let mut client = ClientConfigBuilder::default();
 
@@ -193,6 +195,13 @@ impl Config {
 			if let Some(key_pair) = client_key_pair {
 				crypto.client_auth_cert_resolver = CertificateResolver::new(key_pair);
 			}
+
+			// disable server certificate verification if demanded
+			if disable_server_verification {
+				crypto
+					.dangerous()
+					.set_certificate_verifier(NoServerCertVerification::new());
+			}
 		}
 
 		// set transport
@@ -223,5 +232,31 @@ impl CertificateResolver {
 	/// Builds a new [`CertificateResolver`].
 	fn new(key_pair: KeyPair) -> Arc<Self> {
 		Arc::new(Self(key_pair.into_rustls()))
+	}
+}
+
+/// Disables clients verification of the servers [`Certificate`] when used with
+/// [`Endpoint::connect_unverified`].
+///
+/// [`Endpoint::connect_unverified`]:
+/// crate::dangerous::Endpoint::connect_unverified
+struct NoServerCertVerification;
+
+impl ServerCertVerifier for NoServerCertVerification {
+	fn verify_server_cert(
+		&self,
+		_: &RootCertStore,
+		_: &[rustls::Certificate],
+		_: DNSNameRef<'_>,
+		_: &[u8],
+	) -> Result<ServerCertVerified, TLSError> {
+		Ok(ServerCertVerified::assertion())
+	}
+}
+
+impl NoServerCertVerification {
+	/// Builds a new [`NoServerCertVerification`].
+	fn new() -> Arc<Self> {
+		Arc::new(Self)
 	}
 }

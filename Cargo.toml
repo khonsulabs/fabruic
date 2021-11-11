@@ -17,6 +17,7 @@ trust-dns = ["trust-dns-resolver"]
 
 [dependencies]
 allochronic-util = "0.0.1-dev-1"
+async-trait = "0.1"
 bincode = "1"
 bytes = "1"
 flume = "0.10"

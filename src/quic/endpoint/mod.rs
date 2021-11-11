@@ -11,8 +11,9 @@ use std::{
 	task::{Context, Poll},
 };
 
+use async_trait::async_trait;
 use builder::Config;
-pub use builder::{Builder, Dangerous, Store};
+pub use builder::{Builder, Dangerous as BuilderDangerous, Store};
 use flume::{r#async::RecvStream, Sender};
 use futures_channel::oneshot::Receiver;
 use futures_util::{
@@ -329,11 +330,14 @@ impl Endpoint {
 		let (address, _) = self.resolve_domain(url).await?;
 
 		// build client configuration
-		let client =
-			self.config
-				.new_client(Some(server_certificate), Store::Empty, client_key_pair);
+		let client = self.config.new_client(
+			Some(server_certificate),
+			Store::Empty,
+			client_key_pair,
+			false,
+		);
 
-		// connet
+		// connect
 		let connecting = self
 			.endpoint
 			.connect_with(client, &address, &domain)
@@ -502,6 +506,91 @@ impl Endpoint {
 	/// ```
 	pub async fn wait_idle(&self) {
 		self.endpoint.wait_idle().await;
+	}
+}
+
+/// Security-sensitive features for [`Endpoint`].
+#[async_trait(?Send)]
+pub trait Dangerous {
+	/// Establishes a new [`Connection`](crate::Connection) to a server without
+	/// verifying the servers [`Certificate`]. The servers
+	/// [`CertificateChain`](crate::CertificateChain) can still be manually
+	/// insepcted through
+	/// [`Connection::peer_identity`](crate::Connection::peer_identity).
+	///
+	/// See [`connect`](Endpoint::connect) for more information on host name
+	/// resolution.
+	///
+	/// # Notes
+	/// A client certificate [`KeyPair`] set with
+	/// [`Builder::set_client_key_pair`] will be ignored, use `client_key_pair`
+	/// to add a client certificate to this connection.
+	///
+	/// # Safety
+	/// Connecting to a server without verifying the [`Certificate`] provides no
+	/// way for the client to authenticate the servers identity.
+	/// This is primarily used to enable connections to unknown user-hosted
+	/// servers, e.g. multiplayer.
+	///
+	/// There are many ways to prevent the need for this feature in certain
+	/// situations:
+	/// - during testing, a temporary certificate can be created
+	/// - use [Let's Encrypt](https://en.wikipedia.org/wiki/Let%27s_Encrypt) to
+	///   get a free certificate if a domain is present
+	/// - provide a middle-man service that helps connect clients with servers
+	///   by automatically communicating the servers public key
+	/// - share a public key over third-party communication channels beforehand
+	///   as a last resort
+	///
+	/// # Errors
+	/// - [`error::Connect::ParseUrl`] if the URL couldn't be parsed
+	/// - [`error::Connect::Port`] if the URL didn't contain a port
+	/// - [`error::Connect::ParseDomain`] if the domain couldn't be parsed
+	/// - [`error::Connect::TrustDns`] if the URL couldn't be resolved to an IP
+	///   address with [`trust-dns`](trust_dns_resolver)
+	/// - [`error::Connect::StdDns`] if the URL couldn't be resolved to an IP
+	///   address with [`ToSocketAddrs`]
+	/// - [`error::Connect::NoIp`] if no IP address was found for that domain
+	///
+	/// # Examples
+	/// ```
+	/// # #[tokio::main] async fn main() -> anyhow::Result<()> {
+	/// use fabruic::{dangerous, Endpoint};
+	///
+	/// let endpoint = Endpoint::new_client()?;
+	/// let connecting =
+	/// 	dangerous::Endpoint::connect_unverified(&endpoint, "quic://localhost:443", None).await?;
+	/// # Ok(()) }
+	/// ```
+	async fn connect_unverified<U: AsRef<str>>(
+		endpoint: &Self,
+		url: U,
+		client_key_pair: Option<KeyPair>,
+	) -> Result<Connecting, error::Connect>;
+}
+
+#[async_trait(?Send)]
+impl Dangerous for Endpoint {
+	async fn connect_unverified<U: AsRef<str>>(
+		endpoint: &Self,
+		url: U,
+		client_key_pair: Option<KeyPair>,
+	) -> Result<Connecting, error::Connect> {
+		// resolve URL
+		let (address, domain) = endpoint.resolve_domain(url).await?;
+
+		// build client configuration
+		let client = endpoint
+			.config
+			.new_client(None, Store::Empty, client_key_pair, true);
+
+		// connect
+		let connecting = endpoint
+			.endpoint
+			.connect_with(client, &address, &domain)
+			.map_err(error::Connect::Config)?;
+
+		Ok(Connecting::new(connecting))
 	}
 }
 

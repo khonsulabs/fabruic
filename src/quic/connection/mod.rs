@@ -134,7 +134,7 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 			.and_then(|data| data.protocol)
 	}
 
-	/// Get the peer’s identity, if available.
+	/// Get the peer's [`CertificateChain`], if available.
 	#[must_use]
 	pub fn peer_identity(&self) -> Option<CertificateChain> {
 		self.connection
