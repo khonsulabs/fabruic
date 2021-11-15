@@ -50,7 +50,7 @@ zeroize = { version = "1", features = ["zeroize_derive"] }
 [dev-dependencies]
 anyhow = "1"
 fabruic = { path = "", features = ["rcgen", "test", "trust-dns"] }
-quinn-proto = { version = "0.7", default-features = false }
+quinn-proto = { version = "0.8", default-features = false }
 tokio = { version = "1", features = ["macros"] }
 trust-dns-proto = "0.20"
 
