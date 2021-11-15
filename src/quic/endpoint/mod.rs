@@ -510,7 +510,7 @@ impl Endpoint {
 }
 
 /// Security-sensitive features for [`Endpoint`].
-#[async_trait(?Send)]
+#[async_trait]
 pub trait Dangerous {
 	/// Establishes a new [`Connection`](crate::Connection) to a server without
 	/// verifying the servers [`Certificate`]. The servers
@@ -562,16 +562,16 @@ pub trait Dangerous {
 	/// 	dangerous::Endpoint::connect_unverified(&endpoint, "quic://localhost:443", None).await?;
 	/// # Ok(()) }
 	/// ```
-	async fn connect_unverified<U: AsRef<str>>(
+	async fn connect_unverified<U: AsRef<str> + Send>(
 		endpoint: &Self,
 		url: U,
 		client_key_pair: Option<KeyPair>,
 	) -> Result<Connecting, error::Connect>;
 }
 
-#[async_trait(?Send)]
+#[async_trait]
 impl Dangerous for Endpoint {
-	async fn connect_unverified<U: AsRef<str>>(
+	async fn connect_unverified<U: AsRef<str> + Send>(
 		endpoint: &Self,
 		url: U,
 		client_key_pair: Option<KeyPair>,
