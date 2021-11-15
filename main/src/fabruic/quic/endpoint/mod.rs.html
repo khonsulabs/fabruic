@@ -1343,7 +1343,7 @@
 }
 
 <span class="doccomment">/// Security-sensitive features for [`Endpoint`].</span>
-<span class="attribute">#[<span class="ident">async_trait</span>(<span class="question-mark">?</span><span class="ident">Send</span>)]</span>
+<span class="attribute">#[<span class="ident">async_trait</span>]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Dangerous</span> {
 	<span class="doccomment">/// Establishes a new [`Connection`](crate::Connection) to a server without</span>
 	<span class="doccomment">/// verifying the servers [`Certificate`]. The servers</span>
@@ -1395,16 +1395,16 @@
 	<span class="doccomment">/// 	dangerous::Endpoint::connect_unverified(&amp;endpoint, &quot;quic://localhost:443&quot;, None).await?;</span>
 	<span class="doccomment">/// # Ok(()) }</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">connect_unverified</span><span class="op">&lt;</span><span class="ident">U</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">connect_unverified</span><span class="op">&lt;</span><span class="ident">U</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span>(
 		<span class="ident">endpoint</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>,
 		<span class="ident">url</span>: <span class="ident">U</span>,
 		<span class="ident">client_key_pair</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">KeyPair</span><span class="op">&gt;</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Connecting</span>, <span class="ident">error::Connect</span><span class="op">&gt;</span>;
 }
 
-<span class="attribute">#[<span class="ident">async_trait</span>(<span class="question-mark">?</span><span class="ident">Send</span>)]</span>
+<span class="attribute">#[<span class="ident">async_trait</span>]</span>
 <span class="kw">impl</span> <span class="ident">Dangerous</span> <span class="kw">for</span> <span class="ident">Endpoint</span> {
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">connect_unverified</span><span class="op">&lt;</span><span class="ident">U</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">connect_unverified</span><span class="op">&lt;</span><span class="ident">U</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span>(
 		<span class="ident">endpoint</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>,
 		<span class="ident">url</span>: <span class="ident">U</span>,
 		<span class="ident">client_key_pair</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">KeyPair</span><span class="op">&gt;</span>,
