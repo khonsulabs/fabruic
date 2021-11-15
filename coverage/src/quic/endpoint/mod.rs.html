@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-11-11 20:51:56</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-11-15 13:17:41</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -531,7 +531,7 @@
 <div class="line"><span id="510" class="lineNum"><a href="#510">510</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 <div class="line"><span id="511" class="lineNum"><a href="#511">511</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="512" class="lineNum"><a href="#512">512</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Security-sensitive features for [`Endpoint`].</span></div>
-<div class="line"><span id="513" class="lineNum"><a href="#513">513</a></span><span class="counterUnCov"></span><span class="lineUnCov">#[async_trait(?Send)]</span></div>
+<div class="line"><span id="513" class="lineNum"><a href="#513">513</a></span><span class="counterUnCov"></span><span class="lineUnCov">#[async_trait]</span></div>
 <div class="line"><span id="514" class="lineNum"><a href="#514">514</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub trait Dangerous {</span></div>
 <div class="line"><span id="515" class="lineNum"><a href="#515">515</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Establishes a new [`Connection`](crate::Connection) to a server without</span></div>
 <div class="line"><span id="516" class="lineNum"><a href="#516">516</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// verifying the servers [`Certificate`]. The servers</span></div>
@@ -583,16 +583,16 @@
 <div class="line"><span id="562" class="lineNum"><a href="#562">562</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// 	dangerous::Endpoint::connect_unverified(&amp;endpoint, &quot;quic://localhost:443&quot;, None).await?;</span></div>
 <div class="line"><span id="563" class="lineNum"><a href="#563">563</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Ok(()) }</span></div>
 <div class="line"><span id="564" class="lineNum"><a href="#564">564</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// ```</span></div>
-<div class="line"><span id="565" class="lineNum"><a href="#565">565</a></span><span class="counterUnCov"></span><span class="lineUnCov">	async fn connect_unverified&lt;U: AsRef&lt;str&gt;&gt;(</span></div>
+<div class="line"><span id="565" class="lineNum"><a href="#565">565</a></span><span class="counterUnCov"></span><span class="lineUnCov">	async fn connect_unverified&lt;U: AsRef&lt;str&gt; + Send&gt;(</span></div>
 <div class="line"><span id="566" class="lineNum"><a href="#566">566</a></span><span class="counterUnCov"></span><span class="lineUnCov">		endpoint: &amp;Self,</span></div>
 <div class="line"><span id="567" class="lineNum"><a href="#567">567</a></span><span class="counterUnCov"></span><span class="lineUnCov">		url: U,</span></div>
 <div class="line"><span id="568" class="lineNum"><a href="#568">568</a></span><span class="counterUnCov"></span><span class="lineUnCov">		client_key_pair: Option&lt;KeyPair&gt;,</span></div>
 <div class="line"><span id="569" class="lineNum"><a href="#569">569</a></span><span class="counterUnCov"></span><span class="lineUnCov">	) -&gt; Result&lt;Connecting, error::Connect&gt;;</span></div>
 <div class="line"><span id="570" class="lineNum"><a href="#570">570</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 <div class="line"><span id="571" class="lineNum"><a href="#571">571</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="572" class="lineNum"><a href="#572">572</a></span><span class="counterUnCov"></span><span class="lineUnCov">#[async_trait(?Send)]</span></div>
+<div class="line"><span id="572" class="lineNum"><a href="#572">572</a></span><span class="counterUnCov"></span><span class="lineUnCov">#[async_trait]</span></div>
 <div class="line"><span id="573" class="lineNum"><a href="#573">573</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl Dangerous for Endpoint {</span></div>
-<div class="line"><span id="574" class="lineNum"><a href="#574">574</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	async fn connect_unverified&lt;U: AsRef&lt;str&gt;&gt;(</span></div>
+<div class="line"><span id="574" class="lineNum"><a href="#574">574</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	async fn connect_unverified&lt;U: AsRef&lt;str&gt; + Send&gt;(</span></div>
 <div class="line"><span id="575" class="lineNum"><a href="#575">575</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		endpoint: &amp;Self,</span></div>
 <div class="line"><span id="576" class="lineNum"><a href="#576">576</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		url: U,</span></div>
 <div class="line"><span id="577" class="lineNum"><a href="#577">577</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		client_key_pair: Option&lt;KeyPair&gt;,</span></div>
