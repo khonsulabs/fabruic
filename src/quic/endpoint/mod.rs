@@ -577,7 +577,7 @@ impl Dangerous for Endpoint {
 		client_key_pair: Option<KeyPair>,
 	) -> Result<Connecting, error::Connect> {
 		// resolve URL
-		let (address, domain) = endpoint.resolve_domain(url).await?;
+		let (address, _) = endpoint.resolve_domain(url).await?;
 
 		// build client configuration
 		let client = endpoint
@@ -587,7 +587,7 @@ impl Dangerous for Endpoint {
 		// connect
 		let connecting = endpoint
 			.endpoint
-			.connect_with(client, &address, &domain)
+			.connect_with(client, &address, "unverified")
 			.map_err(error::Connect::Config)?;
 
 		Ok(Connecting::new(connecting))
@@ -645,6 +645,31 @@ mod test {
 			.await?
 			.accept::<()>()
 			.await?;
+		let _connection = server
+			.next()
+			.await
+			.expect("client dropped")
+			.accept::<()>()
+			.await?;
+
+		Ok(())
+	}
+
+	#[tokio::test]
+	async fn unverified() -> Result<()> {
+		let key_pair = KeyPair::new_self_signed("test");
+
+		let client = Endpoint::new_client()?;
+		let mut server = Endpoint::new_server(0, key_pair.clone())?;
+
+		let _connection = Dangerous::connect_unverified(
+			&client,
+			format!("quic://{}", server.local_address()?),
+			None,
+		)
+		.await?
+		.accept::<()>()
+		.await?;
 		let _connection = server
 			.next()
 			.await
