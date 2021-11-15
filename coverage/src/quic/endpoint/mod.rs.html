@@ -9,12 +9,12 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-11-15 13:17:41</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-11-15 14:05:24</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">269</span><span class="linesTotal">314</span><span class="linesPercentage lineMed">85.7 %</span></div>
-<div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">67</span><span class="funsTotal">101</span><span class="funsPercentage funLow">66.3 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">300</span><span class="linesTotal">333</span><span class="linesPercentage lineHi">90.1 %</span></div>
+<div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">72</span><span class="funsTotal">104</span><span class="funsPercentage funLow">69.2 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
 </div>
@@ -101,49 +101,49 @@
 <div class="line"><span id="80" class="lineNum"><a href="#80">80</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
 <div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Panics</span></div>
 <div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// If not called from inside a Tokio [`Runtime`](tokio::runtime::Runtime).</span></div>
-<div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterCov">129</span><span class="lineCov">	fn new(</span></div>
-<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterCov">129</span><span class="lineCov">		address: SocketAddr,</span></div>
-<div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterCov">129</span><span class="lineCov">		client: ClientConfig,</span></div>
-<div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterCov">129</span><span class="lineCov">		server: Option&lt;ServerConfig&gt;,</span></div>
-<div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterCov">129</span><span class="lineCov">		config: Config,</span></div>
-<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterCov">129</span><span class="lineCov">	) -&gt; Result&lt;Self, Error&gt; {</span></div>
-<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterCov">129</span><span class="lineCov">		// configure endpoint for server and client</span></div>
-<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterCov">129</span><span class="lineCov">		let mut endpoint_builder = quinn::Endpoint::builder();</span></div>
-<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterCov">129</span><span class="lineCov">		let _ = endpoint_builder.default_client_config(client);</span></div>
-<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterCov">129</span><span class="lineCov"></span></div>
-<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterCov">129</span><span class="lineCov">		// server configuration is optional</span></div>
-<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterCov">129</span><span class="lineCov">		let server = server.map_or(false, |server| {</span></div>
-<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">9</span><span class="lineCov">			let _ = endpoint_builder.listen(server);</span></div>
-<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterCov">9</span><span class="lineCov">			true</span></div>
-<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">129</span><span class="lineCov">		});</span></div>
+<div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterCov">131</span><span class="lineCov">	fn new(</span></div>
+<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterCov">131</span><span class="lineCov">		address: SocketAddr,</span></div>
+<div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterCov">131</span><span class="lineCov">		client: ClientConfig,</span></div>
+<div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterCov">131</span><span class="lineCov">		server: Option&lt;ServerConfig&gt;,</span></div>
+<div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterCov">131</span><span class="lineCov">		config: Config,</span></div>
+<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterCov">131</span><span class="lineCov">	) -&gt; Result&lt;Self, Error&gt; {</span></div>
+<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterCov">131</span><span class="lineCov">		// configure endpoint for server and client</span></div>
+<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterCov">131</span><span class="lineCov">		let mut endpoint_builder = quinn::Endpoint::builder();</span></div>
+<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterCov">131</span><span class="lineCov">		let _ = endpoint_builder.default_client_config(client);</span></div>
+<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterCov">131</span><span class="lineCov"></span></div>
+<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterCov">131</span><span class="lineCov">		// server configuration is optional</span></div>
+<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterCov">131</span><span class="lineCov">		let server = server.map_or(false, |server| {</span></div>
+<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">10</span><span class="lineCov">			let _ = endpoint_builder.listen(server);</span></div>
+<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterCov">10</span><span class="lineCov">			true</span></div>
+<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">131</span><span class="lineCov">		});</span></div>
 <div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// build endpoint</span></div>
-<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterCov">129</span><span class="lineCov">		let (endpoint, incoming) =</span></div>
-<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterCov">129</span><span class="lineCov">			endpoint_builder</span></div>
-<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterCov">129</span><span class="lineCov">				.bind(&amp;address)</span></div>
-<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterCov">129</span><span class="lineCov">				.map_err(|error| match error {</span></div>
+<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterCov">131</span><span class="lineCov">		let (endpoint, incoming) =</span></div>
+<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterCov">131</span><span class="lineCov">			endpoint_builder</span></div>
+<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterCov">131</span><span class="lineCov">				.bind(&amp;address)</span></div>
+<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterCov">131</span><span class="lineCov">				.map_err(|error| match error {</span></div>
 <div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterNoCov">0</span><span class="lineNoCov">					EndpointError::Socket(error) =&gt; error,</span></div>
-<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterCov">129</span><span class="lineCov">				})?;</span></div>
+<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterCov">131</span><span class="lineCov">				})?;</span></div>
 <div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// create channels that will receive incoming `Connection`s</span></div>
-<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterCov">129</span><span class="lineCov">		let (sender, receiver) = flume::unbounded();</span></div>
-<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterCov">129</span><span class="lineCov">		let receiver = receiver.into_stream();</span></div>
+<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterCov">131</span><span class="lineCov">		let (sender, receiver) = flume::unbounded();</span></div>
+<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterCov">131</span><span class="lineCov">		let receiver = receiver.into_stream();</span></div>
 <div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// only servers need to deal with incoming connections</span></div>
-<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterCov">129</span><span class="lineCov">		let task = if server {</span></div>
+<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterCov">131</span><span class="lineCov">		let task = if server {</span></div>
 <div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// spawn task handling incoming `Connection`s</span></div>
-<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterCov">9</span><span class="lineCov">			Task::new(|shutdown| Self::incoming(incoming, sender, shutdown))</span></div>
+<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterCov">10</span><span class="lineCov">			Task::new(|shutdown| Self::incoming(incoming, sender, shutdown))</span></div>
 <div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
-<div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterCov">120</span><span class="lineCov">			Task::empty()</span></div>
+<div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterCov">121</span><span class="lineCov">			Task::empty()</span></div>
 <div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterUnCov"></span><span class="lineUnCov">		};</span></div>
 <div class="line"><span id="118" class="lineNum"><a href="#118">118</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="119" class="lineNum"><a href="#119">119</a></span><span class="counterCov">129</span><span class="lineCov">		Ok(Self {</span></div>
-<div class="line"><span id="120" class="lineNum"><a href="#120">120</a></span><span class="counterCov">129</span><span class="lineCov">			endpoint,</span></div>
-<div class="line"><span id="121" class="lineNum"><a href="#121">121</a></span><span class="counterCov">129</span><span class="lineCov">			receiver,</span></div>
-<div class="line"><span id="122" class="lineNum"><a href="#122">122</a></span><span class="counterCov">129</span><span class="lineCov">			task,</span></div>
-<div class="line"><span id="123" class="lineNum"><a href="#123">123</a></span><span class="counterCov">129</span><span class="lineCov">			config: Arc::new(config),</span></div>
-<div class="line"><span id="124" class="lineNum"><a href="#124">124</a></span><span class="counterCov">129</span><span class="lineCov">		})</span></div>
-<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterCov">129</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="119" class="lineNum"><a href="#119">119</a></span><span class="counterCov">131</span><span class="lineCov">		Ok(Self {</span></div>
+<div class="line"><span id="120" class="lineNum"><a href="#120">120</a></span><span class="counterCov">131</span><span class="lineCov">			endpoint,</span></div>
+<div class="line"><span id="121" class="lineNum"><a href="#121">121</a></span><span class="counterCov">131</span><span class="lineCov">			receiver,</span></div>
+<div class="line"><span id="122" class="lineNum"><a href="#122">122</a></span><span class="counterCov">131</span><span class="lineCov">			task,</span></div>
+<div class="line"><span id="123" class="lineNum"><a href="#123">123</a></span><span class="counterCov">131</span><span class="lineCov">			config: Arc::new(config),</span></div>
+<div class="line"><span id="124" class="lineNum"><a href="#124">124</a></span><span class="counterCov">131</span><span class="lineCov">		})</span></div>
+<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterCov">131</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Simplified version of creating a client. See [`Builder`] for more</span></div>
 <div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// sophisticated configuration options. Must be called from inside a Tokio</span></div>
@@ -168,11 +168,11 @@
 <div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// let endpoint = Endpoint::new_client()?;</span></div>
 <div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Ok(()) }</span></div>
 <div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// ```</span></div>
-<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterCov">105</span><span class="lineCov">	pub fn new_client() -&gt; Result&lt;Self, Error&gt; {</span></div>
-<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterCov">105</span><span class="lineCov">		Builder::new()</span></div>
-<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterCov">105</span><span class="lineCov">			.build()</span></div>
-<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterCov">105</span><span class="lineCov">			.map_err(|error::Builder { error, .. }| error)</span></div>
-<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterCov">105</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterCov">106</span><span class="lineCov">	pub fn new_client() -&gt; Result&lt;Self, Error&gt; {</span></div>
+<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterCov">106</span><span class="lineCov">		Builder::new()</span></div>
+<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterCov">106</span><span class="lineCov">			.build()</span></div>
+<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterCov">106</span><span class="lineCov">			.map_err(|error::Builder { error, .. }| error)</span></div>
+<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterCov">106</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Simplified version of creating a server. See [`Builder`] for more</span></div>
 <div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// sophisticated configuration options. Must be called from inside a Tokio</span></div>
@@ -195,35 +195,35 @@
 <div class="line"><span id="174" class="lineNum"><a href="#174">174</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// let endpoint = Endpoint::new_server(0, KeyPair::new_self_signed(&quot;self-signed&quot;))?;</span></div>
 <div class="line"><span id="175" class="lineNum"><a href="#175">175</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Ok(()) }</span></div>
 <div class="line"><span id="176" class="lineNum"><a href="#176">176</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// ```</span></div>
-<div class="line"><span id="177" class="lineNum"><a href="#177">177</a></span><span class="counterCov">5</span><span class="lineCov">	pub fn new_server(port: u16, key_pair: KeyPair) -&gt; Result&lt;Self, Error&gt; {</span></div>
-<div class="line"><span id="178" class="lineNum"><a href="#178">178</a></span><span class="counterCov">5</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
-<div class="line"><span id="179" class="lineNum"><a href="#179">179</a></span><span class="counterCov">5</span><span class="lineCov">		#[cfg(not(feature = &quot;test&quot;))]</span></div>
-<div class="line"><span id="180" class="lineNum"><a href="#180">180</a></span><span class="counterCov">5</span><span class="lineCov">		let _ = builder.set_address(([0; 8], port).into());</span></div>
-<div class="line"><span id="181" class="lineNum"><a href="#181">181</a></span><span class="counterCov">5</span><span class="lineCov">		// while testing always use the default loopback address</span></div>
-<div class="line"><span id="182" class="lineNum"><a href="#182">182</a></span><span class="counterCov">5</span><span class="lineCov">		#[cfg(feature = &quot;test&quot;)]</span></div>
-<div class="line"><span id="183" class="lineNum"><a href="#183">183</a></span><span class="counterCov">5</span><span class="lineCov">		builder.set_address(([0, 0, 0, 0, 0, 0, 0, 1], port).into());</span></div>
-<div class="line"><span id="184" class="lineNum"><a href="#184">184</a></span><span class="counterCov">5</span><span class="lineCov">		builder.set_server_key_pair(Some(key_pair));</span></div>
-<div class="line"><span id="185" class="lineNum"><a href="#185">185</a></span><span class="counterCov">5</span><span class="lineCov"></span></div>
-<div class="line"><span id="186" class="lineNum"><a href="#186">186</a></span><span class="counterCov">5</span><span class="lineCov">		builder</span></div>
-<div class="line"><span id="187" class="lineNum"><a href="#187">187</a></span><span class="counterCov">5</span><span class="lineCov">			.build()</span></div>
-<div class="line"><span id="188" class="lineNum"><a href="#188">188</a></span><span class="counterCov">5</span><span class="lineCov">			.map_err(|error::Builder { error, .. }| error)</span></div>
-<div class="line"><span id="189" class="lineNum"><a href="#189">189</a></span><span class="counterCov">5</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="177" class="lineNum"><a href="#177">177</a></span><span class="counterCov">6</span><span class="lineCov">	pub fn new_server(port: u16, key_pair: KeyPair) -&gt; Result&lt;Self, Error&gt; {</span></div>
+<div class="line"><span id="178" class="lineNum"><a href="#178">178</a></span><span class="counterCov">6</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
+<div class="line"><span id="179" class="lineNum"><a href="#179">179</a></span><span class="counterCov">6</span><span class="lineCov">		#[cfg(not(feature = &quot;test&quot;))]</span></div>
+<div class="line"><span id="180" class="lineNum"><a href="#180">180</a></span><span class="counterCov">6</span><span class="lineCov">		let _ = builder.set_address(([0; 8], port).into());</span></div>
+<div class="line"><span id="181" class="lineNum"><a href="#181">181</a></span><span class="counterCov">6</span><span class="lineCov">		// while testing always use the default loopback address</span></div>
+<div class="line"><span id="182" class="lineNum"><a href="#182">182</a></span><span class="counterCov">6</span><span class="lineCov">		#[cfg(feature = &quot;test&quot;)]</span></div>
+<div class="line"><span id="183" class="lineNum"><a href="#183">183</a></span><span class="counterCov">6</span><span class="lineCov">		builder.set_address(([0, 0, 0, 0, 0, 0, 0, 1], port).into());</span></div>
+<div class="line"><span id="184" class="lineNum"><a href="#184">184</a></span><span class="counterCov">6</span><span class="lineCov">		builder.set_server_key_pair(Some(key_pair));</span></div>
+<div class="line"><span id="185" class="lineNum"><a href="#185">185</a></span><span class="counterCov">6</span><span class="lineCov"></span></div>
+<div class="line"><span id="186" class="lineNum"><a href="#186">186</a></span><span class="counterCov">6</span><span class="lineCov">		builder</span></div>
+<div class="line"><span id="187" class="lineNum"><a href="#187">187</a></span><span class="counterCov">6</span><span class="lineCov">			.build()</span></div>
+<div class="line"><span id="188" class="lineNum"><a href="#188">188</a></span><span class="counterCov">6</span><span class="lineCov">			.map_err(|error::Builder { error, .. }| error)</span></div>
+<div class="line"><span id="189" class="lineNum"><a href="#189">189</a></span><span class="counterCov">6</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="190" class="lineNum"><a href="#190">190</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="191" class="lineNum"><a href="#191">191</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Handle incoming connections. Accessed through [`Stream`] in</span></div>
 <div class="line"><span id="192" class="lineNum"><a href="#192">192</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Endpoint`].</span></div>
-<div class="line"><span id="193" class="lineNum"><a href="#193">193</a></span><span class="counterCov">9</span><span class="lineCov">	async fn incoming(</span></div>
-<div class="line"><span id="194" class="lineNum"><a href="#194">194</a></span><span class="counterCov">9</span><span class="lineCov">		mut incoming: quinn::Incoming,</span></div>
-<div class="line"><span id="195" class="lineNum"><a href="#195">195</a></span><span class="counterCov">9</span><span class="lineCov">		sender: Sender&lt;Connecting&gt;,</span></div>
-<div class="line"><span id="196" class="lineNum"><a href="#196">196</a></span><span class="counterCov">9</span><span class="lineCov">		mut shutdown: Receiver&lt;()&gt;,</span></div>
-<div class="line"><span id="197" class="lineNum"><a href="#197">197</a></span><span class="counterCov">9</span><span class="lineCov">	) {</span></div>
-<div class="line"><span id="198" class="lineNum"><a href="#198">198</a></span><span class="counterCov">107</span><span class="lineCov">		while let Some(connecting) = allochronic_util::select! {</span></div>
-<div class="line"><span id="199" class="lineNum"><a href="#199">199</a></span><span class="counterCov">108</span><span class="lineCov">			connecting: &amp;mut incoming =&gt; connecting,</span></div>
+<div class="line"><span id="193" class="lineNum"><a href="#193">193</a></span><span class="counterCov">10</span><span class="lineCov">	async fn incoming(</span></div>
+<div class="line"><span id="194" class="lineNum"><a href="#194">194</a></span><span class="counterCov">10</span><span class="lineCov">		mut incoming: quinn::Incoming,</span></div>
+<div class="line"><span id="195" class="lineNum"><a href="#195">195</a></span><span class="counterCov">10</span><span class="lineCov">		sender: Sender&lt;Connecting&gt;,</span></div>
+<div class="line"><span id="196" class="lineNum"><a href="#196">196</a></span><span class="counterCov">10</span><span class="lineCov">		mut shutdown: Receiver&lt;()&gt;,</span></div>
+<div class="line"><span id="197" class="lineNum"><a href="#197">197</a></span><span class="counterCov">10</span><span class="lineCov">	) {</span></div>
+<div class="line"><span id="198" class="lineNum"><a href="#198">198</a></span><span class="counterCov">108</span><span class="lineCov">		while let Some(connecting) = allochronic_util::select! {</span></div>
+<div class="line"><span id="199" class="lineNum"><a href="#199">199</a></span><span class="counterCov">109</span><span class="lineCov">			connecting: &amp;mut incoming =&gt; connecting,</span></div>
 <div class="line"><span id="200" class="lineNum"><a href="#200">200</a></span><span class="counterCov">2</span><span class="lineCov">			_ : &amp;mut shutdown =&gt; None,</span></div>
 <div class="line"><span id="201" class="lineNum"><a href="#201">201</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} {</span></div>
 <div class="line"><span id="202" class="lineNum"><a href="#202">202</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// if there is no receiver, it means that we dropped the last `Endpoint`</span></div>
-<div class="line"><span id="203" class="lineNum"><a href="#203">203</a></span><span class="counterCov">107</span><span class="lineCov">			if sender.send(Connecting::new(connecting)).is_err() {</span></div>
+<div class="line"><span id="203" class="lineNum"><a href="#203">203</a></span><span class="counterCov">108</span><span class="lineCov">			if sender.send(Connecting::new(connecting)).is_err() {</span></div>
 <div class="line"><span id="204" class="lineNum"><a href="#204">204</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				break;</span></div>
-<div class="line"><span id="205" class="lineNum"><a href="#205">205</a></span><span class="counterCov">107</span><span class="lineCov">			}</span></div>
+<div class="line"><span id="205" class="lineNum"><a href="#205">205</a></span><span class="counterCov">108</span><span class="lineCov">			}</span></div>
 <div class="line"><span id="206" class="lineNum"><a href="#206">206</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
 <div class="line"><span id="207" class="lineNum"><a href="#207">207</a></span><span class="counterCov">3</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="208" class="lineNum"><a href="#208">208</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
@@ -380,21 +380,21 @@
 <div class="line"><span id="359" class="lineNum"><a href="#359">359</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`error::Connect::StdDns`] if the URL couldn&#39;t be resolved to an IP</span></div>
 <div class="line"><span id="360" class="lineNum"><a href="#360">360</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///   address with [`ToSocketAddrs`]</span></div>
 <div class="line"><span id="361" class="lineNum"><a href="#361">361</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`error::Connect::NoIp`] if no IP address was found for that domain</span></div>
-<div class="line"><span id="362" class="lineNum"><a href="#362">362</a></span><span class="counterCov">120</span><span class="lineCov">	async fn resolve_domain(</span></div>
-<div class="line"><span id="363" class="lineNum"><a href="#363">363</a></span><span class="counterCov">120</span><span class="lineCov">		&amp;self,</span></div>
-<div class="line"><span id="364" class="lineNum"><a href="#364">364</a></span><span class="counterCov">120</span><span class="lineCov">		url: impl AsRef&lt;str&gt;,</span></div>
-<div class="line"><span id="365" class="lineNum"><a href="#365">365</a></span><span class="counterCov">120</span><span class="lineCov">	) -&gt; Result&lt;(SocketAddr, String), error::Connect&gt; {</span></div>
-<div class="line"><span id="366" class="lineNum"><a href="#366">366</a></span><span class="counterCov">120</span><span class="lineCov">		let url = Url::parse(url.as_ref()).map_err(error::Connect::ParseUrl)?;</span></div>
+<div class="line"><span id="362" class="lineNum"><a href="#362">362</a></span><span class="counterCov">121</span><span class="lineCov">	async fn resolve_domain(</span></div>
+<div class="line"><span id="363" class="lineNum"><a href="#363">363</a></span><span class="counterCov">121</span><span class="lineCov">		&amp;self,</span></div>
+<div class="line"><span id="364" class="lineNum"><a href="#364">364</a></span><span class="counterCov">121</span><span class="lineCov">		url: impl AsRef&lt;str&gt;,</span></div>
+<div class="line"><span id="365" class="lineNum"><a href="#365">365</a></span><span class="counterCov">121</span><span class="lineCov">	) -&gt; Result&lt;(SocketAddr, String), error::Connect&gt; {</span></div>
+<div class="line"><span id="366" class="lineNum"><a href="#366">366</a></span><span class="counterCov">121</span><span class="lineCov">		let url = Url::parse(url.as_ref()).map_err(error::Connect::ParseUrl)?;</span></div>
 <div class="line"><span id="367" class="lineNum"><a href="#367">367</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// url removes known default ports, we don&#39;t actually want to accept known</span></div>
 <div class="line"><span id="368" class="lineNum"><a href="#368">368</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// scheme&#39;s, but this is probably not intended behaviour</span></div>
-<div class="line"><span id="369" class="lineNum"><a href="#369">369</a></span><span class="counterCov">120</span><span class="lineCov">		let port = url.port_or_known_default().ok_or(error::Connect::Port)?;</span></div>
-<div class="line"><span id="370" class="lineNum"><a href="#370">370</a></span><span class="counterCov">119</span><span class="lineCov">		let domain = url.host_str().ok_or(error::Connect::Domain)?;</span></div>
+<div class="line"><span id="369" class="lineNum"><a href="#369">369</a></span><span class="counterCov">121</span><span class="lineCov">		let port = url.port_or_known_default().ok_or(error::Connect::Port)?;</span></div>
+<div class="line"><span id="370" class="lineNum"><a href="#370">370</a></span><span class="counterCov">120</span><span class="lineCov">		let domain = url.host_str().ok_or(error::Connect::Domain)?;</span></div>
 <div class="line"><span id="371" class="lineNum"><a href="#371">371</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// url doesn&#39;t parse IP addresses unless the schema is known, which doesn&#39;t</span></div>
 <div class="line"><span id="372" class="lineNum"><a href="#372">372</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// work for &quot;quic://&quot; for example</span></div>
-<div class="line"><span id="373" class="lineNum"><a href="#373">373</a></span><span class="counterCov">119</span><span class="lineCov">		let domain = match Host::parse(domain).map_err(error::Connect::ParseDomain)? {</span></div>
+<div class="line"><span id="373" class="lineNum"><a href="#373">373</a></span><span class="counterCov">120</span><span class="lineCov">		let domain = match Host::parse(domain).map_err(error::Connect::ParseDomain)? {</span></div>
 <div class="line"><span id="374" class="lineNum"><a href="#374">374</a></span><span class="counterCov">10</span><span class="lineCov">			Host::Domain(domain) =&gt; domain,</span></div>
 <div class="line"><span id="375" class="lineNum"><a href="#375">375</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Host::Ipv4(ip) =&gt; return Ok((SocketAddr::from((ip, port)), ip.to_string())),</span></div>
-<div class="line"><span id="376" class="lineNum"><a href="#376">376</a></span><span class="counterCov">109</span><span class="lineCov">			Host::Ipv6(ip) =&gt; return Ok((SocketAddr::from((ip, port)), ip.to_string())),</span></div>
+<div class="line"><span id="376" class="lineNum"><a href="#376">376</a></span><span class="counterCov">110</span><span class="lineCov">			Host::Ipv6(ip) =&gt; return Ok((SocketAddr::from((ip, port)), ip.to_string())),</span></div>
 <div class="line"><span id="377" class="lineNum"><a href="#377">377</a></span><span class="counterUnCov"></span><span class="lineUnCov">		};</span></div>
 <div class="line"><span id="378" class="lineNum"><a href="#378">378</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="379" class="lineNum"><a href="#379">379</a></span><span class="counterUnCov"></span><span class="lineUnCov">		#[cfg(feature = &quot;trust-dns&quot;)]</span></div>
@@ -445,7 +445,7 @@
 <div class="line"><span id="424" class="lineNum"><a href="#424">424</a></span><span class="counterUnCov"></span><span class="lineUnCov">		};</span></div>
 <div class="line"><span id="425" class="lineNum"><a href="#425">425</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="426" class="lineNum"><a href="#426">426</a></span><span class="counterCov">2</span><span class="lineCov">		Ok((address, domain))</span></div>
-<div class="line"><span id="427" class="lineNum"><a href="#427">427</a></span><span class="counterCov">120</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="427" class="lineNum"><a href="#427">427</a></span><span class="counterCov">121</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="428" class="lineNum"><a href="#428">428</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="429" class="lineNum"><a href="#429">429</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Get the local [`SocketAddr`] the underlying socket is bound to.</span></div>
 <div class="line"><span id="430" class="lineNum"><a href="#430">430</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
@@ -461,9 +461,9 @@
 <div class="line"><span id="440" class="lineNum"><a href="#440">440</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// assert!(endpoint.local_address().is_ok());</span></div>
 <div class="line"><span id="441" class="lineNum"><a href="#441">441</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Ok(()) }</span></div>
 <div class="line"><span id="442" class="lineNum"><a href="#442">442</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// ```</span></div>
-<div class="line"><span id="443" class="lineNum"><a href="#443">443</a></span><span class="counterCov">220</span><span class="lineCov">	pub fn local_address(&amp;self) -&gt; Result&lt;SocketAddr, Error&gt; {</span></div>
-<div class="line"><span id="444" class="lineNum"><a href="#444">444</a></span><span class="counterCov">220</span><span class="lineCov">		self.endpoint.local_addr()</span></div>
-<div class="line"><span id="445" class="lineNum"><a href="#445">445</a></span><span class="counterCov">220</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="443" class="lineNum"><a href="#443">443</a></span><span class="counterCov">221</span><span class="lineCov">	pub fn local_address(&amp;self) -&gt; Result&lt;SocketAddr, Error&gt; {</span></div>
+<div class="line"><span id="444" class="lineNum"><a href="#444">444</a></span><span class="counterCov">221</span><span class="lineCov">		self.endpoint.local_addr()</span></div>
+<div class="line"><span id="445" class="lineNum"><a href="#445">445</a></span><span class="counterCov">221</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="446" class="lineNum"><a href="#446">446</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="447" class="lineNum"><a href="#447">447</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Close all of this [`Endpoint`]&#39;s [`Connection`](crate::Connection)s</span></div>
 <div class="line"><span id="448" class="lineNum"><a href="#448">448</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// immediately and cease accepting new [`Connection`](crate::Connection)s.</span></div>
@@ -592,39 +592,39 @@
 <div class="line"><span id="571" class="lineNum"><a href="#571">571</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="572" class="lineNum"><a href="#572">572</a></span><span class="counterUnCov"></span><span class="lineUnCov">#[async_trait]</span></div>
 <div class="line"><span id="573" class="lineNum"><a href="#573">573</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl Dangerous for Endpoint {</span></div>
-<div class="line"><span id="574" class="lineNum"><a href="#574">574</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	async fn connect_unverified&lt;U: AsRef&lt;str&gt; + Send&gt;(</span></div>
-<div class="line"><span id="575" class="lineNum"><a href="#575">575</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		endpoint: &amp;Self,</span></div>
-<div class="line"><span id="576" class="lineNum"><a href="#576">576</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		url: U,</span></div>
-<div class="line"><span id="577" class="lineNum"><a href="#577">577</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		client_key_pair: Option&lt;KeyPair&gt;,</span></div>
-<div class="line"><span id="578" class="lineNum"><a href="#578">578</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	) -&gt; Result&lt;Connecting, error::Connect&gt; {</span></div>
+<div class="line"><span id="574" class="lineNum"><a href="#574">574</a></span><span class="counterCov">1</span><span class="lineCov">	async fn connect_unverified&lt;U: AsRef&lt;str&gt; + Send&gt;(</span></div>
+<div class="line"><span id="575" class="lineNum"><a href="#575">575</a></span><span class="counterCov">1</span><span class="lineCov">		endpoint: &amp;Self,</span></div>
+<div class="line"><span id="576" class="lineNum"><a href="#576">576</a></span><span class="counterCov">1</span><span class="lineCov">		url: U,</span></div>
+<div class="line"><span id="577" class="lineNum"><a href="#577">577</a></span><span class="counterCov">1</span><span class="lineCov">		client_key_pair: Option&lt;KeyPair&gt;,</span></div>
+<div class="line"><span id="578" class="lineNum"><a href="#578">578</a></span><span class="counterCov">1</span><span class="lineCov">	) -&gt; Result&lt;Connecting, error::Connect&gt; {</span></div>
 <div class="line"><span id="579" class="lineNum"><a href="#579">579</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// resolve URL</span></div>
-<div class="line"><span id="580" class="lineNum"><a href="#580">580</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		let (address, domain) = endpoint.resolve_domain(url).await?;</span></div>
+<div class="line"><span id="580" class="lineNum"><a href="#580">580</a></span><span class="counterCov">1</span><span class="lineCov">		let (address, _) = endpoint.resolve_domain(url).await?;</span></div>
 <div class="line"><span id="581" class="lineNum"><a href="#581">581</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="582" class="lineNum"><a href="#582">582</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// build client configuration</span></div>
-<div class="line"><span id="583" class="lineNum"><a href="#583">583</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		let client = endpoint</span></div>
-<div class="line"><span id="584" class="lineNum"><a href="#584">584</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.config</span></div>
-<div class="line"><span id="585" class="lineNum"><a href="#585">585</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.new_client(None, Store::Empty, client_key_pair, true);</span></div>
+<div class="line"><span id="583" class="lineNum"><a href="#583">583</a></span><span class="counterCov">1</span><span class="lineCov">		let client = endpoint</span></div>
+<div class="line"><span id="584" class="lineNum"><a href="#584">584</a></span><span class="counterCov">1</span><span class="lineCov">			.config</span></div>
+<div class="line"><span id="585" class="lineNum"><a href="#585">585</a></span><span class="counterCov">1</span><span class="lineCov">			.new_client(None, Store::Empty, client_key_pair, true);</span></div>
 <div class="line"><span id="586" class="lineNum"><a href="#586">586</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="587" class="lineNum"><a href="#587">587</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// connect</span></div>
-<div class="line"><span id="588" class="lineNum"><a href="#588">588</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		let connecting = endpoint</span></div>
-<div class="line"><span id="589" class="lineNum"><a href="#589">589</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.endpoint</span></div>
-<div class="line"><span id="590" class="lineNum"><a href="#590">590</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.connect_with(client, &amp;address, &amp;domain)</span></div>
-<div class="line"><span id="591" class="lineNum"><a href="#591">591</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.map_err(error::Connect::Config)?;</span></div>
+<div class="line"><span id="588" class="lineNum"><a href="#588">588</a></span><span class="counterCov">1</span><span class="lineCov">		let connecting = endpoint</span></div>
+<div class="line"><span id="589" class="lineNum"><a href="#589">589</a></span><span class="counterCov">1</span><span class="lineCov">			.endpoint</span></div>
+<div class="line"><span id="590" class="lineNum"><a href="#590">590</a></span><span class="counterCov">1</span><span class="lineCov">			.connect_with(client, &amp;address, &quot;unverified&quot;)</span></div>
+<div class="line"><span id="591" class="lineNum"><a href="#591">591</a></span><span class="counterCov">1</span><span class="lineCov">			.map_err(error::Connect::Config)?;</span></div>
 <div class="line"><span id="592" class="lineNum"><a href="#592">592</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="593" class="lineNum"><a href="#593">593</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		Ok(Connecting::new(connecting))</span></div>
-<div class="line"><span id="594" class="lineNum"><a href="#594">594</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
+<div class="line"><span id="593" class="lineNum"><a href="#593">593</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(Connecting::new(connecting))</span></div>
+<div class="line"><span id="594" class="lineNum"><a href="#594">594</a></span><span class="counterCov">2</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="595" class="lineNum"><a href="#595">595</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 <div class="line"><span id="596" class="lineNum"><a href="#596">596</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="597" class="lineNum"><a href="#597">597</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl Stream for Endpoint {</span></div>
 <div class="line"><span id="598" class="lineNum"><a href="#598">598</a></span><span class="counterUnCov"></span><span class="lineUnCov">	type Item = Connecting;</span></div>
 <div class="line"><span id="599" class="lineNum"><a href="#599">599</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="600" class="lineNum"><a href="#600">600</a></span><span class="counterCov">111</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
-<div class="line"><span id="601" class="lineNum"><a href="#601">601</a></span><span class="counterCov">111</span><span class="lineCov">		if self.receiver.is_terminated() {</span></div>
+<div class="line"><span id="600" class="lineNum"><a href="#600">600</a></span><span class="counterCov">112</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
+<div class="line"><span id="601" class="lineNum"><a href="#601">601</a></span><span class="counterCov">112</span><span class="lineCov">		if self.receiver.is_terminated() {</span></div>
 <div class="line"><span id="602" class="lineNum"><a href="#602">602</a></span><span class="counterCov">2</span><span class="lineCov">			Poll::Ready(None)</span></div>
 <div class="line"><span id="603" class="lineNum"><a href="#603">603</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
-<div class="line"><span id="604" class="lineNum"><a href="#604">604</a></span><span class="counterCov">109</span><span class="lineCov">			self.receiver.poll_next_unpin(cx)</span></div>
+<div class="line"><span id="604" class="lineNum"><a href="#604">604</a></span><span class="counterCov">110</span><span class="lineCov">			self.receiver.poll_next_unpin(cx)</span></div>
 <div class="line"><span id="605" class="lineNum"><a href="#605">605</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="606" class="lineNum"><a href="#606">606</a></span><span class="counterCov">111</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="606" class="lineNum"><a href="#606">606</a></span><span class="counterCov">112</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="607" class="lineNum"><a href="#607">607</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 <div class="line"><span id="608" class="lineNum"><a href="#608">608</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="609" class="lineNum"><a href="#609">609</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl FusedStream for Endpoint {</span></div>
@@ -677,181 +677,206 @@
 <div class="line"><span id="656" class="lineNum"><a href="#656">656</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="657" class="lineNum"><a href="#657">657</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="658" class="lineNum"><a href="#658">658</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
-<div class="line"><span id="659" class="lineNum"><a href="#659">659</a></span><span class="counterCov">1</span><span class="lineCov">	async fn port() -&gt; Result&lt;()&gt; {</span></div>
-<div class="line"><span id="660" class="lineNum"><a href="#660">660</a></span><span class="counterCov">1</span><span class="lineCov">		let client = Endpoint::new_client()?;</span></div>
+<div class="line"><span id="659" class="lineNum"><a href="#659">659</a></span><span class="counterCov">1</span><span class="lineCov">	async fn unverified() -&gt; Result&lt;()&gt; {</span></div>
+<div class="line"><span id="660" class="lineNum"><a href="#660">660</a></span><span class="counterCov">1</span><span class="lineCov">		let key_pair = KeyPair::new_self_signed(&quot;test&quot;);</span></div>
 <div class="line"><span id="661" class="lineNum"><a href="#661">661</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="662" class="lineNum"><a href="#662">662</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
-<div class="line"><span id="663" class="lineNum"><a href="#663">663</a></span><span class="counterCov">1</span><span class="lineCov">			client.resolve_domain(&quot;https://localhost&quot;).await,</span></div>
-<div class="line"><span id="664" class="lineNum"><a href="#664">664</a></span><span class="counterCov">1</span><span class="lineCov">			Ok((address, domain))</span></div>
-<div class="line"><span id="665" class="lineNum"><a href="#665">665</a></span><span class="counterCov">1</span><span class="lineCov">			if address == SocketAddr::from_str(&quot;[::1]:443&quot;)? &amp;&amp; domain == &quot;localhost&quot;</span></div>
-<div class="line"><span id="666" class="lineNum"><a href="#666">666</a></span><span class="counterUnCov"></span><span class="lineUnCov">		));</span></div>
-<div class="line"><span id="667" class="lineNum"><a href="#667">667</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="668" class="lineNum"><a href="#668">668</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
-<div class="line"><span id="669" class="lineNum"><a href="#669">669</a></span><span class="counterCov">1</span><span class="lineCov">			client.resolve_domain(&quot;quic://localhost&quot;).await,</span></div>
-<div class="line"><span id="670" class="lineNum"><a href="#670">670</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Err(error::Connect::Port)</span></div>
-<div class="line"><span id="671" class="lineNum"><a href="#671">671</a></span><span class="counterUnCov"></span><span class="lineUnCov">		));</span></div>
-<div class="line"><span id="672" class="lineNum"><a href="#672">672</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="673" class="lineNum"><a href="#673">673</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
-<div class="line"><span id="674" class="lineNum"><a href="#674">674</a></span><span class="counterCov">1</span><span class="lineCov">			client.resolve_domain(&quot;quic://localhost:443&quot;).await,</span></div>
-<div class="line"><span id="675" class="lineNum"><a href="#675">675</a></span><span class="counterCov">1</span><span class="lineCov">			Ok((address, domain))</span></div>
-<div class="line"><span id="676" class="lineNum"><a href="#676">676</a></span><span class="counterCov">1</span><span class="lineCov">			if address == SocketAddr::from_str(&quot;[::1]:443&quot;)? &amp;&amp; domain == &quot;localhost&quot;</span></div>
-<div class="line"><span id="677" class="lineNum"><a href="#677">677</a></span><span class="counterUnCov"></span><span class="lineUnCov">		));</span></div>
-<div class="line"><span id="678" class="lineNum"><a href="#678">678</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="679" class="lineNum"><a href="#679">679</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
-<div class="line"><span id="680" class="lineNum"><a href="#680">680</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="681" class="lineNum"><a href="#681">681</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="682" class="lineNum"><a href="#682">682</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
-<div class="line"><span id="683" class="lineNum"><a href="#683">683</a></span><span class="counterCov">1</span><span class="lineCov">	async fn close() -&gt; Result&lt;()&gt; {</span></div>
-<div class="line"><span id="684" class="lineNum"><a href="#684">684</a></span><span class="counterCov">1</span><span class="lineCov">		let key_pair = KeyPair::new_self_signed(&quot;test&quot;);</span></div>
-<div class="line"><span id="685" class="lineNum"><a href="#685">685</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="686" class="lineNum"><a href="#686">686</a></span><span class="counterCov">1</span><span class="lineCov">		let client = Endpoint::new_client()?;</span></div>
-<div class="line"><span id="687" class="lineNum"><a href="#687">687</a></span><span class="counterCov">1</span><span class="lineCov">		let mut server = Endpoint::new_server(0, key_pair.clone())?;</span></div>
-<div class="line"><span id="688" class="lineNum"><a href="#688">688</a></span><span class="counterCov">1</span><span class="lineCov">		let address = format!(&quot;quic://{}&quot;, server.local_address()?);</span></div>
-<div class="line"><span id="689" class="lineNum"><a href="#689">689</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="690" class="lineNum"><a href="#690">690</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// `wait_idle` should never finish unless these `Connection`s are closed, which</span></div>
-<div class="line"><span id="691" class="lineNum"><a href="#691">691</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// they won&#39;t unless they are dropped or explicitly closed</span></div>
-<div class="line"><span id="692" class="lineNum"><a href="#692">692</a></span><span class="counterCov">1</span><span class="lineCov">		let _connection = client</span></div>
-<div class="line"><span id="693" class="lineNum"><a href="#693">693</a></span><span class="counterCov">1</span><span class="lineCov">			.connect_pinned(&amp;address, key_pair.end_entity_certificate(), None)</span></div>
-<div class="line"><span id="694" class="lineNum"><a href="#694">694</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?</span></div>
-<div class="line"><span id="695" class="lineNum"><a href="#695">695</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="696" class="lineNum"><a href="#696">696</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?;</span></div>
-<div class="line"><span id="697" class="lineNum"><a href="#697">697</a></span><span class="counterCov">1</span><span class="lineCov">		let _connection = server</span></div>
-<div class="line"><span id="698" class="lineNum"><a href="#698">698</a></span><span class="counterCov">1</span><span class="lineCov">			.next()</span></div>
-<div class="line"><span id="699" class="lineNum"><a href="#699">699</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.await</span></div>
-<div class="line"><span id="700" class="lineNum"><a href="#700">700</a></span><span class="counterCov">1</span><span class="lineCov">			.expect(&quot;client dropped&quot;)</span></div>
-<div class="line"><span id="701" class="lineNum"><a href="#701">701</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="702" class="lineNum"><a href="#702">702</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?;</span></div>
+<div class="line"><span id="662" class="lineNum"><a href="#662">662</a></span><span class="counterCov">1</span><span class="lineCov">		let client = Endpoint::new_client()?;</span></div>
+<div class="line"><span id="663" class="lineNum"><a href="#663">663</a></span><span class="counterCov">1</span><span class="lineCov">		let mut server = Endpoint::new_server(0, key_pair.clone())?;</span></div>
+<div class="line"><span id="664" class="lineNum"><a href="#664">664</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="665" class="lineNum"><a href="#665">665</a></span><span class="counterCov">1</span><span class="lineCov">		let _connection = Dangerous::connect_unverified(</span></div>
+<div class="line"><span id="666" class="lineNum"><a href="#666">666</a></span><span class="counterCov">1</span><span class="lineCov">			&amp;client,</span></div>
+<div class="line"><span id="667" class="lineNum"><a href="#667">667</a></span><span class="counterCov">1</span><span class="lineCov">			format!(&quot;quic://{}&quot;, server.local_address()?),</span></div>
+<div class="line"><span id="668" class="lineNum"><a href="#668">668</a></span><span class="counterCov">1</span><span class="lineCov">			None,</span></div>
+<div class="line"><span id="669" class="lineNum"><a href="#669">669</a></span><span class="counterUnCov"></span><span class="lineUnCov">		)</span></div>
+<div class="line"><span id="670" class="lineNum"><a href="#670">670</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		.await?</span></div>
+<div class="line"><span id="671" class="lineNum"><a href="#671">671</a></span><span class="counterCov">1</span><span class="lineCov">		.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="672" class="lineNum"><a href="#672">672</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		.await?;</span></div>
+<div class="line"><span id="673" class="lineNum"><a href="#673">673</a></span><span class="counterCov">1</span><span class="lineCov">		let _connection = server</span></div>
+<div class="line"><span id="674" class="lineNum"><a href="#674">674</a></span><span class="counterCov">1</span><span class="lineCov">			.next()</span></div>
+<div class="line"><span id="675" class="lineNum"><a href="#675">675</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.await</span></div>
+<div class="line"><span id="676" class="lineNum"><a href="#676">676</a></span><span class="counterCov">1</span><span class="lineCov">			.expect(&quot;client dropped&quot;)</span></div>
+<div class="line"><span id="677" class="lineNum"><a href="#677">677</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="678" class="lineNum"><a href="#678">678</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?;</span></div>
+<div class="line"><span id="679" class="lineNum"><a href="#679">679</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="680" class="lineNum"><a href="#680">680</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
+<div class="line"><span id="681" class="lineNum"><a href="#681">681</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="682" class="lineNum"><a href="#682">682</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="683" class="lineNum"><a href="#683">683</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="684" class="lineNum"><a href="#684">684</a></span><span class="counterCov">1</span><span class="lineCov">	async fn port() -&gt; Result&lt;()&gt; {</span></div>
+<div class="line"><span id="685" class="lineNum"><a href="#685">685</a></span><span class="counterCov">1</span><span class="lineCov">		let client = Endpoint::new_client()?;</span></div>
+<div class="line"><span id="686" class="lineNum"><a href="#686">686</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="687" class="lineNum"><a href="#687">687</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
+<div class="line"><span id="688" class="lineNum"><a href="#688">688</a></span><span class="counterCov">1</span><span class="lineCov">			client.resolve_domain(&quot;https://localhost&quot;).await,</span></div>
+<div class="line"><span id="689" class="lineNum"><a href="#689">689</a></span><span class="counterCov">1</span><span class="lineCov">			Ok((address, domain))</span></div>
+<div class="line"><span id="690" class="lineNum"><a href="#690">690</a></span><span class="counterCov">1</span><span class="lineCov">			if address == SocketAddr::from_str(&quot;[::1]:443&quot;)? &amp;&amp; domain == &quot;localhost&quot;</span></div>
+<div class="line"><span id="691" class="lineNum"><a href="#691">691</a></span><span class="counterUnCov"></span><span class="lineUnCov">		));</span></div>
+<div class="line"><span id="692" class="lineNum"><a href="#692">692</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="693" class="lineNum"><a href="#693">693</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
+<div class="line"><span id="694" class="lineNum"><a href="#694">694</a></span><span class="counterCov">1</span><span class="lineCov">			client.resolve_domain(&quot;quic://localhost&quot;).await,</span></div>
+<div class="line"><span id="695" class="lineNum"><a href="#695">695</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Err(error::Connect::Port)</span></div>
+<div class="line"><span id="696" class="lineNum"><a href="#696">696</a></span><span class="counterUnCov"></span><span class="lineUnCov">		));</span></div>
+<div class="line"><span id="697" class="lineNum"><a href="#697">697</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="698" class="lineNum"><a href="#698">698</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
+<div class="line"><span id="699" class="lineNum"><a href="#699">699</a></span><span class="counterCov">1</span><span class="lineCov">			client.resolve_domain(&quot;quic://localhost:443&quot;).await,</span></div>
+<div class="line"><span id="700" class="lineNum"><a href="#700">700</a></span><span class="counterCov">1</span><span class="lineCov">			Ok((address, domain))</span></div>
+<div class="line"><span id="701" class="lineNum"><a href="#701">701</a></span><span class="counterCov">1</span><span class="lineCov">			if address == SocketAddr::from_str(&quot;[::1]:443&quot;)? &amp;&amp; domain == &quot;localhost&quot;</span></div>
+<div class="line"><span id="702" class="lineNum"><a href="#702">702</a></span><span class="counterUnCov"></span><span class="lineUnCov">		));</span></div>
 <div class="line"><span id="703" class="lineNum"><a href="#703">703</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="704" class="lineNum"><a href="#704">704</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// closing the client/server will close all connection immediately</span></div>
-<div class="line"><span id="705" class="lineNum"><a href="#705">705</a></span><span class="counterCov">1</span><span class="lineCov">		client.close().await;</span></div>
-<div class="line"><span id="706" class="lineNum"><a href="#706">706</a></span><span class="counterCov">1</span><span class="lineCov">		server.close().await;</span></div>
-<div class="line"><span id="707" class="lineNum"><a href="#707">707</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="708" class="lineNum"><a href="#708">708</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// connecting to a closed server shouldn&#39;t work</span></div>
-<div class="line"><span id="709" class="lineNum"><a href="#709">709</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
-<div class="line"><span id="710" class="lineNum"><a href="#710">710</a></span><span class="counterCov">1</span><span class="lineCov">			client</span></div>
-<div class="line"><span id="711" class="lineNum"><a href="#711">711</a></span><span class="counterCov">1</span><span class="lineCov">				.connect_pinned(address, key_pair.end_entity_certificate(), None)</span></div>
-<div class="line"><span id="712" class="lineNum"><a href="#712">712</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.await?</span></div>
-<div class="line"><span id="713" class="lineNum"><a href="#713">713</a></span><span class="counterCov">1</span><span class="lineCov">				.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="714" class="lineNum"><a href="#714">714</a></span><span class="counterUnCov"></span><span class="lineUnCov">				.await,</span></div>
-<div class="line"><span id="715" class="lineNum"><a href="#715">715</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Err(error::Connecting(ConnectionError::LocallyClosed))</span></div>
-<div class="line"><span id="716" class="lineNum"><a href="#716">716</a></span><span class="counterUnCov"></span><span class="lineUnCov">		));</span></div>
-<div class="line"><span id="717" class="lineNum"><a href="#717">717</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="718" class="lineNum"><a href="#718">718</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// waiting for a new connection on a closed server shouldn&#39;t work</span></div>
-<div class="line"><span id="719" class="lineNum"><a href="#719">719</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(server.next().await, None));</span></div>
-<div class="line"><span id="720" class="lineNum"><a href="#720">720</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="721" class="lineNum"><a href="#721">721</a></span><span class="counterCov">1</span><span class="lineCov">		client.wait_idle().await;</span></div>
-<div class="line"><span id="722" class="lineNum"><a href="#722">722</a></span><span class="counterCov">1</span><span class="lineCov">		server.wait_idle().await;</span></div>
-<div class="line"><span id="723" class="lineNum"><a href="#723">723</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="724" class="lineNum"><a href="#724">724</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
-<div class="line"><span id="725" class="lineNum"><a href="#725">725</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="726" class="lineNum"><a href="#726">726</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="727" class="lineNum"><a href="#727">727</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
-<div class="line"><span id="728" class="lineNum"><a href="#728">728</a></span><span class="counterCov">1</span><span class="lineCov">	async fn close_incoming() -&gt; Result&lt;()&gt; {</span></div>
-<div class="line"><span id="729" class="lineNum"><a href="#729">729</a></span><span class="counterCov">1</span><span class="lineCov">		let key_pair = KeyPair::new_self_signed(&quot;test&quot;);</span></div>
-<div class="line"><span id="730" class="lineNum"><a href="#730">730</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="731" class="lineNum"><a href="#731">731</a></span><span class="counterCov">1</span><span class="lineCov">		let client = Endpoint::new_client()?;</span></div>
-<div class="line"><span id="732" class="lineNum"><a href="#732">732</a></span><span class="counterCov">1</span><span class="lineCov">		let mut server = Endpoint::new_server(0, key_pair.clone())?;</span></div>
-<div class="line"><span id="733" class="lineNum"><a href="#733">733</a></span><span class="counterCov">1</span><span class="lineCov">		let address = format!(&quot;quic://{}&quot;, server.local_address()?);</span></div>
-<div class="line"><span id="734" class="lineNum"><a href="#734">734</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="735" class="lineNum"><a href="#735">735</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// these `Connection`s should still work even if new incoming connections are</span></div>
-<div class="line"><span id="736" class="lineNum"><a href="#736">736</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// refused</span></div>
-<div class="line"><span id="737" class="lineNum"><a href="#737">737</a></span><span class="counterCov">1</span><span class="lineCov">		let client_connection = client</span></div>
-<div class="line"><span id="738" class="lineNum"><a href="#738">738</a></span><span class="counterCov">1</span><span class="lineCov">			.connect_pinned(&amp;address, key_pair.end_entity_certificate(), None)</span></div>
-<div class="line"><span id="739" class="lineNum"><a href="#739">739</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?</span></div>
-<div class="line"><span id="740" class="lineNum"><a href="#740">740</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="741" class="lineNum"><a href="#741">741</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?;</span></div>
-<div class="line"><span id="742" class="lineNum"><a href="#742">742</a></span><span class="counterCov">1</span><span class="lineCov">		let mut server_connection = server</span></div>
-<div class="line"><span id="743" class="lineNum"><a href="#743">743</a></span><span class="counterCov">1</span><span class="lineCov">			.next()</span></div>
-<div class="line"><span id="744" class="lineNum"><a href="#744">744</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.await</span></div>
-<div class="line"><span id="745" class="lineNum"><a href="#745">745</a></span><span class="counterCov">1</span><span class="lineCov">			.expect(&quot;client dropped&quot;)</span></div>
-<div class="line"><span id="746" class="lineNum"><a href="#746">746</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="747" class="lineNum"><a href="#747">747</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?;</span></div>
+<div class="line"><span id="704" class="lineNum"><a href="#704">704</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
+<div class="line"><span id="705" class="lineNum"><a href="#705">705</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="706" class="lineNum"><a href="#706">706</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="707" class="lineNum"><a href="#707">707</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="708" class="lineNum"><a href="#708">708</a></span><span class="counterCov">1</span><span class="lineCov">	async fn close() -&gt; Result&lt;()&gt; {</span></div>
+<div class="line"><span id="709" class="lineNum"><a href="#709">709</a></span><span class="counterCov">1</span><span class="lineCov">		let key_pair = KeyPair::new_self_signed(&quot;test&quot;);</span></div>
+<div class="line"><span id="710" class="lineNum"><a href="#710">710</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="711" class="lineNum"><a href="#711">711</a></span><span class="counterCov">1</span><span class="lineCov">		let client = Endpoint::new_client()?;</span></div>
+<div class="line"><span id="712" class="lineNum"><a href="#712">712</a></span><span class="counterCov">1</span><span class="lineCov">		let mut server = Endpoint::new_server(0, key_pair.clone())?;</span></div>
+<div class="line"><span id="713" class="lineNum"><a href="#713">713</a></span><span class="counterCov">1</span><span class="lineCov">		let address = format!(&quot;quic://{}&quot;, server.local_address()?);</span></div>
+<div class="line"><span id="714" class="lineNum"><a href="#714">714</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="715" class="lineNum"><a href="#715">715</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// `wait_idle` should never finish unless these `Connection`s are closed, which</span></div>
+<div class="line"><span id="716" class="lineNum"><a href="#716">716</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// they won&#39;t unless they are dropped or explicitly closed</span></div>
+<div class="line"><span id="717" class="lineNum"><a href="#717">717</a></span><span class="counterCov">1</span><span class="lineCov">		let _connection = client</span></div>
+<div class="line"><span id="718" class="lineNum"><a href="#718">718</a></span><span class="counterCov">1</span><span class="lineCov">			.connect_pinned(&amp;address, key_pair.end_entity_certificate(), None)</span></div>
+<div class="line"><span id="719" class="lineNum"><a href="#719">719</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?</span></div>
+<div class="line"><span id="720" class="lineNum"><a href="#720">720</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="721" class="lineNum"><a href="#721">721</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?;</span></div>
+<div class="line"><span id="722" class="lineNum"><a href="#722">722</a></span><span class="counterCov">1</span><span class="lineCov">		let _connection = server</span></div>
+<div class="line"><span id="723" class="lineNum"><a href="#723">723</a></span><span class="counterCov">1</span><span class="lineCov">			.next()</span></div>
+<div class="line"><span id="724" class="lineNum"><a href="#724">724</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.await</span></div>
+<div class="line"><span id="725" class="lineNum"><a href="#725">725</a></span><span class="counterCov">1</span><span class="lineCov">			.expect(&quot;client dropped&quot;)</span></div>
+<div class="line"><span id="726" class="lineNum"><a href="#726">726</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="727" class="lineNum"><a href="#727">727</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?;</span></div>
+<div class="line"><span id="728" class="lineNum"><a href="#728">728</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="729" class="lineNum"><a href="#729">729</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// closing the client/server will close all connection immediately</span></div>
+<div class="line"><span id="730" class="lineNum"><a href="#730">730</a></span><span class="counterCov">1</span><span class="lineCov">		client.close().await;</span></div>
+<div class="line"><span id="731" class="lineNum"><a href="#731">731</a></span><span class="counterCov">1</span><span class="lineCov">		server.close().await;</span></div>
+<div class="line"><span id="732" class="lineNum"><a href="#732">732</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="733" class="lineNum"><a href="#733">733</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// connecting to a closed server shouldn&#39;t work</span></div>
+<div class="line"><span id="734" class="lineNum"><a href="#734">734</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
+<div class="line"><span id="735" class="lineNum"><a href="#735">735</a></span><span class="counterCov">1</span><span class="lineCov">			client</span></div>
+<div class="line"><span id="736" class="lineNum"><a href="#736">736</a></span><span class="counterCov">1</span><span class="lineCov">				.connect_pinned(address, key_pair.end_entity_certificate(), None)</span></div>
+<div class="line"><span id="737" class="lineNum"><a href="#737">737</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.await?</span></div>
+<div class="line"><span id="738" class="lineNum"><a href="#738">738</a></span><span class="counterCov">1</span><span class="lineCov">				.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="739" class="lineNum"><a href="#739">739</a></span><span class="counterUnCov"></span><span class="lineUnCov">				.await,</span></div>
+<div class="line"><span id="740" class="lineNum"><a href="#740">740</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Err(error::Connecting(ConnectionError::LocallyClosed))</span></div>
+<div class="line"><span id="741" class="lineNum"><a href="#741">741</a></span><span class="counterUnCov"></span><span class="lineUnCov">		));</span></div>
+<div class="line"><span id="742" class="lineNum"><a href="#742">742</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="743" class="lineNum"><a href="#743">743</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// waiting for a new connection on a closed server shouldn&#39;t work</span></div>
+<div class="line"><span id="744" class="lineNum"><a href="#744">744</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(server.next().await, None));</span></div>
+<div class="line"><span id="745" class="lineNum"><a href="#745">745</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="746" class="lineNum"><a href="#746">746</a></span><span class="counterCov">1</span><span class="lineCov">		client.wait_idle().await;</span></div>
+<div class="line"><span id="747" class="lineNum"><a href="#747">747</a></span><span class="counterCov">1</span><span class="lineCov">		server.wait_idle().await;</span></div>
 <div class="line"><span id="748" class="lineNum"><a href="#748">748</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="749" class="lineNum"><a href="#749">749</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// refuse new incoming connections</span></div>
-<div class="line"><span id="750" class="lineNum"><a href="#750">750</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// client never accepts incoming connections</span></div>
-<div class="line"><span id="751" class="lineNum"><a href="#751">751</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
-<div class="line"><span id="752" class="lineNum"><a href="#752">752</a></span><span class="counterCov">1</span><span class="lineCov">			client.close_incoming().await,</span></div>
-<div class="line"><span id="753" class="lineNum"><a href="#753">753</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Err(error::AlreadyClosed)</span></div>
-<div class="line"><span id="754" class="lineNum"><a href="#754">754</a></span><span class="counterUnCov"></span><span class="lineUnCov">		));</span></div>
-<div class="line"><span id="755" class="lineNum"><a href="#755">755</a></span><span class="counterCov">1</span><span class="lineCov">		server.close_incoming().await?;</span></div>
-<div class="line"><span id="756" class="lineNum"><a href="#756">756</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
-<div class="line"><span id="757" class="lineNum"><a href="#757">757</a></span><span class="counterCov">1</span><span class="lineCov">			server.close_incoming().await,</span></div>
-<div class="line"><span id="758" class="lineNum"><a href="#758">758</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Err(error::AlreadyClosed)</span></div>
-<div class="line"><span id="759" class="lineNum"><a href="#759">759</a></span><span class="counterUnCov"></span><span class="lineUnCov">		));</span></div>
-<div class="line"><span id="760" class="lineNum"><a href="#760">760</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="761" class="lineNum"><a href="#761">761</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// connecting to a server that refuses new `Connection`s shouldn&#39;t work</span></div>
-<div class="line"><span id="762" class="lineNum"><a href="#762">762</a></span><span class="counterCov">1</span><span class="lineCov">		let result = client</span></div>
-<div class="line"><span id="763" class="lineNum"><a href="#763">763</a></span><span class="counterCov">1</span><span class="lineCov">			.connect_pinned(address, key_pair.end_entity_certificate(), None)</span></div>
+<div class="line"><span id="749" class="lineNum"><a href="#749">749</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
+<div class="line"><span id="750" class="lineNum"><a href="#750">750</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="751" class="lineNum"><a href="#751">751</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="752" class="lineNum"><a href="#752">752</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="753" class="lineNum"><a href="#753">753</a></span><span class="counterCov">1</span><span class="lineCov">	async fn close_incoming() -&gt; Result&lt;()&gt; {</span></div>
+<div class="line"><span id="754" class="lineNum"><a href="#754">754</a></span><span class="counterCov">1</span><span class="lineCov">		let key_pair = KeyPair::new_self_signed(&quot;test&quot;);</span></div>
+<div class="line"><span id="755" class="lineNum"><a href="#755">755</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="756" class="lineNum"><a href="#756">756</a></span><span class="counterCov">1</span><span class="lineCov">		let client = Endpoint::new_client()?;</span></div>
+<div class="line"><span id="757" class="lineNum"><a href="#757">757</a></span><span class="counterCov">1</span><span class="lineCov">		let mut server = Endpoint::new_server(0, key_pair.clone())?;</span></div>
+<div class="line"><span id="758" class="lineNum"><a href="#758">758</a></span><span class="counterCov">1</span><span class="lineCov">		let address = format!(&quot;quic://{}&quot;, server.local_address()?);</span></div>
+<div class="line"><span id="759" class="lineNum"><a href="#759">759</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="760" class="lineNum"><a href="#760">760</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// these `Connection`s should still work even if new incoming connections are</span></div>
+<div class="line"><span id="761" class="lineNum"><a href="#761">761</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// refused</span></div>
+<div class="line"><span id="762" class="lineNum"><a href="#762">762</a></span><span class="counterCov">1</span><span class="lineCov">		let client_connection = client</span></div>
+<div class="line"><span id="763" class="lineNum"><a href="#763">763</a></span><span class="counterCov">1</span><span class="lineCov">			.connect_pinned(&amp;address, key_pair.end_entity_certificate(), None)</span></div>
 <div class="line"><span id="764" class="lineNum"><a href="#764">764</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?</span></div>
 <div class="line"><span id="765" class="lineNum"><a href="#765">765</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="766" class="lineNum"><a href="#766">766</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.await;</span></div>
-<div class="line"><span id="767" class="lineNum"><a href="#767">767</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
-<div class="line"><span id="768" class="lineNum"><a href="#768">768</a></span><span class="counterCov">1</span><span class="lineCov">			result,</span></div>
-<div class="line"><span id="769" class="lineNum"><a href="#769">769</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Err(error::Connecting(ConnectionError::ConnectionClosed(</span></div>
-<div class="line"><span id="770" class="lineNum"><a href="#770">770</a></span><span class="counterUnCov"></span><span class="lineUnCov">				ConnectionClose {</span></div>
-<div class="line"><span id="771" class="lineNum"><a href="#771">771</a></span><span class="counterUnCov"></span><span class="lineUnCov">					error_code: TransportErrorCode::CONNECTION_REFUSED,</span></div>
-<div class="line"><span id="772" class="lineNum"><a href="#772">772</a></span><span class="counterUnCov"></span><span class="lineUnCov">					frame_type: None,</span></div>
-<div class="line"><span id="773" class="lineNum"><a href="#773">773</a></span><span class="counterCov">1</span><span class="lineCov">					reason: bytes,</span></div>
-<div class="line"><span id="774" class="lineNum"><a href="#774">774</a></span><span class="counterCov">1</span><span class="lineCov">				}</span></div>
-<div class="line"><span id="775" class="lineNum"><a href="#775">775</a></span><span class="counterCov">1</span><span class="lineCov">			))) if bytes.is_empty()</span></div>
-<div class="line"><span id="776" class="lineNum"><a href="#776">776</a></span><span class="counterUnCov"></span><span class="lineUnCov">		));</span></div>
-<div class="line"><span id="777" class="lineNum"><a href="#777">777</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="778" class="lineNum"><a href="#778">778</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// waiting for a new connection on a server that refuses new `Connection`s</span></div>
-<div class="line"><span id="779" class="lineNum"><a href="#779">779</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// shouldn&#39;t work</span></div>
-<div class="line"><span id="780" class="lineNum"><a href="#780">780</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(server.next().await, None));</span></div>
-<div class="line"><span id="781" class="lineNum"><a href="#781">781</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="782" class="lineNum"><a href="#782">782</a></span><span class="counterUnCov"></span><span class="lineUnCov">		{</span></div>
-<div class="line"><span id="783" class="lineNum"><a href="#783">783</a></span><span class="counterCov">1</span><span class="lineCov">			let (sender, _) = client_connection.open_stream::&lt;(), ()&gt;(&amp;()).await?;</span></div>
-<div class="line"><span id="784" class="lineNum"><a href="#784">784</a></span><span class="counterCov">1</span><span class="lineCov">			let _server_stream = server_connection</span></div>
-<div class="line"><span id="785" class="lineNum"><a href="#785">785</a></span><span class="counterCov">1</span><span class="lineCov">				.next()</span></div>
-<div class="line"><span id="786" class="lineNum"><a href="#786">786</a></span><span class="counterUnCov"></span><span class="lineUnCov">				.await</span></div>
-<div class="line"><span id="787" class="lineNum"><a href="#787">787</a></span><span class="counterCov">1</span><span class="lineCov">				.expect(&quot;client dropped&quot;)?</span></div>
-<div class="line"><span id="788" class="lineNum"><a href="#788">788</a></span><span class="counterCov">1</span><span class="lineCov">				.accept::&lt;(), ()&gt;();</span></div>
-<div class="line"><span id="789" class="lineNum"><a href="#789">789</a></span><span class="counterCov">1</span><span class="lineCov">			sender.finish().await?;</span></div>
-<div class="line"><span id="790" class="lineNum"><a href="#790">790</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="791" class="lineNum"><a href="#791">791</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="792" class="lineNum"><a href="#792">792</a></span><span class="counterCov">1</span><span class="lineCov">		drop(client_connection);</span></div>
-<div class="line"><span id="793" class="lineNum"><a href="#793">793</a></span><span class="counterCov">1</span><span class="lineCov">		drop(server_connection);</span></div>
-<div class="line"><span id="794" class="lineNum"><a href="#794">794</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
-<div class="line"><span id="795" class="lineNum"><a href="#795">795</a></span><span class="counterCov">1</span><span class="lineCov">		client.wait_idle().await;</span></div>
-<div class="line"><span id="796" class="lineNum"><a href="#796">796</a></span><span class="counterCov">1</span><span class="lineCov">		server.wait_idle().await;</span></div>
-<div class="line"><span id="797" class="lineNum"><a href="#797">797</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="798" class="lineNum"><a href="#798">798</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
-<div class="line"><span id="799" class="lineNum"><a href="#799">799</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="800" class="lineNum"><a href="#800">800</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="801" class="lineNum"><a href="#801">801</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
-<div class="line"><span id="802" class="lineNum"><a href="#802">802</a></span><span class="counterCov">1</span><span class="lineCov">	async fn wait_idle() -&gt; Result&lt;()&gt; {</span></div>
-<div class="line"><span id="803" class="lineNum"><a href="#803">803</a></span><span class="counterCov">1</span><span class="lineCov">		let key_pair = KeyPair::new_self_signed(&quot;test&quot;);</span></div>
-<div class="line"><span id="804" class="lineNum"><a href="#804">804</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="805" class="lineNum"><a href="#805">805</a></span><span class="counterCov">1</span><span class="lineCov">		let client = Endpoint::new_client()?;</span></div>
-<div class="line"><span id="806" class="lineNum"><a href="#806">806</a></span><span class="counterCov">1</span><span class="lineCov">		let mut server = Endpoint::new_server(0, key_pair.clone())?;</span></div>
-<div class="line"><span id="807" class="lineNum"><a href="#807">807</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="808" class="lineNum"><a href="#808">808</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// `wait_idle` will never finish unless the `Connection` closes, which happens</span></div>
-<div class="line"><span id="809" class="lineNum"><a href="#809">809</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// automatically when it&#39;s dropped</span></div>
-<div class="line"><span id="810" class="lineNum"><a href="#810">810</a></span><span class="counterUnCov"></span><span class="lineUnCov">		{</span></div>
-<div class="line"><span id="811" class="lineNum"><a href="#811">811</a></span><span class="counterCov">1</span><span class="lineCov">			let _connection = client</span></div>
-<div class="line"><span id="812" class="lineNum"><a href="#812">812</a></span><span class="counterCov">1</span><span class="lineCov">				.connect_pinned(</span></div>
-<div class="line"><span id="813" class="lineNum"><a href="#813">813</a></span><span class="counterCov">1</span><span class="lineCov">					format!(&quot;quic://{}&quot;, server.local_address()?),</span></div>
-<div class="line"><span id="814" class="lineNum"><a href="#814">814</a></span><span class="counterCov">1</span><span class="lineCov">					key_pair.end_entity_certificate(),</span></div>
-<div class="line"><span id="815" class="lineNum"><a href="#815">815</a></span><span class="counterCov">1</span><span class="lineCov">					None,</span></div>
-<div class="line"><span id="816" class="lineNum"><a href="#816">816</a></span><span class="counterUnCov"></span><span class="lineUnCov">				)</span></div>
-<div class="line"><span id="817" class="lineNum"><a href="#817">817</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.await?</span></div>
-<div class="line"><span id="818" class="lineNum"><a href="#818">818</a></span><span class="counterCov">1</span><span class="lineCov">				.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="819" class="lineNum"><a href="#819">819</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.await?;</span></div>
-<div class="line"><span id="820" class="lineNum"><a href="#820">820</a></span><span class="counterCov">1</span><span class="lineCov">			let _connection = server</span></div>
-<div class="line"><span id="821" class="lineNum"><a href="#821">821</a></span><span class="counterCov">1</span><span class="lineCov">				.next()</span></div>
-<div class="line"><span id="822" class="lineNum"><a href="#822">822</a></span><span class="counterUnCov"></span><span class="lineUnCov">				.await</span></div>
-<div class="line"><span id="823" class="lineNum"><a href="#823">823</a></span><span class="counterCov">1</span><span class="lineCov">				.expect(&quot;client dropped&quot;)</span></div>
-<div class="line"><span id="824" class="lineNum"><a href="#824">824</a></span><span class="counterCov">1</span><span class="lineCov">				.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="825" class="lineNum"><a href="#825">825</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.await?;</span></div>
-<div class="line"><span id="826" class="lineNum"><a href="#826">826</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="827" class="lineNum"><a href="#827">827</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="828" class="lineNum"><a href="#828">828</a></span><span class="counterCov">1</span><span class="lineCov">		client.wait_idle().await;</span></div>
-<div class="line"><span id="829" class="lineNum"><a href="#829">829</a></span><span class="counterCov">1</span><span class="lineCov">		server.wait_idle().await;</span></div>
-<div class="line"><span id="830" class="lineNum"><a href="#830">830</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="831" class="lineNum"><a href="#831">831</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
-<div class="line"><span id="832" class="lineNum"><a href="#832">832</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="833" class="lineNum"><a href="#833">833</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="766" class="lineNum"><a href="#766">766</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?;</span></div>
+<div class="line"><span id="767" class="lineNum"><a href="#767">767</a></span><span class="counterCov">1</span><span class="lineCov">		let mut server_connection = server</span></div>
+<div class="line"><span id="768" class="lineNum"><a href="#768">768</a></span><span class="counterCov">1</span><span class="lineCov">			.next()</span></div>
+<div class="line"><span id="769" class="lineNum"><a href="#769">769</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.await</span></div>
+<div class="line"><span id="770" class="lineNum"><a href="#770">770</a></span><span class="counterCov">1</span><span class="lineCov">			.expect(&quot;client dropped&quot;)</span></div>
+<div class="line"><span id="771" class="lineNum"><a href="#771">771</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="772" class="lineNum"><a href="#772">772</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?;</span></div>
+<div class="line"><span id="773" class="lineNum"><a href="#773">773</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="774" class="lineNum"><a href="#774">774</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// refuse new incoming connections</span></div>
+<div class="line"><span id="775" class="lineNum"><a href="#775">775</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// client never accepts incoming connections</span></div>
+<div class="line"><span id="776" class="lineNum"><a href="#776">776</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
+<div class="line"><span id="777" class="lineNum"><a href="#777">777</a></span><span class="counterCov">1</span><span class="lineCov">			client.close_incoming().await,</span></div>
+<div class="line"><span id="778" class="lineNum"><a href="#778">778</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Err(error::AlreadyClosed)</span></div>
+<div class="line"><span id="779" class="lineNum"><a href="#779">779</a></span><span class="counterUnCov"></span><span class="lineUnCov">		));</span></div>
+<div class="line"><span id="780" class="lineNum"><a href="#780">780</a></span><span class="counterCov">1</span><span class="lineCov">		server.close_incoming().await?;</span></div>
+<div class="line"><span id="781" class="lineNum"><a href="#781">781</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
+<div class="line"><span id="782" class="lineNum"><a href="#782">782</a></span><span class="counterCov">1</span><span class="lineCov">			server.close_incoming().await,</span></div>
+<div class="line"><span id="783" class="lineNum"><a href="#783">783</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Err(error::AlreadyClosed)</span></div>
+<div class="line"><span id="784" class="lineNum"><a href="#784">784</a></span><span class="counterUnCov"></span><span class="lineUnCov">		));</span></div>
+<div class="line"><span id="785" class="lineNum"><a href="#785">785</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="786" class="lineNum"><a href="#786">786</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// connecting to a server that refuses new `Connection`s shouldn&#39;t work</span></div>
+<div class="line"><span id="787" class="lineNum"><a href="#787">787</a></span><span class="counterCov">1</span><span class="lineCov">		let result = client</span></div>
+<div class="line"><span id="788" class="lineNum"><a href="#788">788</a></span><span class="counterCov">1</span><span class="lineCov">			.connect_pinned(address, key_pair.end_entity_certificate(), None)</span></div>
+<div class="line"><span id="789" class="lineNum"><a href="#789">789</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?</span></div>
+<div class="line"><span id="790" class="lineNum"><a href="#790">790</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="791" class="lineNum"><a href="#791">791</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.await;</span></div>
+<div class="line"><span id="792" class="lineNum"><a href="#792">792</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
+<div class="line"><span id="793" class="lineNum"><a href="#793">793</a></span><span class="counterCov">1</span><span class="lineCov">			result,</span></div>
+<div class="line"><span id="794" class="lineNum"><a href="#794">794</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Err(error::Connecting(ConnectionError::ConnectionClosed(</span></div>
+<div class="line"><span id="795" class="lineNum"><a href="#795">795</a></span><span class="counterUnCov"></span><span class="lineUnCov">				ConnectionClose {</span></div>
+<div class="line"><span id="796" class="lineNum"><a href="#796">796</a></span><span class="counterUnCov"></span><span class="lineUnCov">					error_code: TransportErrorCode::CONNECTION_REFUSED,</span></div>
+<div class="line"><span id="797" class="lineNum"><a href="#797">797</a></span><span class="counterUnCov"></span><span class="lineUnCov">					frame_type: None,</span></div>
+<div class="line"><span id="798" class="lineNum"><a href="#798">798</a></span><span class="counterCov">1</span><span class="lineCov">					reason: bytes,</span></div>
+<div class="line"><span id="799" class="lineNum"><a href="#799">799</a></span><span class="counterCov">1</span><span class="lineCov">				}</span></div>
+<div class="line"><span id="800" class="lineNum"><a href="#800">800</a></span><span class="counterCov">1</span><span class="lineCov">			))) if bytes.is_empty()</span></div>
+<div class="line"><span id="801" class="lineNum"><a href="#801">801</a></span><span class="counterUnCov"></span><span class="lineUnCov">		));</span></div>
+<div class="line"><span id="802" class="lineNum"><a href="#802">802</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="803" class="lineNum"><a href="#803">803</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// waiting for a new connection on a server that refuses new `Connection`s</span></div>
+<div class="line"><span id="804" class="lineNum"><a href="#804">804</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// shouldn&#39;t work</span></div>
+<div class="line"><span id="805" class="lineNum"><a href="#805">805</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(server.next().await, None));</span></div>
+<div class="line"><span id="806" class="lineNum"><a href="#806">806</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="807" class="lineNum"><a href="#807">807</a></span><span class="counterUnCov"></span><span class="lineUnCov">		{</span></div>
+<div class="line"><span id="808" class="lineNum"><a href="#808">808</a></span><span class="counterCov">1</span><span class="lineCov">			let (sender, _) = client_connection.open_stream::&lt;(), ()&gt;(&amp;()).await?;</span></div>
+<div class="line"><span id="809" class="lineNum"><a href="#809">809</a></span><span class="counterCov">1</span><span class="lineCov">			let _server_stream = server_connection</span></div>
+<div class="line"><span id="810" class="lineNum"><a href="#810">810</a></span><span class="counterCov">1</span><span class="lineCov">				.next()</span></div>
+<div class="line"><span id="811" class="lineNum"><a href="#811">811</a></span><span class="counterUnCov"></span><span class="lineUnCov">				.await</span></div>
+<div class="line"><span id="812" class="lineNum"><a href="#812">812</a></span><span class="counterCov">1</span><span class="lineCov">				.expect(&quot;client dropped&quot;)?</span></div>
+<div class="line"><span id="813" class="lineNum"><a href="#813">813</a></span><span class="counterCov">1</span><span class="lineCov">				.accept::&lt;(), ()&gt;();</span></div>
+<div class="line"><span id="814" class="lineNum"><a href="#814">814</a></span><span class="counterCov">1</span><span class="lineCov">			sender.finish().await?;</span></div>
+<div class="line"><span id="815" class="lineNum"><a href="#815">815</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
+<div class="line"><span id="816" class="lineNum"><a href="#816">816</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="817" class="lineNum"><a href="#817">817</a></span><span class="counterCov">1</span><span class="lineCov">		drop(client_connection);</span></div>
+<div class="line"><span id="818" class="lineNum"><a href="#818">818</a></span><span class="counterCov">1</span><span class="lineCov">		drop(server_connection);</span></div>
+<div class="line"><span id="819" class="lineNum"><a href="#819">819</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="820" class="lineNum"><a href="#820">820</a></span><span class="counterCov">1</span><span class="lineCov">		client.wait_idle().await;</span></div>
+<div class="line"><span id="821" class="lineNum"><a href="#821">821</a></span><span class="counterCov">1</span><span class="lineCov">		server.wait_idle().await;</span></div>
+<div class="line"><span id="822" class="lineNum"><a href="#822">822</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="823" class="lineNum"><a href="#823">823</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
+<div class="line"><span id="824" class="lineNum"><a href="#824">824</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="825" class="lineNum"><a href="#825">825</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="826" class="lineNum"><a href="#826">826</a></span><span class="counterCov">1</span><span class="lineCov">	#[tokio::test]</span></div>
+<div class="line"><span id="827" class="lineNum"><a href="#827">827</a></span><span class="counterCov">1</span><span class="lineCov">	async fn wait_idle() -&gt; Result&lt;()&gt; {</span></div>
+<div class="line"><span id="828" class="lineNum"><a href="#828">828</a></span><span class="counterCov">1</span><span class="lineCov">		let key_pair = KeyPair::new_self_signed(&quot;test&quot;);</span></div>
+<div class="line"><span id="829" class="lineNum"><a href="#829">829</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="830" class="lineNum"><a href="#830">830</a></span><span class="counterCov">1</span><span class="lineCov">		let client = Endpoint::new_client()?;</span></div>
+<div class="line"><span id="831" class="lineNum"><a href="#831">831</a></span><span class="counterCov">1</span><span class="lineCov">		let mut server = Endpoint::new_server(0, key_pair.clone())?;</span></div>
+<div class="line"><span id="832" class="lineNum"><a href="#832">832</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="833" class="lineNum"><a href="#833">833</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// `wait_idle` will never finish unless the `Connection` closes, which happens</span></div>
+<div class="line"><span id="834" class="lineNum"><a href="#834">834</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// automatically when it&#39;s dropped</span></div>
+<div class="line"><span id="835" class="lineNum"><a href="#835">835</a></span><span class="counterUnCov"></span><span class="lineUnCov">		{</span></div>
+<div class="line"><span id="836" class="lineNum"><a href="#836">836</a></span><span class="counterCov">1</span><span class="lineCov">			let _connection = client</span></div>
+<div class="line"><span id="837" class="lineNum"><a href="#837">837</a></span><span class="counterCov">1</span><span class="lineCov">				.connect_pinned(</span></div>
+<div class="line"><span id="838" class="lineNum"><a href="#838">838</a></span><span class="counterCov">1</span><span class="lineCov">					format!(&quot;quic://{}&quot;, server.local_address()?),</span></div>
+<div class="line"><span id="839" class="lineNum"><a href="#839">839</a></span><span class="counterCov">1</span><span class="lineCov">					key_pair.end_entity_certificate(),</span></div>
+<div class="line"><span id="840" class="lineNum"><a href="#840">840</a></span><span class="counterCov">1</span><span class="lineCov">					None,</span></div>
+<div class="line"><span id="841" class="lineNum"><a href="#841">841</a></span><span class="counterUnCov"></span><span class="lineUnCov">				)</span></div>
+<div class="line"><span id="842" class="lineNum"><a href="#842">842</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.await?</span></div>
+<div class="line"><span id="843" class="lineNum"><a href="#843">843</a></span><span class="counterCov">1</span><span class="lineCov">				.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="844" class="lineNum"><a href="#844">844</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.await?;</span></div>
+<div class="line"><span id="845" class="lineNum"><a href="#845">845</a></span><span class="counterCov">1</span><span class="lineCov">			let _connection = server</span></div>
+<div class="line"><span id="846" class="lineNum"><a href="#846">846</a></span><span class="counterCov">1</span><span class="lineCov">				.next()</span></div>
+<div class="line"><span id="847" class="lineNum"><a href="#847">847</a></span><span class="counterUnCov"></span><span class="lineUnCov">				.await</span></div>
+<div class="line"><span id="848" class="lineNum"><a href="#848">848</a></span><span class="counterCov">1</span><span class="lineCov">				.expect(&quot;client dropped&quot;)</span></div>
+<div class="line"><span id="849" class="lineNum"><a href="#849">849</a></span><span class="counterCov">1</span><span class="lineCov">				.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="850" class="lineNum"><a href="#850">850</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.await?;</span></div>
+<div class="line"><span id="851" class="lineNum"><a href="#851">851</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
+<div class="line"><span id="852" class="lineNum"><a href="#852">852</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="853" class="lineNum"><a href="#853">853</a></span><span class="counterCov">1</span><span class="lineCov">		client.wait_idle().await;</span></div>
+<div class="line"><span id="854" class="lineNum"><a href="#854">854</a></span><span class="counterCov">1</span><span class="lineCov">		server.wait_idle().await;</span></div>
+<div class="line"><span id="855" class="lineNum"><a href="#855">855</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="856" class="lineNum"><a href="#856">856</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
+<div class="line"><span id="857" class="lineNum"><a href="#857">857</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="858" class="lineNum"><a href="#858">858</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 </div>
 </body>
 </html>

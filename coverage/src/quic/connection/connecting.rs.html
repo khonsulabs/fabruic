@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - connecting.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-11-15 13:17:41</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-11-15 14:05:24</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -34,9 +34,9 @@
 <div class="line"><span id="13" class="lineNum"><a href="#13">13</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="14" class="lineNum"><a href="#14">14</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl Connecting {</span></div>
 <div class="line"><span id="15" class="lineNum"><a href="#15">15</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Builds a new [`Connecting`].</span></div>
-<div class="line"><span id="16" class="lineNum"><a href="#16">16</a></span><span class="counterCov">223</span><span class="lineCov">	pub(in crate::quic) const fn new(connecting: quinn::Connecting) -&gt; Self {</span></div>
-<div class="line"><span id="17" class="lineNum"><a href="#17">17</a></span><span class="counterCov">223</span><span class="lineCov">		Self(connecting)</span></div>
-<div class="line"><span id="18" class="lineNum"><a href="#18">18</a></span><span class="counterCov">223</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="16" class="lineNum"><a href="#16">16</a></span><span class="counterCov">225</span><span class="lineCov">	pub(in crate::quic) const fn new(connecting: quinn::Connecting) -&gt; Self {</span></div>
+<div class="line"><span id="17" class="lineNum"><a href="#17">17</a></span><span class="counterCov">225</span><span class="lineCov">		Self(connecting)</span></div>
+<div class="line"><span id="18" class="lineNum"><a href="#18">18</a></span><span class="counterCov">225</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="19" class="lineNum"><a href="#19">19</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="20" class="lineNum"><a href="#20">20</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// The negotiated application protocol. See</span></div>
 <div class="line"><span id="21" class="lineNum"><a href="#21">21</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Builder::set_protocols`](crate::Builder::set_protocols).</span></div>
@@ -56,20 +56,20 @@
 <div class="line"><span id="35" class="lineNum"><a href="#35">35</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
 <div class="line"><span id="36" class="lineNum"><a href="#36">36</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
 <div class="line"><span id="37" class="lineNum"><a href="#37">37</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`error::Connecting`] if the [`Connection`] failed to be established.</span></div>
-<div class="line"><span id="38" class="lineNum"><a href="#38">38</a></span><span class="counterCov">220</span><span class="lineCov">	pub async fn accept&lt;T: DeserializeOwned + Serialize + Send + &#39;static&gt;(</span></div>
-<div class="line"><span id="39" class="lineNum"><a href="#39">39</a></span><span class="counterCov">220</span><span class="lineCov">		self,</span></div>
-<div class="line"><span id="40" class="lineNum"><a href="#40">40</a></span><span class="counterCov">220</span><span class="lineCov">	) -&gt; Result&lt;Connection&lt;T&gt;, error::Connecting&gt; {</span></div>
-<div class="line"><span id="41" class="lineNum"><a href="#41">41</a></span><span class="counterCov">220</span><span class="lineCov">		self.0</span></div>
+<div class="line"><span id="38" class="lineNum"><a href="#38">38</a></span><span class="counterCov">222</span><span class="lineCov">	pub async fn accept&lt;T: DeserializeOwned + Serialize + Send + &#39;static&gt;(</span></div>
+<div class="line"><span id="39" class="lineNum"><a href="#39">39</a></span><span class="counterCov">222</span><span class="lineCov">		self,</span></div>
+<div class="line"><span id="40" class="lineNum"><a href="#40">40</a></span><span class="counterCov">222</span><span class="lineCov">	) -&gt; Result&lt;Connection&lt;T&gt;, error::Connecting&gt; {</span></div>
+<div class="line"><span id="41" class="lineNum"><a href="#41">41</a></span><span class="counterCov">222</span><span class="lineCov">		self.0</span></div>
 <div class="line"><span id="42" class="lineNum"><a href="#42">42</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.await</span></div>
-<div class="line"><span id="43" class="lineNum"><a href="#43">43</a></span><span class="counterCov">220</span><span class="lineCov">			.map(</span></div>
-<div class="line"><span id="44" class="lineNum"><a href="#44">44</a></span><span class="counterCov">220</span><span class="lineCov">				|NewConnection {</span></div>
+<div class="line"><span id="43" class="lineNum"><a href="#43">43</a></span><span class="counterCov">222</span><span class="lineCov">			.map(</span></div>
+<div class="line"><span id="44" class="lineNum"><a href="#44">44</a></span><span class="counterCov">222</span><span class="lineCov">				|NewConnection {</span></div>
 <div class="line"><span id="45" class="lineNum"><a href="#45">45</a></span><span class="counterUnCov"></span><span class="lineUnCov">				     connection,</span></div>
 <div class="line"><span id="46" class="lineNum"><a href="#46">46</a></span><span class="counterUnCov"></span><span class="lineUnCov">				     bi_streams,</span></div>
 <div class="line"><span id="47" class="lineNum"><a href="#47">47</a></span><span class="counterUnCov"></span><span class="lineUnCov">				     ..</span></div>
-<div class="line"><span id="48" class="lineNum"><a href="#48">48</a></span><span class="counterCov">220</span><span class="lineCov">				 }| Connection::new(connection, bi_streams),</span></div>
-<div class="line"><span id="49" class="lineNum"><a href="#49">49</a></span><span class="counterCov">220</span><span class="lineCov">			)</span></div>
-<div class="line"><span id="50" class="lineNum"><a href="#50">50</a></span><span class="counterCov">220</span><span class="lineCov">			.map_err(error::Connecting)</span></div>
-<div class="line"><span id="51" class="lineNum"><a href="#51">51</a></span><span class="counterCov">220</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="48" class="lineNum"><a href="#48">48</a></span><span class="counterCov">222</span><span class="lineCov">				 }| Connection::new(connection, bi_streams),</span></div>
+<div class="line"><span id="49" class="lineNum"><a href="#49">49</a></span><span class="counterCov">222</span><span class="lineCov">			)</span></div>
+<div class="line"><span id="50" class="lineNum"><a href="#50">50</a></span><span class="counterCov">222</span><span class="lineCov">			.map_err(error::Connecting)</span></div>
+<div class="line"><span id="51" class="lineNum"><a href="#51">51</a></span><span class="counterCov">222</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="52" class="lineNum"><a href="#52">52</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 </div>
 </body>

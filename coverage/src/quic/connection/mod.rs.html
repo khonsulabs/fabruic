@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-11-15 13:17:41</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-11-15 14:05:24</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -89,14 +89,14 @@
 <div class="line"><span id="68" class="lineNum"><a href="#68">68</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="69" class="lineNum"><a href="#69">69</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;T: DeserializeOwned + Serialize + Send + &#39;static&gt; Connection&lt;T&gt; {</span></div>
 <div class="line"><span id="70" class="lineNum"><a href="#70">70</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Builds a new [`Connection`] from raw [`quinn`] types.</span></div>
-<div class="line"><span id="71" class="lineNum"><a href="#71">71</a></span><span class="counterCov">216</span><span class="lineCov">	pub(super) fn new(connection: quinn::Connection, mut bi_streams: IncomingBiStreams) -&gt; Self {</span></div>
-<div class="line"><span id="72" class="lineNum"><a href="#72">72</a></span><span class="counterCov">216</span><span class="lineCov">		// channels for passing down new `Incoming` `Connection`s</span></div>
-<div class="line"><span id="73" class="lineNum"><a href="#73">73</a></span><span class="counterCov">216</span><span class="lineCov">		let (sender, receiver) = flume::unbounded();</span></div>
-<div class="line"><span id="74" class="lineNum"><a href="#74">74</a></span><span class="counterCov">216</span><span class="lineCov">		let receiver = receiver.into_stream();</span></div>
-<div class="line"><span id="75" class="lineNum"><a href="#75">75</a></span><span class="counterCov">216</span><span class="lineCov"></span></div>
-<div class="line"><span id="76" class="lineNum"><a href="#76">76</a></span><span class="counterCov">216</span><span class="lineCov">		// `Task` handling incoming streams</span></div>
-<div class="line"><span id="77" class="lineNum"><a href="#77">77</a></span><span class="counterCov">216</span><span class="lineCov">		let task = Task::new(|mut shutdown| async move {</span></div>
-<div class="line"><span id="78" class="lineNum"><a href="#78">78</a></span><span class="counterCov">1092</span><span class="lineCov">			while let Some(connecting) = allochronic_util::select! {</span></div>
+<div class="line"><span id="71" class="lineNum"><a href="#71">71</a></span><span class="counterCov">218</span><span class="lineCov">	pub(super) fn new(connection: quinn::Connection, mut bi_streams: IncomingBiStreams) -&gt; Self {</span></div>
+<div class="line"><span id="72" class="lineNum"><a href="#72">72</a></span><span class="counterCov">218</span><span class="lineCov">		// channels for passing down new `Incoming` `Connection`s</span></div>
+<div class="line"><span id="73" class="lineNum"><a href="#73">73</a></span><span class="counterCov">218</span><span class="lineCov">		let (sender, receiver) = flume::unbounded();</span></div>
+<div class="line"><span id="74" class="lineNum"><a href="#74">74</a></span><span class="counterCov">218</span><span class="lineCov">		let receiver = receiver.into_stream();</span></div>
+<div class="line"><span id="75" class="lineNum"><a href="#75">75</a></span><span class="counterCov">218</span><span class="lineCov"></span></div>
+<div class="line"><span id="76" class="lineNum"><a href="#76">76</a></span><span class="counterCov">218</span><span class="lineCov">		// `Task` handling incoming streams</span></div>
+<div class="line"><span id="77" class="lineNum"><a href="#77">77</a></span><span class="counterCov">218</span><span class="lineCov">		let task = Task::new(|mut shutdown| async move {</span></div>
+<div class="line"><span id="78" class="lineNum"><a href="#78">78</a></span><span class="counterCov">1119</span><span class="lineCov">			while let Some(connecting) = allochronic_util::select! {</span></div>
 <div class="line"><span id="79" class="lineNum"><a href="#79">79</a></span><span class="counterCov">103</span><span class="lineCov">				connecting: &amp;mut bi_streams =&gt; connecting,</span></div>
 <div class="line"><span id="80" class="lineNum"><a href="#80">80</a></span><span class="counterCov">204</span><span class="lineCov">				_: &amp;mut shutdown =&gt; None,</span></div>
 <div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterUnCov"></span><span class="lineUnCov">			} {</span></div>
@@ -109,15 +109,15 @@
 <div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterNoCov">0</span><span class="lineNoCov">					break;</span></div>
 <div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterCov">101</span><span class="lineCov">				}</span></div>
 <div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterUnCov"></span><span class="lineUnCov">			}</span></div>
-<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterCov">216</span><span class="lineCov">		});</span></div>
-<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterCov">216</span><span class="lineCov"></span></div>
-<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterCov">216</span><span class="lineCov">		Self {</span></div>
-<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterCov">216</span><span class="lineCov">			connection,</span></div>
-<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">216</span><span class="lineCov">			receiver,</span></div>
-<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterCov">216</span><span class="lineCov">			task,</span></div>
-<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">216</span><span class="lineCov">			types: PhantomData,</span></div>
-<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">216</span><span class="lineCov">		}</span></div>
-<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterCov">216</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterCov">218</span><span class="lineCov">		});</span></div>
+<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterCov">218</span><span class="lineCov"></span></div>
+<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterCov">218</span><span class="lineCov">		Self {</span></div>
+<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterCov">218</span><span class="lineCov">			connection,</span></div>
+<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">218</span><span class="lineCov">			receiver,</span></div>
+<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterCov">218</span><span class="lineCov">			task,</span></div>
+<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">218</span><span class="lineCov">			types: PhantomData,</span></div>
+<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">218</span><span class="lineCov">		}</span></div>
+<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterCov">218</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Open a stream on this [`Connection`], allowing to send data back and</span></div>
 <div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// forth.</span></div>
@@ -195,15 +195,15 @@
 <div class="line"><span id="174" class="lineNum"><a href="#174">174</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;T: DeserializeOwned + Serialize + Send + &#39;static&gt; Stream for Connection&lt;T&gt; {</span></div>
 <div class="line"><span id="175" class="lineNum"><a href="#175">175</a></span><span class="counterUnCov"></span><span class="lineUnCov">	type Item = Result&lt;Incoming&lt;T&gt;, error::Connection&gt;;</span></div>
 <div class="line"><span id="176" class="lineNum"><a href="#176">176</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="177" class="lineNum"><a href="#177">177</a></span><span class="counterCov">181</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
-<div class="line"><span id="178" class="lineNum"><a href="#178">178</a></span><span class="counterCov">181</span><span class="lineCov">		if self.receiver.is_terminated() {</span></div>
+<div class="line"><span id="177" class="lineNum"><a href="#177">177</a></span><span class="counterCov">176</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
+<div class="line"><span id="178" class="lineNum"><a href="#178">178</a></span><span class="counterCov">176</span><span class="lineCov">		if self.receiver.is_terminated() {</span></div>
 <div class="line"><span id="179" class="lineNum"><a href="#179">179</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Poll::Ready(None)</span></div>
 <div class="line"><span id="180" class="lineNum"><a href="#180">180</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
-<div class="line"><span id="181" class="lineNum"><a href="#181">181</a></span><span class="counterCov">181</span><span class="lineCov">			self.receiver</span></div>
-<div class="line"><span id="182" class="lineNum"><a href="#182">182</a></span><span class="counterCov">181</span><span class="lineCov">				.poll_next_unpin(cx)</span></div>
-<div class="line"><span id="183" class="lineNum"><a href="#183">183</a></span><span class="counterCov">181</span><span class="lineCov">				.map_ok(|(sender, receiver)| Incoming::new(sender, receiver))</span></div>
+<div class="line"><span id="181" class="lineNum"><a href="#181">181</a></span><span class="counterCov">176</span><span class="lineCov">			self.receiver</span></div>
+<div class="line"><span id="182" class="lineNum"><a href="#182">182</a></span><span class="counterCov">176</span><span class="lineCov">				.poll_next_unpin(cx)</span></div>
+<div class="line"><span id="183" class="lineNum"><a href="#183">183</a></span><span class="counterCov">176</span><span class="lineCov">				.map_ok(|(sender, receiver)| Incoming::new(sender, receiver))</span></div>
 <div class="line"><span id="184" class="lineNum"><a href="#184">184</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="185" class="lineNum"><a href="#185">185</a></span><span class="counterCov">181</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="185" class="lineNum"><a href="#185">185</a></span><span class="counterCov">176</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="186" class="lineNum"><a href="#186">186</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 <div class="line"><span id="187" class="lineNum"><a href="#187">187</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="188" class="lineNum"><a href="#188">188</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;T: DeserializeOwned + Serialize + Send + &#39;static&gt; FusedStream for Connection&lt;T&gt; {</span></div>

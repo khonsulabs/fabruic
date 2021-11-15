@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint/builder</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-11-15 13:17:41</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-11-15 14:05:24</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -79,22 +79,22 @@
 <div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// let mut endpoint = Builder::new().build()?;</span></div>
 <div class="line"><span id="59" class="lineNum"><a href="#59">59</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Ok(()) }</span></div>
 <div class="line"><span id="60" class="lineNum"><a href="#60">60</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// ```</span></div>
-<div class="line"><span id="61" class="lineNum"><a href="#61">61</a></span><span class="counterCov">133</span><span class="lineCov">	pub fn new() -&gt; Self {</span></div>
-<div class="line"><span id="62" class="lineNum"><a href="#62">62</a></span><span class="counterCov">133</span><span class="lineCov">		let config = Config::new();</span></div>
-<div class="line"><span id="63" class="lineNum"><a href="#63">63</a></span><span class="counterCov">133</span><span class="lineCov"></span></div>
-<div class="line"><span id="64" class="lineNum"><a href="#64">64</a></span><span class="counterCov">133</span><span class="lineCov">		Self {</span></div>
-<div class="line"><span id="65" class="lineNum"><a href="#65">65</a></span><span class="counterCov">133</span><span class="lineCov">			#[cfg(not(feature = &quot;test&quot;))]</span></div>
-<div class="line"><span id="66" class="lineNum"><a href="#66">66</a></span><span class="counterCov">133</span><span class="lineCov">			address: ([0; 8], 0).into(),</span></div>
-<div class="line"><span id="67" class="lineNum"><a href="#67">67</a></span><span class="counterCov">133</span><span class="lineCov">			// while testing always use the default loopback address</span></div>
-<div class="line"><span id="68" class="lineNum"><a href="#68">68</a></span><span class="counterCov">133</span><span class="lineCov">			#[cfg(feature = &quot;test&quot;)]</span></div>
-<div class="line"><span id="69" class="lineNum"><a href="#69">69</a></span><span class="counterCov">133</span><span class="lineCov">			address: ([0, 0, 0, 0, 0, 0, 0, 1], 0).into(),</span></div>
-<div class="line"><span id="70" class="lineNum"><a href="#70">70</a></span><span class="counterCov">133</span><span class="lineCov">			root_certificates: Vec::new(),</span></div>
-<div class="line"><span id="71" class="lineNum"><a href="#71">71</a></span><span class="counterCov">133</span><span class="lineCov">			server_key_pair: None,</span></div>
-<div class="line"><span id="72" class="lineNum"><a href="#72">72</a></span><span class="counterCov">133</span><span class="lineCov">			client_key_pair: None,</span></div>
-<div class="line"><span id="73" class="lineNum"><a href="#73">73</a></span><span class="counterCov">133</span><span class="lineCov">			store: Store::Embedded,</span></div>
-<div class="line"><span id="74" class="lineNum"><a href="#74">74</a></span><span class="counterCov">133</span><span class="lineCov">			config,</span></div>
-<div class="line"><span id="75" class="lineNum"><a href="#75">75</a></span><span class="counterCov">133</span><span class="lineCov">		}</span></div>
-<div class="line"><span id="76" class="lineNum"><a href="#76">76</a></span><span class="counterCov">133</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="61" class="lineNum"><a href="#61">61</a></span><span class="counterCov">135</span><span class="lineCov">	pub fn new() -&gt; Self {</span></div>
+<div class="line"><span id="62" class="lineNum"><a href="#62">62</a></span><span class="counterCov">135</span><span class="lineCov">		let config = Config::new();</span></div>
+<div class="line"><span id="63" class="lineNum"><a href="#63">63</a></span><span class="counterCov">135</span><span class="lineCov"></span></div>
+<div class="line"><span id="64" class="lineNum"><a href="#64">64</a></span><span class="counterCov">135</span><span class="lineCov">		Self {</span></div>
+<div class="line"><span id="65" class="lineNum"><a href="#65">65</a></span><span class="counterCov">135</span><span class="lineCov">			#[cfg(not(feature = &quot;test&quot;))]</span></div>
+<div class="line"><span id="66" class="lineNum"><a href="#66">66</a></span><span class="counterCov">135</span><span class="lineCov">			address: ([0; 8], 0).into(),</span></div>
+<div class="line"><span id="67" class="lineNum"><a href="#67">67</a></span><span class="counterCov">135</span><span class="lineCov">			// while testing always use the default loopback address</span></div>
+<div class="line"><span id="68" class="lineNum"><a href="#68">68</a></span><span class="counterCov">135</span><span class="lineCov">			#[cfg(feature = &quot;test&quot;)]</span></div>
+<div class="line"><span id="69" class="lineNum"><a href="#69">69</a></span><span class="counterCov">135</span><span class="lineCov">			address: ([0, 0, 0, 0, 0, 0, 0, 1], 0).into(),</span></div>
+<div class="line"><span id="70" class="lineNum"><a href="#70">70</a></span><span class="counterCov">135</span><span class="lineCov">			root_certificates: Vec::new(),</span></div>
+<div class="line"><span id="71" class="lineNum"><a href="#71">71</a></span><span class="counterCov">135</span><span class="lineCov">			server_key_pair: None,</span></div>
+<div class="line"><span id="72" class="lineNum"><a href="#72">72</a></span><span class="counterCov">135</span><span class="lineCov">			client_key_pair: None,</span></div>
+<div class="line"><span id="73" class="lineNum"><a href="#73">73</a></span><span class="counterCov">135</span><span class="lineCov">			store: Store::Embedded,</span></div>
+<div class="line"><span id="74" class="lineNum"><a href="#74">74</a></span><span class="counterCov">135</span><span class="lineCov">			config,</span></div>
+<div class="line"><span id="75" class="lineNum"><a href="#75">75</a></span><span class="counterCov">135</span><span class="lineCov">		}</span></div>
+<div class="line"><span id="76" class="lineNum"><a href="#76">76</a></span><span class="counterCov">135</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="77" class="lineNum"><a href="#77">77</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="78" class="lineNum"><a href="#78">78</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Set&#39;s the [`SocketAddr`] to bind to.</span></div>
 <div class="line"><span id="79" class="lineNum"><a href="#79">79</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
@@ -110,9 +110,9 @@
 <div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// builder.set_address(&quot;[::1]:0&quot;.parse()?);</span></div>
 <div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Ok(()) }</span></div>
 <div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// ```</span></div>
-<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterCov">9</span><span class="lineCov">	pub fn set_address(&amp;mut self, address: SocketAddr) {</span></div>
-<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterCov">9</span><span class="lineCov">		self.address = address;</span></div>
-<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterCov">9</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterCov">10</span><span class="lineCov">	pub fn set_address(&amp;mut self, address: SocketAddr) {</span></div>
+<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterCov">10</span><span class="lineCov">		self.address = address;</span></div>
+<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterCov">10</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returns the [`SocketAddr`] to bind to.</span></div>
 <div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
@@ -152,9 +152,9 @@
 <div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// let mut builder = Builder::new();</span></div>
 <div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// builder.set_server_key_pair(Some(KeyPair::new_self_signed(&quot;test&quot;)));</span></div>
 <div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// ```</span></div>
-<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterCov">9</span><span class="lineCov">	pub fn set_server_key_pair(&amp;mut self, key_pair: Option&lt;KeyPair&gt;) {</span></div>
-<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterCov">9</span><span class="lineCov">		self.server_key_pair = key_pair;</span></div>
-<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterCov">9</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterCov">10</span><span class="lineCov">	pub fn set_server_key_pair(&amp;mut self, key_pair: Option&lt;KeyPair&gt;) {</span></div>
+<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterCov">10</span><span class="lineCov">		self.server_key_pair = key_pair;</span></div>
+<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterCov">10</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returns the server certificate [`KeyPair`].</span></div>
 <div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
@@ -457,22 +457,22 @@
 <div class="line"><span id="436" class="lineNum"><a href="#436">436</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// let endpoint = Builder::new().build()?;</span></div>
 <div class="line"><span id="437" class="lineNum"><a href="#437">437</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Ok(()) }</span></div>
 <div class="line"><span id="438" class="lineNum"><a href="#438">438</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// ```</span></div>
-<div class="line"><span id="439" class="lineNum"><a href="#439">439</a></span><span class="counterCov">129</span><span class="lineCov">	pub fn build(self) -&gt; Result&lt;Endpoint, error::Builder&gt; {</span></div>
-<div class="line"><span id="440" class="lineNum"><a href="#440">440</a></span><span class="counterCov">129</span><span class="lineCov">		match {</span></div>
-<div class="line"><span id="441" class="lineNum"><a href="#441">441</a></span><span class="counterCov">129</span><span class="lineCov">			// build client</span></div>
-<div class="line"><span id="442" class="lineNum"><a href="#442">442</a></span><span class="counterCov">129</span><span class="lineCov">			let client = self.config.new_client(</span></div>
-<div class="line"><span id="443" class="lineNum"><a href="#443">443</a></span><span class="counterCov">129</span><span class="lineCov">				self.root_certificates.iter(),</span></div>
-<div class="line"><span id="444" class="lineNum"><a href="#444">444</a></span><span class="counterCov">129</span><span class="lineCov">				self.store,</span></div>
-<div class="line"><span id="445" class="lineNum"><a href="#445">445</a></span><span class="counterCov">129</span><span class="lineCov">				self.client_key_pair.clone(),</span></div>
-<div class="line"><span id="446" class="lineNum"><a href="#446">446</a></span><span class="counterCov">129</span><span class="lineCov">				false,</span></div>
-<div class="line"><span id="447" class="lineNum"><a href="#447">447</a></span><span class="counterCov">129</span><span class="lineCov">			);</span></div>
-<div class="line"><span id="448" class="lineNum"><a href="#448">448</a></span><span class="counterCov">129</span><span class="lineCov"></span></div>
-<div class="line"><span id="449" class="lineNum"><a href="#449">449</a></span><span class="counterCov">129</span><span class="lineCov">			// build server only if we have a key-pair</span></div>
-<div class="line"><span id="450" class="lineNum"><a href="#450">450</a></span><span class="counterCov">129</span><span class="lineCov">			let server = self.server_key_pair.as_ref().map(|key_pair| {</span></div>
-<div class="line"><span id="451" class="lineNum"><a href="#451">451</a></span><span class="counterCov">9</span><span class="lineCov">				let mut server = ServerConfigBuilder::default();</span></div>
-<div class="line"><span id="452" class="lineNum"><a href="#452">452</a></span><span class="counterCov">9</span><span class="lineCov"></span></div>
-<div class="line"><span id="453" class="lineNum"><a href="#453">453</a></span><span class="counterCov">9</span><span class="lineCov">				// set protocols</span></div>
-<div class="line"><span id="454" class="lineNum"><a href="#454">454</a></span><span class="counterCov">9</span><span class="lineCov">				if !self.config.protocols().is_empty() {</span></div>
+<div class="line"><span id="439" class="lineNum"><a href="#439">439</a></span><span class="counterCov">131</span><span class="lineCov">	pub fn build(self) -&gt; Result&lt;Endpoint, error::Builder&gt; {</span></div>
+<div class="line"><span id="440" class="lineNum"><a href="#440">440</a></span><span class="counterCov">131</span><span class="lineCov">		match {</span></div>
+<div class="line"><span id="441" class="lineNum"><a href="#441">441</a></span><span class="counterCov">131</span><span class="lineCov">			// build client</span></div>
+<div class="line"><span id="442" class="lineNum"><a href="#442">442</a></span><span class="counterCov">131</span><span class="lineCov">			let client = self.config.new_client(</span></div>
+<div class="line"><span id="443" class="lineNum"><a href="#443">443</a></span><span class="counterCov">131</span><span class="lineCov">				self.root_certificates.iter(),</span></div>
+<div class="line"><span id="444" class="lineNum"><a href="#444">444</a></span><span class="counterCov">131</span><span class="lineCov">				self.store,</span></div>
+<div class="line"><span id="445" class="lineNum"><a href="#445">445</a></span><span class="counterCov">131</span><span class="lineCov">				self.client_key_pair.clone(),</span></div>
+<div class="line"><span id="446" class="lineNum"><a href="#446">446</a></span><span class="counterCov">131</span><span class="lineCov">				false,</span></div>
+<div class="line"><span id="447" class="lineNum"><a href="#447">447</a></span><span class="counterCov">131</span><span class="lineCov">			);</span></div>
+<div class="line"><span id="448" class="lineNum"><a href="#448">448</a></span><span class="counterCov">131</span><span class="lineCov"></span></div>
+<div class="line"><span id="449" class="lineNum"><a href="#449">449</a></span><span class="counterCov">131</span><span class="lineCov">			// build server only if we have a key-pair</span></div>
+<div class="line"><span id="450" class="lineNum"><a href="#450">450</a></span><span class="counterCov">131</span><span class="lineCov">			let server = self.server_key_pair.as_ref().map(|key_pair| {</span></div>
+<div class="line"><span id="451" class="lineNum"><a href="#451">451</a></span><span class="counterCov">10</span><span class="lineCov">				let mut server = ServerConfigBuilder::default();</span></div>
+<div class="line"><span id="452" class="lineNum"><a href="#452">452</a></span><span class="counterCov">10</span><span class="lineCov"></span></div>
+<div class="line"><span id="453" class="lineNum"><a href="#453">453</a></span><span class="counterCov">10</span><span class="lineCov">				// set protocols</span></div>
+<div class="line"><span id="454" class="lineNum"><a href="#454">454</a></span><span class="counterCov">10</span><span class="lineCov">				if !self.config.protocols().is_empty() {</span></div>
 <div class="line"><span id="455" class="lineNum"><a href="#455">455</a></span><span class="counterCov">2</span><span class="lineCov">					let _ = server.protocols(</span></div>
 <div class="line"><span id="456" class="lineNum"><a href="#456">456</a></span><span class="counterCov">2</span><span class="lineCov">						self.config</span></div>
 <div class="line"><span id="457" class="lineNum"><a href="#457">457</a></span><span class="counterCov">2</span><span class="lineCov">							.protocols()</span></div>
@@ -481,42 +481,42 @@
 <div class="line"><span id="460" class="lineNum"><a href="#460">460</a></span><span class="counterCov">2</span><span class="lineCov">							.collect::&lt;Vec&lt;_&gt;&gt;()</span></div>
 <div class="line"><span id="461" class="lineNum"><a href="#461">461</a></span><span class="counterCov">2</span><span class="lineCov">							.as_slice(),</span></div>
 <div class="line"><span id="462" class="lineNum"><a href="#462">462</a></span><span class="counterCov">2</span><span class="lineCov">					);</span></div>
-<div class="line"><span id="463" class="lineNum"><a href="#463">463</a></span><span class="counterCov">7</span><span class="lineCov">				}</span></div>
+<div class="line"><span id="463" class="lineNum"><a href="#463">463</a></span><span class="counterCov">8</span><span class="lineCov">				}</span></div>
 <div class="line"><span id="464" class="lineNum"><a href="#464">464</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="465" class="lineNum"><a href="#465">465</a></span><span class="counterCov">9</span><span class="lineCov">				let mut server = server.build();</span></div>
-<div class="line"><span id="466" class="lineNum"><a href="#466">466</a></span><span class="counterCov">9</span><span class="lineCov"></span></div>
-<div class="line"><span id="467" class="lineNum"><a href="#467">467</a></span><span class="counterCov">9</span><span class="lineCov">				// set key-pair</span></div>
-<div class="line"><span id="468" class="lineNum"><a href="#468">468</a></span><span class="counterCov">9</span><span class="lineCov">				let _ = server</span></div>
-<div class="line"><span id="469" class="lineNum"><a href="#469">469</a></span><span class="counterCov">9</span><span class="lineCov">					.certificate(</span></div>
-<div class="line"><span id="470" class="lineNum"><a href="#470">470</a></span><span class="counterCov">9</span><span class="lineCov">						key_pair.certificate_chain().as_quinn(),</span></div>
-<div class="line"><span id="471" class="lineNum"><a href="#471">471</a></span><span class="counterCov">9</span><span class="lineCov">						key_pair.private_key().as_quinn(),</span></div>
-<div class="line"><span id="472" class="lineNum"><a href="#472">472</a></span><span class="counterCov">9</span><span class="lineCov">					)</span></div>
-<div class="line"><span id="473" class="lineNum"><a href="#473">473</a></span><span class="counterCov">9</span><span class="lineCov">					.expect(&quot;`CertificateChain` couldn&#39;t be verified&quot;);</span></div>
-<div class="line"><span id="474" class="lineNum"><a href="#474">474</a></span><span class="counterCov">9</span><span class="lineCov"></span></div>
-<div class="line"><span id="475" class="lineNum"><a href="#475">475</a></span><span class="counterCov">9</span><span class="lineCov">				// get inner rustls `ServerConfig`</span></div>
-<div class="line"><span id="476" class="lineNum"><a href="#476">476</a></span><span class="counterCov">9</span><span class="lineCov">				{</span></div>
-<div class="line"><span id="477" class="lineNum"><a href="#477">477</a></span><span class="counterCov">9</span><span class="lineCov">					let crypto =</span></div>
-<div class="line"><span id="478" class="lineNum"><a href="#478">478</a></span><span class="counterCov">9</span><span class="lineCov">						Arc::get_mut(&amp;mut server.crypto).expect(&quot;failed to build `ServerConfig`&quot;);</span></div>
-<div class="line"><span id="479" class="lineNum"><a href="#479">479</a></span><span class="counterCov">9</span><span class="lineCov"></span></div>
-<div class="line"><span id="480" class="lineNum"><a href="#480">480</a></span><span class="counterCov">9</span><span class="lineCov">					// set client certificate verifier</span></div>
-<div class="line"><span id="481" class="lineNum"><a href="#481">481</a></span><span class="counterCov">9</span><span class="lineCov">					crypto.set_client_certificate_verifier(Arc::new(ClientVerifier));</span></div>
-<div class="line"><span id="482" class="lineNum"><a href="#482">482</a></span><span class="counterCov">9</span><span class="lineCov">				}</span></div>
-<div class="line"><span id="483" class="lineNum"><a href="#483">483</a></span><span class="counterCov">9</span><span class="lineCov"></span></div>
-<div class="line"><span id="484" class="lineNum"><a href="#484">484</a></span><span class="counterCov">9</span><span class="lineCov">				// set transport</span></div>
-<div class="line"><span id="485" class="lineNum"><a href="#485">485</a></span><span class="counterCov">9</span><span class="lineCov">				server.transport = self.config.transport();</span></div>
-<div class="line"><span id="486" class="lineNum"><a href="#486">486</a></span><span class="counterCov">9</span><span class="lineCov"></span></div>
-<div class="line"><span id="487" class="lineNum"><a href="#487">487</a></span><span class="counterCov">9</span><span class="lineCov">				server</span></div>
-<div class="line"><span id="488" class="lineNum"><a href="#488">488</a></span><span class="counterCov">129</span><span class="lineCov">			});</span></div>
-<div class="line"><span id="489" class="lineNum"><a href="#489">489</a></span><span class="counterCov">129</span><span class="lineCov"></span></div>
-<div class="line"><span id="490" class="lineNum"><a href="#490">490</a></span><span class="counterCov">129</span><span class="lineCov">			Endpoint::new(self.address, client, server, self.config.clone())</span></div>
-<div class="line"><span id="491" class="lineNum"><a href="#491">491</a></span><span class="counterCov">129</span><span class="lineCov">		} {</span></div>
-<div class="line"><span id="492" class="lineNum"><a href="#492">492</a></span><span class="counterCov">129</span><span class="lineCov">			Ok(endpoint) =&gt; Ok(endpoint),</span></div>
+<div class="line"><span id="465" class="lineNum"><a href="#465">465</a></span><span class="counterCov">10</span><span class="lineCov">				let mut server = server.build();</span></div>
+<div class="line"><span id="466" class="lineNum"><a href="#466">466</a></span><span class="counterCov">10</span><span class="lineCov"></span></div>
+<div class="line"><span id="467" class="lineNum"><a href="#467">467</a></span><span class="counterCov">10</span><span class="lineCov">				// set key-pair</span></div>
+<div class="line"><span id="468" class="lineNum"><a href="#468">468</a></span><span class="counterCov">10</span><span class="lineCov">				let _ = server</span></div>
+<div class="line"><span id="469" class="lineNum"><a href="#469">469</a></span><span class="counterCov">10</span><span class="lineCov">					.certificate(</span></div>
+<div class="line"><span id="470" class="lineNum"><a href="#470">470</a></span><span class="counterCov">10</span><span class="lineCov">						key_pair.certificate_chain().as_quinn(),</span></div>
+<div class="line"><span id="471" class="lineNum"><a href="#471">471</a></span><span class="counterCov">10</span><span class="lineCov">						key_pair.private_key().as_quinn(),</span></div>
+<div class="line"><span id="472" class="lineNum"><a href="#472">472</a></span><span class="counterCov">10</span><span class="lineCov">					)</span></div>
+<div class="line"><span id="473" class="lineNum"><a href="#473">473</a></span><span class="counterCov">10</span><span class="lineCov">					.expect(&quot;`CertificateChain` couldn&#39;t be verified&quot;);</span></div>
+<div class="line"><span id="474" class="lineNum"><a href="#474">474</a></span><span class="counterCov">10</span><span class="lineCov"></span></div>
+<div class="line"><span id="475" class="lineNum"><a href="#475">475</a></span><span class="counterCov">10</span><span class="lineCov">				// get inner rustls `ServerConfig`</span></div>
+<div class="line"><span id="476" class="lineNum"><a href="#476">476</a></span><span class="counterCov">10</span><span class="lineCov">				{</span></div>
+<div class="line"><span id="477" class="lineNum"><a href="#477">477</a></span><span class="counterCov">10</span><span class="lineCov">					let crypto =</span></div>
+<div class="line"><span id="478" class="lineNum"><a href="#478">478</a></span><span class="counterCov">10</span><span class="lineCov">						Arc::get_mut(&amp;mut server.crypto).expect(&quot;failed to build `ServerConfig`&quot;);</span></div>
+<div class="line"><span id="479" class="lineNum"><a href="#479">479</a></span><span class="counterCov">10</span><span class="lineCov"></span></div>
+<div class="line"><span id="480" class="lineNum"><a href="#480">480</a></span><span class="counterCov">10</span><span class="lineCov">					// set client certificate verifier</span></div>
+<div class="line"><span id="481" class="lineNum"><a href="#481">481</a></span><span class="counterCov">10</span><span class="lineCov">					crypto.set_client_certificate_verifier(Arc::new(ClientVerifier));</span></div>
+<div class="line"><span id="482" class="lineNum"><a href="#482">482</a></span><span class="counterCov">10</span><span class="lineCov">				}</span></div>
+<div class="line"><span id="483" class="lineNum"><a href="#483">483</a></span><span class="counterCov">10</span><span class="lineCov"></span></div>
+<div class="line"><span id="484" class="lineNum"><a href="#484">484</a></span><span class="counterCov">10</span><span class="lineCov">				// set transport</span></div>
+<div class="line"><span id="485" class="lineNum"><a href="#485">485</a></span><span class="counterCov">10</span><span class="lineCov">				server.transport = self.config.transport();</span></div>
+<div class="line"><span id="486" class="lineNum"><a href="#486">486</a></span><span class="counterCov">10</span><span class="lineCov"></span></div>
+<div class="line"><span id="487" class="lineNum"><a href="#487">487</a></span><span class="counterCov">10</span><span class="lineCov">				server</span></div>
+<div class="line"><span id="488" class="lineNum"><a href="#488">488</a></span><span class="counterCov">131</span><span class="lineCov">			});</span></div>
+<div class="line"><span id="489" class="lineNum"><a href="#489">489</a></span><span class="counterCov">131</span><span class="lineCov"></span></div>
+<div class="line"><span id="490" class="lineNum"><a href="#490">490</a></span><span class="counterCov">131</span><span class="lineCov">			Endpoint::new(self.address, client, server, self.config.clone())</span></div>
+<div class="line"><span id="491" class="lineNum"><a href="#491">491</a></span><span class="counterCov">131</span><span class="lineCov">		} {</span></div>
+<div class="line"><span id="492" class="lineNum"><a href="#492">492</a></span><span class="counterCov">131</span><span class="lineCov">			Ok(endpoint) =&gt; Ok(endpoint),</span></div>
 <div class="line"><span id="493" class="lineNum"><a href="#493">493</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Err(error) =&gt; Err(error::Builder {</span></div>
 <div class="line"><span id="494" class="lineNum"><a href="#494">494</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				error,</span></div>
 <div class="line"><span id="495" class="lineNum"><a href="#495">495</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				builder: self,</span></div>
 <div class="line"><span id="496" class="lineNum"><a href="#496">496</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			}),</span></div>
 <div class="line"><span id="497" class="lineNum"><a href="#497">497</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="498" class="lineNum"><a href="#498">498</a></span><span class="counterCov">129</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="498" class="lineNum"><a href="#498">498</a></span><span class="counterCov">131</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="499" class="lineNum"><a href="#499">499</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 <div class="line"><span id="500" class="lineNum"><a href="#500">500</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="501" class="lineNum"><a href="#501">501</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Client certificate verifier accepting anything. Verification has to happen</span></div>
@@ -524,13 +524,13 @@
 <div class="line"><span id="503" class="lineNum"><a href="#503">503</a></span><span class="counterUnCov"></span><span class="lineUnCov">struct ClientVerifier;</span></div>
 <div class="line"><span id="504" class="lineNum"><a href="#504">504</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="505" class="lineNum"><a href="#505">505</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl ClientCertVerifier for ClientVerifier {</span></div>
-<div class="line"><span id="506" class="lineNum"><a href="#506">506</a></span><span class="counterCov">107</span><span class="lineCov">	fn client_auth_mandatory(&amp;self, _sni: Option&lt;&amp;DNSName&gt;) -&gt; Option&lt;bool&gt; {</span></div>
-<div class="line"><span id="507" class="lineNum"><a href="#507">507</a></span><span class="counterCov">107</span><span class="lineCov">		Some(false)</span></div>
-<div class="line"><span id="508" class="lineNum"><a href="#508">508</a></span><span class="counterCov">107</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="506" class="lineNum"><a href="#506">506</a></span><span class="counterCov">108</span><span class="lineCov">	fn client_auth_mandatory(&amp;self, _sni: Option&lt;&amp;DNSName&gt;) -&gt; Option&lt;bool&gt; {</span></div>
+<div class="line"><span id="507" class="lineNum"><a href="#507">507</a></span><span class="counterCov">108</span><span class="lineCov">		Some(false)</span></div>
+<div class="line"><span id="508" class="lineNum"><a href="#508">508</a></span><span class="counterCov">108</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="509" class="lineNum"><a href="#509">509</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="510" class="lineNum"><a href="#510">510</a></span><span class="counterCov">107</span><span class="lineCov">	fn client_auth_root_subjects(&amp;self, _sni: Option&lt;&amp;DNSName&gt;) -&gt; Option&lt;DistinguishedNames&gt; {</span></div>
-<div class="line"><span id="511" class="lineNum"><a href="#511">511</a></span><span class="counterCov">107</span><span class="lineCov">		Some(DistinguishedNames::new())</span></div>
-<div class="line"><span id="512" class="lineNum"><a href="#512">512</a></span><span class="counterCov">107</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="510" class="lineNum"><a href="#510">510</a></span><span class="counterCov">108</span><span class="lineCov">	fn client_auth_root_subjects(&amp;self, _sni: Option&lt;&amp;DNSName&gt;) -&gt; Option&lt;DistinguishedNames&gt; {</span></div>
+<div class="line"><span id="511" class="lineNum"><a href="#511">511</a></span><span class="counterCov">108</span><span class="lineCov">		Some(DistinguishedNames::new())</span></div>
+<div class="line"><span id="512" class="lineNum"><a href="#512">512</a></span><span class="counterCov">108</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="513" class="lineNum"><a href="#513">513</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="514" class="lineNum"><a href="#514">514</a></span><span class="counterCov">1</span><span class="lineCov">	fn verify_client_cert(</span></div>
 <div class="line"><span id="515" class="lineNum"><a href="#515">515</a></span><span class="counterCov">1</span><span class="lineCov">		&amp;self,</span></div>
