@@ -68,16 +68,19 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Debug for Connection<T> {
 
 impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 	/// Builds a new [`Connection`] from raw [`quinn`] types.
-	pub(super) fn new(connection: quinn::Connection, mut bi_streams: IncomingBiStreams) -> Self {
+	#[allow(clippy::mut_mut)] // futures_util::select_biased internal usage
+	pub(super) fn new(connection: quinn::Connection, bi_streams: IncomingBiStreams) -> Self {
 		// channels for passing down new `Incoming` `Connection`s
 		let (sender, receiver) = flume::unbounded();
 		let receiver = receiver.into_stream();
 
 		// `Task` handling incoming streams
 		let task = Task::new(|mut shutdown| async move {
-			while let Some(connecting) = allochronic_util::select! {
-				connecting: &mut bi_streams => connecting,
-				_: &mut shutdown => None,
+			let mut bi_streams = bi_streams.fuse();
+			while let Some(connecting) = futures_util::select_biased! {
+				connecting = bi_streams.next() => connecting,
+				_ = shutdown => None,
+				complete => None,
 			} {
 				let incoming = connecting.map_err(error::Connection);
 

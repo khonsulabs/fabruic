@@ -3,6 +3,7 @@
 use std::{convert::TryFrom, marker::PhantomData, mem::size_of};
 
 use bytes::{BufMut, Bytes, BytesMut};
+use futures_util::StreamExt;
 use quinn::{SendStream, VarInt};
 use serde::Serialize;
 
@@ -34,18 +35,19 @@ enum Message {
 impl<T: Serialize> Sender<T> {
 	/// Builds a new [`Sender`] from a raw [`quinn`] type. Spawns a task that
 	/// sends data into the stream.
+	#[allow(clippy::mut_mut)] // futures_util::select_biased internal usage
 	pub(super) fn new(mut stream_sender: SendStream) -> Self {
 		// sender channels
 		let (sender, receiver) = flume::unbounded();
 
 		// `Task` handling `Sender`
-		let task = Task::new(|shutdown| async move {
-			let mut receiver = receiver.into_stream();
-			let mut shutdown = shutdown;
+		let task = Task::new(|mut shutdown| async move {
+			let mut receiver = receiver.into_stream().fuse();
 
-			while let Some(message) = allochronic_util::select! {
-				message: &mut receiver => message.map(Message::Data),
-				shutdown: &mut shutdown => shutdown.ok(),
+			while let Some(message) = futures_util::select_biased! {
+				message = receiver.next() => message.map(Message::Data),
+				shutdown = shutdown => shutdown.ok(),
+				complete => Some(Message::Finish),
 			} {
 				match message {
 					Message::Data(bytes) => stream_sender.write_chunk(bytes).await?,

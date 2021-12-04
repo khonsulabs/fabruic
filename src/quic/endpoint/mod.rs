@@ -190,14 +190,17 @@ impl Endpoint {
 
 	/// Handle incoming connections. Accessed through [`Stream`] in
 	/// [`Endpoint`].
+	#[allow(clippy::mut_mut)] // futures_util::select_biased internal usage
 	async fn incoming(
-		mut incoming: quinn::Incoming,
+		incoming: quinn::Incoming,
 		sender: Sender<Connecting>,
 		mut shutdown: Receiver<()>,
 	) {
-		while let Some(connecting) = allochronic_util::select! {
-			connecting: &mut incoming => connecting,
-			_ : &mut shutdown => None,
+		let mut incoming = incoming.fuse();
+		while let Some(connecting) = futures_util::select_biased! {
+			connecting = incoming.next() => connecting,
+			_ = shutdown => None,
+			complete => None,
 		} {
 			// if there is no receiver, it means that we dropped the last `Endpoint`
 			if sender.send(Connecting::new(connecting)).is_err() {
