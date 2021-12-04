@@ -11,7 +11,10 @@ use std::{
 
 use bincode::ErrorKind;
 use bytes::{Buf, BufMut, BytesMut};
-use futures_util::{stream::Stream, FutureExt};
+use futures_util::{
+	stream::{FusedStream, Stream},
+	FutureExt,
+};
 use pin_project::pin_project;
 use quinn::{Chunk, ReadError, RecvStream, VarInt};
 use serde::de::DeserializeOwned;
@@ -27,6 +30,8 @@ pub(super) struct ReceiverStream<M: DeserializeOwned> {
 	buffer: BytesMut,
 	/// [`Quinn`](quinn)s receiver.
 	stream: RecvStream,
+	/// True if the stream is complete.
+	complete: bool,
 	/// Type to be [`Deserialize`](serde::Deserialize)d
 	_type: PhantomData<M>,
 }
@@ -39,6 +44,7 @@ impl<M: DeserializeOwned> ReceiverStream<M> {
 			// 1480 bytes is a default MTU size configured by quinn-proto
 			buffer: BytesMut::with_capacity(1480),
 			stream,
+			complete: false,
 			_type: PhantomData,
 		}
 	}
@@ -49,6 +55,7 @@ impl<M: DeserializeOwned> ReceiverStream<M> {
 			length: self.length,
 			buffer: self.buffer,
 			stream: self.stream,
+			complete: self.complete,
 			_type: PhantomData,
 		}
 	}
@@ -145,6 +152,7 @@ impl<M: DeserializeOwned> Stream for ReceiverStream<M> {
 			}
 			// stream has ended
 			else {
+				self.complete = true;
 				Poll::Ready(None)
 			}
 		}
@@ -160,7 +168,14 @@ impl<M: DeserializeOwned> Stream for ReceiverStream<M> {
 		}
 		// stream has ended
 		else {
+			self.complete = true;
 			Poll::Ready(None)
 		}
+	}
+}
+
+impl<M: DeserializeOwned> FusedStream for ReceiverStream<M> {
+	fn is_terminated(&self) -> bool {
+		self.complete
 	}
 }

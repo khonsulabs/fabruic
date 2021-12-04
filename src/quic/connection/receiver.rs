@@ -34,6 +34,7 @@ impl<T> Debug for Receiver<T> {
 impl<T> Receiver<T> {
 	/// Builds a new [`Receiver`] from a raw [`quinn`] type. Spawns a task that
 	/// receives data from the stream.
+	#[allow(clippy::mut_mut)] // futures_util::select_biased internal usage
 	pub(super) fn new(mut stream: ReceiverStream<T>) -> Self
 	where
 		T: DeserializeOwned + Send,
@@ -52,9 +53,10 @@ impl<T> Receiver<T> {
 				Close,
 			}
 
-			while let Some(message) = allochronic_util::select! {
-				message: &mut stream => message.map(Message::Data),
-				shutdown: &mut shutdown => shutdown.ok().map(|_| Message::Close),
+			while let Some(message) = futures_util::select_biased! {
+				message = stream.next() => message.map(Message::Data),
+				shutdown = shutdown => shutdown.ok().map(|_| Message::Close),
+				complete => Some(Message::Close),
 			} {
 				match message {
 					Message::Data(message) => {
