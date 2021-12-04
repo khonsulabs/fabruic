@@ -1,7 +1,7 @@
 //! Intermediate [`Connection`] object to query
 //! [`protocol`](Connecting::protocol).
 
-use quinn::NewConnection;
+use quinn::{crypto::rustls::HandshakeData, NewConnection};
 use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{error, Connection};
@@ -26,7 +26,10 @@ impl Connecting {
 		self.0
 			.handshake_data()
 			.await
-			.map(|data| data.protocol)
+			.map(|data| {
+				data.downcast_ref::<HandshakeData>()
+					.and_then(|data| data.protocol.clone())
+			})
 			.map_err(error::Connecting)
 	}
 

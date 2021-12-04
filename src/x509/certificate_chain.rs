@@ -93,23 +93,19 @@ impl CertificateChain {
 		self.0.get(index)
 	}
 
-	/// Convert from a [`quinn`] type.
-	pub(crate) fn from_quinn(certificate_chain: quinn::CertificateChain) -> Self {
-		Self(
-			certificate_chain
-				.into_iter()
-				.map(Certificate::from_rustls)
-				.collect(),
-		)
-	}
-
-	/// Convert into a type [`quinn`] can consume.
-	pub(crate) fn as_quinn(&self) -> quinn::CertificateChain {
-		quinn::CertificateChain::from_certs(self.0.iter().map(Certificate::as_quinn))
-	}
-
 	/// Convert into a type [`rustls`] can consume.
 	pub(crate) fn into_rustls(self) -> Vec<rustls::Certificate> {
 		self.0.into_iter().map(Certificate::into_rustls).collect()
+	}
+
+	/// Converts from a slice of rustls certificates with no validation.
+	pub(crate) fn from_rustls(certs: &[rustls::Certificate]) -> Self {
+		Self(
+			certs
+				.iter()
+				.cloned()
+				.map(Certificate::from_rustls)
+				.collect(),
+		)
 	}
 }

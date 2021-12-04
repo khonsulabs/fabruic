@@ -30,7 +30,7 @@ use futures_util::{
 };
 pub use incoming::Incoming;
 use pin_project::pin_project;
-use quinn::{IncomingBiStreams, VarInt};
+use quinn::{crypto::rustls::HandshakeData, IncomingBiStreams, VarInt};
 pub use receiver::Receiver;
 use receiver_stream::ReceiverStream;
 pub use sender::Sender;
@@ -131,17 +131,19 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 	/// [`Builder::set_protocols`](crate::Builder::set_protocols).
 	#[must_use]
 	pub fn protocol(&self) -> Option<Vec<u8>> {
-		self.connection
-			.handshake_data()
-			.and_then(|data| data.protocol)
+		self.connection.handshake_data().and_then(|data| {
+			data.downcast_ref::<HandshakeData>()
+				.and_then(|data| data.protocol.clone())
+		})
 	}
 
 	/// Get the peer's [`CertificateChain`], if available.
 	#[must_use]
 	pub fn peer_identity(&self) -> Option<CertificateChain> {
-		self.connection
-			.peer_identity()
-			.map(CertificateChain::from_quinn)
+		self.connection.peer_identity().and_then(|cert| {
+			cert.downcast_ref::<Vec<rustls::Certificate>>()
+				.map(|certs| CertificateChain::from_rustls(certs))
+		})
 	}
 
 	/// The peer's address. Clients may change addresses at will, e.g. when

@@ -60,7 +60,7 @@ impl<M: DeserializeOwned> ReceiverStream<M> {
 		}
 	}
 
-	/// Calls [`RecvStream::stop`](quinn::generic::RecvStream::stop).
+	/// Calls [`RecvStream::stop`](RecvStream::stop).
 	///
 	/// # Errors
 	/// [`error::AlreadyClosed`] if it was already closed.

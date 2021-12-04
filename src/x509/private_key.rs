@@ -3,6 +3,7 @@
 use std::{
 	convert::TryFrom,
 	fmt::{self, Debug, Formatter},
+	sync::Arc,
 };
 
 use rustls::sign::{self, SigningKey};
@@ -57,25 +58,24 @@ impl PrivateKey {
 		Self(Some(private_key.into()))
 	}
 
-	/// Convert into a type [`quinn`] can consume.
+	/// Convert into a rustls `PrivateKey`.
 	///
 	/// # Panics
 	/// Panics if [`PrivateKey`] couldn't be parsed. This can't happen if
 	/// [`PrivateKey`] is constructed correctly from
 	/// [`from_der`](Self::from_der).
-	pub(crate) fn as_quinn(&self) -> quinn::PrivateKey {
-		quinn::PrivateKey::from_der(Dangerous::as_ref(self))
-			.expect("`PrivateKey` couldn't be parsed")
+	pub(crate) fn into_rustls(self) -> rustls::PrivateKey {
+		rustls::PrivateKey(Dangerous::into(self))
 	}
 
-	/// Convert into a type [`rustls`] can consume.
+	/// Convert into a type [`rustls`] can use for signatures.
 	///
 	/// # Panics
 	/// Panics if [`PrivateKey`] couldn't be parsed. This can't happen if
 	/// [`PrivateKey`] is constructed correctly from
 	/// [`from_der`](Self::from_der).
-	pub(crate) fn into_rustls(self) -> Box<dyn SigningKey> {
-		sign::any_supported_type(&rustls::PrivateKey(Dangerous::into(self)))
+	pub(crate) fn into_rustls_signing_key(self) -> Arc<dyn SigningKey> {
+		sign::any_supported_type(&self.into_rustls())
 			.expect("`PrivateKey` not compatible with `rustls`")
 	}
 }
