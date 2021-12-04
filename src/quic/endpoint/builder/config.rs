@@ -1,14 +1,15 @@
 //! Persistent configuration shared between [`Builder`](crate::Builder) and
 //! [`Endpoint`](crate::Endpoint).
 
-use std::{ops::Deref, sync::Arc};
+use std::{sync::Arc, time::SystemTime};
 
-use quinn::{ClientConfig, ClientConfigBuilder, TransportConfig};
+use quinn::{ClientConfig, TransportConfig};
 use rustls::{
-	sign::CertifiedKey, OwnedTrustAnchor, ResolvesClientCert, RootCertStore, ServerCertVerified,
-	ServerCertVerifier, SignatureScheme, TLSError,
+	client::{ResolvesClientCert, ServerCertVerified, ServerCertVerifier},
+	sign::CertifiedKey,
+	OwnedTrustAnchor, RootCertStore, ServerName, SignatureScheme,
 };
-use webpki::{trust_anchor_util, DNSNameRef};
+use webpki::TrustAnchor;
 
 use crate::{Certificate, KeyPair, Store};
 
@@ -48,8 +49,7 @@ impl Config {
 			// we don't support unordered for now
 			.datagram_receive_buffer_size(None)
 			// for compatibility with WebRTC, we won't be using uni-directional streams
-			.max_concurrent_uni_streams(0)
-			.expect("can't be bigger then `VarInt`");
+			.max_concurrent_uni_streams(quinn::VarInt::from_u32(0));
 
 		Self {
 			transport: Arc::new(transport),
@@ -152,75 +152,76 @@ impl Config {
 		client_key_pair: Option<KeyPair>,
 		disable_server_verification: bool,
 	) -> ClientConfig {
-		let mut client = ClientConfigBuilder::default();
+		let mut certificate_store = match store {
+			Store::Empty => RootCertStore::empty(),
+			Store::Os => {
+				let mut store = RootCertStore::empty();
+				if let Ok(certs) = rustls_native_certs::load_native_certs() {
+					for cert in certs {
+						store
+							.add(&rustls::Certificate(cert.0))
+							.expect("invalid native cert");
+					}
+				}
+				store
+			}
+			Store::Embedded => {
+				let mut store = RootCertStore::empty();
+				store.add_server_trust_anchors(webpki_roots::TLS_SERVER_ROOTS.0.iter().map(|ta| {
+					OwnedTrustAnchor::from_subject_spki_name_constraints(
+						ta.subject,
+						ta.spki,
+						ta.name_constraints,
+					)
+				}));
+				store
+			}
+		};
 
-		// add protocols
-		if !self.protocols.is_empty() {
-			let protocols: Vec<_> = self.protocols.iter().map(Deref::deref).collect();
-			let _ = client.protocols(&protocols);
+		let additional_anchors = certificates.into_iter().map(|certificate| {
+			let anchor = TrustAnchor::try_from_cert_der(certificate.as_ref())
+				.expect("`Certificate` couldn't be parsed");
+			OwnedTrustAnchor::from_subject_spki_name_constraints(
+				anchor.subject,
+				anchor.spki,
+				anchor.name_constraints,
+			)
+		});
+		certificate_store.add_server_trust_anchors(additional_anchors);
+		let mut crypto = rustls::ClientConfig::builder()
+			.with_safe_defaults()
+			.with_root_certificates(certificate_store)
+			.with_no_client_auth();
+
+		crypto.alpn_protocols = self.protocols.clone();
+		// insert client certificate
+		if let Some(key_pair) = client_key_pair {
+			crypto.client_auth_cert_resolver = CertificateResolver::new(key_pair);
 		}
 
-		let mut client = client.build();
-
-		// get inner rustls `ClientConfig`
-		{
-			let crypto = Arc::get_mut(&mut client.crypto).expect("failed to build `ClientConfig`");
-
-			// set default root certificates
-			match store {
-				// remove the defaults set by Quinn
-				Store::Empty => {
-					crypto.root_store = RootCertStore::empty();
-					crypto.ct_logs = None;
-				}
-				// is set correctly by Quinn by default
-				Store::Os => (),
-				// insert `webpki-roots`
-				Store::Embedded => {
-					let mut store = RootCertStore::empty();
-					store.add_server_trust_anchors(&webpki_roots::TLS_SERVER_ROOTS);
-					crypto.root_store = store;
-				}
-			}
-
-			// add custom root certificates
-			let certificates = certificates.into_iter().map(|certificate| {
-				let anchor = trust_anchor_util::cert_der_as_trust_anchor(certificate.as_ref())
-					.expect("`Certificate` couldn't be parsed");
-				OwnedTrustAnchor::from_trust_anchor(&anchor)
-			});
-			crypto.root_store.roots.extend(certificates);
-
-			// insert client certificate
-			if let Some(key_pair) = client_key_pair {
-				crypto.client_auth_cert_resolver = CertificateResolver::new(key_pair);
-			}
-
-			// disable server certificate verification if demanded
-			if disable_server_verification {
-				crypto
-					.dangerous()
-					.set_certificate_verifier(NoServerCertVerification::new());
-			}
+		// disable server certificate verification if demanded
+		if disable_server_verification {
+			crypto
+				.dangerous()
+				.set_certificate_verifier(NoServerCertVerification::new());
 		}
 
-		// set transport
+		let mut client = ClientConfig::new(Arc::new(crypto));
 		client.transport = self.transport();
-
 		client
 	}
 }
 
 /// Client certificate handler.
-struct CertificateResolver(CertifiedKey);
+struct CertificateResolver(Arc<CertifiedKey>);
 
 impl ResolvesClientCert for CertificateResolver {
 	fn resolve(
 		&self,
 		_acceptable_issuers: &[&[u8]],
 		_sigschemes: &[SignatureScheme],
-	) -> Option<CertifiedKey> {
-		Some(self.0.clone())
+	) -> Option<Arc<CertifiedKey>> {
+		Some(Arc::clone(&self.0))
 	}
 
 	fn has_certs(&self) -> bool {
@@ -231,7 +232,7 @@ impl ResolvesClientCert for CertificateResolver {
 impl CertificateResolver {
 	/// Builds a new [`CertificateResolver`].
 	fn new(key_pair: KeyPair) -> Arc<Self> {
-		Arc::new(Self(key_pair.into_rustls()))
+		Arc::new(Self(Arc::new(key_pair.into_rustls())))
 	}
 }
 
@@ -245,11 +246,13 @@ struct NoServerCertVerification;
 impl ServerCertVerifier for NoServerCertVerification {
 	fn verify_server_cert(
 		&self,
-		_: &RootCertStore,
-		_: &[rustls::Certificate],
-		_: DNSNameRef<'_>,
-		_: &[u8],
-	) -> Result<ServerCertVerified, TLSError> {
+		_end_entity: &rustls::Certificate,
+		_intermediates: &[rustls::Certificate],
+		_server_name: &ServerName,
+		_scts: &mut dyn Iterator<Item = &[u8]>,
+		_ocsp_response: &[u8],
+		_now: SystemTime,
+	) -> Result<ServerCertVerified, rustls::Error> {
 		Ok(ServerCertVerified::assertion())
 	}
 }

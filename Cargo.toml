@@ -26,32 +26,33 @@ futures-util = "0.3"
 if_chain = "1"
 parking_lot = { version = "0.11", features = ["send_guard"] }
 pin-project = "1"
-quinn = "0.7"
+quinn = "0.8"
 rcgen = { version = "0.8", default-features = false, optional = true }
 ring = "0.16"
-rustls = { version = "0.19", default-features = false, features = [
-	"dangerous_configuration"
+rustls = { version = "0.20", default-features = false, features = [
+	"dangerous_configuration",
 ] }
 serde = "1"
 thiserror = "1"
 tokio = { version = "1", features = ["rt-multi-thread"] }
-trust-dns-resolver = { version = "0.20", default-features = false, optional = true, features = [
+trust-dns-resolver = { version = "0.21.0-alpha.4", default-features = false, optional = true, features = [
 	"dns-over-https-rustls",
 	"dnssec-ring",
 	"tokio-runtime",
 ] }
 url = "2"
-webpki = { version = "0.21", default-features = false }
-webpki-roots = "0.21"
+webpki = { version = "0.22", default-features = false }
+webpki-roots = "0.22"
+rustls-native-certs = "0.6"
 x509-parser = "0.12"
 zeroize = { version = "1", features = ["zeroize_derive"] }
 
 [dev-dependencies]
 anyhow = "1"
 fabruic = { path = "", features = ["rcgen", "test", "trust-dns"] }
-quinn-proto = { version = "0.7", default-features = false }
+quinn-proto = { version = "0.8", default-features = false }
 tokio = { version = "1", features = ["macros"] }
-trust-dns-proto = "0.20"
+trust-dns-proto = "0.21.0-alpha.4"
 
 [profile.release]
 codegen-units = 1

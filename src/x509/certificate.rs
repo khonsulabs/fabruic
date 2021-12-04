@@ -50,23 +50,25 @@ impl Certificate {
 
 		// parse certificate with `webpki`, which is what `rustls` uses, which is what
 		// `quinn` uses
-		let _ = match EndEntityCert::from(&certificate) {
+		let _ = match EndEntityCert::try_from(certificate.as_slice()) {
 			Ok(parsed) => parsed,
-			Err(error) =>
+			Err(error) => {
 				return Err(error::Certificate {
 					error: CertificateError::WebPki(error),
 					certificate,
-				}),
+				})
+			}
 		};
 
 		// parse certificate with the `x509-parser, which is what `rcgen` uses
 		let (trailing, parsed) = match X509Certificate::from_der(&certificate) {
 			Ok((trailing, bytes)) => (trailing, bytes),
-			Err(error) =>
+			Err(error) => {
 				return Err(error::Certificate {
 					error: CertificateError::X509(error),
 					certificate,
-				}),
+				})
+			}
 		};
 
 		// don't allow trailing bytes
@@ -150,16 +152,6 @@ impl Certificate {
 	/// Convert from a [`rustls`] type.
 	pub(crate) fn from_rustls(certificate: rustls::Certificate) -> Self {
 		Self::unchecked_from_der(certificate.0)
-	}
-
-	/// Convert into a type [`quinn`] can consume.
-	///
-	/// # Panics
-	/// Panics if [`Certificate`] couldn't be parsed or contained no valid
-	/// domain names. This can't happen if [`Certificate`] is constructed
-	/// correctly from [`from_der`](Self::from_der).
-	pub(crate) fn as_quinn(&self) -> quinn::Certificate {
-		quinn::Certificate::from_der(self.as_ref()).expect("`Certificate` couldn't be parsed")
 	}
 
 	/// Convert into a type [`rustls`] can consume.

@@ -1,13 +1,14 @@
 //! [`Endpoint`] builder.
 
 mod config;
-use std::{fmt::Debug, net::SocketAddr, sync::Arc};
+use std::{fmt::Debug, net::SocketAddr, sync::Arc, time::SystemTime};
 
 pub(super) use config::Config;
-use quinn::ServerConfigBuilder;
-use rustls::{ClientCertVerified, ClientCertVerifier, DistinguishedNames, TLSError};
+use rustls::{
+	server::{ClientCertVerified, ClientCertVerifier},
+	DistinguishedNames,
+};
 use serde::{Deserialize, Serialize};
-use webpki::DNSName;
 
 use crate::{error, Certificate, Endpoint, KeyPair};
 
@@ -448,38 +449,19 @@ impl Builder {
 
 			// build server only if we have a key-pair
 			let server = self.server_key_pair.as_ref().map(|key_pair| {
-				let mut server = ServerConfigBuilder::default();
+				let mut crypto = rustls::ServerConfig::builder()
+					.with_safe_defaults()
+					.with_client_cert_verifier(Arc::new(ClientVerifier))
+					.with_single_cert(
+						key_pair.certificate_chain().clone().into_rustls(),
+						key_pair.private_key().clone().into_rustls(),
+					)
+					.expect("failed to build server crypto config");
 
 				// set protocols
-				if !self.config.protocols().is_empty() {
-					let _ = server.protocols(
-						self.config
-							.protocols()
-							.iter()
-							.map(Vec::as_slice)
-							.collect::<Vec<_>>()
-							.as_slice(),
-					);
-				}
+				crypto.alpn_protocols = self.config.protocols().to_vec();
 
-				let mut server = server.build();
-
-				// set key-pair
-				let _ = server
-					.certificate(
-						key_pair.certificate_chain().as_quinn(),
-						key_pair.private_key().as_quinn(),
-					)
-					.expect("`CertificateChain` couldn't be verified");
-
-				// get inner rustls `ServerConfig`
-				{
-					let crypto =
-						Arc::get_mut(&mut server.crypto).expect("failed to build `ServerConfig`");
-
-					// set client certificate verifier
-					crypto.set_client_certificate_verifier(Arc::new(ClientVerifier));
-				}
+				let mut server = quinn::ServerConfig::with_crypto(Arc::new(crypto));
 
 				// set transport
 				server.transport = self.config.transport();
@@ -503,19 +485,19 @@ impl Builder {
 struct ClientVerifier;
 
 impl ClientCertVerifier for ClientVerifier {
-	fn client_auth_mandatory(&self, _sni: Option<&DNSName>) -> Option<bool> {
+	fn client_auth_mandatory(&self) -> Option<bool> {
 		Some(false)
 	}
 
-	fn client_auth_root_subjects(&self, _sni: Option<&DNSName>) -> Option<DistinguishedNames> {
+	fn client_auth_root_subjects(&self) -> Option<DistinguishedNames> {
 		Some(DistinguishedNames::new())
 	}
-
 	fn verify_client_cert(
 		&self,
-		_presented_certs: &[rustls::Certificate],
-		_sni: Option<&DNSName>,
-	) -> Result<ClientCertVerified, TLSError> {
+		_end_entity: &rustls::Certificate,
+		_intermediates: &[rustls::Certificate],
+		_now: SystemTime,
+	) -> Result<ClientCertVerified, rustls::Error> {
 		Ok(ClientCertVerified::assertion())
 	}
 }
@@ -683,9 +665,10 @@ mod test {
 
 		// build client
 		let mut builder = Builder::new();
-		Dangerous::set_root_certificates(&mut builder, [server_key_pair
-			.end_entity_certificate()
-			.clone()]);
+		Dangerous::set_root_certificates(
+			&mut builder,
+			[server_key_pair.end_entity_certificate().clone()],
+		);
 		builder.set_client_key_pair(Some(client_key_pair.clone()));
 		let client = builder.build()?;
 
@@ -1023,7 +1006,7 @@ mod test {
 					code,
 					frame: None,
 					reason
-				}))) if (reason == "invalid certificate: UnknownIssuer")
+				}))) if (reason == "invalid peer certificate contents: invalid peer certificate: UnknownIssuer")
 					&& code.to_string() == "the cryptographic handshake failed: error 42"));
 
 		Ok(())

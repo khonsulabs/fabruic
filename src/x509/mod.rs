@@ -3,7 +3,7 @@
 mod certificate;
 mod certificate_chain;
 pub mod private_key;
-use std::{convert::TryFrom, sync::Arc};
+use std::convert::TryFrom;
 
 pub use certificate::Certificate;
 pub use certificate_chain::CertificateChain;
@@ -130,7 +130,7 @@ impl KeyPair {
 	pub(crate) fn into_rustls(self) -> CertifiedKey {
 		CertifiedKey::new(
 			self.certificate_chain.into_rustls(),
-			Arc::new(self.private_key.into_rustls()),
+			self.private_key.into_rustls_signing_key(),
 		)
 	}
 }

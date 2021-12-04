@@ -20,7 +20,7 @@ use futures_util::{
 	stream::{FusedStream, Stream},
 	StreamExt,
 };
-use quinn::{ClientConfig, EndpointError, ServerConfig, VarInt};
+use quinn::{ClientConfig, ServerConfig, VarInt};
 use url::{Host, Url};
 
 use super::Task;
@@ -87,34 +87,23 @@ impl Endpoint {
 		config: Config,
 	) -> Result<Self, Error> {
 		// configure endpoint for server and client
-		let mut endpoint_builder = quinn::Endpoint::builder();
-		let _ = endpoint_builder.default_client_config(client);
+		let (mut endpoint, incoming) = match server {
+			Some(server) => {
+				let (endpoint, incoming) = quinn::Endpoint::server(server, address)?;
+				(endpoint, Some(incoming))
+			}
+			None => (quinn::Endpoint::client(address)?, None),
+		};
 
-		// server configuration is optional
-		let server = server.map_or(false, |server| {
-			let _ = endpoint_builder.listen(server);
-			true
-		});
-
-		// build endpoint
-		let (endpoint, incoming) =
-			endpoint_builder
-				.bind(&address)
-				.map_err(|error| match error {
-					EndpointError::Socket(error) => error,
-				})?;
+		endpoint.set_default_client_config(client);
 
 		// create channels that will receive incoming `Connection`s
 		let (sender, receiver) = flume::unbounded();
 		let receiver = receiver.into_stream();
 
-		// only servers need to deal with incoming connections
-		let task = if server {
-			// spawn task handling incoming `Connection`s
+		let task = incoming.map_or_else(Task::empty, |incoming| {
 			Task::new(|shutdown| Self::incoming(incoming, sender, shutdown))
-		} else {
-			Task::empty()
-		};
+		});
 
 		Ok(Self {
 			endpoint,
@@ -256,7 +245,7 @@ impl Endpoint {
 
 		Ok(Connecting::new(
 			self.endpoint
-				.connect(&address, &domain)
+				.connect(address, &domain)
 				.map_err(error::Connect::Config)?,
 		))
 	}
@@ -342,7 +331,7 @@ impl Endpoint {
 		// connect
 		let connecting = self
 			.endpoint
-			.connect_with(client, &address, &domain)
+			.connect_with(client, address, &domain)
 			.map_err(error::Connect::Config)?;
 
 		Ok(Connecting::new(connecting))
@@ -394,12 +383,11 @@ impl Endpoint {
 			};
 
 			// build `Resolver` options
-			let opts = ResolverOpts {
-				ip_strategy,
-				use_hosts_file: self.config.hosts_file(),
-				validate: self.config.dnssec(),
-				..ResolverOpts::default()
-			};
+			let mut opts = ResolverOpts::default();
+			opts.ip_strategy = ip_strategy;
+			opts.use_hosts_file = self.config.hosts_file();
+			opts.validate = self.config.dnssec();
+			opts.try_tcp_on_error = true;
 
 			// build the `Resolver`
 			let resolver = TokioAsyncResolver::tokio(ResolverConfig::cloudflare_https(), opts)
@@ -589,7 +577,7 @@ impl Dangerous for Endpoint {
 		// connect
 		let connecting = endpoint
 			.endpoint
-			.connect_with(client, &address, "unverified")
+			.connect_with(client, address, "unverified")
 			.map_err(error::Connect::Config)?;
 
 		Ok(Connecting::new(connecting))
