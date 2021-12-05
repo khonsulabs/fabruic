@@ -107,24 +107,28 @@ impl<M: DeserializeOwned> ReceiverStream<M> {
 	}
 
 	/// [`Deserialize`](serde::Deserialize)s the currents
-	/// [`bufer`](Self::buffer) with the given `length`. Returns [`None`] if
-	/// there isn't enough data to extract [`length`](Self::length) yet.
+	/// [`buffer`](Self::buffer). Returns [`None`] if there isn't enough data to
+	/// extract [`length()`](Self::length()) yet.
 	///
 	/// # Errors
 	/// [`ErrorKind`] if `data` failed to be
 	/// [`Deserialize`](serde::Deserialize)d.
-	fn deserialize(&mut self, length: usize) -> Result<Option<M>, ErrorKind> {
-		if self.buffer.len() >= length {
-			// split off the correct amount of data
-			let data = self.buffer.split_to(length).reader();
-			// reset the length
-			self.length = 0;
+	fn deserialize(&mut self) -> Result<Option<M>, ErrorKind> {
+		if let Some(length) = self.length() {
+			if self.buffer.len() >= length {
+				// split off the correct amount of data
+				let data = self.buffer.split_to(length).reader();
+				// reset the length
+				self.length = 0;
 
-			// deserialize message
-			// TODO: configure bincode, for example make it bounded
-			bincode::deserialize_from::<_, M>(data)
-				.map(Some)
-				.map_err(|error| *error)
+				// deserialize message
+				// TODO: configure bincode, for example make it bounded
+				bincode::deserialize_from::<_, M>(data)
+					.map(Some)
+					.map_err(|error| *error)
+			} else {
+				Ok(None)
+			}
 		} else {
 			Ok(None)
 		}
@@ -137,39 +141,28 @@ impl<M: DeserializeOwned> Stream for ReceiverStream<M> {
 	fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
 		use futures_util::ready;
 
-		// do we have enough data to extract the length?
-		if let Some(length) = self.length() {
-			// did we receive enough data to deserialize the message?
-			if let Some(message) = self.deserialize(length)? {
-				// send back the message
-				Poll::Ready(Some(Ok(message)))
-			}
-			// try to poll for more data
-			else if ready!(self.poll(cx)?).is_some() {
-				// did we receive enough data to deserialize the message?
-				self.deserialize(length)?
-					.map_or(Poll::Pending, |message| Poll::Ready(Some(Ok(message))))
-			}
-			// stream has ended
-			else {
-				self.complete = true;
-				Poll::Ready(None)
-			}
+		// did already have enough data to return a message without polling?
+		if let Some(message) = self.deserialize()? {
+			// send back the message
+			return Poll::Ready(Some(Ok(message)));
 		}
-		// try to poll for more data
-		else if ready!(self.poll(cx)?).is_some() {
-			// did we receive enough data to extract the length?
-			if let Some(length) = self.length() {
-				self.deserialize(length)?
-					.map_or(Poll::Pending, |message| Poll::Ready(Some(Ok(message))))
+
+		// try to poll for more data. This loop is important, because if the
+		// stream receives data between returning Poll::Ready and our failed
+		// attempt at deserializing a message beacuse we didn't have enough
+		// data, we want to poll the stream again before yielding to the
+		// runtime.
+		loop {
+			if ready!(self.poll(cx)?).is_some() {
+				// The stream received some data, but we may not have a full packet.
+				if let Some(message) = self.deserialize()? {
+					break Poll::Ready(Some(Ok(message)));
+				}
 			} else {
-				Poll::Pending
+				// The stream has ended
+				self.complete = true;
+				break Poll::Ready(None);
 			}
-		}
-		// stream has ended
-		else {
-			self.complete = true;
-			Poll::Ready(None)
 		}
 	}
 }
