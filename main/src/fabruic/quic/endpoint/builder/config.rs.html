@@ -311,6 +311,7 @@
 <span id="310">310</span>
 <span id="311">311</span>
 <span id="312">312</span>
+<span id="313">313</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Persistent configuration shared between [`Builder`](crate::Builder) and</span>
 <span class="doccomment">//! [`Endpoint`](crate::Endpoint).</span>
 
@@ -421,6 +422,7 @@
 	}
 
 	<span class="doccomment">/// Returns if [`trust-dns`](trust_dns_resolver) is enabled.</span>
+	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>), <span class="ident">allow</span>(<span class="ident">clippy::unused_self</span>))]</span>
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::quic::endpoint</span>) <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">trust_dns</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
 		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
 		<span class="kw">return</span> <span class="self">self</span>.<span class="ident">trust_dns</span>;
