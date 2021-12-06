@@ -108,6 +108,7 @@ impl Config {
 	}
 
 	/// Returns if [`trust-dns`](trust_dns_resolver) is enabled.
+	#[cfg_attr(not(feature = "trust-dns"), allow(clippy::unused_self))]
 	pub(in crate::quic::endpoint) const fn trust_dns(&self) -> bool {
 		#[cfg(feature = "trust-dns")]
 		return self.trust_dns;

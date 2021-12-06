@@ -167,7 +167,7 @@ impl Endpoint {
 	pub fn new_server(port: u16, key_pair: KeyPair) -> Result<Self, error::Config> {
 		let mut builder = Builder::new();
 		#[cfg(not(feature = "test"))]
-		let _ = builder.set_address(([0; 8], port).into());
+		builder.set_address(([0; 8], port).into());
 		// while testing always use the default loopback address
 		#[cfg(feature = "test")]
 		builder.set_address(([0, 0, 0, 0, 0, 0, 0, 1], port).into());
