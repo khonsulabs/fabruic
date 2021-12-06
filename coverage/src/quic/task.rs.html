@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../index.html">top level</a> - <a href="index.html">src/quic</a> - task.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-06 14:38:34</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-06 14:45:16</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -112,12 +112,12 @@
 <div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;R, S&gt; Future for &amp;Task&lt;R, S&gt; {</span></div>
 <div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterUnCov"></span><span class="lineUnCov">	type Output = Result&lt;R, error::AlreadyClosed&gt;;</span></div>
 <div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterCov">236</span><span class="lineCov">	fn poll(self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Self::Output&gt; {</span></div>
-<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">236</span><span class="lineCov">		// save the lock in a separate variable to be able to drop it</span></div>
-<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterCov">236</span><span class="lineCov">		let mut inner = self.0.lock();</span></div>
+<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterCov">233</span><span class="lineCov">	fn poll(self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Self::Output&gt; {</span></div>
+<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">233</span><span class="lineCov">		// save the lock in a separate variable to be able to drop it</span></div>
+<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterCov">233</span><span class="lineCov">		let mut inner = self.0.lock();</span></div>
 <div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">236</span><span class="lineCov">		if let Some(Inner { handle, .. }) = inner.as_mut() {</span></div>
-<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterCov">232</span><span class="lineCov">			if let Poll::Ready(result) = handle.poll_unpin(cx) {</span></div>
+<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">233</span><span class="lineCov">		if let Some(Inner { handle, .. }) = inner.as_mut() {</span></div>
+<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterCov">229</span><span class="lineCov">			if let Poll::Ready(result) = handle.poll_unpin(cx) {</span></div>
 <div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterUnCov"></span><span class="lineUnCov">				// drop inner, `close` might be called simultaneously, so we don&#39;t handle this</span></div>
 <div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterCov">203</span><span class="lineCov">				let _inner = inner.take();</span></div>
 <div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterCov">203</span><span class="lineCov">				// drop `Mutex` before doing anything rash (parking_lot `Mutex` can&#39;t be</span></div>
@@ -130,12 +130,12 @@
 <div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterCov">1</span><span class="lineCov">					Err(panic) =&gt; panic::resume_unwind(panic),</span></div>
 <div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterUnCov"></span><span class="lineUnCov">				}</span></div>
 <div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterUnCov"></span><span class="lineUnCov">			} else {</span></div>
-<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterCov">29</span><span class="lineCov">				Poll::Pending</span></div>
+<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterCov">26</span><span class="lineCov">				Poll::Pending</span></div>
 <div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterUnCov"></span><span class="lineUnCov">			}</span></div>
 <div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
 <div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterCov">4</span><span class="lineCov">			Poll::Ready(Err(error::AlreadyClosed))</span></div>
 <div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterCov">235</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterCov">232</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="118" class="lineNum"><a href="#118">118</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 <div class="line"><span id="119" class="lineNum"><a href="#119">119</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="120" class="lineNum"><a href="#120">120</a></span><span class="counterUnCov"></span><span class="lineUnCov">#[cfg(test)]</span></div>
