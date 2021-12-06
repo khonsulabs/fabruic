@@ -43,7 +43,6 @@ jobs:
           rustup default nightly
 
       - name: Run Clippy
-        continue-on-error: true
         run: |
           cargo clippy --workspace --all-targets --all-features -- -D warnings
 

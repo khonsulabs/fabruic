@@ -190,7 +190,6 @@ impl Endpoint {
 
 	/// Handle incoming connections. Accessed through [`Stream`] in
 	/// [`Endpoint`].
-	#[allow(clippy::mut_mut)] // futures_util::select_biased internal usage
 	async fn incoming(
 		incoming: quinn::Incoming,
 		sender: Sender<Connecting>,
