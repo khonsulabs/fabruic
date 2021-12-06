@@ -47,7 +47,7 @@ impl<T: Serialize> Sender<T> {
 			while let Some(message) = futures_util::select_biased! {
 				message = receiver.next() => message.map(Message::Data),
 				shutdown = shutdown => shutdown.ok(),
-				complete => Some(Message::Finish),
+				complete => None,
 			} {
 				match message {
 					Message::Data(bytes) => stream_sender.write_chunk(bytes).await?,

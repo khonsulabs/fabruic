@@ -56,7 +56,7 @@ impl<T> Receiver<T> {
 			while let Some(message) = futures_util::select_biased! {
 				message = stream.next() => message.map(Message::Data),
 				shutdown = shutdown => shutdown.ok().map(|_| Message::Close),
-				complete => Some(Message::Close),
+				complete => None,
 			} {
 				match message {
 					Message::Data(message) => {
