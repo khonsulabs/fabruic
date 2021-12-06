@@ -19,6 +19,7 @@ trust-dns = ["trust-dns-resolver"]
 async-trait = "0.1"
 bincode = "1"
 bytes = "1"
+ct-logs = "0.9"
 flume = "0.10"
 futures-channel = "0.3"
 futures-executor = "0.3"
@@ -34,6 +35,7 @@ rustls = { version = "0.20", default-features = false, features = [
 ] }
 serde = "1"
 thiserror = "1"
+time = "0.3"
 tokio = { version = "1", features = ["rt-multi-thread"] }
 trust-dns-resolver = { version = "0.21.0-alpha.4", default-features = false, optional = true, features = [
 	"dns-over-https-rustls",
