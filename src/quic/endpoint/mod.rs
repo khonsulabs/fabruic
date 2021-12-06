@@ -582,7 +582,7 @@ impl Dangerous for Endpoint {
 		// connect
 		let connecting = endpoint
 			.endpoint
-			.connect_with(client.map_err(error::Config::from)?, address, "unverified")
+			.connect_with(client.map_err(error::Config::from)?, address, "placeholder")
 			.map_err(error::Connect::ConnectConfig)?;
 
 		Ok(Connecting::new(connecting))
