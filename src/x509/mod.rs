@@ -3,7 +3,6 @@
 mod certificate;
 mod certificate_chain;
 pub mod private_key;
-use std::convert::TryFrom;
 
 pub use certificate::Certificate;
 pub use certificate_chain::CertificateChain;

@@ -2,7 +2,6 @@
 //! deserialization around [`RecvStream`](quinn::RecvStream).
 
 use std::{
-	convert::TryFrom,
 	marker::PhantomData,
 	mem::size_of,
 	pin::Pin,

@@ -1,6 +1,6 @@
 //! [`CertificateChain`].
 
-use std::{convert::TryFrom, ops::Index, slice::Iter, vec::IntoIter};
+use std::{ops::Index, slice::Iter, vec::IntoIter};
 
 use serde::{Deserialize, Serialize};
 

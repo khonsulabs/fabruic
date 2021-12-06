@@ -1,6 +1,6 @@
 //! [`Sender`] part of a stream.
 
-use std::{convert::TryFrom, marker::PhantomData, mem::size_of};
+use std::{marker::PhantomData, mem::size_of};
 
 use bytes::{BufMut, Bytes, BytesMut};
 use futures_util::StreamExt;

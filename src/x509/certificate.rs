@@ -1,6 +1,6 @@
 //! [`Certificate`].
 
-use std::{convert::TryFrom, time::Duration};
+use std::time::Duration;
 
 use error::CertificateError;
 use serde::{Deserialize, Serialize};
