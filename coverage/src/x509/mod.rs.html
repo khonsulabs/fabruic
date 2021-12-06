@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../index.html">top level</a> - <a href="index.html">src/x509</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-11-15 14:05:24</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-06 14:12:13</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -24,7 +24,7 @@
 <div class="line"><span id="3" class="lineNum"><a href="#3">3</a></span><span class="counterUnCov"></span><span class="lineUnCov">mod certificate;</span></div>
 <div class="line"><span id="4" class="lineNum"><a href="#4">4</a></span><span class="counterUnCov"></span><span class="lineUnCov">mod certificate_chain;</span></div>
 <div class="line"><span id="5" class="lineNum"><a href="#5">5</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub mod private_key;</span></div>
-<div class="line"><span id="6" class="lineNum"><a href="#6">6</a></span><span class="counterUnCov"></span><span class="lineUnCov">use std::{convert::TryFrom, sync::Arc};</span></div>
+<div class="line"><span id="6" class="lineNum"><a href="#6">6</a></span><span class="counterUnCov"></span><span class="lineUnCov">use std::convert::TryFrom;</span></div>
 <div class="line"><span id="7" class="lineNum"><a href="#7">7</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="8" class="lineNum"><a href="#8">8</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub use certificate::Certificate;</span></div>
 <div class="line"><span id="9" class="lineNum"><a href="#9">9</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub use certificate_chain::CertificateChain;</span></div>
@@ -151,7 +151,7 @@
 <div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterCov">1</span><span class="lineCov">	pub(crate) fn into_rustls(self) -&gt; CertifiedKey {</span></div>
 <div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterCov">1</span><span class="lineCov">		CertifiedKey::new(</span></div>
 <div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterCov">1</span><span class="lineCov">			self.certificate_chain.into_rustls(),</span></div>
-<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterCov">1</span><span class="lineCov">			Arc::new(self.private_key.into_rustls()),</span></div>
+<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterCov">1</span><span class="lineCov">			self.private_key.into_rustls_signing_key(),</span></div>
 <div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterCov">1</span><span class="lineCov">		)</span></div>
 <div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
