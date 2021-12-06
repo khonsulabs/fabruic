@@ -119,7 +119,6 @@ impl<R, S> Future for &Task<R, S> {
 
 #[cfg(test)]
 mod test {
-	use allochronic_util::select;
 	use anyhow::{Error, Result};
 	use futures_util::StreamExt;
 
@@ -153,9 +152,9 @@ mod test {
 		let task = Task::new(|mut shutdown| async move {
 			let mut receiver = receiver.into_stream();
 
-			while let Some(message) = select!(
-				message: &mut receiver => message,
-				_: &mut shutdown => None,
+			while let Some(message) = futures_util::select_biased!(
+				message = receiver.next() => message,
+				_ = &mut shutdown => None,
 			) {
 				// send back our messages
 				tester_sender.send(message)?;

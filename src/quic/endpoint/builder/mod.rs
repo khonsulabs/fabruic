@@ -830,10 +830,7 @@ mod test {
 				&& error_code.to_string() == "the cryptographic handshake failed: error 120"));
 
 		// on protocol mismatch, the server receives nothing
-		assert!(matches!(
-			allochronic_util::poll(server.next()).await,
-			Poll::Pending
-		));
+		assert!(matches!(futures_util::poll!(server.next()), Poll::Pending));
 
 		Ok(())
 	}
