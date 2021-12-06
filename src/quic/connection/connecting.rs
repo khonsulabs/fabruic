@@ -1,6 +1,8 @@
 //! Intermediate [`Connection`] object to query
 //! [`protocol`](Connecting::protocol).
 
+use std::net::SocketAddr;
+
 use quinn::{crypto::rustls::HandshakeData, NewConnection};
 use serde::{de::DeserializeOwned, Serialize};
 
@@ -31,6 +33,13 @@ impl Connecting {
 					.and_then(|data| data.protocol.clone())
 			})
 			.map_err(error::Connecting)
+	}
+
+	/// The peer's address. Clients may change addresses at will, e.g. when
+	/// switching to a cellular internet connection.
+	#[must_use]
+	pub fn remote_address(&self) -> SocketAddr {
+		self.0.remote_address()
 	}
 
 	/// Accept the [`Connection`] with the given `T` as the type negotiator for
