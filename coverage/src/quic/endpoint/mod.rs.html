@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-06 14:27:57</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-06 14:38:34</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -188,7 +188,7 @@
 <div class="line"><span id="167" class="lineNum"><a href="#167">167</a></span><span class="counterCov">6</span><span class="lineCov">	pub fn new_server(port: u16, key_pair: KeyPair) -&gt; Result&lt;Self, error::Config&gt; {</span></div>
 <div class="line"><span id="168" class="lineNum"><a href="#168">168</a></span><span class="counterCov">6</span><span class="lineCov">		let mut builder = Builder::new();</span></div>
 <div class="line"><span id="169" class="lineNum"><a href="#169">169</a></span><span class="counterCov">6</span><span class="lineCov">		#[cfg(not(feature = &quot;test&quot;))]</span></div>
-<div class="line"><span id="170" class="lineNum"><a href="#170">170</a></span><span class="counterCov">6</span><span class="lineCov">		let _ = builder.set_address(([0; 8], port).into());</span></div>
+<div class="line"><span id="170" class="lineNum"><a href="#170">170</a></span><span class="counterCov">6</span><span class="lineCov">		builder.set_address(([0; 8], port).into());</span></div>
 <div class="line"><span id="171" class="lineNum"><a href="#171">171</a></span><span class="counterCov">6</span><span class="lineCov">		// while testing always use the default loopback address</span></div>
 <div class="line"><span id="172" class="lineNum"><a href="#172">172</a></span><span class="counterCov">6</span><span class="lineCov">		#[cfg(feature = &quot;test&quot;)]</span></div>
 <div class="line"><span id="173" class="lineNum"><a href="#173">173</a></span><span class="counterCov">6</span><span class="lineCov">		builder.set_address(([0, 0, 0, 0, 0, 0, 0, 1], port).into());</span></div>
@@ -603,7 +603,7 @@
 <div class="line"><span id="582" class="lineNum"><a href="#582">582</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// connect</span></div>
 <div class="line"><span id="583" class="lineNum"><a href="#583">583</a></span><span class="counterCov">1</span><span class="lineCov">		let connecting = endpoint</span></div>
 <div class="line"><span id="584" class="lineNum"><a href="#584">584</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.endpoint</span></div>
-<div class="line"><span id="585" class="lineNum"><a href="#585">585</a></span><span class="counterCov">1</span><span class="lineCov">			.connect_with(client.map_err(error::Config::from)?, address, &quot;unverified&quot;)</span></div>
+<div class="line"><span id="585" class="lineNum"><a href="#585">585</a></span><span class="counterCov">1</span><span class="lineCov">			.connect_with(client.map_err(error::Config::from)?, address, &quot;placeholder&quot;)</span></div>
 <div class="line"><span id="586" class="lineNum"><a href="#586">586</a></span><span class="counterCov">1</span><span class="lineCov">			.map_err(error::Connect::ConnectConfig)?;</span></div>
 <div class="line"><span id="587" class="lineNum"><a href="#587">587</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="588" class="lineNum"><a href="#588">588</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(Connecting::new(connecting))</span></div>
