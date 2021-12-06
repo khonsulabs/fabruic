@@ -61,5 +61,5 @@ codegen-units = 1
 lto = true
 
 [package.metadata.docs.rs]
-features = ["dangerous", "trust-dns"]
+features = ["dangerous", "rcgen", "trust-dns"]
 targets = []
