@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-06 14:12:13</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-06 14:25:22</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -456,9 +456,9 @@
 <div class="line"><span id="435" class="lineNum"><a href="#435">435</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// assert!(endpoint.local_address().is_ok());</span></div>
 <div class="line"><span id="436" class="lineNum"><a href="#436">436</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Ok(()) }</span></div>
 <div class="line"><span id="437" class="lineNum"><a href="#437">437</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// ```</span></div>
-<div class="line"><span id="438" class="lineNum"><a href="#438">438</a></span><span class="counterCov">221</span><span class="lineCov">	pub fn local_address(&amp;self) -&gt; Result&lt;SocketAddr, Error&gt; {</span></div>
-<div class="line"><span id="439" class="lineNum"><a href="#439">439</a></span><span class="counterCov">221</span><span class="lineCov">		self.endpoint.local_addr()</span></div>
-<div class="line"><span id="440" class="lineNum"><a href="#440">440</a></span><span class="counterCov">221</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="438" class="lineNum"><a href="#438">438</a></span><span class="counterCov">121</span><span class="lineCov">	pub fn local_address(&amp;self) -&gt; Result&lt;SocketAddr, Error&gt; {</span></div>
+<div class="line"><span id="439" class="lineNum"><a href="#439">439</a></span><span class="counterCov">121</span><span class="lineCov">		self.endpoint.local_addr()</span></div>
+<div class="line"><span id="440" class="lineNum"><a href="#440">440</a></span><span class="counterCov">121</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="441" class="lineNum"><a href="#441">441</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="442" class="lineNum"><a href="#442">442</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Close all of this [`Endpoint`]&#39;s [`Connection`](crate::Connection)s</span></div>
 <div class="line"><span id="443" class="lineNum"><a href="#443">443</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// immediately and cease accepting new [`Connection`](crate::Connection)s.</span></div>
@@ -613,13 +613,13 @@
 <div class="line"><span id="592" class="lineNum"><a href="#592">592</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl Stream for Endpoint {</span></div>
 <div class="line"><span id="593" class="lineNum"><a href="#593">593</a></span><span class="counterUnCov"></span><span class="lineUnCov">	type Item = Connecting;</span></div>
 <div class="line"><span id="594" class="lineNum"><a href="#594">594</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="595" class="lineNum"><a href="#595">595</a></span><span class="counterCov">112</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
-<div class="line"><span id="596" class="lineNum"><a href="#596">596</a></span><span class="counterCov">112</span><span class="lineCov">		if self.receiver.is_terminated() {</span></div>
+<div class="line"><span id="595" class="lineNum"><a href="#595">595</a></span><span class="counterCov">115</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
+<div class="line"><span id="596" class="lineNum"><a href="#596">596</a></span><span class="counterCov">115</span><span class="lineCov">		if self.receiver.is_terminated() {</span></div>
 <div class="line"><span id="597" class="lineNum"><a href="#597">597</a></span><span class="counterCov">2</span><span class="lineCov">			Poll::Ready(None)</span></div>
 <div class="line"><span id="598" class="lineNum"><a href="#598">598</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
-<div class="line"><span id="599" class="lineNum"><a href="#599">599</a></span><span class="counterCov">110</span><span class="lineCov">			self.receiver.poll_next_unpin(cx)</span></div>
+<div class="line"><span id="599" class="lineNum"><a href="#599">599</a></span><span class="counterCov">113</span><span class="lineCov">			self.receiver.poll_next_unpin(cx)</span></div>
 <div class="line"><span id="600" class="lineNum"><a href="#600">600</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="601" class="lineNum"><a href="#601">601</a></span><span class="counterCov">112</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="601" class="lineNum"><a href="#601">601</a></span><span class="counterCov">115</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="602" class="lineNum"><a href="#602">602</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 <div class="line"><span id="603" class="lineNum"><a href="#603">603</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="604" class="lineNum"><a href="#604">604</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl FusedStream for Endpoint {</span></div>

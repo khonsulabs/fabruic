@@ -9,12 +9,12 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - connecting.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-06 14:12:13</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-06 14:25:22</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">22</span><span class="linesTotal">26</span><span class="linesPercentage lineMed">84.6 %</span></div>
-<div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">12</span><span class="funsTotal">23</span><span class="funsPercentage funLow">52.2 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">25</span><span class="linesTotal">26</span><span class="linesPercentage lineHi">96.2 %</span></div>
+<div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">13</span><span class="funsTotal">23</span><span class="funsPercentage funLow">56.5 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
 </div>
@@ -59,9 +59,9 @@
 <div class="line"><span id="38" class="lineNum"><a href="#38">38</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// The peer&#39;s address. Clients may change addresses at will, e.g. when</span></div>
 <div class="line"><span id="39" class="lineNum"><a href="#39">39</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// switching to a cellular internet connection.</span></div>
 <div class="line"><span id="40" class="lineNum"><a href="#40">40</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[must_use]</span></div>
-<div class="line"><span id="41" class="lineNum"><a href="#41">41</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub fn remote_address(&amp;self) -&gt; SocketAddr {</span></div>
-<div class="line"><span id="42" class="lineNum"><a href="#42">42</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.0.remote_address()</span></div>
-<div class="line"><span id="43" class="lineNum"><a href="#43">43</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
+<div class="line"><span id="41" class="lineNum"><a href="#41">41</a></span><span class="counterCov">200</span><span class="lineCov">	pub fn remote_address(&amp;self) -&gt; SocketAddr {</span></div>
+<div class="line"><span id="42" class="lineNum"><a href="#42">42</a></span><span class="counterCov">200</span><span class="lineCov">		self.0.remote_address()</span></div>
+<div class="line"><span id="43" class="lineNum"><a href="#43">43</a></span><span class="counterCov">200</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="44" class="lineNum"><a href="#44">44</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="45" class="lineNum"><a href="#45">45</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Accept the [`Connection`] with the given `T` as the type negotiator for</span></div>
 <div class="line"><span id="46" class="lineNum"><a href="#46">46</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// new streams.</span></div>
