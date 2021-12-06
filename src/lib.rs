@@ -37,7 +37,7 @@
 	clippy::non_ascii_literal,
 	clippy::pattern_type_mismatch,
 	clippy::redundant_pub_crate,
-	clippy::unseparated_literal_suffix,
+	clippy::separated_literal_suffix,
 	clippy::shadow_reuse,
 	// Currently breaks async
 	clippy::shadow_same,

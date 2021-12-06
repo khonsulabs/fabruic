@@ -35,7 +35,6 @@ enum Message {
 impl<T: Serialize> Sender<T> {
 	/// Builds a new [`Sender`] from a raw [`quinn`] type. Spawns a task that
 	/// sends data into the stream.
-	#[allow(clippy::mut_mut)] // futures_util::select_biased internal usage
 	pub(super) fn new(mut stream_sender: SendStream) -> Self {
 		// sender channels
 		let (sender, receiver) = flume::unbounded();
