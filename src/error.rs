@@ -96,16 +96,39 @@ pub struct CertificateChain(Vec<crate::Certificate>);
 #[error("This is already closed")]
 pub struct AlreadyClosed;
 
-/// Error binding socket during construction of [`Endpoint`](crate::Endpoint)
+/// Error during construction of [`Endpoint`](crate::Endpoint)
 /// with [`Builder::build`](crate::Builder::build).
 #[derive(Debug, Error)]
-#[error("Error binding socket during construction of `Endpoint`: {error}")]
+#[error("Error constructing `Endpoint` with `Builder`: {error}")]
 pub struct Builder {
-	/// The error binding [`Endpoint`](crate::Endpoint).
+	/// Configuration error.
 	#[source]
-	pub error: io::Error,
+	pub error: Config,
 	/// Recovered [`Builder`](crate::Builder) for re-use.
 	pub builder: crate::Builder,
+}
+
+/// Configuration error.
+#[derive(Debug, Error)]
+pub enum Config {
+	/// The error binding [`Endpoint`](crate::Endpoint).
+	#[error("Error binding socket during construction of `Endpoint`: {0}")]
+	Bind(io::Error),
+	/// Error aquiring or parsing root certificates from the OS.
+	#[error(transparent)]
+	NativeCert(#[from] OsStore),
+}
+
+/// Error aquiring or parsing root certs from OS.
+#[derive(Debug, Error)]
+#[allow(variant_size_differences)]
+pub enum OsStore {
+	/// Failed to aquire root certs from OS.
+	#[error("Error aquiring root certificates from the OS: {0}")]
+	Aquire(io::Error),
+	/// Failed to parse root certs from OS.
+	#[error("Error parsing root certificates from the OS: {0}")]
+	Parse(Error),
 }
 
 /// Error connecting to a server with
@@ -140,13 +163,16 @@ pub enum Connect {
 	/// Failed to resolve domain with
 	/// [`ToSocketAddrs`](std::net::ToSocketAddrs).
 	#[error("Error resolving domain with `ToSocketAddrs`: {0}")]
-	StdDns(#[from] io::Error),
+	StdDns(io::Error),
 	/// Found no IP address for that domain.
 	#[error("Found no IP address for that domain")]
 	NoIp,
 	/// Configuration needed to connect to a server is faulty.
 	#[error("Error in configuration to connect to server: {0}")]
-	Config(#[from] ConnectError),
+	ConnectConfig(#[from] ConnectError),
+	/// Configuration faulty.
+	#[error("Error in configuration: {0}")]
+	Config(#[from] Config),
 }
 
 /// Error receiving stream from peer with [`Stream`](futures_util::Stream)

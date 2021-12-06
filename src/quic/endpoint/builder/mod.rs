@@ -440,23 +440,33 @@ impl Builder {
 	pub fn build(self) -> Result<Endpoint, error::Builder> {
 		match {
 			// build client
-			let client = self.config.new_client(
-				self.root_certificates.iter(),
+			let client = match self.config.new_client(
+				&self.root_certificates,
 				self.store,
 				self.client_key_pair.clone(),
 				false,
-			);
+			) {
+				Ok(client) => client,
+				Err(error) =>
+					return Err(error::Builder {
+						error: error.into(),
+						builder: self,
+					}),
+			};
 
 			// build server only if we have a key-pair
 			let server = self.server_key_pair.as_ref().map(|key_pair| {
 				let mut crypto = rustls::ServerConfig::builder()
-					.with_safe_defaults()
+					.with_safe_default_cipher_suites()
+					.with_safe_default_kx_groups()
+					.with_protocol_versions(&[&rustls::version::TLS13])
+					.expect("failed to configure correct protocol")
 					.with_client_cert_verifier(Arc::new(ClientVerifier))
 					.with_single_cert(
 						key_pair.certificate_chain().clone().into_rustls(),
 						key_pair.private_key().clone().into_rustls(),
 					)
-					.expect("failed to build server crypto config");
+					.expect("`CertificateChain` couldn't be verified");
 
 				// set protocols
 				crypto.alpn_protocols = self.config.protocols().to_vec();
@@ -473,7 +483,7 @@ impl Builder {
 		} {
 			Ok(endpoint) => Ok(endpoint),
 			Err(error) => Err(error::Builder {
-				error,
+				error: error::Config::Bind(error),
 				builder: self,
 			}),
 		}
@@ -492,6 +502,7 @@ impl ClientCertVerifier for ClientVerifier {
 	fn client_auth_root_subjects(&self) -> Option<DistinguishedNames> {
 		Some(DistinguishedNames::new())
 	}
+
 	fn verify_client_cert(
 		&self,
 		_end_entity: &rustls::Certificate,
@@ -517,7 +528,7 @@ pub enum Store {
 	/// Empty root certificate store.
 	Empty,
 	/// Uses the OS root certificate store, see
-	/// [`rustls-native-certs`](https://docs.rs/rustls-native-certs).
+	/// [`rustls-native-certs`](rustls_native_certs).
 	Os,
 	/// Use an embedded root certificate store, see
 	/// [`webpki-roots`](webpki_roots).
@@ -665,10 +676,9 @@ mod test {
 
 		// build client
 		let mut builder = Builder::new();
-		Dangerous::set_root_certificates(
-			&mut builder,
-			[server_key_pair.end_entity_certificate().clone()],
-		);
+		Dangerous::set_root_certificates(&mut builder, [server_key_pair
+			.end_entity_certificate()
+			.clone()]);
 		builder.set_client_key_pair(Some(client_key_pair.clone()));
 		let client = builder.build()?;
 

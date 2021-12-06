@@ -52,23 +52,21 @@ impl Certificate {
 		// `quinn` uses
 		let _ = match EndEntityCert::try_from(certificate.as_slice()) {
 			Ok(parsed) => parsed,
-			Err(error) => {
+			Err(error) =>
 				return Err(error::Certificate {
 					error: CertificateError::WebPki(error),
 					certificate,
-				})
-			}
+				}),
 		};
 
 		// parse certificate with the `x509-parser, which is what `rcgen` uses
 		let (trailing, parsed) = match X509Certificate::from_der(&certificate) {
 			Ok((trailing, bytes)) => (trailing, bytes),
-			Err(error) => {
+			Err(error) =>
 				return Err(error::Certificate {
 					error: CertificateError::X509(error),
 					certificate,
-				})
-			}
+				}),
 		};
 
 		// don't allow trailing bytes

@@ -5,13 +5,20 @@ use std::{sync::Arc, time::SystemTime};
 
 use quinn::{ClientConfig, TransportConfig};
 use rustls::{
-	client::{ResolvesClientCert, ServerCertVerified, ServerCertVerifier},
+	client::{
+		CertificateTransparencyPolicy, ResolvesClientCert, ServerCertVerified, ServerCertVerifier,
+		WebPkiVerifier,
+	},
 	sign::CertifiedKey,
 	OwnedTrustAnchor, RootCertStore, ServerName, SignatureScheme,
 };
+use time::{Date, Month, PrimitiveDateTime, Time};
 use webpki::TrustAnchor;
 
-use crate::{Certificate, KeyPair, Store};
+use crate::{
+	error::{self, OsStore},
+	Certificate, KeyPair, Store,
+};
 
 /// Persistent configuration shared between [`Builder`](crate::Builder) and
 /// [`Endpoint`](crate::Endpoint).
@@ -145,70 +152,110 @@ impl Config {
 	/// Panics if the given [`KeyPair`] or [`Certificate`]s are invalid. Can't
 	/// happen if they were properly validated through [`KeyPair::from_parts`]
 	/// or [`Certificate::from_der`].
-	pub(in crate::quic::endpoint) fn new_client<'a>(
+	#[allow(clippy::unwrap_in_result)]
+	pub(in crate::quic::endpoint) fn new_client(
 		&self,
-		certificates: impl IntoIterator<Item = &'a Certificate> + 'a,
+		certificates: &[Certificate],
 		store: Store,
 		client_key_pair: Option<KeyPair>,
 		disable_server_verification: bool,
-	) -> ClientConfig {
-		let mut certificate_store = match store {
-			Store::Empty => RootCertStore::empty(),
-			Store::Os => {
-				let mut store = RootCertStore::empty();
-				if let Ok(certs) = rustls_native_certs::load_native_certs() {
-					for cert in certs {
-						store
-							.add(&rustls::Certificate(cert.0))
-							.expect("invalid native cert");
-					}
+	) -> Result<ClientConfig, OsStore> {
+		// disable server certificate verification if demanded
+		let server_verifier: Arc<dyn ServerCertVerifier> = if disable_server_verification {
+			NoServerCertVerification::new()
+		} else {
+			// set default root certificates
+			let mut root_store = match store {
+				Store::Empty => RootCertStore::empty(),
+				Store::Os => {
+					let mut store = RootCertStore::empty();
+
+					store.roots = rustls_native_certs::load_native_certs()
+						.map_err(error::OsStore::Aquire)?
+						.into_iter()
+						.map(|certificate| {
+							let ta = TrustAnchor::try_from_cert_der(&certificate.0)
+								.map_err(error::OsStore::Parse)?;
+
+							Ok(OwnedTrustAnchor::from_subject_spki_name_constraints(
+								ta.subject,
+								ta.spki,
+								ta.name_constraints,
+							))
+						})
+						.collect::<Result<_, _>>()?;
+
+					store
 				}
-				store
-			}
-			Store::Embedded => {
-				let mut store = RootCertStore::empty();
-				store.add_server_trust_anchors(webpki_roots::TLS_SERVER_ROOTS.0.iter().map(|ta| {
-					OwnedTrustAnchor::from_subject_spki_name_constraints(
-						ta.subject,
-						ta.spki,
-						ta.name_constraints,
+				Store::Embedded => {
+					let mut store = RootCertStore::empty();
+
+					store.add_server_trust_anchors(webpki_roots::TLS_SERVER_ROOTS.0.iter().map(
+						|ta| {
+							OwnedTrustAnchor::from_subject_spki_name_constraints(
+								ta.subject,
+								ta.spki,
+								ta.name_constraints,
+							)
+						},
+					));
+
+					store
+				}
+			};
+
+			// add custom root certificates
+			let additional_anchors = certificates.iter().map(|certificate| {
+				let anchor = TrustAnchor::try_from_cert_der(certificate.as_ref())
+					.expect("`Certificate` couldn't be parsed");
+				OwnedTrustAnchor::from_subject_spki_name_constraints(
+					anchor.subject,
+					anchor.spki,
+					anchor.name_constraints,
+				)
+			});
+			root_store.add_server_trust_anchors(additional_anchors);
+
+			// Add certificate transparency logs
+			// TODO: configuratbility
+			let ct_policy = match store {
+				Store::Empty => None,
+				Store::Os | Store::Embedded => Some(CertificateTransparencyPolicy::new(
+					ct_logs::LOGS,
+					// Add one year to last release.
+					PrimitiveDateTime::new(
+						#[allow(clippy::integer_arithmetic)]
+						Date::from_calendar_date(2021 + 1, Month::April, 10).expect("invalid date"),
+						Time::MIDNIGHT,
 					)
-				}));
-				store
-			}
+					.assume_utc()
+					.into(),
+				)),
+			};
+
+			Arc::new(WebPkiVerifier::new(root_store, ct_policy))
 		};
 
-		let additional_anchors = certificates.into_iter().map(|certificate| {
-			let anchor = TrustAnchor::try_from_cert_der(certificate.as_ref())
-				.expect("`Certificate` couldn't be parsed");
-			OwnedTrustAnchor::from_subject_spki_name_constraints(
-				anchor.subject,
-				anchor.spki,
-				anchor.name_constraints,
-			)
-		});
-		certificate_store.add_server_trust_anchors(additional_anchors);
-		let mut crypto = rustls::ClientConfig::builder()
-			.with_safe_defaults()
-			.with_root_certificates(certificate_store)
-			.with_no_client_auth();
+		let crypto = rustls::ClientConfig::builder()
+			.with_safe_default_cipher_suites()
+			.with_safe_default_kx_groups()
+			.with_protocol_versions(&[&rustls::version::TLS13])
+			.expect("failed to configure correct protocol")
+			.with_custom_certificate_verifier(server_verifier);
 
+		let mut crypto = if let Some(key_pair) = client_key_pair {
+			crypto.with_client_cert_resolver(CertificateResolver::new(key_pair))
+		} else {
+			crypto.with_no_client_auth()
+		};
+
+		crypto.enable_early_data = true;
 		crypto.alpn_protocols = self.protocols.clone();
-		// insert client certificate
-		if let Some(key_pair) = client_key_pair {
-			crypto.client_auth_cert_resolver = CertificateResolver::new(key_pair);
-		}
-
-		// disable server certificate verification if demanded
-		if disable_server_verification {
-			crypto
-				.dangerous()
-				.set_certificate_verifier(NoServerCertVerification::new());
-		}
 
 		let mut client = ClientConfig::new(Arc::new(crypto));
 		client.transport = self.transport();
-		client
+
+		Ok(client)
 	}
 }
 

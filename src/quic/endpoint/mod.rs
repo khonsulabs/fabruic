@@ -7,6 +7,7 @@ use std::{
 	io::Error,
 	net::{SocketAddr, ToSocketAddrs},
 	pin::Pin,
+	slice,
 	sync::Arc,
 	task::{Context, Poll},
 };
@@ -136,7 +137,7 @@ impl Endpoint {
 	/// let endpoint = Endpoint::new_client()?;
 	/// # Ok(()) }
 	/// ```
-	pub fn new_client() -> Result<Self, Error> {
+	pub fn new_client() -> Result<Self, error::Config> {
 		Builder::new()
 			.build()
 			.map_err(|error::Builder { error, .. }| error)
@@ -163,7 +164,7 @@ impl Endpoint {
 	/// let endpoint = Endpoint::new_server(0, KeyPair::new_self_signed("self-signed"))?;
 	/// # Ok(()) }
 	/// ```
-	pub fn new_server(port: u16, key_pair: KeyPair) -> Result<Self, Error> {
+	pub fn new_server(port: u16, key_pair: KeyPair) -> Result<Self, error::Config> {
 		let mut builder = Builder::new();
 		#[cfg(not(feature = "test"))]
 		let _ = builder.set_address(([0; 8], port).into());
@@ -246,7 +247,7 @@ impl Endpoint {
 		Ok(Connecting::new(
 			self.endpoint
 				.connect(address, &domain)
-				.map_err(error::Connect::Config)?,
+				.map_err(error::Connect::ConnectConfig)?,
 		))
 	}
 
@@ -322,7 +323,7 @@ impl Endpoint {
 
 		// build client configuration
 		let client = self.config.new_client(
-			Some(server_certificate),
+			slice::from_ref(server_certificate),
 			Store::Empty,
 			client_key_pair,
 			false,
@@ -331,8 +332,8 @@ impl Endpoint {
 		// connect
 		let connecting = self
 			.endpoint
-			.connect_with(client, address, &domain)
-			.map_err(error::Connect::Config)?;
+			.connect_with(client.map_err(error::Config::from)?, address, &domain)
+			.map_err(error::Connect::ConnectConfig)?;
 
 		Ok(Connecting::new(connecting))
 	}
@@ -407,7 +408,11 @@ impl Endpoint {
 			// `ToSocketAddrs` needs a port
 			let domain = format!("{}:{}", domain, port);
 			tokio::task::spawn_blocking(move || {
-				domain.to_socket_addrs()?.next().ok_or(error::Connect::NoIp)
+				domain
+					.to_socket_addrs()
+					.map_err(error::Connect::StdDns)?
+					.next()
+					.ok_or(error::Connect::NoIp)
 			})
 			.await
 			.expect("Resolving domain panicked")?
@@ -572,13 +577,13 @@ impl Dangerous for Endpoint {
 		// build client configuration
 		let client = endpoint
 			.config
-			.new_client(None, Store::Empty, client_key_pair, true);
+			.new_client(&[], Store::Empty, client_key_pair, true);
 
 		// connect
 		let connecting = endpoint
 			.endpoint
-			.connect_with(client, address, "unverified")
-			.map_err(error::Connect::Config)?;
+			.connect_with(client.map_err(error::Config::from)?, address, "unverified")
+			.map_err(error::Connect::ConnectConfig)?;
 
 		Ok(Connecting::new(connecting))
 	}
