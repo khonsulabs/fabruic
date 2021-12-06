@@ -1,7 +1,6 @@
 //! [`PrivateKey`].
 
 use std::{
-	convert::TryFrom,
 	fmt::{self, Debug, Formatter},
 	sync::Arc,
 };
