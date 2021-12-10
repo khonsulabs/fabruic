@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;quic&#x2F;endpoint&#x2F;builder&#x2F;config.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>config.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../../ayu.css"disabled><link rel="stylesheet" type="text/css" href="../../../../../dark.css"disabled><link rel="stylesheet" type="text/css" href="../../../../../light.css"id="themeStyle"><script id="default-settings" ></script><script src="../../../../../storage.js"></script><script src="../../../../../crates.js"></script><script defer src="../../../../../main.js"></script><script defer src="../../../../../source-script.js"></script><script defer src="../../../../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;quic&#x2F;endpoint&#x2F;builder&#x2F;config.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>config.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../../../storage.js"></script><script src="../../../../../crates.js"></script><script defer src="../../../../../main.js"></script><script defer src="../../../../../source-script.js"></script><script defer src="../../../../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a class="sidebar-logo" href='../../../../../fabruic/index.html'><div class='logo-container rust-logo'><img src='../../../../../rust-logo.png' alt='logo'></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container rust-logo" href='../../../../../fabruic/index.html'><img src='../../../../../rust-logo.png' alt='logo'></a><nav class="sub"><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -312,12 +312,51 @@
 <span id="311">311</span>
 <span id="312">312</span>
 <span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Persistent configuration shared between [`Builder`](crate::Builder) and</span>
 <span class="doccomment">//! [`Endpoint`](crate::Endpoint).</span>
 
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">sync::Arc</span>, <span class="ident">time::SystemTime</span>};
+<span class="kw">use</span> <span class="ident">std</span>::{
+	<span class="ident">sync::Arc</span>,
+	<span class="ident">time</span>::{<span class="ident">Duration</span>, <span class="ident">SystemTime</span>},
+};
 
-<span class="kw">use</span> <span class="ident">quinn</span>::{<span class="ident">ClientConfig</span>, <span class="ident">TransportConfig</span>};
+<span class="kw">use</span> <span class="ident">quinn</span>::{<span class="ident">ClientConfig</span>, <span class="ident">IdleTimeout</span>, <span class="ident">TransportConfig</span>};
 <span class="kw">use</span> <span class="ident">rustls</span>::{
 	<span class="ident">client</span>::{
 		<span class="ident">CertificateTransparencyPolicy</span>, <span class="ident">ResolvesClientCert</span>, <span class="ident">ServerCertVerified</span>, <span class="ident">ServerCertVerifier</span>,
@@ -338,10 +377,10 @@
 <span class="doccomment">/// [`Endpoint`](crate::Endpoint).</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::quic::endpoint</span>) <span class="kw">struct</span> <span class="ident">Config</span> {
-	<span class="doccomment">/// Storing the default [`TransportConfig`].</span>
-	<span class="ident">transport</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TransportConfig</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Protocols used.</span>
 	<span class="ident">protocols</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// Store maximum idle timeout.</span>
+	<span class="ident">max_idle_timeout</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Duration</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Enable [`trust-dns`](trust_dns_resolver).</span>
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
 	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">doc</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)))]</span>
@@ -358,23 +397,11 @@
 
 <span class="kw">impl</span> <span class="ident">Config</span> {
 	<span class="doccomment">/// Builds a new [`Config`].</span>
-	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">transport</span> <span class="op">=</span> <span class="ident">TransportConfig::default</span>();
-
-		<span class="comment">// set transport defaults</span>
-		<span class="comment">// TODO: research other settings</span>
-		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">transport</span>
-			<span class="comment">// TODO: research if this is necessary, it improves privacy, but may hurt network</span>
-			<span class="comment">// providers?</span>
-			.<span class="ident">allow_spin</span>(<span class="bool-val">false</span>)
-			<span class="comment">// we don&#39;t support unordered for now</span>
-			.<span class="ident">datagram_receive_buffer_size</span>(<span class="prelude-val">None</span>)
-			<span class="comment">// for compatibility with WebRTC, we won&#39;t be using uni-directional streams</span>
-			.<span class="ident">max_concurrent_uni_streams</span>(<span class="ident">quinn::VarInt::from_u32</span>(<span class="number">0</span>));
-
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
 		<span class="self">Self</span> {
-			<span class="ident">transport</span>: <span class="ident">Arc::new</span>(<span class="ident">transport</span>),
 			<span class="ident">protocols</span>: <span class="ident">Vec::new</span>(),
+			<span class="comment">// default set by quinn</span>
+			<span class="ident">max_idle_timeout</span>: <span class="prelude-val">Some</span>(<span class="ident">Duration::from_secs</span>(<span class="number">10</span>)),
 			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
 			<span class="ident">trust_dns</span>: <span class="bool-val">true</span>,
 			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)]</span>
@@ -384,9 +411,26 @@
 		}
 	}
 
-	<span class="doccomment">/// Returns the default [`TransportConfig`].</span>
-	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">transport</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TransportConfig</span><span class="op">&gt;</span> {
-		<span class="ident">Arc::clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">transport</span>)
+	<span class="doccomment">/// Creates a with the correct settings [`TransportConfig`].</span>
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">transport</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TransportConfig</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">transport</span> <span class="op">=</span> <span class="ident">TransportConfig::default</span>();
+
+		<span class="comment">// set transport defaults</span>
+		<span class="comment">// TODO: research other settings</span>
+		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span>
+			<span class="ident">transport</span>
+				<span class="comment">// TODO: research if this is necessary, it improves privacy, but may hurt network</span>
+				<span class="comment">// providers?</span>
+				.<span class="ident">allow_spin</span>(<span class="bool-val">false</span>)
+				<span class="comment">// we don&#39;t support unordered for now</span>
+				.<span class="ident">datagram_receive_buffer_size</span>(<span class="prelude-val">None</span>)
+				<span class="comment">// for compatibility with WebRTC, we won&#39;t be using uni-directional streams</span>
+				.<span class="ident">max_concurrent_uni_streams</span>(<span class="ident">quinn::VarInt::from_u32</span>(<span class="number">0</span>))
+				.<span class="ident">max_idle_timeout</span>(<span class="self">self</span>.<span class="ident">max_idle_timeout</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">time</span><span class="op">|</span> {
+					<span class="ident">IdleTimeout::try_from</span>(<span class="ident">time</span>).<span class="ident">expect</span>(<span class="string">&quot;unexpected failure conversion&quot;</span>)
+				}));
+
+		<span class="ident">transport</span>
 	}
 
 	<span class="doccomment">/// Set the application-layer protocols.</span>
@@ -458,6 +502,34 @@
 	<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">doc</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;trust-dns&quot;</span>)))]</span>
 	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::quic::endpoint</span>) <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">hosts_file</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
 		<span class="self">self</span>.<span class="ident">hosts_file</span>
+	}
+
+	<span class="doccomment">/// Set&#39;s the maximum idle timeout a client can have before getting</span>
+	<span class="doccomment">/// automatically disconnected. Set [`None`] to disable automatic</span>
+	<span class="doccomment">/// disconnecting completely.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Errors</span>
+	<span class="doccomment">/// [`Config::MaxIdleTimeout`](error::Config::MaxIdleTimeout) if time</span>
+	<span class="doccomment">/// exceeds 2^62 ms.</span>
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::quic::endpoint</span>) <span class="kw">fn</span> <span class="ident">set_max_idle_timeout</span>(
+		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
+		<span class="ident">time</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Duration</span><span class="op">&gt;</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">error::Config</span><span class="op">&gt;</span> {
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">time</span>) <span class="op">=</span> <span class="ident">time</span> {
+			<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">IdleTimeout::try_from</span>(<span class="ident">time</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">_error</span><span class="op">|</span> <span class="ident">error::Config::MaxIdleTimeout</span>)<span class="question-mark">?</span>;
+		}
+
+		<span class="self">self</span>.<span class="ident">max_idle_timeout</span> <span class="op">=</span> <span class="ident">time</span>;
+
+		<span class="prelude-val">Ok</span>(())
+	}
+
+	<span class="doccomment">/// Returns the set [`Duration`] specified for idle clients to automatically</span>
+	<span class="doccomment">/// get disconnected. [`None`] means clients don&#39;t get automatically</span>
+	<span class="doccomment">/// disconnected.</span>
+	<span class="attribute">#[<span class="ident">must_use</span>]</span>
+	<span class="kw">pub</span>(<span class="kw">in</span> <span class="ident"><span class="kw">crate</span>::quic::endpoint</span>) <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">max_idle_timeout</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Duration</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">max_idle_timeout</span>
 	}
 
 	<span class="doccomment">/// Builds a new [`ClientConfig`] with this [`Config`] and adds</span>
@@ -568,7 +640,7 @@
 		<span class="ident">crypto</span>.<span class="ident">alpn_protocols</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">protocols</span>.<span class="ident">clone</span>();
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">ClientConfig::new</span>(<span class="ident">Arc::new</span>(<span class="ident">crypto</span>));
-		<span class="ident">client</span>.<span class="ident">transport</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">transport</span>();
+		<span class="ident">client</span>.<span class="ident">transport</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="self">self</span>.<span class="ident">transport</span>());
 
 		<span class="prelude-val">Ok</span>(<span class="ident">client</span>)
 	}
@@ -626,5 +698,5 @@
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../../" data-current-crate="fabruic" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.59.0-nightly (e2116acae 2021-12-05)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../../" data-current-crate="fabruic" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.59.0-nightly (0b42deacc 2021-12-09)" ></div>
 </body></html>
