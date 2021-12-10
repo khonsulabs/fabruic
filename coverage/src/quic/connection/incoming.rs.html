@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - incoming.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-06 15:05:53</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-10 23:17:58</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -70,61 +70,63 @@
 <div class="line"><span id="49" class="lineNum"><a href="#49">49</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`error::Incoming::Closed`] if the stream was closed</span></div>
 <div class="line"><span id="50" class="lineNum"><a href="#50">50</a></span><span class="counterUnCov"></span><span class="lineUnCov">	// TODO: fix lint</span></div>
 <div class="line"><span id="51" class="lineNum"><a href="#51">51</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[allow(unused_lifetimes)]</span></div>
-<div class="line"><span id="52" class="lineNum"><a href="#52">52</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub async fn r#type(&amp;mut self) -&gt; Result&lt;&amp;T, &amp;error::Incoming&gt; {</span></div>
-<div class="line"><span id="53" class="lineNum"><a href="#53">53</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		if let Some(ref r#type) = self.r#type {</span></div>
-<div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			r#type.as_ref()</span></div>
-<div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
-<div class="line"><span id="56" class="lineNum"><a href="#56">56</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			let r#type = self</span></div>
-<div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.receiver</span></div>
-<div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.next()</span></div>
-<div class="line"><span id="59" class="lineNum"><a href="#59">59</a></span><span class="counterUnCov"></span><span class="lineUnCov">				.await</span></div>
-<div class="line"><span id="60" class="lineNum"><a href="#60">60</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.map_or(Err(error::Incoming::Closed), |result| {</span></div>
-<div class="line"><span id="61" class="lineNum"><a href="#61">61</a></span><span class="counterNoCov">0</span><span class="lineNoCov">					result.map_err(error::Incoming::Receiver)</span></div>
-<div class="line"><span id="62" class="lineNum"><a href="#62">62</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				});</span></div>
-<div class="line"><span id="63" class="lineNum"><a href="#63">63</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			// TODO: replace with `Option::insert`</span></div>
-<div class="line"><span id="64" class="lineNum"><a href="#64">64</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			self.r#type = Some(r#type);</span></div>
-<div class="line"><span id="65" class="lineNum"><a href="#65">65</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			self.r#type</span></div>
-<div class="line"><span id="66" class="lineNum"><a href="#66">66</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.as_ref()</span></div>
-<div class="line"><span id="67" class="lineNum"><a href="#67">67</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.expect(&quot;`type` just inserted missing&quot;)</span></div>
+<div class="line"><span id="52" class="lineNum"><a href="#52">52</a></span><span class="counterUnCov"></span><span class="lineUnCov">	// TODO: return different state, because error can&#39;t be cloned and state is</span></div>
+<div class="line"><span id="53" class="lineNum"><a href="#53">53</a></span><span class="counterUnCov"></span><span class="lineUnCov">	// unusable anyway</span></div>
+<div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub async fn r#type(&amp;mut self) -&gt; Result&lt;&amp;T, &amp;error::Incoming&gt; {</span></div>
+<div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		if let Some(ref r#type) = self.r#type {</span></div>
+<div class="line"><span id="56" class="lineNum"><a href="#56">56</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			r#type.as_ref()</span></div>
+<div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
+<div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			let r#type = self</span></div>
+<div class="line"><span id="59" class="lineNum"><a href="#59">59</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.receiver</span></div>
+<div class="line"><span id="60" class="lineNum"><a href="#60">60</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.next()</span></div>
+<div class="line"><span id="61" class="lineNum"><a href="#61">61</a></span><span class="counterUnCov"></span><span class="lineUnCov">				.await</span></div>
+<div class="line"><span id="62" class="lineNum"><a href="#62">62</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.map_or(Err(error::Incoming::Closed), |result| {</span></div>
+<div class="line"><span id="63" class="lineNum"><a href="#63">63</a></span><span class="counterNoCov">0</span><span class="lineNoCov">					result.map_err(error::Incoming::Receiver)</span></div>
+<div class="line"><span id="64" class="lineNum"><a href="#64">64</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				});</span></div>
+<div class="line"><span id="65" class="lineNum"><a href="#65">65</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			// TODO: replace with `Option::insert`</span></div>
+<div class="line"><span id="66" class="lineNum"><a href="#66">66</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			self.r#type = Some(r#type);</span></div>
+<div class="line"><span id="67" class="lineNum"><a href="#67">67</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			self.r#type</span></div>
 <div class="line"><span id="68" class="lineNum"><a href="#68">68</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.as_ref()</span></div>
-<div class="line"><span id="69" class="lineNum"><a href="#69">69</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="70" class="lineNum"><a href="#70">70</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
-<div class="line"><span id="71" class="lineNum"><a href="#71">71</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="72" class="lineNum"><a href="#72">72</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Accept the incoming stream with the given types.</span></div>
-<div class="line"><span id="73" class="lineNum"><a href="#73">73</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="74" class="lineNum"><a href="#74">74</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Use `S` and `R` to define which type this stream is sending and</span></div>
-<div class="line"><span id="75" class="lineNum"><a href="#75">75</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// receiving.</span></div>
-<div class="line"><span id="76" class="lineNum"><a href="#76">76</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="77" class="lineNum"><a href="#77">77</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
-<div class="line"><span id="78" class="lineNum"><a href="#78">78</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`error::Incoming::Receiver`] if receiving the type information to the</span></div>
-<div class="line"><span id="79" class="lineNum"><a href="#79">79</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///   peer failed, see [`error::Receiver`] for more details</span></div>
-<div class="line"><span id="80" class="lineNum"><a href="#80">80</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`error::Incoming::Closed`] if the stream was closed</span></div>
-<div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterCov">101</span><span class="lineCov">	pub async fn accept&lt;</span></div>
-<div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterCov">101</span><span class="lineCov">		S: DeserializeOwned + Serialize + Send + &#39;static,</span></div>
-<div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterCov">101</span><span class="lineCov">		R: DeserializeOwned + Serialize + Send + &#39;static,</span></div>
-<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterCov">101</span><span class="lineCov">	&gt;(</span></div>
-<div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterCov">101</span><span class="lineCov">		mut self,</span></div>
-<div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterCov">101</span><span class="lineCov">	) -&gt; Result&lt;(Sender&lt;S&gt;, Receiver&lt;R&gt;), error::Incoming&gt; {</span></div>
-<div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		match self.r#type {</span></div>
-<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Some(Ok(_)) =&gt; (),</span></div>
-<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Some(Err(error)) =&gt; return Err(error),</span></div>
-<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterCov">100</span><span class="lineCov">			None =&gt; {</span></div>
-<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterCov">100</span><span class="lineCov">				let _type = self</span></div>
-<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterCov">100</span><span class="lineCov">					.receiver</span></div>
-<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterCov">100</span><span class="lineCov">					.next()</span></div>
-<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterUnCov"></span><span class="lineUnCov">					.await</span></div>
-<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">100</span><span class="lineCov">					.map_or(Err(error::Incoming::Closed), |result| {</span></div>
-<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterCov">100</span><span class="lineCov">						result.map_err(error::Incoming::Receiver)</span></div>
-<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">100</span><span class="lineCov">					});</span></div>
-<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterUnCov"></span><span class="lineUnCov">			}</span></div>
-<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterCov">100</span><span class="lineCov">		let sender = Sender::new(self.sender);</span></div>
-<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterCov">100</span><span class="lineCov">		let receiver = Receiver::new(self.receiver.transmute());</span></div>
-<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterCov">100</span><span class="lineCov"></span></div>
-<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterCov">100</span><span class="lineCov">		Ok((sender, receiver))</span></div>
-<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterCov">100</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="69" class="lineNum"><a href="#69">69</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.expect(&quot;`type` just inserted missing&quot;)</span></div>
+<div class="line"><span id="70" class="lineNum"><a href="#70">70</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.as_ref()</span></div>
+<div class="line"><span id="71" class="lineNum"><a href="#71">71</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
+<div class="line"><span id="72" class="lineNum"><a href="#72">72</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
+<div class="line"><span id="73" class="lineNum"><a href="#73">73</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="74" class="lineNum"><a href="#74">74</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Accept the incoming stream with the given types.</span></div>
+<div class="line"><span id="75" class="lineNum"><a href="#75">75</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="76" class="lineNum"><a href="#76">76</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Use `S` and `R` to define which type this stream is sending and</span></div>
+<div class="line"><span id="77" class="lineNum"><a href="#77">77</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// receiving.</span></div>
+<div class="line"><span id="78" class="lineNum"><a href="#78">78</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="79" class="lineNum"><a href="#79">79</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
+<div class="line"><span id="80" class="lineNum"><a href="#80">80</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`error::Incoming::Receiver`] if receiving the type information to the</span></div>
+<div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///   peer failed, see [`error::Receiver`] for more details</span></div>
+<div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// - [`error::Incoming::Closed`] if the stream was closed</span></div>
+<div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterCov">101</span><span class="lineCov">	pub async fn accept&lt;</span></div>
+<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterCov">101</span><span class="lineCov">		S: DeserializeOwned + Serialize + Send + &#39;static,</span></div>
+<div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterCov">101</span><span class="lineCov">		R: DeserializeOwned + Serialize + Send + &#39;static,</span></div>
+<div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterCov">101</span><span class="lineCov">	&gt;(</span></div>
+<div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterCov">101</span><span class="lineCov">		mut self,</span></div>
+<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterCov">101</span><span class="lineCov">	) -&gt; Result&lt;(Sender&lt;S&gt;, Receiver&lt;R&gt;), error::Incoming&gt; {</span></div>
+<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		match self.r#type {</span></div>
+<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Some(Ok(_)) =&gt; (),</span></div>
+<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			Some(Err(error)) =&gt; return Err(error),</span></div>
+<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterCov">100</span><span class="lineCov">			None =&gt; {</span></div>
+<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterCov">100</span><span class="lineCov">				let _type = self</span></div>
+<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterCov">100</span><span class="lineCov">					.receiver</span></div>
+<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">100</span><span class="lineCov">					.next()</span></div>
+<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterUnCov"></span><span class="lineUnCov">					.await</span></div>
+<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">100</span><span class="lineCov">					.map_or(Err(error::Incoming::Closed), |result| {</span></div>
+<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">100</span><span class="lineCov">						result.map_err(error::Incoming::Receiver)</span></div>
+<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterCov">100</span><span class="lineCov">					});</span></div>
+<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterUnCov"></span><span class="lineUnCov">			}</span></div>
+<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
+<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterCov">100</span><span class="lineCov">		let sender = Sender::new(self.sender);</span></div>
+<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterCov">100</span><span class="lineCov">		let receiver = Receiver::new(self.receiver.transmute());</span></div>
+<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterCov">100</span><span class="lineCov"></span></div>
+<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterCov">100</span><span class="lineCov">		Ok((sender, receiver))</span></div>
+<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterCov">100</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 </div>
 </body>
 </html>
