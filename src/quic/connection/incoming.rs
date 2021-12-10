@@ -49,6 +49,8 @@ impl<T: DeserializeOwned> Incoming<T> {
 	/// - [`error::Incoming::Closed`] if the stream was closed
 	// TODO: fix lint
 	#[allow(unused_lifetimes)]
+	// TODO: return different state, because error can't be cloned and state is
+	// unusable anyway
 	pub async fn r#type(&mut self) -> Result<&T, &error::Incoming> {
 		if let Some(ref r#type) = self.r#type {
 			r#type.as_ref()
