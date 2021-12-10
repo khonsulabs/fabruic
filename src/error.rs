@@ -25,7 +25,7 @@ use zeroize::Zeroize;
 
 /// Error constructing [`Certificate`](crate::Certificate) with
 /// [`Certificate::from_der`](crate::Certificate::from_der).
-#[derive(Debug, Error)]
+#[derive(Clone, Debug, Error, PartialEq)]
 #[error("Error constructing `Certificate` from bytes: {error}")]
 pub struct Certificate {
 	/// The error.
@@ -38,7 +38,7 @@ pub struct Certificate {
 /// Error constructing [`Certificate`](crate::Certificate) with
 /// [`Certificate::from_der`](crate::Certificate::from_der).
 #[allow(clippy::module_name_repetitions)]
-#[derive(Debug, Error)]
+#[derive(Clone, Debug, Error, PartialEq)]
 pub enum CertificateError {
 	/// [`Error`](std::error::Error) returned by [`webpki`].
 	#[error(transparent)]

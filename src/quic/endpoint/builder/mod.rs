@@ -26,7 +26,7 @@ use crate::{error, Certificate, Endpoint, KeyPair};
 /// # Ok(()) }
 /// ```
 #[must_use = "doesn't do anything unless `Builder::build` is called"]
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Builder {
 	/// [`SocketAddr`] for [`Endpoint`](quinn::Endpoint) to bind to.
 	address: SocketAddr,
