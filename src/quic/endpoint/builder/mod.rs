@@ -1,7 +1,12 @@
 //! [`Endpoint`] builder.
 
 mod config;
-use std::{fmt::Debug, net::SocketAddr, sync::Arc, time::SystemTime};
+use std::{
+	fmt::Debug,
+	net::SocketAddr,
+	sync::Arc,
+	time::{Duration, SystemTime},
+};
 
 pub(super) use config::Config;
 use rustls::{
@@ -416,6 +421,59 @@ impl Builder {
 		self.store
 	}
 
+	/// Set's the maximum idle timeout a client can have before getting
+	/// automatically disconnected. Set [`None`] to disable automatic
+	/// disconnecting completely.
+	///
+	/// # Default
+	/// 10s
+	///
+	/// # Examples
+	/// ```
+	/// use std::time::Duration;
+	///
+	/// use fabruic::{Builder, Store};
+	///
+	/// let mut builder = Builder::new();
+	/// builder.set_max_idle_timeout(Some(Duration::from_millis(1000)));
+	/// ```
+	///
+	/// # Errors
+	/// [`Config::MaxIdleTimeout`](error::Config::MaxIdleTimeout) if time
+	/// exceeds 2^62 ms.
+	#[allow(clippy::unwrap_in_result)]
+	pub fn set_max_idle_timeout(&mut self, time: Option<Duration>) -> Result<(), error::Config> {
+		self.config.set_max_idle_timeout(time)
+	}
+
+	/// Returns the set [`Duration`] specified for idle clients to automatically
+	/// get disconnected. [`None`] means clients don't get automatically
+	/// disconnected.
+	///
+	/// See [`set_max_idle_timeout`](Self::set_max_idle_timeout).
+	///
+	/// # Examples
+	/// ```
+	/// use std::time::Duration;
+	///
+	/// use fabruic::{Builder, Store};
+	///
+	/// let mut builder = Builder::new();
+	///
+	/// // default
+	/// assert_eq!(builder.max_idle_timeout(), Some(Duration::from_secs(10)));
+	///
+	/// builder.set_max_idle_timeout(None);
+	/// assert_eq!(builder.max_idle_timeout(), None);
+	///
+	/// builder.set_max_idle_timeout(Some(Duration::from_secs(30)));
+	/// assert_eq!(builder.max_idle_timeout(), Some(Duration::from_secs(30)));
+	/// ```
+	#[must_use]
+	pub const fn max_idle_timeout(&self) -> Option<Duration> {
+		self.config.max_idle_timeout()
+	}
+
 	/// Consumes [`Builder`] to build [`Endpoint`]. Must be called from inside a
 	/// Tokio [`Runtime`](tokio::runtime::Runtime).
 	///
@@ -474,7 +532,7 @@ impl Builder {
 				let mut server = quinn::ServerConfig::with_crypto(Arc::new(crypto));
 
 				// set transport
-				server.transport = self.config.transport();
+				server.transport = Arc::new(self.config.transport());
 
 				server
 			});

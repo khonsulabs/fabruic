@@ -117,6 +117,9 @@ pub enum Config {
 	/// Error aquiring or parsing root certificates from the OS.
 	#[error(transparent)]
 	NativeCert(#[from] OsStore),
+	/// Returned when timeout chosen is equal or bigger than 2^62 ms.
+	#[error("Invalid timeout, can't exceed 2^62 ms")]
+	MaxIdleTimeout,
 }
 
 /// Error aquiring or parsing root certs from OS.

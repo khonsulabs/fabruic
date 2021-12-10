@@ -1,9 +1,12 @@
 //! Persistent configuration shared between [`Builder`](crate::Builder) and
 //! [`Endpoint`](crate::Endpoint).
 
-use std::{sync::Arc, time::SystemTime};
+use std::{
+	sync::Arc,
+	time::{Duration, SystemTime},
+};
 
-use quinn::{ClientConfig, TransportConfig};
+use quinn::{ClientConfig, IdleTimeout, TransportConfig};
 use rustls::{
 	client::{
 		CertificateTransparencyPolicy, ResolvesClientCert, ServerCertVerified, ServerCertVerifier,
@@ -24,10 +27,10 @@ use crate::{
 /// [`Endpoint`](crate::Endpoint).
 #[derive(Clone, Debug)]
 pub(in crate::quic::endpoint) struct Config {
-	/// Storing the default [`TransportConfig`].
-	transport: Arc<TransportConfig>,
 	/// Protocols used.
 	protocols: Vec<Vec<u8>>,
+	/// Store maximum idle timeout.
+	max_idle_timeout: Option<Duration>,
 	/// Enable [`trust-dns`](trust_dns_resolver).
 	#[cfg(feature = "trust-dns")]
 	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
@@ -44,23 +47,11 @@ pub(in crate::quic::endpoint) struct Config {
 
 impl Config {
 	/// Builds a new [`Config`].
-	pub(super) fn new() -> Self {
-		let mut transport = TransportConfig::default();
-
-		// set transport defaults
-		// TODO: research other settings
-		let _ = transport
-			// TODO: research if this is necessary, it improves privacy, but may hurt network
-			// providers?
-			.allow_spin(false)
-			// we don't support unordered for now
-			.datagram_receive_buffer_size(None)
-			// for compatibility with WebRTC, we won't be using uni-directional streams
-			.max_concurrent_uni_streams(quinn::VarInt::from_u32(0));
-
+	pub(super) const fn new() -> Self {
 		Self {
-			transport: Arc::new(transport),
 			protocols: Vec::new(),
+			// default set by quinn
+			max_idle_timeout: Some(Duration::from_secs(10)),
 			#[cfg(feature = "trust-dns")]
 			trust_dns: true,
 			#[cfg(feature = "trust-dns")]
@@ -70,9 +61,26 @@ impl Config {
 		}
 	}
 
-	/// Returns the default [`TransportConfig`].
-	pub(super) fn transport(&self) -> Arc<TransportConfig> {
-		Arc::clone(&self.transport)
+	/// Creates a with the correct settings [`TransportConfig`].
+	pub(super) fn transport(&self) -> TransportConfig {
+		let mut transport = TransportConfig::default();
+
+		// set transport defaults
+		// TODO: research other settings
+		let _ =
+			transport
+				// TODO: research if this is necessary, it improves privacy, but may hurt network
+				// providers?
+				.allow_spin(false)
+				// we don't support unordered for now
+				.datagram_receive_buffer_size(None)
+				// for compatibility with WebRTC, we won't be using uni-directional streams
+				.max_concurrent_uni_streams(quinn::VarInt::from_u32(0))
+				.max_idle_timeout(self.max_idle_timeout.map(|time| {
+					IdleTimeout::try_from(time).expect("unexpected failure conversion")
+				}));
+
+		transport
 	}
 
 	/// Set the application-layer protocols.
@@ -144,6 +152,34 @@ impl Config {
 	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	pub(in crate::quic::endpoint) const fn hosts_file(&self) -> bool {
 		self.hosts_file
+	}
+
+	/// Set's the maximum idle timeout a client can have before getting
+	/// automatically disconnected. Set [`None`] to disable automatic
+	/// disconnecting completely.
+	///
+	/// # Errors
+	/// [`Config::MaxIdleTimeout`](error::Config::MaxIdleTimeout) if time
+	/// exceeds 2^62 ms.
+	pub(in crate::quic::endpoint) fn set_max_idle_timeout(
+		&mut self,
+		time: Option<Duration>,
+	) -> Result<(), error::Config> {
+		if let Some(time) = time {
+			let _ = IdleTimeout::try_from(time).map_err(|_error| error::Config::MaxIdleTimeout)?;
+		}
+
+		self.max_idle_timeout = time;
+
+		Ok(())
+	}
+
+	/// Returns the set [`Duration`] specified for idle clients to automatically
+	/// get disconnected. [`None`] means clients don't get automatically
+	/// disconnected.
+	#[must_use]
+	pub(in crate::quic::endpoint) const fn max_idle_timeout(&self) -> Option<Duration> {
+		self.max_idle_timeout
 	}
 
 	/// Builds a new [`ClientConfig`] with this [`Config`] and adds
@@ -254,7 +290,7 @@ impl Config {
 		crypto.alpn_protocols = self.protocols.clone();
 
 		let mut client = ClientConfig::new(Arc::new(crypto));
-		client.transport = self.transport();
+		client.transport = Arc::new(self.transport());
 
 		Ok(client)
 	}
