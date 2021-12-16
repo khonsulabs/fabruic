@@ -75,5 +75,8 @@ pub mod dangerous {
 pub mod error;
 mod quic;
 
-pub use quic::{Builder, Connecting, Connection, Endpoint, Incoming, Receiver, Sender, Store};
+pub use quic::{
+	Builder, Connecting, Connection, Endpoint, Incoming, Receiver, Sender, ServerCertificateConfig,
+	Store,
+};
 pub use x509::{Certificate, CertificateChain, KeyPair, PrivateKey};

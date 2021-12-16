@@ -14,7 +14,7 @@ use std::{
 
 use async_trait::async_trait;
 use builder::Config;
-pub use builder::{Builder, Dangerous as BuilderDangerous, Store};
+pub use builder::{Builder, Dangerous as BuilderDangerous, ServerCertificateConfig, Store};
 use flume::{r#async::RecvStream, Sender};
 use futures_channel::oneshot::Receiver;
 use futures_util::{
@@ -171,7 +171,7 @@ impl Endpoint {
 		// while testing always use the default loopback address
 		#[cfg(feature = "test")]
 		builder.set_address(([0, 0, 0, 0, 0, 0, 0, 1], port).into());
-		builder.set_server_key_pair(Some(key_pair));
+		builder.set_server_certificate_config(Some(key_pair));
 
 		builder
 			.build()
@@ -467,7 +467,7 @@ impl Endpoint {
 	/// finish first. This will always return [`error::AlreadyClosed`] if the
 	/// [`Endpoint`] wasn't started with a listener.
 	///
-	/// See [`Builder::set_server_key_pair`].
+	/// See [`Builder::set_server_certificate_config`].
 	///
 	/// # Errors
 	/// [`error::AlreadyClosed`] if it was already closed.
