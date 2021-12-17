@@ -732,7 +732,9 @@ mod test {
 				.await?
 				.accept::<()>()
 				.await,
-			Err(error::Connecting(ConnectionError::LocallyClosed))
+			Err(error::Connecting::Connection(
+				ConnectionError::LocallyClosed
+			))
 		));
 
 		// waiting for a new connection on a closed server shouldn't work
@@ -786,7 +788,7 @@ mod test {
 			.await;
 		assert!(matches!(
 			result,
-			Err(error::Connecting(ConnectionError::ConnectionClosed(
+			Err(error::Connecting::Connection(ConnectionError::ConnectionClosed(
 				ConnectionClose {
 					error_code: TransportErrorCode::CONNECTION_REFUSED,
 					frame_type: None,

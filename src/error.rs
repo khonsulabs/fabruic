@@ -13,6 +13,7 @@ use std::{
 };
 
 pub use bincode::ErrorKind;
+use quinn::ConnectionClose;
 pub use quinn::{ConnectError, ConnectionError, ReadError, WriteError};
 use thiserror::Error;
 #[cfg(feature = "trust-dns")]
@@ -188,8 +189,29 @@ pub struct Connection(pub ConnectionError);
 /// [`Incoming::type`](crate::Incoming::type) or
 /// [`Incoming::accept`](crate::Incoming::accept).
 #[derive(Clone, Debug, Eq, Error, PartialEq)]
-#[error("Error completing connection with peer: {0}")]
-pub struct Connecting(pub ConnectionError);
+pub enum Connecting {
+	/// The peer did not accept any of the protocols specified.
+	#[error("Peer failed to negotiate a protocol")]
+	ProtocolMismatch,
+	/// An error completing the connection.
+	#[error("Error completing connection with peer: {0}")]
+	Connection(ConnectionError),
+}
+
+impl From<ConnectionError> for Connecting {
+	fn from(err: ConnectionError) -> Self {
+		match err {
+			ConnectionError::ConnectionClosed(ConnectionClose {
+				error_code,
+				frame_type: None,
+				reason,
+			}) if reason.as_ref() == b"peer doesn't support any known protocol"
+				&& error_code.to_string() == "the cryptographic handshake failed: error 120" =>
+				Self::ProtocolMismatch,
+			other => Self::Connection(other),
+		}
+	}
+}
 
 /// Error opening a new stream to peer with
 /// [`Connection::open_stream`](crate::Connection::open_stream).
