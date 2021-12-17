@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - sender.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-10 23:17:58</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-17 19:17:42</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -72,7 +72,7 @@
 <div class="line"><span id="51" class="lineNum"><a href="#51">51</a></span><span class="counterCov">502</span><span class="lineCov">				match message {</span></div>
 <div class="line"><span id="52" class="lineNum"><a href="#52">52</a></span><span class="counterCov">301</span><span class="lineCov">					Message::Data(bytes) =&gt; stream_sender.write_chunk(bytes).await?,</span></div>
 <div class="line"><span id="53" class="lineNum"><a href="#53">53</a></span><span class="counterUnCov"></span><span class="lineUnCov">					Message::Finish =&gt; {</span></div>
-<div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterCov">201</span><span class="lineCov">						stream_sender.finish().await?;</span></div>
+<div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterCov">402</span><span class="lineCov">						stream_sender.finish().await?;</span></div>
 <div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterCov">201</span><span class="lineCov">						break;</span></div>
 <div class="line"><span id="56" class="lineNum"><a href="#56">56</a></span><span class="counterUnCov"></span><span class="lineUnCov">					}</span></div>
 <div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterUnCov"></span><span class="lineUnCov">					Message::Close =&gt; {</span></div>
@@ -165,7 +165,7 @@
 <div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// already closed, but if the [`Sender`] failed to write to the stream it</span></div>
 <div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// will return a queued [`error::Sender::Write`].</span></div>
 <div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterCov">201</span><span class="lineCov">	pub async fn finish(&amp;self) -&gt; Result&lt;(), error::Sender&gt; {</span></div>
-<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterCov">201</span><span class="lineCov">		self.task.close(Message::Finish).await?</span></div>
+<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterCov">402</span><span class="lineCov">		self.task.close(Message::Finish).await?</span></div>
 <div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterCov">201</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Close the [`Sender`] immediately.</span></div>

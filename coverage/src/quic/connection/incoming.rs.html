@@ -9,11 +9,11 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - incoming.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-10 23:17:58</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-17 19:17:42</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">25</span><span class="linesTotal">51</span><span class="linesPercentage lineLow">49.0 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">25</span><span class="linesTotal">53</span><span class="linesPercentage lineLow">47.2 %</span></div>
 <div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">5</span><span class="funsTotal">12</span><span class="funsPercentage funLow">41.7 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
@@ -79,7 +79,7 @@
 <div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			let r#type = self</span></div>
 <div class="line"><span id="59" class="lineNum"><a href="#59">59</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.receiver</span></div>
 <div class="line"><span id="60" class="lineNum"><a href="#60">60</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.next()</span></div>
-<div class="line"><span id="61" class="lineNum"><a href="#61">61</a></span><span class="counterUnCov"></span><span class="lineUnCov">				.await</span></div>
+<div class="line"><span id="61" class="lineNum"><a href="#61">61</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.await</span></div>
 <div class="line"><span id="62" class="lineNum"><a href="#62">62</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.map_or(Err(error::Incoming::Closed), |result| {</span></div>
 <div class="line"><span id="63" class="lineNum"><a href="#63">63</a></span><span class="counterNoCov">0</span><span class="lineNoCov">					result.map_err(error::Incoming::Receiver)</span></div>
 <div class="line"><span id="64" class="lineNum"><a href="#64">64</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				});</span></div>
@@ -114,7 +114,7 @@
 <div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterCov">100</span><span class="lineCov">				let _type = self</span></div>
 <div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterCov">100</span><span class="lineCov">					.receiver</span></div>
 <div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">100</span><span class="lineCov">					.next()</span></div>
-<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterUnCov"></span><span class="lineUnCov">					.await</span></div>
+<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterNoCov">0</span><span class="lineNoCov">					.await</span></div>
 <div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">100</span><span class="lineCov">					.map_or(Err(error::Incoming::Closed), |result| {</span></div>
 <div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">100</span><span class="lineCov">						result.map_err(error::Incoming::Receiver)</span></div>
 <div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterCov">100</span><span class="lineCov">					});</span></div>

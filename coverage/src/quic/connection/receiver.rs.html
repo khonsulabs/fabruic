@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - receiver.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-10 23:17:58</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-17 19:17:42</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -113,7 +113,7 @@
 <div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Errors</span></div>
 <div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`error::AlreadyClosed`] if it has already been closed.</span></div>
 <div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterCov">200</span><span class="lineCov">	pub async fn finish(&amp;self) -&gt; Result&lt;(), error::AlreadyClosed&gt; {</span></div>
-<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">200</span><span class="lineCov">		(&amp;self.task).await?</span></div>
+<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterCov">224</span><span class="lineCov">		(&amp;self.task).await?</span></div>
 <div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterCov">200</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Close the [`Receiver`] immediately. To close a [`Receiver`] gracefully</span></div>

@@ -9,11 +9,11 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - connecting.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-10 23:17:58</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-17 19:17:42</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">25</span><span class="linesTotal">26</span><span class="linesPercentage lineHi">96.2 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">27</span><span class="linesTotal">28</span><span class="linesPercentage lineHi">96.4 %</span></div>
 <div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">13</span><span class="funsTotal">23</span><span class="funsPercentage funLow">56.5 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
@@ -48,12 +48,12 @@
 <div class="line"><span id="27" class="lineNum"><a href="#27">27</a></span><span class="counterCov">2</span><span class="lineCov">	pub async fn protocol(&amp;mut self) -&gt; Result&lt;Option&lt;Vec&lt;u8&gt;&gt;, error::Connecting&gt; {</span></div>
 <div class="line"><span id="28" class="lineNum"><a href="#28">28</a></span><span class="counterCov">2</span><span class="lineCov">		self.0</span></div>
 <div class="line"><span id="29" class="lineNum"><a href="#29">29</a></span><span class="counterCov">2</span><span class="lineCov">			.handshake_data()</span></div>
-<div class="line"><span id="30" class="lineNum"><a href="#30">30</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.await</span></div>
+<div class="line"><span id="30" class="lineNum"><a href="#30">30</a></span><span class="counterCov">1</span><span class="lineCov">			.await</span></div>
 <div class="line"><span id="31" class="lineNum"><a href="#31">31</a></span><span class="counterCov">2</span><span class="lineCov">			.map(|data| {</span></div>
 <div class="line"><span id="32" class="lineNum"><a href="#32">32</a></span><span class="counterCov">2</span><span class="lineCov">				data.downcast_ref::&lt;HandshakeData&gt;()</span></div>
 <div class="line"><span id="33" class="lineNum"><a href="#33">33</a></span><span class="counterCov">2</span><span class="lineCov">					.and_then(|data| data.protocol.clone())</span></div>
 <div class="line"><span id="34" class="lineNum"><a href="#34">34</a></span><span class="counterCov">2</span><span class="lineCov">			})</span></div>
-<div class="line"><span id="35" class="lineNum"><a href="#35">35</a></span><span class="counterCov">2</span><span class="lineCov">			.map_err(error::Connecting)</span></div>
+<div class="line"><span id="35" class="lineNum"><a href="#35">35</a></span><span class="counterCov">2</span><span class="lineCov">			.map_err(error::Connecting::from)</span></div>
 <div class="line"><span id="36" class="lineNum"><a href="#36">36</a></span><span class="counterCov">2</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="37" class="lineNum"><a href="#37">37</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="38" class="lineNum"><a href="#38">38</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// The peer&#39;s address. Clients may change addresses at will, e.g. when</span></div>
@@ -72,7 +72,7 @@
 <div class="line"><span id="51" class="lineNum"><a href="#51">51</a></span><span class="counterCov">222</span><span class="lineCov">		self,</span></div>
 <div class="line"><span id="52" class="lineNum"><a href="#52">52</a></span><span class="counterCov">222</span><span class="lineCov">	) -&gt; Result&lt;Connection&lt;T&gt;, error::Connecting&gt; {</span></div>
 <div class="line"><span id="53" class="lineNum"><a href="#53">53</a></span><span class="counterCov">222</span><span class="lineCov">		self.0</span></div>
-<div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterUnCov"></span><span class="lineUnCov">			.await</span></div>
+<div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterCov">221</span><span class="lineCov">			.await</span></div>
 <div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterCov">222</span><span class="lineCov">			.map(</span></div>
 <div class="line"><span id="56" class="lineNum"><a href="#56">56</a></span><span class="counterCov">222</span><span class="lineCov">				|NewConnection {</span></div>
 <div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterUnCov"></span><span class="lineUnCov">				     connection,</span></div>
@@ -80,7 +80,7 @@
 <div class="line"><span id="59" class="lineNum"><a href="#59">59</a></span><span class="counterUnCov"></span><span class="lineUnCov">				     ..</span></div>
 <div class="line"><span id="60" class="lineNum"><a href="#60">60</a></span><span class="counterCov">222</span><span class="lineCov">				 }| Connection::new(connection, bi_streams),</span></div>
 <div class="line"><span id="61" class="lineNum"><a href="#61">61</a></span><span class="counterCov">222</span><span class="lineCov">			)</span></div>
-<div class="line"><span id="62" class="lineNum"><a href="#62">62</a></span><span class="counterCov">222</span><span class="lineCov">			.map_err(error::Connecting)</span></div>
+<div class="line"><span id="62" class="lineNum"><a href="#62">62</a></span><span class="counterCov">222</span><span class="lineCov">			.map_err(error::Connecting::from)</span></div>
 <div class="line"><span id="63" class="lineNum"><a href="#63">63</a></span><span class="counterCov">222</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="64" class="lineNum"><a href="#64">64</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 </div>
