@@ -660,7 +660,7 @@ mod test {
 
 	use anyhow::Result;
 	use futures_util::StreamExt;
-	use quinn::{ConnectionClose, ConnectionError};
+	use quinn::ConnectionError;
 	use quinn_proto::TransportError;
 	use trust_dns_proto::error::ProtoErrorKind;
 	use trust_dns_resolver::error::ResolveErrorKind;
@@ -871,14 +871,7 @@ mod test {
 			.await;
 
 		// check result
-		assert!(matches!(
-			result,
-			Err(error::Connecting(ConnectionError::ConnectionClosed(ConnectionClose {
-				error_code,
-				frame_type: None,
-				reason
-			}))) if (reason.as_ref() == b"peer doesn't support any known protocol")
-				&& error_code.to_string() == "the cryptographic handshake failed: error 120"));
+		assert!(matches!(result, Err(error::Connecting::ProtocolMismatch)));
 
 		// on protocol mismatch, the server receives nothing
 		assert!(matches!(futures_util::poll!(server.next()), Poll::Pending));
@@ -1070,7 +1063,7 @@ mod test {
 		// check result
 		assert!(matches!(
 				result,
-				Err(error::Connecting(ConnectionError::TransportError(TransportError {
+				Err(error::Connecting::Connection(ConnectionError::TransportError(TransportError {
 					code,
 					frame: None,
 					reason

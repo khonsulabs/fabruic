@@ -32,7 +32,7 @@ impl Connecting {
 				data.downcast_ref::<HandshakeData>()
 					.and_then(|data| data.protocol.clone())
 			})
-			.map_err(error::Connecting)
+			.map_err(error::Connecting::from)
 	}
 
 	/// The peer's address. Clients may change addresses at will, e.g. when
@@ -59,6 +59,6 @@ impl Connecting {
 				     ..
 				 }| Connection::new(connection, bi_streams),
 			)
-			.map_err(error::Connecting)
+			.map_err(error::Connecting::from)
 	}
 }
