@@ -182,7 +182,7 @@ where
 
 #[test]
 fn serialize() -> anyhow::Result<()> {
-	use bincode::{config::DefaultOptions, Options, Serializer};
+	use transmog_bincode::bincode::{self, config::DefaultOptions, Options, Serializer};
 
 	let key_pair = KeyPair::new_self_signed("test");
 

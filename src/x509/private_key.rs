@@ -129,7 +129,7 @@ impl Dangerous for PrivateKey {
 #[cfg(test)]
 mod test {
 	use anyhow::Result;
-	use bincode::{config::DefaultOptions, Options, Serializer};
+	use transmog_bincode::bincode::{self, config::DefaultOptions, Options, Serializer};
 
 	use super::*;
 	use crate::KeyPair;

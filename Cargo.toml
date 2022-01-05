@@ -16,7 +16,7 @@ trust-dns = ["trust-dns-resolver"]
 
 [dependencies]
 async-trait = "0.1"
-bincode = "1"
+transmog = "0.1.0-dev.2"
 bytes = "1"
 ct-logs = "0.9"
 flume = "0.10"
@@ -54,6 +54,8 @@ fabruic = { path = "", features = ["rcgen", "test"] }
 quinn-proto = { version = "0.8", default-features = false }
 tokio = { version = "1", features = ["macros"] }
 trust-dns-proto = "0.21.0-alpha.4"
+transmog-bincode = { version = "0.1.0-dev.2" }
+transmog-pot = { version = "0.1.0-dev.2" }
 
 [profile.release]
 codegen-units = 1

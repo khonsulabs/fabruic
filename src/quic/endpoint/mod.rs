@@ -615,6 +615,7 @@ mod test {
 	use futures_util::StreamExt;
 	use quinn::{ConnectionClose, ConnectionError};
 	use quinn_proto::TransportErrorCode;
+	use transmog_bincode::Bincode;
 
 	use super::*;
 	use crate::KeyPair;
@@ -638,13 +639,13 @@ mod test {
 				None,
 			)
 			.await?
-			.accept::<()>()
+			.accept::<(), _>(Bincode::default())
 			.await?;
 		let _connection = server
 			.next()
 			.await
 			.expect("client dropped")
-			.accept::<()>()
+			.accept::<(), _>(Bincode::default())
 			.await?;
 
 		Ok(())
@@ -663,13 +664,13 @@ mod test {
 			None,
 		)
 		.await?
-		.accept::<()>()
+		.accept::<(), _>(Bincode::default())
 		.await?;
 		let _connection = server
 			.next()
 			.await
 			.expect("client dropped")
-			.accept::<()>()
+			.accept::<(), _>(Bincode::default())
 			.await?;
 
 		Ok(())
@@ -712,13 +713,13 @@ mod test {
 		let _connection = client
 			.connect_pinned(&address, key_pair.end_entity_certificate(), None)
 			.await?
-			.accept::<()>()
+			.accept::<(), _>(Bincode::default())
 			.await?;
 		let _connection = server
 			.next()
 			.await
 			.expect("client dropped")
-			.accept::<()>()
+			.accept::<(), _>(Bincode::default())
 			.await?;
 
 		// closing the client/server will close all connection immediately
@@ -730,7 +731,7 @@ mod test {
 			client
 				.connect_pinned(address, key_pair.end_entity_certificate(), None)
 				.await?
-				.accept::<()>()
+				.accept::<(), _>(Bincode::default())
 				.await,
 			Err(error::Connecting::Connection(
 				ConnectionError::LocallyClosed
@@ -759,13 +760,13 @@ mod test {
 		let client_connection = client
 			.connect_pinned(&address, key_pair.end_entity_certificate(), None)
 			.await?
-			.accept::<()>()
+			.accept::<(), _>(Bincode::default())
 			.await?;
 		let mut server_connection = server
 			.next()
 			.await
 			.expect("client dropped")
-			.accept::<()>()
+			.accept::<(), _>(Bincode::default())
 			.await?;
 
 		// refuse new incoming connections
@@ -784,7 +785,7 @@ mod test {
 		let result = client
 			.connect_pinned(address, key_pair.end_entity_certificate(), None)
 			.await?
-			.accept::<()>()
+			.accept::<(), _>(Bincode::default())
 			.await;
 		assert!(matches!(
 			result,
@@ -837,13 +838,13 @@ mod test {
 					None,
 				)
 				.await?
-				.accept::<()>()
+				.accept::<(), _>(Bincode::default())
 				.await?;
 			let _connection = server
 				.next()
 				.await
 				.expect("client dropped")
-				.accept::<()>()
+				.accept::<(), _>(Bincode::default())
 				.await?;
 		}
 
