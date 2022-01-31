@@ -9,12 +9,12 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-17 21:08:56</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2022-01-31 07:01:12</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
 <div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">65</span><span class="linesTotal">83</span><span class="linesPercentage lineMed">78.3 %</span></div>
-<div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">29</span><span class="funsTotal">41</span><span class="funsPercentage funLow">70.7 %</span></div>
+<div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">29</span><span class="funsTotal">69</span><span class="funsPercentage funLow">42.0 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
 </div>
@@ -98,11 +98,11 @@
 <div class="line"><span id="77" class="lineNum"><a href="#77">77</a></span><span class="counterCov">218</span><span class="lineCov">		// `Task` handling incoming streams</span></div>
 <div class="line"><span id="78" class="lineNum"><a href="#78">78</a></span><span class="counterCov">218</span><span class="lineCov">		let task = Task::new(|mut shutdown| async move {</span></div>
 <div class="line"><span id="79" class="lineNum"><a href="#79">79</a></span><span class="counterCov">211</span><span class="lineCov">			let mut bi_streams = bi_streams.fuse();</span></div>
-<div class="line"><span id="80" class="lineNum"><a href="#80">80</a></span><span class="counterCov">463</span><span class="lineCov">			while let Some(connecting) = futures_util::select_biased! {</span></div>
-<div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterCov">819</span><span class="lineCov">				connecting = bi_streams.next() =&gt; connecting,</span></div>
-<div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterCov">819</span><span class="lineCov">				_ = shutdown =&gt; None,</span></div>
-<div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterCov">819</span><span class="lineCov">				complete =&gt; None,</span></div>
-<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterCov">819</span><span class="lineCov">			} {</span></div>
+<div class="line"><span id="80" class="lineNum"><a href="#80">80</a></span><span class="counterCov">460</span><span class="lineCov">			while let Some(connecting) = futures_util::select_biased! {</span></div>
+<div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterCov">813</span><span class="lineCov">				connecting = bi_streams.next() =&gt; connecting,</span></div>
+<div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterCov">813</span><span class="lineCov">				_ = shutdown =&gt; None,</span></div>
+<div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterCov">813</span><span class="lineCov">				complete =&gt; None,</span></div>
+<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterCov">813</span><span class="lineCov">			} {</span></div>
 <div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterCov">105</span><span class="lineCov">				let incoming = connecting.map_err(error::Connection);</span></div>
 <div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterCov">105</span><span class="lineCov"></span></div>
 <div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterCov">105</span><span class="lineCov">				if sender.send(incoming).is_err() {</span></div>

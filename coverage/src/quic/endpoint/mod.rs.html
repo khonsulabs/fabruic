@@ -9,11 +9,11 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2021-12-17 21:08:56</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2022-01-31 07:01:12</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">327</span><span class="linesTotal">347</span><span class="linesPercentage lineHi">94.2 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">314</span><span class="linesTotal">344</span><span class="linesPercentage lineHi">91.3 %</span></div>
 <div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">78</span><span class="funsTotal">108</span><span class="funsPercentage funLow">72.2 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
@@ -207,11 +207,11 @@
 <div class="line"><span id="186" class="lineNum"><a href="#186">186</a></span><span class="counterCov">10</span><span class="lineCov">		mut shutdown: Receiver&lt;()&gt;,</span></div>
 <div class="line"><span id="187" class="lineNum"><a href="#187">187</a></span><span class="counterCov">10</span><span class="lineCov">	) {</span></div>
 <div class="line"><span id="188" class="lineNum"><a href="#188">188</a></span><span class="counterCov">10</span><span class="lineCov">		let mut incoming = incoming.fuse();</span></div>
-<div class="line"><span id="189" class="lineNum"><a href="#189">189</a></span><span class="counterCov">251</span><span class="lineCov">		while let Some(connecting) = futures_util::select_biased! {</span></div>
-<div class="line"><span id="190" class="lineNum"><a href="#190">190</a></span><span class="counterCov">157</span><span class="lineCov">			connecting = incoming.next() =&gt; connecting,</span></div>
-<div class="line"><span id="191" class="lineNum"><a href="#191">191</a></span><span class="counterCov">157</span><span class="lineCov">			_ = shutdown =&gt; None,</span></div>
-<div class="line"><span id="192" class="lineNum"><a href="#192">192</a></span><span class="counterCov">157</span><span class="lineCov">			complete =&gt; None,</span></div>
-<div class="line"><span id="193" class="lineNum"><a href="#193">193</a></span><span class="counterCov">157</span><span class="lineCov">		} {</span></div>
+<div class="line"><span id="189" class="lineNum"><a href="#189">189</a></span><span class="counterCov">250</span><span class="lineCov">		while let Some(connecting) = futures_util::select_biased! {</span></div>
+<div class="line"><span id="190" class="lineNum"><a href="#190">190</a></span><span class="counterCov">155</span><span class="lineCov">			connecting = incoming.next() =&gt; connecting,</span></div>
+<div class="line"><span id="191" class="lineNum"><a href="#191">191</a></span><span class="counterCov">155</span><span class="lineCov">			_ = shutdown =&gt; None,</span></div>
+<div class="line"><span id="192" class="lineNum"><a href="#192">192</a></span><span class="counterCov">155</span><span class="lineCov">			complete =&gt; None,</span></div>
+<div class="line"><span id="193" class="lineNum"><a href="#193">193</a></span><span class="counterCov">155</span><span class="lineCov">		} {</span></div>
 <div class="line"><span id="194" class="lineNum"><a href="#194">194</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// if there is no receiver, it means that we dropped the last `Endpoint`</span></div>
 <div class="line"><span id="195" class="lineNum"><a href="#195">195</a></span><span class="counterCov">108</span><span class="lineCov">			if sender.send(Connecting::new(connecting)).is_err() {</span></div>
 <div class="line"><span id="196" class="lineNum"><a href="#196">196</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				break;</span></div>
@@ -263,7 +263,7 @@
 <div class="line"><span id="242" class="lineNum"><a href="#242">242</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Ok(()) }</span></div>
 <div class="line"><span id="243" class="lineNum"><a href="#243">243</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// ```</span></div>
 <div class="line"><span id="244" class="lineNum"><a href="#244">244</a></span><span class="counterCov">8</span><span class="lineCov">	pub async fn connect&lt;U: AsRef&lt;str&gt;&gt;(&amp;self, url: U) -&gt; Result&lt;Connecting, error::Connect&gt; {</span></div>
-<div class="line"><span id="245" class="lineNum"><a href="#245">245</a></span><span class="counterCov">53</span><span class="lineCov">		let (address, domain) = self.resolve_domain(url).await?;</span></div>
+<div class="line"><span id="245" class="lineNum"><a href="#245">245</a></span><span class="counterCov">45</span><span class="lineCov">		let (address, domain) = self.resolve_domain(url).await?;</span></div>
 <div class="line"><span id="246" class="lineNum"><a href="#246">246</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="247" class="lineNum"><a href="#247">247</a></span><span class="counterUnCov"></span><span class="lineUnCov">		Ok(Connecting::new(</span></div>
 <div class="line"><span id="248" class="lineNum"><a href="#248">248</a></span><span class="counterCov">7</span><span class="lineCov">			self.endpoint</span></div>
@@ -613,13 +613,13 @@
 <div class="line"><span id="592" class="lineNum"><a href="#592">592</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl Stream for Endpoint {</span></div>
 <div class="line"><span id="593" class="lineNum"><a href="#593">593</a></span><span class="counterUnCov"></span><span class="lineUnCov">	type Item = Connecting;</span></div>
 <div class="line"><span id="594" class="lineNum"><a href="#594">594</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="595" class="lineNum"><a href="#595">595</a></span><span class="counterCov">115</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
-<div class="line"><span id="596" class="lineNum"><a href="#596">596</a></span><span class="counterCov">115</span><span class="lineCov">		if self.receiver.is_terminated() {</span></div>
+<div class="line"><span id="595" class="lineNum"><a href="#595">595</a></span><span class="counterCov">118</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
+<div class="line"><span id="596" class="lineNum"><a href="#596">596</a></span><span class="counterCov">118</span><span class="lineCov">		if self.receiver.is_terminated() {</span></div>
 <div class="line"><span id="597" class="lineNum"><a href="#597">597</a></span><span class="counterCov">2</span><span class="lineCov">			Poll::Ready(None)</span></div>
 <div class="line"><span id="598" class="lineNum"><a href="#598">598</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
-<div class="line"><span id="599" class="lineNum"><a href="#599">599</a></span><span class="counterCov">113</span><span class="lineCov">			self.receiver.poll_next_unpin(cx)</span></div>
+<div class="line"><span id="599" class="lineNum"><a href="#599">599</a></span><span class="counterCov">116</span><span class="lineCov">			self.receiver.poll_next_unpin(cx)</span></div>
 <div class="line"><span id="600" class="lineNum"><a href="#600">600</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="601" class="lineNum"><a href="#601">601</a></span><span class="counterCov">115</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="601" class="lineNum"><a href="#601">601</a></span><span class="counterCov">118</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="602" class="lineNum"><a href="#602">602</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 <div class="line"><span id="603" class="lineNum"><a href="#603">603</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="604" class="lineNum"><a href="#604">604</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl FusedStream for Endpoint {</span></div>
@@ -657,16 +657,16 @@
 <div class="line"><span id="636" class="lineNum"><a href="#636">636</a></span><span class="counterCov">1</span><span class="lineCov">				format!(&quot;quic://{}&quot;, server.local_address()?),</span></div>
 <div class="line"><span id="637" class="lineNum"><a href="#637">637</a></span><span class="counterCov">1</span><span class="lineCov">				key_pair.end_entity_certificate(),</span></div>
 <div class="line"><span id="638" class="lineNum"><a href="#638">638</a></span><span class="counterCov">1</span><span class="lineCov">				None,</span></div>
-<div class="line"><span id="639" class="lineNum"><a href="#639">639</a></span><span class="counterCov">1</span><span class="lineCov">			)</span></div>
-<div class="line"><span id="640" class="lineNum"><a href="#640">640</a></span><span class="counterCov">1</span><span class="lineCov">			.await?</span></div>
-<div class="line"><span id="641" class="lineNum"><a href="#641">641</a></span><span class="counterCov">2</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="642" class="lineNum"><a href="#642">642</a></span><span class="counterCov">2</span><span class="lineCov">			.await?;</span></div>
+<div class="line"><span id="639" class="lineNum"><a href="#639">639</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			)</span></div>
+<div class="line"><span id="640" class="lineNum"><a href="#640">640</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?</span></div>
+<div class="line"><span id="641" class="lineNum"><a href="#641">641</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="642" class="lineNum"><a href="#642">642</a></span><span class="counterCov">1</span><span class="lineCov">			.await?;</span></div>
 <div class="line"><span id="643" class="lineNum"><a href="#643">643</a></span><span class="counterCov">1</span><span class="lineCov">		let _connection = server</span></div>
 <div class="line"><span id="644" class="lineNum"><a href="#644">644</a></span><span class="counterCov">1</span><span class="lineCov">			.next()</span></div>
 <div class="line"><span id="645" class="lineNum"><a href="#645">645</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await</span></div>
 <div class="line"><span id="646" class="lineNum"><a href="#646">646</a></span><span class="counterCov">1</span><span class="lineCov">			.expect(&quot;client dropped&quot;)</span></div>
-<div class="line"><span id="647" class="lineNum"><a href="#647">647</a></span><span class="counterCov">2</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="648" class="lineNum"><a href="#648">648</a></span><span class="counterCov">2</span><span class="lineCov">			.await?;</span></div>
+<div class="line"><span id="647" class="lineNum"><a href="#647">647</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="648" class="lineNum"><a href="#648">648</a></span><span class="counterCov">1</span><span class="lineCov">			.await?;</span></div>
 <div class="line"><span id="649" class="lineNum"><a href="#649">649</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="650" class="lineNum"><a href="#650">650</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="651" class="lineNum"><a href="#651">651</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
@@ -682,16 +682,16 @@
 <div class="line"><span id="661" class="lineNum"><a href="#661">661</a></span><span class="counterCov">1</span><span class="lineCov">			&amp;client,</span></div>
 <div class="line"><span id="662" class="lineNum"><a href="#662">662</a></span><span class="counterCov">1</span><span class="lineCov">			format!(&quot;quic://{}&quot;, server.local_address()?),</span></div>
 <div class="line"><span id="663" class="lineNum"><a href="#663">663</a></span><span class="counterCov">1</span><span class="lineCov">			None,</span></div>
-<div class="line"><span id="664" class="lineNum"><a href="#664">664</a></span><span class="counterCov">1</span><span class="lineCov">		)</span></div>
-<div class="line"><span id="665" class="lineNum"><a href="#665">665</a></span><span class="counterCov">1</span><span class="lineCov">		.await?</span></div>
-<div class="line"><span id="666" class="lineNum"><a href="#666">666</a></span><span class="counterCov">2</span><span class="lineCov">		.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="667" class="lineNum"><a href="#667">667</a></span><span class="counterCov">2</span><span class="lineCov">		.await?;</span></div>
+<div class="line"><span id="664" class="lineNum"><a href="#664">664</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		)</span></div>
+<div class="line"><span id="665" class="lineNum"><a href="#665">665</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		.await?</span></div>
+<div class="line"><span id="666" class="lineNum"><a href="#666">666</a></span><span class="counterCov">1</span><span class="lineCov">		.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="667" class="lineNum"><a href="#667">667</a></span><span class="counterCov">1</span><span class="lineCov">		.await?;</span></div>
 <div class="line"><span id="668" class="lineNum"><a href="#668">668</a></span><span class="counterCov">1</span><span class="lineCov">		let _connection = server</span></div>
 <div class="line"><span id="669" class="lineNum"><a href="#669">669</a></span><span class="counterCov">1</span><span class="lineCov">			.next()</span></div>
 <div class="line"><span id="670" class="lineNum"><a href="#670">670</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await</span></div>
 <div class="line"><span id="671" class="lineNum"><a href="#671">671</a></span><span class="counterCov">1</span><span class="lineCov">			.expect(&quot;client dropped&quot;)</span></div>
-<div class="line"><span id="672" class="lineNum"><a href="#672">672</a></span><span class="counterCov">2</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="673" class="lineNum"><a href="#673">673</a></span><span class="counterCov">2</span><span class="lineCov">			.await?;</span></div>
+<div class="line"><span id="672" class="lineNum"><a href="#672">672</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="673" class="lineNum"><a href="#673">673</a></span><span class="counterCov">1</span><span class="lineCov">			.await?;</span></div>
 <div class="line"><span id="674" class="lineNum"><a href="#674">674</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="675" class="lineNum"><a href="#675">675</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="676" class="lineNum"><a href="#676">676</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
@@ -732,27 +732,27 @@
 <div class="line"><span id="711" class="lineNum"><a href="#711">711</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// they won&#39;t unless they are dropped or explicitly closed</span></div>
 <div class="line"><span id="712" class="lineNum"><a href="#712">712</a></span><span class="counterCov">1</span><span class="lineCov">		let _connection = client</span></div>
 <div class="line"><span id="713" class="lineNum"><a href="#713">713</a></span><span class="counterCov">1</span><span class="lineCov">			.connect_pinned(&amp;address, key_pair.end_entity_certificate(), None)</span></div>
-<div class="line"><span id="714" class="lineNum"><a href="#714">714</a></span><span class="counterCov">1</span><span class="lineCov">			.await?</span></div>
-<div class="line"><span id="715" class="lineNum"><a href="#715">715</a></span><span class="counterCov">2</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="716" class="lineNum"><a href="#716">716</a></span><span class="counterCov">2</span><span class="lineCov">			.await?;</span></div>
+<div class="line"><span id="714" class="lineNum"><a href="#714">714</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?</span></div>
+<div class="line"><span id="715" class="lineNum"><a href="#715">715</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="716" class="lineNum"><a href="#716">716</a></span><span class="counterCov">1</span><span class="lineCov">			.await?;</span></div>
 <div class="line"><span id="717" class="lineNum"><a href="#717">717</a></span><span class="counterCov">1</span><span class="lineCov">		let _connection = server</span></div>
 <div class="line"><span id="718" class="lineNum"><a href="#718">718</a></span><span class="counterCov">1</span><span class="lineCov">			.next()</span></div>
 <div class="line"><span id="719" class="lineNum"><a href="#719">719</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await</span></div>
 <div class="line"><span id="720" class="lineNum"><a href="#720">720</a></span><span class="counterCov">1</span><span class="lineCov">			.expect(&quot;client dropped&quot;)</span></div>
-<div class="line"><span id="721" class="lineNum"><a href="#721">721</a></span><span class="counterCov">2</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="722" class="lineNum"><a href="#722">722</a></span><span class="counterCov">2</span><span class="lineCov">			.await?;</span></div>
+<div class="line"><span id="721" class="lineNum"><a href="#721">721</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="722" class="lineNum"><a href="#722">722</a></span><span class="counterCov">1</span><span class="lineCov">			.await?;</span></div>
 <div class="line"><span id="723" class="lineNum"><a href="#723">723</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="724" class="lineNum"><a href="#724">724</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// closing the client/server will close all connection immediately</span></div>
 <div class="line"><span id="725" class="lineNum"><a href="#725">725</a></span><span class="counterCov">1</span><span class="lineCov">		client.close().await;</span></div>
-<div class="line"><span id="726" class="lineNum"><a href="#726">726</a></span><span class="counterCov">2</span><span class="lineCov">		server.close().await;</span></div>
+<div class="line"><span id="726" class="lineNum"><a href="#726">726</a></span><span class="counterCov">1</span><span class="lineCov">		server.close().await;</span></div>
 <div class="line"><span id="727" class="lineNum"><a href="#727">727</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="728" class="lineNum"><a href="#728">728</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// connecting to a closed server shouldn&#39;t work</span></div>
 <div class="line"><span id="729" class="lineNum"><a href="#729">729</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
 <div class="line"><span id="730" class="lineNum"><a href="#730">730</a></span><span class="counterCov">1</span><span class="lineCov">			client</span></div>
 <div class="line"><span id="731" class="lineNum"><a href="#731">731</a></span><span class="counterCov">1</span><span class="lineCov">				.connect_pinned(address, key_pair.end_entity_certificate(), None)</span></div>
-<div class="line"><span id="732" class="lineNum"><a href="#732">732</a></span><span class="counterCov">1</span><span class="lineCov">				.await?</span></div>
-<div class="line"><span id="733" class="lineNum"><a href="#733">733</a></span><span class="counterCov">2</span><span class="lineCov">				.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="734" class="lineNum"><a href="#734">734</a></span><span class="counterCov">2</span><span class="lineCov">				.await,</span></div>
+<div class="line"><span id="732" class="lineNum"><a href="#732">732</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.await?</span></div>
+<div class="line"><span id="733" class="lineNum"><a href="#733">733</a></span><span class="counterCov">1</span><span class="lineCov">				.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="734" class="lineNum"><a href="#734">734</a></span><span class="counterCov">1</span><span class="lineCov">				.await,</span></div>
 <div class="line"><span id="735" class="lineNum"><a href="#735">735</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Err(error::Connecting::Connection(</span></div>
 <div class="line"><span id="736" class="lineNum"><a href="#736">736</a></span><span class="counterUnCov"></span><span class="lineUnCov">				ConnectionError::LocallyClosed</span></div>
 <div class="line"><span id="737" class="lineNum"><a href="#737">737</a></span><span class="counterUnCov"></span><span class="lineUnCov">			))</span></div>
@@ -763,7 +763,7 @@
 <div class="line"><span id="742" class="lineNum"><a href="#742">742</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="743" class="lineNum"><a href="#743">743</a></span><span class="counterCov">1</span><span class="lineCov">		client.wait_idle().await;</span></div>
 <div class="line"><span id="744" class="lineNum"><a href="#744">744</a></span><span class="counterCov">1</span><span class="lineCov">		server.wait_idle().await;</span></div>
-<div class="line"><span id="745" class="lineNum"><a href="#745">745</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="745" class="lineNum"><a href="#745">745</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="746" class="lineNum"><a href="#746">746</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="747" class="lineNum"><a href="#747">747</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="748" class="lineNum"><a href="#748">748</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
@@ -779,15 +779,15 @@
 <div class="line"><span id="758" class="lineNum"><a href="#758">758</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// refused</span></div>
 <div class="line"><span id="759" class="lineNum"><a href="#759">759</a></span><span class="counterCov">1</span><span class="lineCov">		let client_connection = client</span></div>
 <div class="line"><span id="760" class="lineNum"><a href="#760">760</a></span><span class="counterCov">1</span><span class="lineCov">			.connect_pinned(&amp;address, key_pair.end_entity_certificate(), None)</span></div>
-<div class="line"><span id="761" class="lineNum"><a href="#761">761</a></span><span class="counterCov">1</span><span class="lineCov">			.await?</span></div>
-<div class="line"><span id="762" class="lineNum"><a href="#762">762</a></span><span class="counterCov">2</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="763" class="lineNum"><a href="#763">763</a></span><span class="counterCov">2</span><span class="lineCov">			.await?;</span></div>
+<div class="line"><span id="761" class="lineNum"><a href="#761">761</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?</span></div>
+<div class="line"><span id="762" class="lineNum"><a href="#762">762</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="763" class="lineNum"><a href="#763">763</a></span><span class="counterCov">1</span><span class="lineCov">			.await?;</span></div>
 <div class="line"><span id="764" class="lineNum"><a href="#764">764</a></span><span class="counterCov">1</span><span class="lineCov">		let mut server_connection = server</span></div>
 <div class="line"><span id="765" class="lineNum"><a href="#765">765</a></span><span class="counterCov">1</span><span class="lineCov">			.next()</span></div>
 <div class="line"><span id="766" class="lineNum"><a href="#766">766</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await</span></div>
 <div class="line"><span id="767" class="lineNum"><a href="#767">767</a></span><span class="counterCov">1</span><span class="lineCov">			.expect(&quot;client dropped&quot;)</span></div>
-<div class="line"><span id="768" class="lineNum"><a href="#768">768</a></span><span class="counterCov">2</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="769" class="lineNum"><a href="#769">769</a></span><span class="counterCov">2</span><span class="lineCov">			.await?;</span></div>
+<div class="line"><span id="768" class="lineNum"><a href="#768">768</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="769" class="lineNum"><a href="#769">769</a></span><span class="counterCov">1</span><span class="lineCov">			.await?;</span></div>
 <div class="line"><span id="770" class="lineNum"><a href="#770">770</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="771" class="lineNum"><a href="#771">771</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// refuse new incoming connections</span></div>
 <div class="line"><span id="772" class="lineNum"><a href="#772">772</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// client never accepts incoming connections</span></div>
@@ -795,7 +795,7 @@
 <div class="line"><span id="774" class="lineNum"><a href="#774">774</a></span><span class="counterCov">1</span><span class="lineCov">			client.close_incoming().await,</span></div>
 <div class="line"><span id="775" class="lineNum"><a href="#775">775</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Err(error::AlreadyClosed)</span></div>
 <div class="line"><span id="776" class="lineNum"><a href="#776">776</a></span><span class="counterUnCov"></span><span class="lineUnCov">		));</span></div>
-<div class="line"><span id="777" class="lineNum"><a href="#777">777</a></span><span class="counterCov">2</span><span class="lineCov">		server.close_incoming().await?;</span></div>
+<div class="line"><span id="777" class="lineNum"><a href="#777">777</a></span><span class="counterCov">1</span><span class="lineCov">		server.close_incoming().await?;</span></div>
 <div class="line"><span id="778" class="lineNum"><a href="#778">778</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
 <div class="line"><span id="779" class="lineNum"><a href="#779">779</a></span><span class="counterCov">1</span><span class="lineCov">			server.close_incoming().await,</span></div>
 <div class="line"><span id="780" class="lineNum"><a href="#780">780</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Err(error::AlreadyClosed)</span></div>
@@ -804,9 +804,9 @@
 <div class="line"><span id="783" class="lineNum"><a href="#783">783</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// connecting to a server that refuses new `Connection`s shouldn&#39;t work</span></div>
 <div class="line"><span id="784" class="lineNum"><a href="#784">784</a></span><span class="counterCov">1</span><span class="lineCov">		let result = client</span></div>
 <div class="line"><span id="785" class="lineNum"><a href="#785">785</a></span><span class="counterCov">1</span><span class="lineCov">			.connect_pinned(address, key_pair.end_entity_certificate(), None)</span></div>
-<div class="line"><span id="786" class="lineNum"><a href="#786">786</a></span><span class="counterCov">1</span><span class="lineCov">			.await?</span></div>
-<div class="line"><span id="787" class="lineNum"><a href="#787">787</a></span><span class="counterCov">2</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="788" class="lineNum"><a href="#788">788</a></span><span class="counterCov">2</span><span class="lineCov">			.await;</span></div>
+<div class="line"><span id="786" class="lineNum"><a href="#786">786</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			.await?</span></div>
+<div class="line"><span id="787" class="lineNum"><a href="#787">787</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="788" class="lineNum"><a href="#788">788</a></span><span class="counterCov">1</span><span class="lineCov">			.await;</span></div>
 <div class="line"><span id="789" class="lineNum"><a href="#789">789</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(matches!(</span></div>
 <div class="line"><span id="790" class="lineNum"><a href="#790">790</a></span><span class="counterCov">1</span><span class="lineCov">			result,</span></div>
 <div class="line"><span id="791" class="lineNum"><a href="#791">791</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Err(error::Connecting::Connection(ConnectionError::ConnectionClosed(</span></div>
@@ -829,7 +829,7 @@
 <div class="line"><span id="808" class="lineNum"><a href="#808">808</a></span><span class="counterCov">1</span><span class="lineCov">				.await</span></div>
 <div class="line"><span id="809" class="lineNum"><a href="#809">809</a></span><span class="counterCov">1</span><span class="lineCov">				.expect(&quot;client dropped&quot;)?</span></div>
 <div class="line"><span id="810" class="lineNum"><a href="#810">810</a></span><span class="counterCov">1</span><span class="lineCov">				.accept::&lt;(), ()&gt;();</span></div>
-<div class="line"><span id="811" class="lineNum"><a href="#811">811</a></span><span class="counterCov">2</span><span class="lineCov">			sender.finish().await?;</span></div>
+<div class="line"><span id="811" class="lineNum"><a href="#811">811</a></span><span class="counterCov">1</span><span class="lineCov">			sender.finish().await?;</span></div>
 <div class="line"><span id="812" class="lineNum"><a href="#812">812</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
 <div class="line"><span id="813" class="lineNum"><a href="#813">813</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="814" class="lineNum"><a href="#814">814</a></span><span class="counterCov">1</span><span class="lineCov">		drop(client_connection);</span></div>
@@ -837,7 +837,7 @@
 <div class="line"><span id="816" class="lineNum"><a href="#816">816</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
 <div class="line"><span id="817" class="lineNum"><a href="#817">817</a></span><span class="counterCov">1</span><span class="lineCov">		client.wait_idle().await;</span></div>
 <div class="line"><span id="818" class="lineNum"><a href="#818">818</a></span><span class="counterCov">1</span><span class="lineCov">		server.wait_idle().await;</span></div>
-<div class="line"><span id="819" class="lineNum"><a href="#819">819</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="819" class="lineNum"><a href="#819">819</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="820" class="lineNum"><a href="#820">820</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="821" class="lineNum"><a href="#821">821</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="822" class="lineNum"><a href="#822">822</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
@@ -856,21 +856,21 @@
 <div class="line"><span id="835" class="lineNum"><a href="#835">835</a></span><span class="counterCov">1</span><span class="lineCov">					format!(&quot;quic://{}&quot;, server.local_address()?),</span></div>
 <div class="line"><span id="836" class="lineNum"><a href="#836">836</a></span><span class="counterCov">1</span><span class="lineCov">					key_pair.end_entity_certificate(),</span></div>
 <div class="line"><span id="837" class="lineNum"><a href="#837">837</a></span><span class="counterCov">1</span><span class="lineCov">					None,</span></div>
-<div class="line"><span id="838" class="lineNum"><a href="#838">838</a></span><span class="counterCov">1</span><span class="lineCov">				)</span></div>
-<div class="line"><span id="839" class="lineNum"><a href="#839">839</a></span><span class="counterCov">1</span><span class="lineCov">				.await?</span></div>
-<div class="line"><span id="840" class="lineNum"><a href="#840">840</a></span><span class="counterCov">2</span><span class="lineCov">				.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="841" class="lineNum"><a href="#841">841</a></span><span class="counterCov">2</span><span class="lineCov">				.await?;</span></div>
+<div class="line"><span id="838" class="lineNum"><a href="#838">838</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				)</span></div>
+<div class="line"><span id="839" class="lineNum"><a href="#839">839</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.await?</span></div>
+<div class="line"><span id="840" class="lineNum"><a href="#840">840</a></span><span class="counterCov">1</span><span class="lineCov">				.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="841" class="lineNum"><a href="#841">841</a></span><span class="counterCov">1</span><span class="lineCov">				.await?;</span></div>
 <div class="line"><span id="842" class="lineNum"><a href="#842">842</a></span><span class="counterCov">1</span><span class="lineCov">			let _connection = server</span></div>
 <div class="line"><span id="843" class="lineNum"><a href="#843">843</a></span><span class="counterCov">1</span><span class="lineCov">				.next()</span></div>
 <div class="line"><span id="844" class="lineNum"><a href="#844">844</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				.await</span></div>
 <div class="line"><span id="845" class="lineNum"><a href="#845">845</a></span><span class="counterCov">1</span><span class="lineCov">				.expect(&quot;client dropped&quot;)</span></div>
-<div class="line"><span id="846" class="lineNum"><a href="#846">846</a></span><span class="counterCov">2</span><span class="lineCov">				.accept::&lt;()&gt;()</span></div>
-<div class="line"><span id="847" class="lineNum"><a href="#847">847</a></span><span class="counterCov">2</span><span class="lineCov">				.await?;</span></div>
+<div class="line"><span id="846" class="lineNum"><a href="#846">846</a></span><span class="counterCov">1</span><span class="lineCov">				.accept::&lt;()&gt;()</span></div>
+<div class="line"><span id="847" class="lineNum"><a href="#847">847</a></span><span class="counterCov">1</span><span class="lineCov">				.await?;</span></div>
 <div class="line"><span id="848" class="lineNum"><a href="#848">848</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
 <div class="line"><span id="849" class="lineNum"><a href="#849">849</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="850" class="lineNum"><a href="#850">850</a></span><span class="counterCov">1</span><span class="lineCov">		client.wait_idle().await;</span></div>
 <div class="line"><span id="851" class="lineNum"><a href="#851">851</a></span><span class="counterCov">1</span><span class="lineCov">		server.wait_idle().await;</span></div>
-<div class="line"><span id="852" class="lineNum"><a href="#852">852</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="852" class="lineNum"><a href="#852">852</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="853" class="lineNum"><a href="#853">853</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="854" class="lineNum"><a href="#854">854</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="855" class="lineNum"><a href="#855">855</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
