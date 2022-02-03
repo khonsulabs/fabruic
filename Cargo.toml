@@ -27,7 +27,7 @@ if_chain = "1"
 parking_lot = { version = "0.12", features = ["send_guard"] }
 pin-project = "1"
 quinn = "0.8"
-rcgen = { version = "0.8", default-features = false, optional = true }
+rcgen = { version = "0.9", default-features = false, optional = true }
 ring = "0.16"
 rustls = { version = "0.20", default-features = false, features = [
 	"dangerous_configuration",
