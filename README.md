@@ -5,7 +5,7 @@ simplified interface for reliable payload delivery.
 
 This project is written to support Khonsu Labs projects, primarily
 [Cosmic Verge](https://github.com/khonsulabs/cosmicverge) and
-[PliantDB](https://github.com/khonsulabs/pliantdb).
+[BonsaiDb](https://github.com/khonsulabs/bonsaidb).
 
 While this library is open-source, the primary reason for publishing on
 crates.io is to support releasing PliantDB. If you're considering using this for
