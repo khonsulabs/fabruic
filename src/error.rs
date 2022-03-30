@@ -8,11 +8,10 @@
 // TODO: error type is becoming too big, split it up
 
 use std::{
-	fmt::{self, Debug, Formatter},
+	fmt::{self, Debug, Display, Formatter},
 	io,
 };
 
-pub use bincode::ErrorKind;
 use quinn::ConnectionClose;
 pub use quinn::{ConnectError, ConnectionError, ReadError, WriteError};
 use thiserror::Error;
@@ -207,7 +206,9 @@ impl From<ConnectionError> for Connecting {
 				reason,
 			}) if reason.as_ref() == b"peer doesn't support any known protocol"
 				&& error_code.to_string() == "the cryptographic handshake failed: error 120" =>
-				Self::ProtocolMismatch,
+			{
+				Self::ProtocolMismatch
+			}
 			other => Self::Connection(other),
 		}
 	}
@@ -241,6 +242,7 @@ pub enum Incoming {
 
 /// Error receiving a message from a [`Receiver`](crate::Receiver).
 #[derive(Debug, Error)]
+#[allow(variant_size_differences)]
 pub enum Receiver {
 	/// Failed to read from a [`Receiver`](crate::Receiver).
 	#[error("Error reading from `Receiver`: {0}")]
@@ -248,16 +250,17 @@ pub enum Receiver {
 	/// Failed to [`Deserialize`](serde::Deserialize) a message from a
 	/// [`Receiver`](crate::Receiver).
 	#[error("Error deserializing a message from `Receiver`: {0}")]
-	Deserialize(#[from] ErrorKind),
+	Deserialize(Box<dyn SerializationError>),
 }
 
 /// Error sending a message to a [`Sender`](crate::Sender).
 #[derive(Debug, Error)]
+#[allow(variant_size_differences)]
 pub enum Sender {
 	/// Failed to [`Serialize`](serde::Serialize) a message for a
 	/// [`Sender`](crate::Sender).
 	#[error("Error serializing a message to `Sender`: {0}")]
-	Serialize(ErrorKind),
+	Serialize(Box<dyn SerializationError>),
 	/// Failed to write to a [`Sender`](crate::Sender).
 	#[error("Error writing to `Sender`: {0}")]
 	Write(#[from] WriteError),
@@ -266,8 +269,14 @@ pub enum Sender {
 	Closed(#[from] AlreadyClosed),
 }
 
-impl From<Box<ErrorKind>> for Sender {
-	fn from(error: Box<ErrorKind>) -> Self {
-		Self::Serialize(*error)
+impl Sender {
+	/// Returns a new instance after boxing `err`.
+	pub(crate) fn from_serialization<E: SerializationError>(err: E) -> Self {
+		Self::Serialize(Box::new(err))
 	}
 }
+
+/// An error raised from serialization.
+pub trait SerializationError: Display + Debug + Send + Sync + 'static {}
+
+impl<T> SerializationError for T where T: Display + Debug + Send + Sync + 'static {}

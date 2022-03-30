@@ -7,10 +7,10 @@ use std::{
 };
 
 use futures_util::{stream::Stream, StreamExt};
-use serde::de::DeserializeOwned;
+use transmog::OwnedDeserializer;
 
 use super::{ReceiverStream, Task};
-use crate::error;
+use crate::error::{self, SerializationError};
 
 /// Used to receive data from a stream. Will stop receiving message if
 /// deserialization failed.
@@ -31,13 +31,17 @@ impl<T> Debug for Receiver<T> {
 	}
 }
 
-impl<T> Receiver<T> {
+impl<T> Receiver<T>
+where
+	T: Send,
+{
 	/// Builds a new [`Receiver`] from a raw [`quinn`] type. Spawns a task that
 	/// receives data from the stream.
 	#[allow(clippy::mut_mut)] // futures_util::select_biased internal usage
-	pub(super) fn new(mut stream: ReceiverStream<T>) -> Self
+	pub(super) fn new<F>(mut stream: ReceiverStream<T, F>) -> Self
 	where
-		T: DeserializeOwned + Send,
+		F: OwnedDeserializer<T> + 'static,
+		F::Error: SerializationError,
 	{
 		// receiver channels
 		let (sender, receiver) = flume::unbounded();

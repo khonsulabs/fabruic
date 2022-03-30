@@ -4,9 +4,12 @@
 use std::net::SocketAddr;
 
 use quinn::{crypto::rustls::HandshakeData, NewConnection};
-use serde::{de::DeserializeOwned, Serialize};
+use transmog::OwnedDeserializer;
 
-use crate::{error, Connection};
+use crate::{
+	error::{self, SerializationError},
+	Connection,
+};
 
 /// Represent's an intermediate state to build a [`Connection`].
 #[must_use = "`Connecting` does nothing unless accepted with `Connecting::accept`"]
@@ -47,9 +50,12 @@ impl Connecting {
 	///
 	/// # Errors
 	/// [`error::Connecting`] if the [`Connection`] failed to be established.
-	pub async fn accept<T: DeserializeOwned + Serialize + Send + 'static>(
-		self,
-	) -> Result<Connection<T>, error::Connecting> {
+	pub async fn accept<T, F>(self, format: F) -> Result<Connection<T, F>, error::Connecting>
+	where
+		T: Send + 'static,
+		F: OwnedDeserializer<T> + Clone,
+		F::Error: SerializationError,
+	{
 		self.0
 			.await
 			.map(
@@ -57,7 +63,7 @@ impl Connecting {
 				     connection,
 				     bi_streams,
 				     ..
-				 }| Connection::new(connection, bi_streams),
+				 }| Connection::new(connection, bi_streams, format),
 			)
 			.map_err(error::Connecting::from)
 	}

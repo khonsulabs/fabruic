@@ -1,16 +1,19 @@
 use anyhow::{Error, Result};
 use fabruic::{Endpoint, KeyPair};
 use futures_util::{future, StreamExt, TryFutureExt};
+use transmog::{Format, OwnedDeserializer};
 use transmog_bincode::Bincode;
+use transmog_pot::Pot;
 
 const SERVER_NAME: &str = "test";
-/// Some random port.
-const SERVER_PORT: u16 = 34857;
 const CLIENTS: usize = 100;
 
-#[tokio::main]
-#[cfg_attr(test, test)]
-async fn main() -> Result<()> {
+async fn simulate_client_and_server<F>(format: F) -> Result<()>
+where
+	F: OwnedDeserializer<()> + OwnedDeserializer<String> + Clone + 'static,
+	<F as Format<'static, ()>>::Error: Send + Sync + 'static,
+	<F as Format<'static, String>>::Error: Send + Sync + 'static,
+{
 	// collect all tasks
 	let mut clients = Vec::with_capacity(CLIENTS);
 
@@ -20,7 +23,7 @@ async fn main() -> Result<()> {
 	// build the server
 	// we want to do this outside to reserve the `SERVER_PORT`, otherwise spawned
 	// clients may take it
-	let mut server = Endpoint::new_server(SERVER_PORT, key_pair.clone())?;
+	let mut server = Endpoint::new_server(0, key_pair.clone())?;
 	let address = format!("quic://{}", server.local_address()?);
 
 	// start 100 clients
@@ -28,6 +31,7 @@ async fn main() -> Result<()> {
 		let address = address.clone();
 		let certificate = key_pair.end_entity_certificate().clone();
 
+		let task_format = format.clone();
 		clients.push(
 			tokio::spawn(async move {
 				// build a client
@@ -39,7 +43,7 @@ async fn main() -> Result<()> {
 					index,
 					connecting.remote_address()
 				);
-				let connection = connecting.accept::<(), _>(Bincode::default()).await?;
+				let connection = connecting.accept::<(), _>(task_format).await?;
 				println!(
 					"[client:{}] Successfully connected to {}",
 					index,
@@ -105,10 +109,11 @@ async fn main() -> Result<()> {
 			connecting.remote_address()
 		);
 
+		let task_format = format.clone();
 		// every new incoming connections is handled in it's own task
 		connections.push(
 			tokio::spawn(async move {
-				let mut connection = connecting.accept::<(), _>(Bincode::default()).await?;
+				let mut connection = connecting.accept::<(), _>(task_format.clone()).await?;
 				println!("[server] New Connection: {}", connection.remote_address());
 
 				// start listening to new incoming streams
@@ -160,4 +165,15 @@ async fn main() -> Result<()> {
 	future::try_join_all(clients).await?;
 
 	Ok(())
+}
+
+#[tokio::test]
+async fn format_without_serialized_size() -> Result<()> {
+	simulate_client_and_server(Pot::default()).await
+}
+
+#[tokio::main]
+#[cfg_attr(test, test)]
+async fn format_with_serialized_size() -> Result<()> {
+	simulate_client_and_server(Bincode::default()).await
 }

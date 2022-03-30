@@ -49,6 +49,7 @@ pub struct Builder {
 
 impl Default for Builder {
 	fn default() -> Self {
+		// TODO configure for sane max allocations
 		Self::new()
 	}
 }
@@ -505,11 +506,12 @@ impl Builder {
 				false,
 			) {
 				Ok(client) => client,
-				Err(error) =>
+				Err(error) => {
 					return Err(error::Builder {
 						error: error.into(),
 						builder: self,
-					}),
+					})
+				}
 			};
 
 			// build server only if we have a key-pair
@@ -662,6 +664,7 @@ mod test {
 	use futures_util::StreamExt;
 	use quinn::ConnectionError;
 	use quinn_proto::TransportError;
+	use transmog_bincode::Bincode;
 	use trust_dns_proto::error::ProtoErrorKind;
 	use trust_dns_resolver::error::ResolveErrorKind;
 
@@ -713,7 +716,7 @@ mod test {
 				None,
 			)
 			.await?
-			.accept::<()>()
+			.accept::<(), _>(Bincode::default())
 			.await?;
 
 		// test receiving client on server
@@ -721,7 +724,7 @@ mod test {
 			.next()
 			.await
 			.expect("server dropped")
-			.accept::<()>()
+			.accept::<(), _>(Bincode::default())
 			.await?;
 
 		Ok(())
@@ -734,9 +737,10 @@ mod test {
 
 		// build client
 		let mut builder = Builder::new();
-		Dangerous::set_root_certificates(&mut builder, [server_key_pair
-			.end_entity_certificate()
-			.clone()]);
+		Dangerous::set_root_certificates(
+			&mut builder,
+			[server_key_pair.end_entity_certificate().clone()],
+		);
 		builder.set_client_key_pair(Some(client_key_pair.clone()));
 		let client = builder.build()?;
 
@@ -752,7 +756,7 @@ mod test {
 				server.local_address()?.port()
 			))
 			.await?
-			.accept::<()>()
+			.accept::<(), _>(Bincode::default())
 			.await?;
 
 		// test receiving client on server
@@ -760,7 +764,7 @@ mod test {
 			.next()
 			.await
 			.expect("server dropped")
-			.accept::<()>()
+			.accept::<(), _>(Bincode::default())
 			.await?;
 
 		// validate client certificate
@@ -819,7 +823,7 @@ mod test {
 		);
 
 		// check protocol on `Connection`
-		let connection = connecting.accept::<()>().await?;
+		let connection = connecting.accept::<(), _>(Bincode::default()).await?;
 		assert_eq!(
 			protocols[0],
 			connection.protocol().expect("no protocol found")
@@ -835,7 +839,7 @@ mod test {
 		);
 
 		// check protocol on `Connection`
-		let connection = connecting.accept::<()>().await?;
+		let connection = connecting.accept::<(), _>(Bincode::default()).await?;
 		assert_eq!(
 			protocols[0],
 			connection.protocol().expect("no protocol found")
@@ -867,7 +871,7 @@ mod test {
 				None,
 			)
 			.await?
-			.accept::<()>()
+			.accept::<(), _>(Bincode::default())
 			.await;
 
 		// check result
@@ -1003,7 +1007,7 @@ mod test {
 		assert!(endpoint
 			.connect("https://cloudflare-quic.com:443")
 			.await?
-			.accept::<()>()
+			.accept::<(), _>(Bincode::default())
 			.await
 			.is_ok());
 
@@ -1030,7 +1034,7 @@ mod test {
 		assert!(endpoint
 			.connect("https://cloudflare-quic.com:443")
 			.await?
-			.accept::<()>()
+			.accept::<(), _>(Bincode::default())
 			.await
 			.is_ok());
 
@@ -1057,7 +1061,7 @@ mod test {
 		let result = endpoint
 			.connect("https://cloudflare-quic.com:443")
 			.await?
-			.accept::<()>()
+			.accept::<(), _>(Bincode::default())
 			.await;
 
 		// check result

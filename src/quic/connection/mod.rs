@@ -34,16 +34,23 @@ use quinn::{crypto::rustls::HandshakeData, IncomingBiStreams, VarInt};
 pub use receiver::Receiver;
 use receiver_stream::ReceiverStream;
 pub use sender::Sender;
-use serde::{de::DeserializeOwned, Serialize};
 use stream::Stream;
+use transmog::{Format, OwnedDeserializer};
 
 use super::Task;
-use crate::{error, CertificateChain};
+use crate::{
+	error::{self, SerializationError},
+	CertificateChain,
+};
 
 /// Represents an open connection. Receives [`Incoming`] through [`Stream`].
 #[pin_project]
 #[derive(Clone)]
-pub struct Connection<T: DeserializeOwned + Serialize + Send + 'static> {
+pub struct Connection<T, F>
+where
+	T: Send + 'static,
+	F: OwnedDeserializer<T>,
+{
 	/// Initiate new connections or close socket.
 	connection: quinn::Connection,
 	/// Receive incoming streams.
@@ -51,11 +58,17 @@ pub struct Connection<T: DeserializeOwned + Serialize + Send + 'static> {
 		RecvStream<'static, Result<(quinn::SendStream, quinn::RecvStream), error::Connection>>,
 	/// [`Task`] handling new incoming streams.
 	task: Task<()>,
+	/// Serialization foramt.
+	format: F,
 	/// Type for type negotiation for new streams.
 	types: PhantomData<T>,
 }
 
-impl<T: DeserializeOwned + Serialize + Send + 'static> Debug for Connection<T> {
+impl<T, F> Debug for Connection<T, F>
+where
+	T: Send + 'static,
+	F: OwnedDeserializer<T>,
+{
 	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
 		f.debug_struct("Connection")
 			.field("connection", &self.connection)
@@ -66,10 +79,19 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Debug for Connection<T> {
 	}
 }
 
-impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
+impl<T, F> Connection<T, F>
+where
+	T: Send + 'static,
+	F: OwnedDeserializer<T> + Clone,
+	F::Error: SerializationError,
+{
 	/// Builds a new [`Connection`] from raw [`quinn`] types.
 	#[allow(clippy::mut_mut)] // futures_util::select_biased internal usage
-	pub(super) fn new(connection: quinn::Connection, bi_streams: IncomingBiStreams) -> Self {
+	pub(super) fn new(
+		connection: quinn::Connection,
+		bi_streams: IncomingBiStreams,
+		format: F,
+	) -> Self {
 		// channels for passing down new `Incoming` `Connection`s
 		let (sender, receiver) = flume::unbounded();
 		let receiver = receiver.into_stream();
@@ -96,6 +118,7 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 			connection,
 			receiver,
 			task,
+			format,
 			types: PhantomData,
 		}
 	}
@@ -110,19 +133,52 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 	/// - [`error::Stream::Open`] if opening a stream failed
 	/// - [`error::Stream::Sender`] if sending the type information to the peer
 	///   failed, see [`error::Sender`] for more details
-	pub async fn open_stream<
-		S: DeserializeOwned + Serialize + Send + 'static,
-		R: DeserializeOwned + Serialize + Send + 'static,
-	>(
+	pub async fn open_stream<S: Send + 'static, R: Send + 'static>(
 		&self,
 		r#type: &T,
-	) -> Result<(Sender<S>, Receiver<R>), error::Stream> {
+	) -> Result<(Sender<S, F>, Receiver<R>), error::Stream>
+	where
+		F: OwnedDeserializer<R> + Format<'static, S> + Format<'static, T> + 'static,
+		<F as Format<'static, R>>::Error: SerializationError,
+		<F as Format<'static, S>>::Error: SerializationError,
+	{
 		let (sender, receiver) = self.connection.open_bi().await?;
 
-		let sender = Sender::new(sender);
-		let receiver = Receiver::new(ReceiverStream::new(receiver));
+		let sender = Sender::new(sender, self.format.clone());
+		let receiver = Receiver::new(ReceiverStream::new(receiver, self.format.clone()));
 
-		sender.send_any(&r#type)?;
+		sender.send_any(r#type, &self.format)?;
+
+		Ok((sender, receiver))
+	}
+
+	/// Open a stream on this [`Connection`], allowing to send data back and
+	/// forth using another serialization format.
+	///
+	/// Use `S` and `R` to define which type this stream is sending and
+	/// receiving and `type` to send this information to the receiver. `format`
+	/// will be used for serializing `S` and `R`.
+	///
+	/// # Errors
+	/// - [`error::Stream::Open`] if opening a stream failed
+	/// - [`error::Stream::Sender`] if sending the type information to the peer
+	///   failed, see [`error::Sender`] for more details
+	pub async fn open_stream_with_format<S: Send + 'static, R: Send + 'static, NewFormat>(
+		&self,
+		r#type: &T,
+		format: NewFormat,
+	) -> Result<(Sender<S, NewFormat>, Receiver<R>), error::Stream>
+	where
+		NewFormat: OwnedDeserializer<R> + Format<'static, S> + Clone + 'static,
+		<NewFormat as Format<'static, R>>::Error: SerializationError,
+		<NewFormat as Format<'static, S>>::Error: SerializationError,
+	{
+		let (sender, receiver) = self.connection.open_bi().await?;
+
+		let sender = Sender::new(sender, format.clone());
+		let receiver = Receiver::new(ReceiverStream::new(receiver, format));
+
+		sender.send_any(r#type, &self.format)?;
 
 		Ok((sender, receiver))
 	}
@@ -175,8 +231,13 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 	}
 }
 
-impl<T: DeserializeOwned + Serialize + Send + 'static> Stream for Connection<T> {
-	type Item = Result<Incoming<T>, error::Connection>;
+impl<T, F> Stream for Connection<T, F>
+where
+	T: Send + 'static,
+	F: OwnedDeserializer<T> + Clone,
+	F::Error: SerializationError,
+{
+	type Item = Result<Incoming<T, F>, error::Connection>;
 
 	fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
 		if self.receiver.is_terminated() {
@@ -184,12 +245,17 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Stream for Connection<T> 
 		} else {
 			self.receiver
 				.poll_next_unpin(cx)
-				.map_ok(|(sender, receiver)| Incoming::new(sender, receiver))
+				.map_ok(|(sender, receiver)| Incoming::new(sender, receiver, self.format.clone()))
 		}
 	}
 }
 
-impl<T: DeserializeOwned + Serialize + Send + 'static> FusedStream for Connection<T> {
+impl<T, F> FusedStream for Connection<T, F>
+where
+	T: Send + 'static,
+	F: OwnedDeserializer<T> + Clone,
+	F::Error: SerializationError,
+{
 	fn is_terminated(&self) -> bool {
 		self.receiver.is_terminated()
 	}

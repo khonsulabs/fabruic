@@ -8,7 +8,6 @@ use std::{
 	task::{Context, Poll},
 };
 
-use bincode::ErrorKind;
 use bytes::{Buf, BufMut, BytesMut};
 use futures_util::{
 	stream::{FusedStream, Stream},
@@ -16,13 +15,16 @@ use futures_util::{
 };
 use pin_project::pin_project;
 use quinn::{Chunk, ReadError, RecvStream, VarInt};
-use serde::de::DeserializeOwned;
+use transmog::OwnedDeserializer;
 
-use crate::error;
+use crate::error::{self, SerializationError};
 
 /// Wrapper around [`RecvStream`] providing framing and deserialization.
 #[pin_project]
-pub(super) struct ReceiverStream<M: DeserializeOwned> {
+pub(super) struct ReceiverStream<M, F>
+where
+	F: OwnedDeserializer<M>,
+{
 	/// Store length of the currently processing message.
 	length: usize,
 	/// Store incoming chunks.
@@ -31,30 +33,41 @@ pub(super) struct ReceiverStream<M: DeserializeOwned> {
 	stream: RecvStream,
 	/// True if the stream is complete.
 	complete: bool,
+	/// The deserialization format.
+	pub(super) format: F,
 	/// Type to be [`Deserialize`](serde::Deserialize)d
 	_type: PhantomData<M>,
 }
 
-impl<M: DeserializeOwned> ReceiverStream<M> {
+impl<M, F> ReceiverStream<M, F>
+where
+	F: OwnedDeserializer<M>,
+	F::Error: SerializationError + 'static,
+{
 	/// Builds a new [`ReceiverStream`].
-	pub(super) fn new(stream: RecvStream) -> Self {
+	pub(super) fn new(stream: RecvStream, format: F) -> Self {
 		Self {
 			length: 0,
 			// 1480 bytes is a default MTU size configured by quinn-proto
 			buffer: BytesMut::with_capacity(1480),
 			stream,
 			complete: false,
+			format,
 			_type: PhantomData,
 		}
 	}
 
 	/// Transmutes this [`ReceiverStream`] to a different message type.
-	pub(super) fn transmute<T: DeserializeOwned>(self) -> ReceiverStream<T> {
+	pub(super) fn transmute<T, NewFormat>(self, format: NewFormat) -> ReceiverStream<T, NewFormat>
+	where
+		NewFormat: OwnedDeserializer<T>,
+	{
 		ReceiverStream {
 			length: self.length,
 			buffer: self.buffer,
 			stream: self.stream,
 			complete: self.complete,
+			format,
 			_type: PhantomData,
 		}
 	}
@@ -112,19 +125,20 @@ impl<M: DeserializeOwned> ReceiverStream<M> {
 	/// # Errors
 	/// [`ErrorKind`] if `data` failed to be
 	/// [`Deserialize`](serde::Deserialize)d.
-	fn deserialize(&mut self) -> Result<Option<M>, ErrorKind> {
+	#[allow(clippy::as_conversions, trivial_casts)] // False positive
+	fn deserialize(&mut self) -> Result<Option<M>, Box<dyn SerializationError>> {
 		if let Some(length) = self.length() {
 			if self.buffer.len() >= length {
 				// split off the correct amount of data
-				let data = self.buffer.split_to(length).reader();
+				let data = self.buffer.split_to(length);
 				// reset the length
 				self.length = 0;
 
 				// deserialize message
-				// TODO: configure bincode, for example make it bounded
-				bincode::deserialize_from::<_, M>(data)
+				self.format
+					.deserialize_owned(&data)
 					.map(Some)
-					.map_err(|error| *error)
+					.map_err(|err| Box::new(err) as Box<dyn SerializationError>)
 			} else {
 				Ok(None)
 			}
@@ -134,14 +148,18 @@ impl<M: DeserializeOwned> ReceiverStream<M> {
 	}
 }
 
-impl<M: DeserializeOwned> Stream for ReceiverStream<M> {
+impl<M, F> Stream for ReceiverStream<M, F>
+where
+	F: OwnedDeserializer<M>,
+	F::Error: SerializationError,
+{
 	type Item = Result<M, error::Receiver>;
 
 	fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
 		use futures_util::ready;
 
 		// did already have enough data to return a message without polling?
-		if let Some(message) = self.deserialize()? {
+		if let Some(message) = self.deserialize().map_err(error::Receiver::Deserialize)? {
 			// send back the message
 			return Poll::Ready(Some(Ok(message)));
 		}
@@ -154,7 +172,7 @@ impl<M: DeserializeOwned> Stream for ReceiverStream<M> {
 		loop {
 			if ready!(self.poll(cx)?).is_some() {
 				// The stream received some data, but we may not have a full packet.
-				if let Some(message) = self.deserialize()? {
+				if let Some(message) = self.deserialize().map_err(error::Receiver::Deserialize)? {
 					break Poll::Ready(Some(Ok(message)));
 				}
 			} else {
@@ -166,7 +184,11 @@ impl<M: DeserializeOwned> Stream for ReceiverStream<M> {
 	}
 }
 
-impl<M: DeserializeOwned> FusedStream for ReceiverStream<M> {
+impl<M, F> FusedStream for ReceiverStream<M, F>
+where
+	F: OwnedDeserializer<M>,
+	F::Error: SerializationError,
+{
 	fn is_terminated(&self) -> bool {
 		self.complete
 	}
