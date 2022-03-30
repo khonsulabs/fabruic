@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint/builder</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2022-03-03 09:02:05</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2022-03-30 01:52:19</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -946,7 +946,7 @@
 <div class="line"><span id="925" class="lineNum"><a href="#925">925</a></span><span class="counterCov">1</span><span class="lineCov">		let endpoint = Builder::new().build()?;</span></div>
 <div class="line"><span id="926" class="lineNum"><a href="#926">926</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="927" class="lineNum"><a href="#927">927</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// TODO: find a better target without DNSSEC support then Google</span></div>
-<div class="line"><span id="928" class="lineNum"><a href="#928">928</a></span><span class="counterCov">12</span><span class="lineCov">		let result = endpoint.connect(&quot;https://google.com&quot;).await;</span></div>
+<div class="line"><span id="928" class="lineNum"><a href="#928">928</a></span><span class="counterCov">10</span><span class="lineCov">		let result = endpoint.connect(&quot;https://google.com&quot;).await;</span></div>
 <div class="line"><span id="929" class="lineNum"><a href="#929">929</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="930" class="lineNum"><a href="#930">930</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// target has no DNSSEC records</span></div>
 <div class="line"><span id="931" class="lineNum"><a href="#931">931</a></span><span class="counterCov">1</span><span class="lineCov">		if let Err(error::Connect::TrustDns(error)) = &amp;result {</span></div>
@@ -1022,8 +1022,8 @@
 <div class="line"><span id="1001" class="lineNum"><a href="#1001">1001</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="1002" class="lineNum"><a href="#1002">1002</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// TODO: find a better target to test our root certificate store against</span></div>
 <div class="line"><span id="1003" class="lineNum"><a href="#1003">1003</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(endpoint</span></div>
-<div class="line"><span id="1004" class="lineNum"><a href="#1004">1004</a></span><span class="counterCov">7</span><span class="lineCov">			.connect(&quot;https://cloudflare-quic.com:443&quot;)</span></div>
-<div class="line"><span id="1005" class="lineNum"><a href="#1005">1005</a></span><span class="counterCov">7</span><span class="lineCov">			.await?</span></div>
+<div class="line"><span id="1004" class="lineNum"><a href="#1004">1004</a></span><span class="counterCov">8</span><span class="lineCov">			.connect(&quot;https://cloudflare-quic.com:443&quot;)</span></div>
+<div class="line"><span id="1005" class="lineNum"><a href="#1005">1005</a></span><span class="counterCov">8</span><span class="lineCov">			.await?</span></div>
 <div class="line"><span id="1006" class="lineNum"><a href="#1006">1006</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
 <div class="line"><span id="1007" class="lineNum"><a href="#1007">1007</a></span><span class="counterCov">1</span><span class="lineCov">			.await</span></div>
 <div class="line"><span id="1008" class="lineNum"><a href="#1008">1008</a></span><span class="counterCov">1</span><span class="lineCov">			.is_ok());</span></div>
@@ -1049,8 +1049,8 @@
 <div class="line"><span id="1028" class="lineNum"><a href="#1028">1028</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="1029" class="lineNum"><a href="#1029">1029</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// TODO: find a better target to test our root certificate store against</span></div>
 <div class="line"><span id="1030" class="lineNum"><a href="#1030">1030</a></span><span class="counterCov">1</span><span class="lineCov">		assert!(endpoint</span></div>
-<div class="line"><span id="1031" class="lineNum"><a href="#1031">1031</a></span><span class="counterCov">7</span><span class="lineCov">			.connect(&quot;https://cloudflare-quic.com:443&quot;)</span></div>
-<div class="line"><span id="1032" class="lineNum"><a href="#1032">1032</a></span><span class="counterCov">7</span><span class="lineCov">			.await?</span></div>
+<div class="line"><span id="1031" class="lineNum"><a href="#1031">1031</a></span><span class="counterCov">8</span><span class="lineCov">			.connect(&quot;https://cloudflare-quic.com:443&quot;)</span></div>
+<div class="line"><span id="1032" class="lineNum"><a href="#1032">1032</a></span><span class="counterCov">8</span><span class="lineCov">			.await?</span></div>
 <div class="line"><span id="1033" class="lineNum"><a href="#1033">1033</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
 <div class="line"><span id="1034" class="lineNum"><a href="#1034">1034</a></span><span class="counterCov">1</span><span class="lineCov">			.await</span></div>
 <div class="line"><span id="1035" class="lineNum"><a href="#1035">1035</a></span><span class="counterCov">1</span><span class="lineCov">			.is_ok());</span></div>

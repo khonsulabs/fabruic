@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2022-03-03 09:02:05</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2022-03-30 01:52:19</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -613,13 +613,13 @@
 <div class="line"><span id="592" class="lineNum"><a href="#592">592</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl Stream for Endpoint {</span></div>
 <div class="line"><span id="593" class="lineNum"><a href="#593">593</a></span><span class="counterUnCov"></span><span class="lineUnCov">	type Item = Connecting;</span></div>
 <div class="line"><span id="594" class="lineNum"><a href="#594">594</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="595" class="lineNum"><a href="#595">595</a></span><span class="counterCov">131</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
-<div class="line"><span id="596" class="lineNum"><a href="#596">596</a></span><span class="counterCov">131</span><span class="lineCov">		if self.receiver.is_terminated() {</span></div>
+<div class="line"><span id="595" class="lineNum"><a href="#595">595</a></span><span class="counterCov">183</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
+<div class="line"><span id="596" class="lineNum"><a href="#596">596</a></span><span class="counterCov">183</span><span class="lineCov">		if self.receiver.is_terminated() {</span></div>
 <div class="line"><span id="597" class="lineNum"><a href="#597">597</a></span><span class="counterCov">2</span><span class="lineCov">			Poll::Ready(None)</span></div>
 <div class="line"><span id="598" class="lineNum"><a href="#598">598</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
-<div class="line"><span id="599" class="lineNum"><a href="#599">599</a></span><span class="counterCov">129</span><span class="lineCov">			self.receiver.poll_next_unpin(cx)</span></div>
+<div class="line"><span id="599" class="lineNum"><a href="#599">599</a></span><span class="counterCov">181</span><span class="lineCov">			self.receiver.poll_next_unpin(cx)</span></div>
 <div class="line"><span id="600" class="lineNum"><a href="#600">600</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="601" class="lineNum"><a href="#601">601</a></span><span class="counterCov">131</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="601" class="lineNum"><a href="#601">601</a></span><span class="counterCov">183</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="602" class="lineNum"><a href="#602">602</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 <div class="line"><span id="603" class="lineNum"><a href="#603">603</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="604" class="lineNum"><a href="#604">604</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl FusedStream for Endpoint {</span></div>
