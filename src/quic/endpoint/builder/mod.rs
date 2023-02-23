@@ -35,6 +35,8 @@ use crate::{error, Certificate, Endpoint, KeyPair};
 pub struct Builder {
 	/// [`SocketAddr`] for [`Endpoint`](quinn::Endpoint) to bind to.
 	address: SocketAddr,
+	/// Enables `SO_REUSEADDR` on the underlying `UdpSocket`.
+	reuse_address: bool,
 	/// Custom root [`Certificate`]s.
 	root_certificates: Vec<Certificate>,
 	/// Server certificate key-pair.
@@ -73,6 +75,7 @@ impl Builder {
 			// while testing always use the default loopback address
 			#[cfg(feature = "test")]
 			address: ([0, 0, 0, 0, 0, 0, 0, 1], 0).into(),
+			reuse_address: false,
 			root_certificates: Vec::new(),
 			server_key_pair: None,
 			client_key_pair: None,
@@ -118,6 +121,23 @@ impl Builder {
 	#[must_use]
 	pub const fn address(&self) -> &SocketAddr {
 		&self.address
+	}
+
+	/// Enables `SO_REUSEADDR` on the underlying `UdpSocket`, allowing multiple
+	/// [`Endpoint`]s to bind to the same [`SocketAddr`].
+	///
+	/// If this is false, attempting to create an [`Endpoint`] to a previously
+	/// bound [`SocketAddr`] may result in an address-in-use error.
+	pub fn set_reuse_address(&mut self, reuse: bool) {
+		self.reuse_address = reuse;
+	}
+
+	/// Returns whether the underlying `UdpSocket` will enable the
+	/// `SO_REUSEADDR` option. See
+	/// [`set_reuse_address()`](Self::set_reuse_address) for more information.
+	#[must_use]
+	pub const fn reuse_address(&self) -> bool {
+		self.reuse_address
 	}
 
 	/// Set a server certificate [`KeyPair`], use [`None`] to
@@ -505,11 +525,12 @@ impl Builder {
 				false,
 			) {
 				Ok(client) => client,
-				Err(error) =>
+				Err(error) => {
 					return Err(error::Builder {
 						error: error.into(),
 						builder: self,
-					}),
+					})
+				}
 			};
 
 			// build server only if we have a key-pair
@@ -537,7 +558,13 @@ impl Builder {
 				server
 			});
 
-			Endpoint::new(self.address, client, server, self.config.clone())
+			Endpoint::new(
+				self.address,
+				self.reuse_address,
+				client,
+				server,
+				self.config.clone(),
+			)
 		} {
 			Ok(endpoint) => Ok(endpoint),
 			Err(error) => Err(error::Builder {
@@ -734,9 +761,10 @@ mod test {
 
 		// build client
 		let mut builder = Builder::new();
-		Dangerous::set_root_certificates(&mut builder, [server_key_pair
-			.end_entity_certificate()
-			.clone()]);
+		Dangerous::set_root_certificates(
+			&mut builder,
+			[server_key_pair.end_entity_certificate().clone()],
+		);
 		builder.set_client_key_pair(Some(client_key_pair.clone()));
 		let client = builder.build()?;
 
