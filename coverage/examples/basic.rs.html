@@ -9,11 +9,11 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../index.html">top level</a> - <a href="index.html">examples</a> - basic.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2022-03-30 01:52:19</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-02-23 12:30:44</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">106</span><span class="linesTotal">106</span><span class="linesPercentage lineHi">100.0 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">105</span><span class="linesTotal">105</span><span class="linesPercentage lineHi">100.0 %</span></div>
 <div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">6</span><span class="funsTotal">6</span><span class="funsPercentage funHi">100.0 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
@@ -148,14 +148,14 @@
 <div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterUnCov"></span><span class="lineUnCov">				// in this example we know there is only 1 incoming message, so we will not wait</span></div>
 <div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterUnCov"></span><span class="lineUnCov">				// for more</span></div>
 <div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterCov">100</span><span class="lineCov">				let message = receiver.next().await.expect(&quot;no message found&quot;)?;</span></div>
-<div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterCov">99</span><span class="lineCov">				println!(</span></div>
-<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterCov">99</span><span class="lineCov">					&quot;[server] New message from {}: {}&quot;,</span></div>
-<div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterCov">99</span><span class="lineCov">					connection.remote_address(),</span></div>
-<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterCov">99</span><span class="lineCov">					message</span></div>
-<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterCov">99</span><span class="lineCov">				);</span></div>
-<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterCov">99</span><span class="lineCov"></span></div>
-<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterCov">99</span><span class="lineCov">				// respond</span></div>
-<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterCov">99</span><span class="lineCov">				sender.send(&amp;String::from(&quot;hello from server&quot;))?;</span></div>
+<div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterCov">100</span><span class="lineCov">				println!(</span></div>
+<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterCov">100</span><span class="lineCov">					&quot;[server] New message from {}: {}&quot;,</span></div>
+<div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterCov">100</span><span class="lineCov">					connection.remote_address(),</span></div>
+<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterCov">100</span><span class="lineCov">					message</span></div>
+<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterCov">100</span><span class="lineCov">				);</span></div>
+<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterCov">100</span><span class="lineCov"></span></div>
+<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterCov">100</span><span class="lineCov">				// respond</span></div>
+<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterCov">100</span><span class="lineCov">				sender.send(&amp;String::from(&quot;hello from server&quot;))?;</span></div>
 <div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterUnCov"></span><span class="lineUnCov">				// wait for stream to finish</span></div>
 <div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterCov">100</span><span class="lineCov">				sender.finish().await?;</span></div>
@@ -171,7 +171,7 @@
 <div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterCov">1</span><span class="lineCov">	server.close_incoming().await?;</span></div>
 <div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterUnCov"></span><span class="lineUnCov">	// wait for all connections to finish</span></div>
-<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterCov">100</span><span class="lineCov">	future::try_join_all(connections).await?;</span></div>
+<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterCov">101</span><span class="lineCov">	future::try_join_all(connections).await?;</span></div>
 <div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterUnCov"></span><span class="lineUnCov">	// wait for server to finish cleanly</span></div>
 <div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterCov">1</span><span class="lineCov">	server.wait_idle().await;</span></div>
@@ -180,7 +180,7 @@
 <div class="line"><span id="159" class="lineNum"><a href="#159">159</a></span><span class="counterCov">1</span><span class="lineCov">	future::try_join_all(clients).await?;</span></div>
 <div class="line"><span id="160" class="lineNum"><a href="#160">160</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="161" class="lineNum"><a href="#161">161</a></span><span class="counterCov">1</span><span class="lineCov">	Ok(())</span></div>
-<div class="line"><span id="162" class="lineNum"><a href="#162">162</a></span><span class="counterCov">1</span><span class="lineCov">}</span></div>
+<div class="line"><span id="162" class="lineNum"><a href="#162">162</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 </div>
 </body>
 </html>
