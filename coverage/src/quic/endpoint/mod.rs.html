@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-02-23 12:30:44</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-02-23 16:15:21</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -280,7 +280,7 @@
 <div class="line"><span id="259" class="lineNum"><a href="#259">259</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Ok(()) }</span></div>
 <div class="line"><span id="260" class="lineNum"><a href="#260">260</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// ```</span></div>
 <div class="line"><span id="261" class="lineNum"><a href="#261">261</a></span><span class="counterCov">8</span><span class="lineCov">	pub async fn connect&lt;U: AsRef&lt;str&gt;&gt;(&amp;self, url: U) -&gt; Result&lt;Connecting, error::Connect&gt; {</span></div>
-<div class="line"><span id="262" class="lineNum"><a href="#262">262</a></span><span class="counterCov">45</span><span class="lineCov">		let (address, domain) = self.resolve_domain(url).await?;</span></div>
+<div class="line"><span id="262" class="lineNum"><a href="#262">262</a></span><span class="counterCov">44</span><span class="lineCov">		let (address, domain) = self.resolve_domain(url).await?;</span></div>
 <div class="line"><span id="263" class="lineNum"><a href="#263">263</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="264" class="lineNum"><a href="#264">264</a></span><span class="counterUnCov"></span><span class="lineUnCov">		Ok(Connecting::new(</span></div>
 <div class="line"><span id="265" class="lineNum"><a href="#265">265</a></span><span class="counterCov">7</span><span class="lineCov">			self.endpoint</span></div>
@@ -432,7 +432,7 @@
 <div class="line"><span id="411" class="lineNum"><a href="#411">411</a></span><span class="counterCov">8</span><span class="lineCov">			let resolver = TokioAsyncResolver::tokio(ResolverConfig::cloudflare_https(), opts)</span></div>
 <div class="line"><span id="412" class="lineNum"><a href="#412">412</a></span><span class="counterCov">8</span><span class="lineCov">				.map_err(Box::new)?;</span></div>
 <div class="line"><span id="413" class="lineNum"><a href="#413">413</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// query the IP</span></div>
-<div class="line"><span id="414" class="lineNum"><a href="#414">414</a></span><span class="counterCov">43</span><span class="lineCov">			let ip = resolver.lookup_ip(domain.clone()).await.map_err(Box::new)?;</span></div>
+<div class="line"><span id="414" class="lineNum"><a href="#414">414</a></span><span class="counterCov">42</span><span class="lineCov">			let ip = resolver.lookup_ip(domain.clone()).await.map_err(Box::new)?;</span></div>
 <div class="line"><span id="415" class="lineNum"><a href="#415">415</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="416" class="lineNum"><a href="#416">416</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// take the first IP found</span></div>
 <div class="line"><span id="417" class="lineNum"><a href="#417">417</a></span><span class="counterUnCov"></span><span class="lineUnCov">			// TODO: retry connection on other found IPs</span></div>

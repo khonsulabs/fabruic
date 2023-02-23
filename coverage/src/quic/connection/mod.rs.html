@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-02-23 12:30:44</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-02-23 16:15:21</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -98,11 +98,11 @@
 <div class="line"><span id="77" class="lineNum"><a href="#77">77</a></span><span class="counterCov">221</span><span class="lineCov">		// `Task` handling incoming streams</span></div>
 <div class="line"><span id="78" class="lineNum"><a href="#78">78</a></span><span class="counterCov">221</span><span class="lineCov">		let task = Task::new(|mut shutdown| async move {</span></div>
 <div class="line"><span id="79" class="lineNum"><a href="#79">79</a></span><span class="counterCov">213</span><span class="lineCov">			let mut bi_streams = bi_streams.fuse();</span></div>
-<div class="line"><span id="80" class="lineNum"><a href="#80">80</a></span><span class="counterCov">473</span><span class="lineCov">			while let Some(connecting) = futures_util::select_biased! {</span></div>
-<div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterCov">837</span><span class="lineCov">				connecting = bi_streams.next() =&gt; connecting,</span></div>
-<div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterCov">837</span><span class="lineCov">				_ = shutdown =&gt; None,</span></div>
-<div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterCov">837</span><span class="lineCov">				complete =&gt; None,</span></div>
-<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterCov">837</span><span class="lineCov">			} {</span></div>
+<div class="line"><span id="80" class="lineNum"><a href="#80">80</a></span><span class="counterCov">454</span><span class="lineCov">			while let Some(connecting) = futures_util::select_biased! {</span></div>
+<div class="line"><span id="81" class="lineNum"><a href="#81">81</a></span><span class="counterCov">798</span><span class="lineCov">				connecting = bi_streams.next() =&gt; connecting,</span></div>
+<div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterCov">798</span><span class="lineCov">				_ = shutdown =&gt; None,</span></div>
+<div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterCov">798</span><span class="lineCov">				complete =&gt; None,</span></div>
+<div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterCov">798</span><span class="lineCov">			} {</span></div>
 <div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterCov">105</span><span class="lineCov">				let incoming = connecting.map_err(error::Connection);</span></div>
 <div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterCov">105</span><span class="lineCov"></span></div>
 <div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterCov">105</span><span class="lineCov">				if sender.send(incoming).is_err() {</span></div>
