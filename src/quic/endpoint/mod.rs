@@ -5,7 +5,7 @@ mod builder;
 use std::{
 	fmt::{self, Debug, Formatter},
 	io::Error,
-	net::{SocketAddr, ToSocketAddrs},
+	net::{SocketAddr, ToSocketAddrs, UdpSocket},
 	pin::Pin,
 	slice,
 	sync::Arc,
@@ -21,7 +21,8 @@ use futures_util::{
 	stream::{FusedStream, Stream},
 	StreamExt,
 };
-use quinn::{ClientConfig, ServerConfig, VarInt};
+use quinn::{ClientConfig, EndpointConfig, ServerConfig, VarInt};
+use socket2::{Domain, Protocol, Type};
 use url::{Host, Url};
 
 use super::Task;
@@ -83,18 +84,34 @@ impl Endpoint {
 	/// If not called from inside a Tokio [`Runtime`](tokio::runtime::Runtime).
 	fn new(
 		address: SocketAddr,
+		reuse_address: bool,
 		client: ClientConfig,
 		server: Option<ServerConfig>,
 		config: Config,
 	) -> Result<Self, Error> {
-		// configure endpoint for server and client
-		let (mut endpoint, incoming) = match server {
-			Some(server) => {
-				let (endpoint, incoming) = quinn::Endpoint::server(server, address)?;
-				(endpoint, Some(incoming))
-			}
-			None => (quinn::Endpoint::client(address)?, None),
+		let socket = if reuse_address {
+			let socket = socket2::Socket::new(
+				if address.is_ipv4() {
+					Domain::IPV4
+				} else {
+					Domain::IPV6
+				},
+				Type::DGRAM,
+				Some(Protocol::UDP),
+			)?;
+			socket.set_reuse_address(true)?;
+			socket.bind(&socket2::SockAddr::from(address))?;
+			socket.into()
+		} else {
+			UdpSocket::bind(address)?
 		};
+
+		// configure endpoint for server and client
+		let is_server = server.is_some();
+		let (mut endpoint, incoming) =
+			quinn::Endpoint::new(EndpointConfig::default(), server, socket)?;
+		// If we aren't the server, we don't use the incoming stream.
+		let incoming = is_server.then_some(incoming);
 
 		endpoint.set_default_client_config(client);
 
@@ -742,6 +759,75 @@ mod test {
 
 		client.wait_idle().await;
 		server.wait_idle().await;
+
+		Ok(())
+	}
+
+	#[tokio::test]
+	async fn close_and_reuse() -> Result<()> {
+		let key_pair = KeyPair::new_self_signed("test");
+
+		let client = Endpoint::new_client()?;
+		let mut server = Endpoint::builder();
+		server.set_server_key_pair(Some(key_pair.clone()));
+		server.set_reuse_address(true);
+		let mut server = server.build()?;
+		let bound_address = server.local_address()?;
+		let address = format!("quic://{}", server.local_address()?);
+
+		// `wait_idle` should never finish unless these `Connection`s are closed, which
+		// they won't unless they are dropped or explicitly closed
+		let _connection = client
+			.connect_pinned(&address, key_pair.end_entity_certificate(), None)
+			.await?
+			.accept::<()>()
+			.await?;
+		let _connection = server
+			.next()
+			.await
+			.expect("client dropped")
+			.accept::<()>()
+			.await?;
+
+		// closing the client/server will close all connection immediately
+		client.close().await;
+		server.close().await;
+
+		// connecting to a closed server shouldn't work
+		assert!(matches!(
+			client
+				.connect_pinned(address, key_pair.end_entity_certificate(), None)
+				.await?
+				.accept::<()>()
+				.await,
+			Err(error::Connecting::Connection(
+				ConnectionError::LocallyClosed
+			))
+		));
+
+		// waiting for a new connection on a closed server shouldn't work
+		assert!(matches!(server.next().await, None));
+
+		client.wait_idle().await;
+		server.wait_idle().await;
+
+		// Try listening again.
+		let mut server = Endpoint::builder();
+		server.set_address(bound_address);
+		server.set_server_key_pair(Some(key_pair.clone()));
+		server.set_reuse_address(true);
+		let mut server = server.build()?;
+		let address = format!("quic://{}", server.local_address()?);
+
+		let client = Endpoint::new_client()?;
+		let _connection = client
+			.connect_pinned(&address, key_pair.end_entity_certificate(), None)
+			.await
+			.unwrap()
+			.accept::<()>()
+			.await
+			.unwrap();
+		let _connection = server.next().await.expect("client dropped");
 
 		Ok(())
 	}
