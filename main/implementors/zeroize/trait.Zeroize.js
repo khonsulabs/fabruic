@@ -1,3 +1,3 @@
-(function() {var implementors = {};
-implementors["fabruic"] = [{"text":"impl Zeroize for <a class=\"struct\" href=\"fabruic/struct.PrivateKey.html\" title=\"struct fabruic::PrivateKey\">PrivateKey</a>","synthetic":false,"types":["fabruic::x509::private_key::PrivateKey"]},{"text":"impl Zeroize for <a class=\"struct\" href=\"fabruic/error/struct.PrivateKey.html\" title=\"struct fabruic::error::PrivateKey\">PrivateKey</a>","synthetic":false,"types":["fabruic::error::PrivateKey"]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
+(function() {var implementors = {
+"fabruic":[["impl Zeroize for <a class=\"struct\" href=\"fabruic/error/struct.PrivateKey.html\" title=\"struct fabruic::error::PrivateKey\">PrivateKey</a>"],["impl Zeroize for <a class=\"struct\" href=\"fabruic/struct.PrivateKey.html\" title=\"struct fabruic::PrivateKey\">PrivateKey</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
