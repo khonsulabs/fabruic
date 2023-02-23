@@ -4,11 +4,10 @@ Fabruic is a wrapper around [quinn](https://lib.rs/quinn) that provides a
 simplified interface for reliable payload delivery.
 
 This project is written to support Khonsu Labs projects, primarily
-[Cosmic Verge](https://github.com/khonsulabs/cosmicverge) and
 [BonsaiDb](https://github.com/khonsulabs/bonsaidb).
 
 While this library is open-source, the primary reason for publishing on
-crates.io is to support releasing PliantDB. If you're considering using this for
+crates.io is to support releasing BonsaiDb. If you're considering using this for
 your own project, please recognize that this project is offered as-is and if
 there are features you are wishing to have that we do not need in one of our
 projects, we may not add them. Before submitting a PR, please submit your ideas

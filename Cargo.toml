@@ -1,7 +1,7 @@
 [package]
 name = "fabruic"
-version = "0.0.1-dev.5"
-description = "A simple QUIC-based protocol using quinn. Written for PliantDB and Cosmic Verge."
+version = "0.0.1-dev.6"
+description = "A simple QUIC-based protocol using quinn. Written for BonsaiDb."
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/khonsulabs/fabruic"
 keywords = ["quic"]
