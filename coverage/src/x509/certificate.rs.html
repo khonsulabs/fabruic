@@ -9,11 +9,11 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../index.html">top level</a> - <a href="index.html">src/x509</a> - certificate.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-02-23 16:15:21</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-06-05 14:32:48</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">70</span><span class="linesTotal">97</span><span class="linesPercentage lineLow">72.2 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">74</span><span class="linesTotal">101</span><span class="linesPercentage lineLow">73.3 %</span></div>
 <div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">27</span><span class="funsTotal">47</span><span class="funsPercentage funLow">57.4 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
@@ -35,9 +35,9 @@
 <div class="line"><span id="14" class="lineNum"><a href="#14">14</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub struct Certificate(Vec&lt;u8&gt;);</span></div>
 <div class="line"><span id="15" class="lineNum"><a href="#15">15</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="16" class="lineNum"><a href="#16">16</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl AsRef&lt;[u8]&gt; for Certificate {</span></div>
-<div class="line"><span id="17" class="lineNum"><a href="#17">17</a></span><span class="counterCov">113</span><span class="lineCov">	fn as_ref(&amp;self) -&gt; &amp;[u8] {</span></div>
-<div class="line"><span id="18" class="lineNum"><a href="#18">18</a></span><span class="counterCov">113</span><span class="lineCov">		&amp;self.0</span></div>
-<div class="line"><span id="19" class="lineNum"><a href="#19">19</a></span><span class="counterCov">113</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="17" class="lineNum"><a href="#17">17</a></span><span class="counterCov">114</span><span class="lineCov">	fn as_ref(&amp;self) -&gt; &amp;[u8] {</span></div>
+<div class="line"><span id="18" class="lineNum"><a href="#18">18</a></span><span class="counterCov">114</span><span class="lineCov">		&amp;self.0</span></div>
+<div class="line"><span id="19" class="lineNum"><a href="#19">19</a></span><span class="counterCov">114</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="20" class="lineNum"><a href="#20">20</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 <div class="line"><span id="21" class="lineNum"><a href="#21">21</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="22" class="lineNum"><a href="#22">22</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl From&lt;Certificate&gt; for Vec&lt;u8&gt; {</span></div>
@@ -117,83 +117,87 @@
 <div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterCov">1</span><span class="lineCov">		if parsed</span></div>
 <div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">1</span><span class="lineCov">			.tbs_certificate</span></div>
 <div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">1</span><span class="lineCov">			.subject_alternative_name()</span></div>
-<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterCov">1</span><span class="lineCov">			.filter(|name| !name.1.general_names.is_empty())</span></div>
-<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterCov">1</span><span class="lineCov">			.is_none()</span></div>
-<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterUnCov"></span><span class="lineUnCov">		{</span></div>
-<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			return Err(error::Certificate {</span></div>
-<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				error: CertificateError::Domain,</span></div>
-<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				certificate,</span></div>
-<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			});</span></div>
-<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterCov">1</span><span class="lineCov">		}</span></div>
-<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
-<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterCov">1</span><span class="lineCov">		// TODO: extend validation to use something like</span></div>
-<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterCov">1</span><span class="lineCov">		// `webpki::EndEntityCert::verify_is_valid_tls_client_cert`</span></div>
-<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
-<div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(Self(certificate))</span></div>
-<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Build [`Certificate`] from DER-format. This skips the validation from</span></div>
-<div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`from_der`](Self::from_der), which isn&#39;t `unsafe`, but could fail</span></div>
-<div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// nonetheless when used on an [`Endpoint`](crate::Endpoint).</span></div>
-<div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[must_use]</span></div>
-<div class="line"><span id="118" class="lineNum"><a href="#118">118</a></span><span class="counterCov">19</span><span class="lineCov">	pub fn unchecked_from_der&lt;C: Into&lt;Vec&lt;u8&gt;&gt;&gt;(certificate: C) -&gt; Self {</span></div>
-<div class="line"><span id="119" class="lineNum"><a href="#119">119</a></span><span class="counterCov">19</span><span class="lineCov">		Self(certificate.into())</span></div>
-<div class="line"><span id="120" class="lineNum"><a href="#120">120</a></span><span class="counterCov">19</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="121" class="lineNum"><a href="#121">121</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="122" class="lineNum"><a href="#122">122</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Panics</span></div>
-<div class="line"><span id="123" class="lineNum"><a href="#123">123</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Panics if [`Certificate`] couldn&#39;t be parsed or contained no valid</span></div>
-<div class="line"><span id="124" class="lineNum"><a href="#124">124</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// domain names. This can&#39;t happen if [`Certificate`] is constructed</span></div>
-<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// correctly from [`from_der`](Self::from_der).</span></div>
-<div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[must_use]</span></div>
-<div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterCov">112</span><span class="lineCov">	pub fn domains(&amp;self) -&gt; Vec&lt;String&gt; {</span></div>
-<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterCov">112</span><span class="lineCov">		let (_, certificate) =</span></div>
-<div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterCov">112</span><span class="lineCov">			X509Certificate::from_der(&amp;self.0).expect(&quot;`Certificate` couldn&#39;t be parsed&quot;);</span></div>
-<div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterCov">112</span><span class="lineCov"></span></div>
-<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterCov">112</span><span class="lineCov">		certificate</span></div>
-<div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterCov">112</span><span class="lineCov">			.tbs_certificate</span></div>
-<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterCov">112</span><span class="lineCov">			.subject_alternative_name()</span></div>
-<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterCov">112</span><span class="lineCov">			.map(|name| {</span></div>
-<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterCov">112</span><span class="lineCov">				name.1</span></div>
-<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterCov">112</span><span class="lineCov">					.general_names</span></div>
-<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterCov">112</span><span class="lineCov">					.iter()</span></div>
-<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterCov">112</span><span class="lineCov">					.filter_map(|name| {</span></div>
-<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterCov">112</span><span class="lineCov">						if let GeneralName::DNSName(name) = name {</span></div>
-<div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterCov">112</span><span class="lineCov">							Some((*name).to_owned())</span></div>
-<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterUnCov"></span><span class="lineUnCov">						} else {</span></div>
-<div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterNoCov">0</span><span class="lineNoCov">							None</span></div>
-<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterUnCov"></span><span class="lineUnCov">						}</span></div>
-<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterCov">112</span><span class="lineCov">					})</span></div>
-<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterCov">112</span><span class="lineCov">					.collect()</span></div>
-<div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterCov">112</span><span class="lineCov">			})</span></div>
-<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterCov">112</span><span class="lineCov">			.expect(&quot;`Certificate` contained no valid domains&quot;)</span></div>
-<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterCov">112</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Convert from a [`rustls`] type.</span></div>
-<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterCov">1</span><span class="lineCov">	pub(crate) fn from_rustls(certificate: rustls::Certificate) -&gt; Self {</span></div>
-<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterCov">1</span><span class="lineCov">		Self::unchecked_from_der(certificate.0)</span></div>
-<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Convert into a type [`rustls`] can consume.</span></div>
-<div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
-<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Panics</span></div>
-<div class="line"><span id="158" class="lineNum"><a href="#158">158</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Panics if [`Certificate`] couldn&#39;t be parsed or contained no valid</span></div>
-<div class="line"><span id="159" class="lineNum"><a href="#159">159</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// domain names. This can&#39;t happen if [`Certificate`] is constructed</span></div>
-<div class="line"><span id="160" class="lineNum"><a href="#160">160</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// correctly from [`from_der`](Self::from_der).</span></div>
-<div class="line"><span id="161" class="lineNum"><a href="#161">161</a></span><span class="counterCov">13</span><span class="lineCov">	pub(crate) fn into_rustls(self) -&gt; rustls::Certificate {</span></div>
-<div class="line"><span id="162" class="lineNum"><a href="#162">162</a></span><span class="counterCov">13</span><span class="lineCov">		rustls::Certificate(self.into())</span></div>
-<div class="line"><span id="163" class="lineNum"><a href="#163">163</a></span><span class="counterCov">13</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="164" class="lineNum"><a href="#164">164</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
-<div class="line"><span id="165" class="lineNum"><a href="#165">165</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="166" class="lineNum"><a href="#166">166</a></span><span class="counterCov">1</span><span class="lineCov">#[test]</span></div>
-<div class="line"><span id="167" class="lineNum"><a href="#167">167</a></span><span class="counterCov">1</span><span class="lineCov">fn validate() -&gt; anyhow::Result&lt;()&gt; {</span></div>
-<div class="line"><span id="168" class="lineNum"><a href="#168">168</a></span><span class="counterCov">1</span><span class="lineCov">	use crate::KeyPair;</span></div>
-<div class="line"><span id="169" class="lineNum"><a href="#169">169</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
-<div class="line"><span id="170" class="lineNum"><a href="#170">170</a></span><span class="counterCov">1</span><span class="lineCov">	let key_pair = KeyPair::new_self_signed(&quot;test&quot;);</span></div>
-<div class="line"><span id="171" class="lineNum"><a href="#171">171</a></span><span class="counterCov">1</span><span class="lineCov">	let certificate = key_pair.end_entity_certificate();</span></div>
-<div class="line"><span id="172" class="lineNum"><a href="#172">172</a></span><span class="counterCov">1</span><span class="lineCov">	assert_eq!(certificate, &amp;Certificate::from_der(certificate.as_ref())?);</span></div>
-<div class="line"><span id="173" class="lineNum"><a href="#173">173</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="174" class="lineNum"><a href="#174">174</a></span><span class="counterCov">1</span><span class="lineCov">	Ok(())</span></div>
-<div class="line"><span id="175" class="lineNum"><a href="#175">175</a></span><span class="counterCov">1</span><span class="lineCov">}</span></div>
+<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterCov">1</span><span class="lineCov">			.ok()</span></div>
+<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterCov">1</span><span class="lineCov">			.flatten()</span></div>
+<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterCov">1</span><span class="lineCov">			.filter(|name| !name.value.general_names.is_empty())</span></div>
+<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterCov">1</span><span class="lineCov">			.is_none()</span></div>
+<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterUnCov"></span><span class="lineUnCov">		{</span></div>
+<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			return Err(error::Certificate {</span></div>
+<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				error: CertificateError::Domain,</span></div>
+<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterNoCov">0</span><span class="lineNoCov">				certificate,</span></div>
+<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterNoCov">0</span><span class="lineNoCov">			});</span></div>
+<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterCov">1</span><span class="lineCov">		}</span></div>
+<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterCov">1</span><span class="lineCov">		// TODO: extend validation to use something like</span></div>
+<div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterCov">1</span><span class="lineCov">		// `webpki::EndEntityCert::verify_is_valid_tls_client_cert`</span></div>
+<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(Self(certificate))</span></div>
+<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Build [`Certificate`] from DER-format. This skips the validation from</span></div>
+<div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`from_der`](Self::from_der), which isn&#39;t `unsafe`, but could fail</span></div>
+<div class="line"><span id="118" class="lineNum"><a href="#118">118</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// nonetheless when used on an [`Endpoint`](crate::Endpoint).</span></div>
+<div class="line"><span id="119" class="lineNum"><a href="#119">119</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[must_use]</span></div>
+<div class="line"><span id="120" class="lineNum"><a href="#120">120</a></span><span class="counterCov">19</span><span class="lineCov">	pub fn unchecked_from_der&lt;C: Into&lt;Vec&lt;u8&gt;&gt;&gt;(certificate: C) -&gt; Self {</span></div>
+<div class="line"><span id="121" class="lineNum"><a href="#121">121</a></span><span class="counterCov">19</span><span class="lineCov">		Self(certificate.into())</span></div>
+<div class="line"><span id="122" class="lineNum"><a href="#122">122</a></span><span class="counterCov">19</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="123" class="lineNum"><a href="#123">123</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="124" class="lineNum"><a href="#124">124</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Panics</span></div>
+<div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Panics if [`Certificate`] couldn&#39;t be parsed or contained no valid</span></div>
+<div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// domain names. This can&#39;t happen if [`Certificate`] is constructed</span></div>
+<div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// correctly from [`from_der`](Self::from_der).</span></div>
+<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[must_use]</span></div>
+<div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterCov">112</span><span class="lineCov">	pub fn domains(&amp;self) -&gt; Vec&lt;String&gt; {</span></div>
+<div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterCov">112</span><span class="lineCov">		let (_, certificate) =</span></div>
+<div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterCov">112</span><span class="lineCov">			X509Certificate::from_der(&amp;self.0).expect(&quot;`Certificate` couldn&#39;t be parsed&quot;);</span></div>
+<div class="line"><span id="132" class="lineNum"><a href="#132">132</a></span><span class="counterCov">112</span><span class="lineCov"></span></div>
+<div class="line"><span id="133" class="lineNum"><a href="#133">133</a></span><span class="counterCov">112</span><span class="lineCov">		certificate</span></div>
+<div class="line"><span id="134" class="lineNum"><a href="#134">134</a></span><span class="counterCov">112</span><span class="lineCov">			.tbs_certificate</span></div>
+<div class="line"><span id="135" class="lineNum"><a href="#135">135</a></span><span class="counterCov">112</span><span class="lineCov">			.subject_alternative_name()</span></div>
+<div class="line"><span id="136" class="lineNum"><a href="#136">136</a></span><span class="counterCov">112</span><span class="lineCov">			.ok()</span></div>
+<div class="line"><span id="137" class="lineNum"><a href="#137">137</a></span><span class="counterCov">112</span><span class="lineCov">			.flatten()</span></div>
+<div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterCov">112</span><span class="lineCov">			.map(|name| {</span></div>
+<div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterCov">112</span><span class="lineCov">				name.value</span></div>
+<div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterCov">112</span><span class="lineCov">					.general_names</span></div>
+<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterCov">112</span><span class="lineCov">					.iter()</span></div>
+<div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterCov">112</span><span class="lineCov">					.filter_map(|name| {</span></div>
+<div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterCov">112</span><span class="lineCov">						if let GeneralName::DNSName(name) = name {</span></div>
+<div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterCov">112</span><span class="lineCov">							Some((*name).to_owned())</span></div>
+<div class="line"><span id="145" class="lineNum"><a href="#145">145</a></span><span class="counterUnCov"></span><span class="lineUnCov">						} else {</span></div>
+<div class="line"><span id="146" class="lineNum"><a href="#146">146</a></span><span class="counterNoCov">0</span><span class="lineNoCov">							None</span></div>
+<div class="line"><span id="147" class="lineNum"><a href="#147">147</a></span><span class="counterUnCov"></span><span class="lineUnCov">						}</span></div>
+<div class="line"><span id="148" class="lineNum"><a href="#148">148</a></span><span class="counterCov">112</span><span class="lineCov">					})</span></div>
+<div class="line"><span id="149" class="lineNum"><a href="#149">149</a></span><span class="counterCov">112</span><span class="lineCov">					.collect()</span></div>
+<div class="line"><span id="150" class="lineNum"><a href="#150">150</a></span><span class="counterCov">112</span><span class="lineCov">			})</span></div>
+<div class="line"><span id="151" class="lineNum"><a href="#151">151</a></span><span class="counterCov">112</span><span class="lineCov">			.expect(&quot;`Certificate` contained no valid domains&quot;)</span></div>
+<div class="line"><span id="152" class="lineNum"><a href="#152">152</a></span><span class="counterCov">112</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="153" class="lineNum"><a href="#153">153</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="154" class="lineNum"><a href="#154">154</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Convert from a [`rustls`] type.</span></div>
+<div class="line"><span id="155" class="lineNum"><a href="#155">155</a></span><span class="counterCov">1</span><span class="lineCov">	pub(crate) fn from_rustls(certificate: rustls::Certificate) -&gt; Self {</span></div>
+<div class="line"><span id="156" class="lineNum"><a href="#156">156</a></span><span class="counterCov">1</span><span class="lineCov">		Self::unchecked_from_der(certificate.0)</span></div>
+<div class="line"><span id="157" class="lineNum"><a href="#157">157</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="158" class="lineNum"><a href="#158">158</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="159" class="lineNum"><a href="#159">159</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Convert into a type [`rustls`] can consume.</span></div>
+<div class="line"><span id="160" class="lineNum"><a href="#160">160</a></span><span class="counterUnCov"></span><span class="lineUnCov">	///</span></div>
+<div class="line"><span id="161" class="lineNum"><a href="#161">161</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// # Panics</span></div>
+<div class="line"><span id="162" class="lineNum"><a href="#162">162</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Panics if [`Certificate`] couldn&#39;t be parsed or contained no valid</span></div>
+<div class="line"><span id="163" class="lineNum"><a href="#163">163</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// domain names. This can&#39;t happen if [`Certificate`] is constructed</span></div>
+<div class="line"><span id="164" class="lineNum"><a href="#164">164</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// correctly from [`from_der`](Self::from_der).</span></div>
+<div class="line"><span id="165" class="lineNum"><a href="#165">165</a></span><span class="counterCov">13</span><span class="lineCov">	pub(crate) fn into_rustls(self) -&gt; rustls::Certificate {</span></div>
+<div class="line"><span id="166" class="lineNum"><a href="#166">166</a></span><span class="counterCov">13</span><span class="lineCov">		rustls::Certificate(self.into())</span></div>
+<div class="line"><span id="167" class="lineNum"><a href="#167">167</a></span><span class="counterCov">13</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="168" class="lineNum"><a href="#168">168</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="169" class="lineNum"><a href="#169">169</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="170" class="lineNum"><a href="#170">170</a></span><span class="counterCov">1</span><span class="lineCov">#[test]</span></div>
+<div class="line"><span id="171" class="lineNum"><a href="#171">171</a></span><span class="counterCov">1</span><span class="lineCov">fn validate() -&gt; anyhow::Result&lt;()&gt; {</span></div>
+<div class="line"><span id="172" class="lineNum"><a href="#172">172</a></span><span class="counterCov">1</span><span class="lineCov">	use crate::KeyPair;</span></div>
+<div class="line"><span id="173" class="lineNum"><a href="#173">173</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
+<div class="line"><span id="174" class="lineNum"><a href="#174">174</a></span><span class="counterCov">1</span><span class="lineCov">	let key_pair = KeyPair::new_self_signed(&quot;test&quot;);</span></div>
+<div class="line"><span id="175" class="lineNum"><a href="#175">175</a></span><span class="counterCov">1</span><span class="lineCov">	let certificate = key_pair.end_entity_certificate();</span></div>
+<div class="line"><span id="176" class="lineNum"><a href="#176">176</a></span><span class="counterCov">1</span><span class="lineCov">	assert_eq!(certificate, &amp;Certificate::from_der(certificate.as_ref())?);</span></div>
+<div class="line"><span id="177" class="lineNum"><a href="#177">177</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="178" class="lineNum"><a href="#178">178</a></span><span class="counterCov">1</span><span class="lineCov">	Ok(())</span></div>
+<div class="line"><span id="179" class="lineNum"><a href="#179">179</a></span><span class="counterCov">1</span><span class="lineCov">}</span></div>
 </div>
 </body>
 </html>

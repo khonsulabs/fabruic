@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint/builder</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-02-23 16:15:21</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-06-05 14:32:48</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -974,7 +974,7 @@
 <div class="line"><span id="953" class="lineNum"><a href="#953">953</a></span><span class="counterCov">1</span><span class="lineCov">		let endpoint = Builder::new().build()?;</span></div>
 <div class="line"><span id="954" class="lineNum"><a href="#954">954</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="955" class="lineNum"><a href="#955">955</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// TODO: find a better target without DNSSEC support then Google</span></div>
-<div class="line"><span id="956" class="lineNum"><a href="#956">956</a></span><span class="counterCov">11</span><span class="lineCov">		let result = endpoint.connect(&quot;https://google.com&quot;).await;</span></div>
+<div class="line"><span id="956" class="lineNum"><a href="#956">956</a></span><span class="counterCov">10</span><span class="lineCov">		let result = endpoint.connect(&quot;https://google.com&quot;).await;</span></div>
 <div class="line"><span id="957" class="lineNum"><a href="#957">957</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="958" class="lineNum"><a href="#958">958</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// target has no DNSSEC records</span></div>
 <div class="line"><span id="959" class="lineNum"><a href="#959">959</a></span><span class="counterCov">1</span><span class="lineCov">		if let Err(error::Connect::TrustDns(error)) = &amp;result {</span></div>
@@ -1010,7 +1010,7 @@
 <div class="line"><span id="989" class="lineNum"><a href="#989">989</a></span><span class="counterCov">1</span><span class="lineCov">		let endpoint = builder.build()?;</span></div>
 <div class="line"><span id="990" class="lineNum"><a href="#990">990</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="991" class="lineNum"><a href="#991">991</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// TODO: find a better target without DNSSEC support then Google</span></div>
-<div class="line"><span id="992" class="lineNum"><a href="#992">992</a></span><span class="counterCov">10</span><span class="lineCov">		assert!(endpoint.connect(&quot;https://google.com&quot;).await.is_ok());</span></div>
+<div class="line"><span id="992" class="lineNum"><a href="#992">992</a></span><span class="counterCov">7</span><span class="lineCov">		assert!(endpoint.connect(&quot;https://google.com&quot;).await.is_ok());</span></div>
 <div class="line"><span id="993" class="lineNum"><a href="#993">993</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="994" class="lineNum"><a href="#994">994</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="995" class="lineNum"><a href="#995">995</a></span><span class="counterUnCov"></span><span class="lineUnCov">	}</span></div>
