@@ -52,7 +52,7 @@ socket2 = "0.4.7"
 [dev-dependencies]
 anyhow = "1"
 fabruic = { path = "", features = ["rcgen", "test"] }
-quinn-proto = { version = "0.8", default-features = false }
+quinn-proto = { version = "0.10", default-features = false }
 tokio = { version = "1", features = ["macros"] }
 trust-dns-proto = "0.22.0"
 
