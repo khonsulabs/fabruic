@@ -96,7 +96,9 @@ impl Certificate {
 		if parsed
 			.tbs_certificate
 			.subject_alternative_name()
-			.filter(|name| !name.1.general_names.is_empty())
+			.ok()
+			.flatten()
+			.filter(|name| !name.value.general_names.is_empty())
 			.is_none()
 		{
 			return Err(error::Certificate {
@@ -131,8 +133,10 @@ impl Certificate {
 		certificate
 			.tbs_certificate
 			.subject_alternative_name()
+			.ok()
+			.flatten()
 			.map(|name| {
-				name.1
+				name.value
 					.general_names
 					.iter()
 					.filter_map(|name| {

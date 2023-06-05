@@ -17,7 +17,6 @@
 	single_use_lifetimes,
 	trivial_casts,
 	trivial_numeric_casts,
-	unaligned_references,
 	unreachable_pub,
 	unused_import_braces,
 	unused_lifetimes,
