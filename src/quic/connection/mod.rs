@@ -26,11 +26,11 @@ pub use connecting::Connecting;
 use flume::r#async::RecvStream;
 use futures_util::{
 	stream::{self, FusedStream},
-	StreamExt,
+	FutureExt, StreamExt,
 };
 pub use incoming::Incoming;
 use pin_project::pin_project;
-use quinn::{crypto::rustls::HandshakeData, IncomingBiStreams, VarInt};
+use quinn::{crypto::rustls::HandshakeData, VarInt};
 pub use receiver::Receiver;
 use receiver_stream::ReceiverStream;
 pub use sender::Sender;
@@ -69,25 +69,30 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Debug for Connection<T> {
 impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 	/// Builds a new [`Connection`] from raw [`quinn`] types.
 	#[allow(clippy::mut_mut)] // futures_util::select_biased internal usage
-	pub(super) fn new(connection: quinn::Connection, bi_streams: IncomingBiStreams) -> Self {
+	pub(super) fn new(connection: quinn::Connection) -> Self {
 		// channels for passing down new `Incoming` `Connection`s
 		let (sender, receiver) = flume::unbounded();
 		let receiver = receiver.into_stream();
 
 		// `Task` handling incoming streams
-		let task = Task::new(|mut shutdown| async move {
-			let mut bi_streams = bi_streams.fuse();
-			while let Some(connecting) = futures_util::select_biased! {
-				connecting = bi_streams.next() => connecting,
-				_ = shutdown => None,
-				complete => None,
-			} {
-				let incoming = connecting.map_err(error::Connection);
+		let task = Task::new(|mut shutdown| {
+			let connection = connection.clone();
+			async move {
+				loop {
+					let mut accepting = connection.accept_bi().fuse();
+					let Some(connecting) = futures_util::select_biased! {
+						connecting = std::pin::pin!(accepting) => Some(connecting),
+						_ = shutdown => None,
+						complete => None,
+					} else { break };
 
-				if sender.send(incoming).is_err() {
-					// if there is no receiver, it means that we dropped the last
-					// `Connection`
-					break;
+					let incoming = connecting.map_err(error::Connection);
+
+					if sender.send(incoming).is_err() {
+						// if there is no receiver, it means that we dropped the last
+						// `Connection`
+						break;
+					}
 				}
 			}
 		});

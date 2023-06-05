@@ -3,7 +3,7 @@
 
 use std::net::SocketAddr;
 
-use quinn::{crypto::rustls::HandshakeData, NewConnection};
+use quinn::crypto::rustls::HandshakeData;
 use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{error, Connection};
@@ -52,13 +52,7 @@ impl Connecting {
 	) -> Result<Connection<T>, error::Connecting> {
 		self.0
 			.await
-			.map(
-				|NewConnection {
-				     connection,
-				     bi_streams,
-				     ..
-				 }| Connection::new(connection, bi_streams),
-			)
+			.map(Connection::new)
 			.map_err(error::Connecting::from)
 	}
 }

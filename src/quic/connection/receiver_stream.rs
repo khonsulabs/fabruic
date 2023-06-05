@@ -76,8 +76,7 @@ impl<M: DeserializeOwned> ReceiverStream<M> {
 	/// # Errors
 	/// [`ReadError`] on failure to read from the [`RecvStream`].
 	fn poll(&mut self, cx: &mut Context<'_>) -> Poll<Result<Option<()>, ReadError>> {
-		self.stream
-			.read_chunk(usize::MAX, true)
+		std::pin::pin!(self.stream.read_chunk(usize::MAX, true))
 			.poll_unpin(cx)
 			.map_ok(|option| {
 				option.map(|Chunk { bytes, .. }| {

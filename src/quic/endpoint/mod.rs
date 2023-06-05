@@ -6,7 +6,7 @@ use std::{
 	fmt::{self, Debug, Formatter},
 	io::Error,
 	net::{SocketAddr, ToSocketAddrs, UdpSocket},
-	pin::Pin,
+	pin::{pin, Pin},
 	slice,
 	sync::Arc,
 	task::{Context, Poll},
@@ -19,9 +19,9 @@ use flume::{r#async::RecvStream, Sender};
 use futures_channel::oneshot::Receiver;
 use futures_util::{
 	stream::{FusedStream, Stream},
-	StreamExt,
+	FutureExt, StreamExt,
 };
-use quinn::{ClientConfig, EndpointConfig, ServerConfig, VarInt};
+use quinn::{ClientConfig, EndpointConfig, ServerConfig, TokioRuntime, VarInt};
 use socket2::{Domain, Protocol, Type};
 use url::{Host, Url};
 
@@ -108,10 +108,12 @@ impl Endpoint {
 
 		// configure endpoint for server and client
 		let is_server = server.is_some();
-		let (mut endpoint, incoming) =
-			quinn::Endpoint::new(EndpointConfig::default(), server, socket)?;
-		// If we aren't the server, we don't use the incoming stream.
-		let incoming = is_server.then_some(incoming);
+		let mut endpoint = quinn::Endpoint::new(
+			EndpointConfig::default(),
+			server,
+			socket,
+			Arc::new(TokioRuntime),
+		)?;
 
 		endpoint.set_default_client_config(client);
 
@@ -119,9 +121,11 @@ impl Endpoint {
 		let (sender, receiver) = flume::unbounded();
 		let receiver = receiver.into_stream();
 
-		let task = incoming.map_or_else(Task::empty, |incoming| {
-			Task::new(|shutdown| Self::incoming(incoming, sender, shutdown))
-		});
+		let task = if is_server {
+			Task::new(|shutdown| Self::incoming(endpoint.clone(), sender, shutdown))
+		} else {
+			Task::empty()
+		};
 
 		Ok(Self {
 			endpoint,
@@ -198,16 +202,18 @@ impl Endpoint {
 	/// Handle incoming connections. Accessed through [`Stream`] in
 	/// [`Endpoint`].
 	async fn incoming(
-		incoming: quinn::Incoming,
+		endpoint: quinn::Endpoint,
 		sender: Sender<Connecting>,
 		mut shutdown: Receiver<()>,
 	) {
-		let mut incoming = incoming.fuse();
-		while let Some(connecting) = futures_util::select_biased! {
-			connecting = incoming.next() => connecting,
-			_ = shutdown => None,
-			complete => None,
-		} {
+		loop {
+			let mut incoming = pin!(endpoint.accept().fuse());
+			let Some(connecting) = futures_util::select_biased! {
+				connecting = incoming => connecting,
+				_ = shutdown => None,
+				complete => None,
+			} else { break };
+
 			// if there is no receiver, it means that we dropped the last `Endpoint`
 			if sender.send(Connecting::new(connecting)).is_err() {
 				break;

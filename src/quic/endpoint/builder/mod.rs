@@ -11,7 +11,7 @@ use std::{
 pub(super) use config::Config;
 use rustls::{
 	server::{ClientCertVerified, ClientCertVerifier},
-	DistinguishedNames,
+	DistinguishedName,
 };
 use serde::{Deserialize, Serialize};
 
@@ -525,12 +525,11 @@ impl Builder {
 				false,
 			) {
 				Ok(client) => client,
-				Err(error) => {
+				Err(error) =>
 					return Err(error::Builder {
 						error: error.into(),
 						builder: self,
-					})
-				}
+					}),
 			};
 
 			// build server only if we have a key-pair
@@ -580,12 +579,12 @@ impl Builder {
 struct ClientVerifier;
 
 impl ClientCertVerifier for ClientVerifier {
-	fn client_auth_mandatory(&self) -> Option<bool> {
-		Some(false)
+	fn client_auth_mandatory(&self) -> bool {
+		false
 	}
 
-	fn client_auth_root_subjects(&self) -> Option<DistinguishedNames> {
-		Some(DistinguishedNames::new())
+	fn client_auth_root_subjects(&self) -> &[DistinguishedName] {
+		&[]
 	}
 
 	fn verify_client_cert(
@@ -761,10 +760,9 @@ mod test {
 
 		// build client
 		let mut builder = Builder::new();
-		Dangerous::set_root_certificates(
-			&mut builder,
-			[server_key_pair.end_entity_certificate().clone()],
-		);
+		Dangerous::set_root_certificates(&mut builder, [server_key_pair
+			.end_entity_certificate()
+			.clone()]);
 		builder.set_client_key_pair(Some(client_key_pair.clone()));
 		let client = builder.build()?;
 
@@ -1089,14 +1087,16 @@ mod test {
 			.await;
 
 		// check result
-		assert!(matches!(
-				result,
-				Err(error::Connecting::Connection(ConnectionError::TransportError(TransportError {
-					code,
-					frame: None,
-					reason
-				}))) if (reason == "invalid peer certificate contents: invalid peer certificate: UnknownIssuer")
-					&& code.to_string() == "the cryptographic handshake failed: error 42"));
+		let Err(error::Connecting::Connection(ConnectionError::TransportError(TransportError {
+			code,
+			frame: None,
+			reason
+		}))) = result else { unreachable!("expected TransportError") };
+		assert_eq!(reason, "invalid peer certificate: UnknownIssuer");
+		assert_eq!(
+			code.to_string(),
+			"the cryptographic handshake failed: error 48"
+		);
 
 		Ok(())
 	}
