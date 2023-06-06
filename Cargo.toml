@@ -7,6 +7,7 @@ repository = "https://github.com/khonsulabs/fabruic"
 keywords = ["quic"]
 categories = ["network-programming"]
 edition = "2021"
+rust-version = "1.68.2"
 
 [features]
 dangerous = []

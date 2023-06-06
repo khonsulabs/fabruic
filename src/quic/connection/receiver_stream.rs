@@ -4,7 +4,7 @@
 use std::{
 	marker::PhantomData,
 	mem::size_of,
-	pin::Pin,
+	pin::{pin, Pin},
 	task::{Context, Poll},
 };
 
@@ -76,7 +76,7 @@ impl<M: DeserializeOwned> ReceiverStream<M> {
 	/// # Errors
 	/// [`ReadError`] on failure to read from the [`RecvStream`].
 	fn poll(&mut self, cx: &mut Context<'_>) -> Poll<Result<Option<()>, ReadError>> {
-		std::pin::pin!(self.stream.read_chunk(usize::MAX, true))
+		pin!(self.stream.read_chunk(usize::MAX, true))
 			.poll_unpin(cx)
 			.map_ok(|option| {
 				option.map(|Chunk { bytes, .. }| {

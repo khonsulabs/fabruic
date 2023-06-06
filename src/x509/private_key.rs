@@ -170,6 +170,6 @@ mod test {
 	#[test]
 	fn debug() {
 		let (_, private_key) = KeyPair::new_self_signed("test").into_parts();
-		assert_eq!("PrivateKey(\"[[redacted]]\")", format!("{:?}", private_key));
+		assert_eq!("PrivateKey(\"[[redacted]]\")", format!("{private_key:?}"));
 	}
 }

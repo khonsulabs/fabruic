@@ -432,7 +432,7 @@ impl Endpoint {
 		// TODO: configurable executor
 		let address = {
 			// `ToSocketAddrs` needs a port
-			let domain = format!("{}:{}", domain, port);
+			let domain = format!("{domain}:{port}");
 			tokio::task::spawn_blocking(move || {
 				domain
 					.to_socket_addrs()
@@ -510,7 +510,7 @@ impl Endpoint {
 	pub async fn close_incoming(&self) -> Result<(), error::AlreadyClosed> {
 		if let Some(server) = &self.server {
 			let mut server = server.lock();
-			server.concurrent_connections(0);
+			let _config = server.concurrent_connections(0);
 			self.endpoint.set_server_config(Some(server.clone()));
 		}
 		self.task.close(()).await

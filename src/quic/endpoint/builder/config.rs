@@ -290,7 +290,7 @@ impl Config {
 		crypto.alpn_protocols = self.protocols.clone();
 
 		let mut client = ClientConfig::new(Arc::new(crypto));
-		client.transport_config(Arc::new(self.transport()));
+		let _client = client.transport_config(Arc::new(self.transport()));
 		Ok(client)
 	}
 }

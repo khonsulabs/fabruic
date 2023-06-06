@@ -1,12 +1,5 @@
 #![deny(unsafe_code)]
-#![warn(
-	clippy::cargo,
-	clippy::nursery,
-	clippy::pedantic,
-	clippy::restriction,
-	future_incompatible,
-	rust_2018_idioms
-)]
+#![warn(clippy::cargo, clippy::pedantic, future_incompatible, rust_2018_idioms)]
 #![warn(
 	macro_use_extern_crate,
 	meta_variable_misuse,

@@ -515,6 +515,7 @@ impl Builder {
 	/// let endpoint = Builder::new().build()?;
 	/// # Ok(()) }
 	/// ```
+	#[allow(clippy::result_large_err)]
 	pub fn build(self) -> Result<Endpoint, error::Builder> {
 		match {
 			// build client
@@ -963,7 +964,7 @@ mod test {
 		}
 
 		// any other error or `Ok` should fail the test
-		panic!("unexpected result: {:?}", result)
+		panic!("unexpected result: {result:?}")
 	}
 
 	#[test]
