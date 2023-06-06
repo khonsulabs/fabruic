@@ -26,7 +26,7 @@ futures-util = "0.3"
 if_chain = "1"
 parking_lot = { version = "0.12", features = ["send_guard"] }
 pin-project = "1"
-quinn = "0.8"
+quinn = "0.10"
 rcgen = { version = "0.10.0", default-features = false, optional = true }
 ring = "0.16"
 rustls = { version = "0.20", default-features = false, features = [
