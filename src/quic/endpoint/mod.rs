@@ -21,6 +21,7 @@ use futures_util::{
 	stream::{FusedStream, Stream},
 	FutureExt, StreamExt,
 };
+use parking_lot::Mutex;
 use quinn::{ClientConfig, EndpointConfig, ServerConfig, TokioRuntime, VarInt};
 use socket2::{Domain, Protocol, Type};
 use url::{Host, Url};
@@ -45,6 +46,7 @@ pub struct Endpoint {
 	/// Persistent configuration from [`Builder`] to build new [`ClientConfig`]s
 	/// and [`trust-dns`](trust_dns_resolver) queries.
 	config: Arc<Config>,
+	server: Option<Arc<Mutex<ServerConfig>>>,
 }
 
 impl Debug for Endpoint {
@@ -110,7 +112,7 @@ impl Endpoint {
 		let is_server = server.is_some();
 		let mut endpoint = quinn::Endpoint::new(
 			EndpointConfig::default(),
-			server,
+			server.clone(),
 			socket,
 			Arc::new(TokioRuntime),
 		)?;
@@ -132,6 +134,7 @@ impl Endpoint {
 			receiver,
 			task,
 			config: Arc::new(config),
+			server: server.map(|server| Arc::new(Mutex::new(server))),
 		})
 	}
 
@@ -505,6 +508,11 @@ impl Endpoint {
 	/// # Ok(()) }
 	/// ```
 	pub async fn close_incoming(&self) -> Result<(), error::AlreadyClosed> {
+		if let Some(server) = &self.server {
+			let mut server = server.lock();
+			server.concurrent_connections(0);
+			self.endpoint.set_server_config(Some(server.clone()));
+		}
 		self.task.close(()).await
 	}
 
