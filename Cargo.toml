@@ -47,7 +47,7 @@ webpki-roots = "0.23"
 rustls-native-certs = "0.6"
 x509-parser = "0.15.0"
 zeroize = { version = "1", features = ["zeroize_derive"] }
-socket2 = "0.4.7"
+socket2 = "0.5.3"
 
 [dev-dependencies]
 anyhow = "1"
