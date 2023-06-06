@@ -21,6 +21,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
       - name: Run unit tests
         run: |
           cargo test --workspace --all-targets --all-features
@@ -37,10 +40,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install nightly Rust
-        run: |
-          rustup toolchain install nightly --profile minimal --component clippy --allow-downgrade
-          rustup default nightly
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Run Clippy
         run: |
