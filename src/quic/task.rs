@@ -61,6 +61,10 @@ impl<R> Task<R> {
 }
 
 impl<R, S> Task<R, S> {
+	fn take_inner(&self) -> Option<Inner<R, S>> {
+		self.0.lock().take()
+	}
+
 	/// Shuts down the [`Task`] by sending the close signal. Futher calls to
 	/// [`close`](Self::close) or [`poll`](Future::poll)ing the [`Task`] will
 	/// result in [`error::AlreadyClosed`].
@@ -72,7 +76,7 @@ impl<R, S> Task<R, S> {
 	/// # Panics
 	/// Will propagate any panics that happened in the task.
 	pub(super) async fn close(&self, message: S) -> Result<R, error::AlreadyClosed> {
-		if let Some(Inner { handle, close }) = self.0.lock().take() {
+		if let Some(Inner { handle, close }) = self.take_inner() {
 			// task could have finished and dropped the receiver, it's also possible that
 			// the receiver got dropped otherwise, in any case, not our problem
 			let _result = close.send(message);

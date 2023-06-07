@@ -82,7 +82,6 @@ impl CertificateChain {
 	}
 
 	/// Returns an iterator over the [`CertificateChain`].
-	#[must_use]
 	pub fn iter(&self) -> Iter<'_, Certificate> {
 		self.0.iter()
 	}

@@ -19,9 +19,10 @@ use flume::{r#async::RecvStream, Sender};
 use futures_channel::oneshot::Receiver;
 use futures_util::{
 	stream::{FusedStream, Stream},
-	StreamExt,
+	FutureExt, StreamExt,
 };
-use quinn::{ClientConfig, EndpointConfig, ServerConfig, VarInt};
+use parking_lot::Mutex;
+use quinn::{Accept, ClientConfig, EndpointConfig, ServerConfig, TokioRuntime, VarInt};
 use socket2::{Domain, Protocol, Type};
 use url::{Host, Url};
 
@@ -45,6 +46,7 @@ pub struct Endpoint {
 	/// Persistent configuration from [`Builder`] to build new [`ClientConfig`]s
 	/// and [`trust-dns`](trust_dns_resolver) queries.
 	config: Arc<Config>,
+	server: Option<Arc<Mutex<ServerConfig>>>,
 }
 
 impl Debug for Endpoint {
@@ -108,10 +110,12 @@ impl Endpoint {
 
 		// configure endpoint for server and client
 		let is_server = server.is_some();
-		let (mut endpoint, incoming) =
-			quinn::Endpoint::new(EndpointConfig::default(), server, socket)?;
-		// If we aren't the server, we don't use the incoming stream.
-		let incoming = is_server.then_some(incoming);
+		let mut endpoint = quinn::Endpoint::new(
+			EndpointConfig::default(),
+			server.clone(),
+			socket,
+			Arc::new(TokioRuntime),
+		)?;
 
 		endpoint.set_default_client_config(client);
 
@@ -119,15 +123,18 @@ impl Endpoint {
 		let (sender, receiver) = flume::unbounded();
 		let receiver = receiver.into_stream();
 
-		let task = incoming.map_or_else(Task::empty, |incoming| {
-			Task::new(|shutdown| Self::incoming(incoming, sender, shutdown))
-		});
+		let task = if is_server {
+			Task::new(|shutdown| Self::incoming(endpoint.clone(), sender, shutdown))
+		} else {
+			Task::empty()
+		};
 
 		Ok(Self {
 			endpoint,
 			receiver,
 			task,
 			config: Arc::new(config),
+			server: server.map(|server| Arc::new(Mutex::new(server))),
 		})
 	}
 
@@ -198,21 +205,18 @@ impl Endpoint {
 	/// Handle incoming connections. Accessed through [`Stream`] in
 	/// [`Endpoint`].
 	async fn incoming(
-		incoming: quinn::Incoming,
+		endpoint: quinn::Endpoint,
 		sender: Sender<Connecting>,
-		mut shutdown: Receiver<()>,
+		shutdown: Receiver<()>,
 	) {
-		let mut incoming = incoming.fuse();
-		while let Some(connecting) = futures_util::select_biased! {
-			connecting = incoming.next() => connecting,
-			_ = shutdown => None,
-			complete => None,
-		} {
-			// if there is no receiver, it means that we dropped the last `Endpoint`
-			if sender.send(Connecting::new(connecting)).is_err() {
-				break;
-			}
+		IncomingConnections {
+			endpoint: &endpoint,
+			accept: None,
+			shutdown,
+			sender,
+			complete: false,
 		}
+		.await;
 	}
 
 	/// Establishes a new [`Connection`](crate::Connection) to a server. The
@@ -423,7 +427,7 @@ impl Endpoint {
 		// TODO: configurable executor
 		let address = {
 			// `ToSocketAddrs` needs a port
-			let domain = format!("{}:{}", domain, port);
+			let domain = format!("{domain}:{port}");
 			tokio::task::spawn_blocking(move || {
 				domain
 					.to_socket_addrs()
@@ -475,9 +479,9 @@ impl Endpoint {
 	/// ```
 	pub async fn close(&self) {
 		self.endpoint.close(VarInt::from_u32(0), &[]);
-		// we only want to wait until it's actually closed, it might already be closed
-		// by `close_incoming` or by starting as a client
-		let _result = (&self.task).await;
+		// Close the ability for incoming connections, and wait for the incoming
+		// connection task to exit.
+		let _result = self.close_incoming().await;
 	}
 
 	/// Prevents any new incoming connections. Already incoming connections will
@@ -499,7 +503,13 @@ impl Endpoint {
 	/// # Ok(()) }
 	/// ```
 	pub async fn close_incoming(&self) -> Result<(), error::AlreadyClosed> {
-		self.task.close(()).await
+		if let Some(server) = &self.server {
+			let mut server = server.lock();
+			let _config = server.concurrent_connections(0);
+			self.endpoint.set_server_config(Some(server.clone()));
+		}
+		self.task.close(()).await?;
+		Ok(())
 	}
 
 	/// Wait for all [`Connection`](crate::Connection)s to the [`Endpoint`] to
@@ -518,6 +528,59 @@ impl Endpoint {
 	/// ```
 	pub async fn wait_idle(&self) {
 		self.endpoint.wait_idle().await;
+	}
+}
+
+struct IncomingConnections<'a> {
+	endpoint: &'a quinn::Endpoint,
+	accept: Option<Pin<Box<Accept<'a>>>>,
+	shutdown: Receiver<()>,
+	sender: Sender<Connecting>,
+	complete: bool,
+}
+
+impl std::future::Future for IncomingConnections<'_> {
+	type Output = ();
+
+	fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+		if self.complete {
+			return Poll::Ready(());
+		}
+
+		match self.shutdown.poll_unpin(cx) {
+			Poll::Ready(_) => {
+				self.complete = true;
+				self.accept = None;
+				Poll::Ready(())
+			}
+			Poll::Pending => {
+				loop {
+					let mut accept = self
+						.accept
+						.take()
+						.unwrap_or_else(|| Box::pin(self.endpoint.accept()));
+					match accept.poll_unpin(cx) {
+						Poll::Ready(Some(connecting)) => {
+							// if there is no receiver, it means that we dropped the last
+							// `Endpoint`
+							if self.sender.send(Connecting::new(connecting)).is_err() {
+								self.complete = true;
+								return Poll::Ready(());
+							}
+						}
+						Poll::Ready(None) => {
+							self.complete = true;
+							return Poll::Ready(());
+						}
+						Poll::Pending => {
+							// Restore the same accept future to our state.
+							self.accept = Some(accept);
+							return Poll::Pending;
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
