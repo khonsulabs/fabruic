@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../index.html">top level</a> - <a href="index.html">src/x509</a> - certificate_chain.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-06-05 14:32:48</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-06-07 04:41:14</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -103,33 +103,32 @@
 <div class="line"><span id="82" class="lineNum"><a href="#82">82</a></span><span class="counterCov">114</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="83" class="lineNum"><a href="#83">83</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="84" class="lineNum"><a href="#84">84</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Returns an iterator over the [`CertificateChain`].</span></div>
-<div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[must_use]</span></div>
-<div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub fn iter(&amp;self) -&gt; Iter&lt;&#39;_, Certificate&gt; {</span></div>
-<div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.0.iter()</span></div>
-<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
-<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Provides a reference to the [`Certificate`] at the given index.</span></div>
-<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[must_use]</span></div>
-<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub fn get(&amp;self, index: usize) -&gt; Option&lt;&amp;Certificate&gt; {</span></div>
-<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.0.get(index)</span></div>
-<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
-<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Convert into a type [`rustls`] can consume.</span></div>
-<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">13</span><span class="lineCov">	pub(crate) fn into_rustls(self) -&gt; Vec&lt;rustls::Certificate&gt; {</span></div>
-<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">13</span><span class="lineCov">		self.0.into_iter().map(Certificate::into_rustls).collect()</span></div>
-<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterCov">13</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Converts from a slice of rustls certificates with no validation.</span></div>
-<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterCov">1</span><span class="lineCov">	pub(crate) fn from_rustls(certs: &amp;[rustls::Certificate]) -&gt; Self {</span></div>
-<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterCov">1</span><span class="lineCov">		Self(</span></div>
-<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterCov">1</span><span class="lineCov">			certs</span></div>
-<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterCov">1</span><span class="lineCov">				.iter()</span></div>
-<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterCov">1</span><span class="lineCov">				.cloned()</span></div>
-<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterCov">1</span><span class="lineCov">				.map(Certificate::from_rustls)</span></div>
-<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterCov">1</span><span class="lineCov">				.collect(),</span></div>
-<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterCov">1</span><span class="lineCov">		)</span></div>
-<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="85" class="lineNum"><a href="#85">85</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub fn iter(&amp;self) -&gt; Iter&lt;&#39;_, Certificate&gt; {</span></div>
+<div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.0.iter()</span></div>
+<div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
+<div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Provides a reference to the [`Certificate`] at the given index.</span></div>
+<div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[must_use]</span></div>
+<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	pub fn get(&amp;self, index: usize) -&gt; Option&lt;&amp;Certificate&gt; {</span></div>
+<div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterNoCov">0</span><span class="lineNoCov">		self.0.get(index)</span></div>
+<div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	}</span></div>
+<div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="95" class="lineNum"><a href="#95">95</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Convert into a type [`rustls`] can consume.</span></div>
+<div class="line"><span id="96" class="lineNum"><a href="#96">96</a></span><span class="counterCov">13</span><span class="lineCov">	pub(crate) fn into_rustls(self) -&gt; Vec&lt;rustls::Certificate&gt; {</span></div>
+<div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterCov">13</span><span class="lineCov">		self.0.into_iter().map(Certificate::into_rustls).collect()</span></div>
+<div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterCov">13</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Converts from a slice of rustls certificates with no validation.</span></div>
+<div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterCov">1</span><span class="lineCov">	pub(crate) fn from_rustls(certs: &amp;[rustls::Certificate]) -&gt; Self {</span></div>
+<div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterCov">1</span><span class="lineCov">		Self(</span></div>
+<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterCov">1</span><span class="lineCov">			certs</span></div>
+<div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterCov">1</span><span class="lineCov">				.iter()</span></div>
+<div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterCov">1</span><span class="lineCov">				.cloned()</span></div>
+<div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterCov">1</span><span class="lineCov">				.map(Certificate::from_rustls)</span></div>
+<div class="line"><span id="107" class="lineNum"><a href="#107">107</a></span><span class="counterCov">1</span><span class="lineCov">				.collect(),</span></div>
+<div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterCov">1</span><span class="lineCov">		)</span></div>
+<div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 </div>
 </body>
 </html>

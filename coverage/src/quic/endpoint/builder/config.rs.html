@@ -9,11 +9,11 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint/builder</a> - config.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-06-05 14:32:48</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-06-07 04:41:14</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">174</span><span class="linesTotal">184</span><span class="linesPercentage lineHi">94.6 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">173</span><span class="linesTotal">183</span><span class="linesPercentage lineHi">94.5 %</span></div>
 <div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">30</span><span class="funsTotal">52</span><span class="funsPercentage funLow">57.7 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
@@ -311,63 +311,62 @@
 <div class="line"><span id="290" class="lineNum"><a href="#290">290</a></span><span class="counterCov">248</span><span class="lineCov">		crypto.alpn_protocols = self.protocols.clone();</span></div>
 <div class="line"><span id="291" class="lineNum"><a href="#291">291</a></span><span class="counterCov">248</span><span class="lineCov"></span></div>
 <div class="line"><span id="292" class="lineNum"><a href="#292">292</a></span><span class="counterCov">248</span><span class="lineCov">		let mut client = ClientConfig::new(Arc::new(crypto));</span></div>
-<div class="line"><span id="293" class="lineNum"><a href="#293">293</a></span><span class="counterCov">248</span><span class="lineCov">		client.transport = Arc::new(self.transport());</span></div>
-<div class="line"><span id="294" class="lineNum"><a href="#294">294</a></span><span class="counterCov">248</span><span class="lineCov"></span></div>
-<div class="line"><span id="295" class="lineNum"><a href="#295">295</a></span><span class="counterCov">248</span><span class="lineCov">		Ok(client)</span></div>
-<div class="line"><span id="296" class="lineNum"><a href="#296">296</a></span><span class="counterCov">248</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="297" class="lineNum"><a href="#297">297</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
-<div class="line"><span id="298" class="lineNum"><a href="#298">298</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="299" class="lineNum"><a href="#299">299</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Client certificate handler.</span></div>
-<div class="line"><span id="300" class="lineNum"><a href="#300">300</a></span><span class="counterUnCov"></span><span class="lineUnCov">struct CertificateResolver(Arc&lt;CertifiedKey&gt;);</span></div>
-<div class="line"><span id="301" class="lineNum"><a href="#301">301</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="302" class="lineNum"><a href="#302">302</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl ResolvesClientCert for CertificateResolver {</span></div>
-<div class="line"><span id="303" class="lineNum"><a href="#303">303</a></span><span class="counterCov">1</span><span class="lineCov">	fn resolve(</span></div>
-<div class="line"><span id="304" class="lineNum"><a href="#304">304</a></span><span class="counterCov">1</span><span class="lineCov">		&amp;self,</span></div>
-<div class="line"><span id="305" class="lineNum"><a href="#305">305</a></span><span class="counterCov">1</span><span class="lineCov">		_acceptable_issuers: &amp;[&amp;[u8]],</span></div>
-<div class="line"><span id="306" class="lineNum"><a href="#306">306</a></span><span class="counterCov">1</span><span class="lineCov">		_sigschemes: &amp;[SignatureScheme],</span></div>
-<div class="line"><span id="307" class="lineNum"><a href="#307">307</a></span><span class="counterCov">1</span><span class="lineCov">	) -&gt; Option&lt;Arc&lt;CertifiedKey&gt;&gt; {</span></div>
-<div class="line"><span id="308" class="lineNum"><a href="#308">308</a></span><span class="counterCov">1</span><span class="lineCov">		Some(Arc::clone(&amp;self.0))</span></div>
-<div class="line"><span id="309" class="lineNum"><a href="#309">309</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="310" class="lineNum"><a href="#310">310</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="311" class="lineNum"><a href="#311">311</a></span><span class="counterCov">1</span><span class="lineCov">	fn has_certs(&amp;self) -&gt; bool {</span></div>
-<div class="line"><span id="312" class="lineNum"><a href="#312">312</a></span><span class="counterCov">1</span><span class="lineCov">		true</span></div>
-<div class="line"><span id="313" class="lineNum"><a href="#313">313</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="314" class="lineNum"><a href="#314">314</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
-<div class="line"><span id="315" class="lineNum"><a href="#315">315</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="316" class="lineNum"><a href="#316">316</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl CertificateResolver {</span></div>
-<div class="line"><span id="317" class="lineNum"><a href="#317">317</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Builds a new [`CertificateResolver`].</span></div>
-<div class="line"><span id="318" class="lineNum"><a href="#318">318</a></span><span class="counterCov">1</span><span class="lineCov">	fn new(key_pair: KeyPair) -&gt; Arc&lt;Self&gt; {</span></div>
-<div class="line"><span id="319" class="lineNum"><a href="#319">319</a></span><span class="counterCov">1</span><span class="lineCov">		Arc::new(Self(Arc::new(key_pair.into_rustls())))</span></div>
-<div class="line"><span id="320" class="lineNum"><a href="#320">320</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="321" class="lineNum"><a href="#321">321</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
-<div class="line"><span id="322" class="lineNum"><a href="#322">322</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="323" class="lineNum"><a href="#323">323</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Disables clients verification of the servers [`Certificate`] when used with</span></div>
-<div class="line"><span id="324" class="lineNum"><a href="#324">324</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// [`Endpoint::connect_unverified`].</span></div>
-<div class="line"><span id="325" class="lineNum"><a href="#325">325</a></span><span class="counterUnCov"></span><span class="lineUnCov">///</span></div>
-<div class="line"><span id="326" class="lineNum"><a href="#326">326</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// [`Endpoint::connect_unverified`]:</span></div>
-<div class="line"><span id="327" class="lineNum"><a href="#327">327</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// crate::dangerous::Endpoint::connect_unverified</span></div>
-<div class="line"><span id="328" class="lineNum"><a href="#328">328</a></span><span class="counterUnCov"></span><span class="lineUnCov">struct NoServerCertVerification;</span></div>
-<div class="line"><span id="329" class="lineNum"><a href="#329">329</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="330" class="lineNum"><a href="#330">330</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl ServerCertVerifier for NoServerCertVerification {</span></div>
-<div class="line"><span id="331" class="lineNum"><a href="#331">331</a></span><span class="counterCov">1</span><span class="lineCov">	fn verify_server_cert(</span></div>
-<div class="line"><span id="332" class="lineNum"><a href="#332">332</a></span><span class="counterCov">1</span><span class="lineCov">		&amp;self,</span></div>
-<div class="line"><span id="333" class="lineNum"><a href="#333">333</a></span><span class="counterCov">1</span><span class="lineCov">		_end_entity: &amp;rustls::Certificate,</span></div>
-<div class="line"><span id="334" class="lineNum"><a href="#334">334</a></span><span class="counterCov">1</span><span class="lineCov">		_intermediates: &amp;[rustls::Certificate],</span></div>
-<div class="line"><span id="335" class="lineNum"><a href="#335">335</a></span><span class="counterCov">1</span><span class="lineCov">		_server_name: &amp;ServerName,</span></div>
-<div class="line"><span id="336" class="lineNum"><a href="#336">336</a></span><span class="counterCov">1</span><span class="lineCov">		_scts: &amp;mut dyn Iterator&lt;Item = &amp;[u8]&gt;,</span></div>
-<div class="line"><span id="337" class="lineNum"><a href="#337">337</a></span><span class="counterCov">1</span><span class="lineCov">		_ocsp_response: &amp;[u8],</span></div>
-<div class="line"><span id="338" class="lineNum"><a href="#338">338</a></span><span class="counterCov">1</span><span class="lineCov">		_now: SystemTime,</span></div>
-<div class="line"><span id="339" class="lineNum"><a href="#339">339</a></span><span class="counterCov">1</span><span class="lineCov">	) -&gt; Result&lt;ServerCertVerified, rustls::Error&gt; {</span></div>
-<div class="line"><span id="340" class="lineNum"><a href="#340">340</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(ServerCertVerified::assertion())</span></div>
-<div class="line"><span id="341" class="lineNum"><a href="#341">341</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="342" class="lineNum"><a href="#342">342</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
-<div class="line"><span id="343" class="lineNum"><a href="#343">343</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="344" class="lineNum"><a href="#344">344</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl NoServerCertVerification {</span></div>
-<div class="line"><span id="345" class="lineNum"><a href="#345">345</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Builds a new [`NoServerCertVerification`].</span></div>
-<div class="line"><span id="346" class="lineNum"><a href="#346">346</a></span><span class="counterCov">1</span><span class="lineCov">	fn new() -&gt; Arc&lt;Self&gt; {</span></div>
-<div class="line"><span id="347" class="lineNum"><a href="#347">347</a></span><span class="counterCov">1</span><span class="lineCov">		Arc::new(Self)</span></div>
-<div class="line"><span id="348" class="lineNum"><a href="#348">348</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="349" class="lineNum"><a href="#349">349</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="293" class="lineNum"><a href="#293">293</a></span><span class="counterCov">248</span><span class="lineCov">		let _client = client.transport_config(Arc::new(self.transport()));</span></div>
+<div class="line"><span id="294" class="lineNum"><a href="#294">294</a></span><span class="counterCov">248</span><span class="lineCov">		Ok(client)</span></div>
+<div class="line"><span id="295" class="lineNum"><a href="#295">295</a></span><span class="counterCov">248</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="296" class="lineNum"><a href="#296">296</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="297" class="lineNum"><a href="#297">297</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="298" class="lineNum"><a href="#298">298</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Client certificate handler.</span></div>
+<div class="line"><span id="299" class="lineNum"><a href="#299">299</a></span><span class="counterUnCov"></span><span class="lineUnCov">struct CertificateResolver(Arc&lt;CertifiedKey&gt;);</span></div>
+<div class="line"><span id="300" class="lineNum"><a href="#300">300</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="301" class="lineNum"><a href="#301">301</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl ResolvesClientCert for CertificateResolver {</span></div>
+<div class="line"><span id="302" class="lineNum"><a href="#302">302</a></span><span class="counterCov">1</span><span class="lineCov">	fn resolve(</span></div>
+<div class="line"><span id="303" class="lineNum"><a href="#303">303</a></span><span class="counterCov">1</span><span class="lineCov">		&amp;self,</span></div>
+<div class="line"><span id="304" class="lineNum"><a href="#304">304</a></span><span class="counterCov">1</span><span class="lineCov">		_acceptable_issuers: &amp;[&amp;[u8]],</span></div>
+<div class="line"><span id="305" class="lineNum"><a href="#305">305</a></span><span class="counterCov">1</span><span class="lineCov">		_sigschemes: &amp;[SignatureScheme],</span></div>
+<div class="line"><span id="306" class="lineNum"><a href="#306">306</a></span><span class="counterCov">1</span><span class="lineCov">	) -&gt; Option&lt;Arc&lt;CertifiedKey&gt;&gt; {</span></div>
+<div class="line"><span id="307" class="lineNum"><a href="#307">307</a></span><span class="counterCov">1</span><span class="lineCov">		Some(Arc::clone(&amp;self.0))</span></div>
+<div class="line"><span id="308" class="lineNum"><a href="#308">308</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="309" class="lineNum"><a href="#309">309</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="310" class="lineNum"><a href="#310">310</a></span><span class="counterCov">1</span><span class="lineCov">	fn has_certs(&amp;self) -&gt; bool {</span></div>
+<div class="line"><span id="311" class="lineNum"><a href="#311">311</a></span><span class="counterCov">1</span><span class="lineCov">		true</span></div>
+<div class="line"><span id="312" class="lineNum"><a href="#312">312</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="313" class="lineNum"><a href="#313">313</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="314" class="lineNum"><a href="#314">314</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="315" class="lineNum"><a href="#315">315</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl CertificateResolver {</span></div>
+<div class="line"><span id="316" class="lineNum"><a href="#316">316</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Builds a new [`CertificateResolver`].</span></div>
+<div class="line"><span id="317" class="lineNum"><a href="#317">317</a></span><span class="counterCov">1</span><span class="lineCov">	fn new(key_pair: KeyPair) -&gt; Arc&lt;Self&gt; {</span></div>
+<div class="line"><span id="318" class="lineNum"><a href="#318">318</a></span><span class="counterCov">1</span><span class="lineCov">		Arc::new(Self(Arc::new(key_pair.into_rustls())))</span></div>
+<div class="line"><span id="319" class="lineNum"><a href="#319">319</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="320" class="lineNum"><a href="#320">320</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="321" class="lineNum"><a href="#321">321</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="322" class="lineNum"><a href="#322">322</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Disables clients verification of the servers [`Certificate`] when used with</span></div>
+<div class="line"><span id="323" class="lineNum"><a href="#323">323</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// [`Endpoint::connect_unverified`].</span></div>
+<div class="line"><span id="324" class="lineNum"><a href="#324">324</a></span><span class="counterUnCov"></span><span class="lineUnCov">///</span></div>
+<div class="line"><span id="325" class="lineNum"><a href="#325">325</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// [`Endpoint::connect_unverified`]:</span></div>
+<div class="line"><span id="326" class="lineNum"><a href="#326">326</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// crate::dangerous::Endpoint::connect_unverified</span></div>
+<div class="line"><span id="327" class="lineNum"><a href="#327">327</a></span><span class="counterUnCov"></span><span class="lineUnCov">struct NoServerCertVerification;</span></div>
+<div class="line"><span id="328" class="lineNum"><a href="#328">328</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="329" class="lineNum"><a href="#329">329</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl ServerCertVerifier for NoServerCertVerification {</span></div>
+<div class="line"><span id="330" class="lineNum"><a href="#330">330</a></span><span class="counterCov">1</span><span class="lineCov">	fn verify_server_cert(</span></div>
+<div class="line"><span id="331" class="lineNum"><a href="#331">331</a></span><span class="counterCov">1</span><span class="lineCov">		&amp;self,</span></div>
+<div class="line"><span id="332" class="lineNum"><a href="#332">332</a></span><span class="counterCov">1</span><span class="lineCov">		_end_entity: &amp;rustls::Certificate,</span></div>
+<div class="line"><span id="333" class="lineNum"><a href="#333">333</a></span><span class="counterCov">1</span><span class="lineCov">		_intermediates: &amp;[rustls::Certificate],</span></div>
+<div class="line"><span id="334" class="lineNum"><a href="#334">334</a></span><span class="counterCov">1</span><span class="lineCov">		_server_name: &amp;ServerName,</span></div>
+<div class="line"><span id="335" class="lineNum"><a href="#335">335</a></span><span class="counterCov">1</span><span class="lineCov">		_scts: &amp;mut dyn Iterator&lt;Item = &amp;[u8]&gt;,</span></div>
+<div class="line"><span id="336" class="lineNum"><a href="#336">336</a></span><span class="counterCov">1</span><span class="lineCov">		_ocsp_response: &amp;[u8],</span></div>
+<div class="line"><span id="337" class="lineNum"><a href="#337">337</a></span><span class="counterCov">1</span><span class="lineCov">		_now: SystemTime,</span></div>
+<div class="line"><span id="338" class="lineNum"><a href="#338">338</a></span><span class="counterCov">1</span><span class="lineCov">	) -&gt; Result&lt;ServerCertVerified, rustls::Error&gt; {</span></div>
+<div class="line"><span id="339" class="lineNum"><a href="#339">339</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(ServerCertVerified::assertion())</span></div>
+<div class="line"><span id="340" class="lineNum"><a href="#340">340</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="341" class="lineNum"><a href="#341">341</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="342" class="lineNum"><a href="#342">342</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
+<div class="line"><span id="343" class="lineNum"><a href="#343">343</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl NoServerCertVerification {</span></div>
+<div class="line"><span id="344" class="lineNum"><a href="#344">344</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Builds a new [`NoServerCertVerification`].</span></div>
+<div class="line"><span id="345" class="lineNum"><a href="#345">345</a></span><span class="counterCov">1</span><span class="lineCov">	fn new() -&gt; Arc&lt;Self&gt; {</span></div>
+<div class="line"><span id="346" class="lineNum"><a href="#346">346</a></span><span class="counterCov">1</span><span class="lineCov">		Arc::new(Self)</span></div>
+<div class="line"><span id="347" class="lineNum"><a href="#347">347</a></span><span class="counterCov">1</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="348" class="lineNum"><a href="#348">348</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 </div>
 </body>
 </html>

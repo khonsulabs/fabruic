@@ -9,12 +9,12 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - connecting.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-06-05 14:32:48</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-06-07 04:41:14</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">27</span><span class="linesTotal">28</span><span class="linesPercentage lineHi">96.4 %</span></div>
-<div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">13</span><span class="funsTotal">23</span><span class="funsPercentage funLow">56.5 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">24</span><span class="linesTotal">25</span><span class="linesPercentage lineHi">96.0 %</span></div>
+<div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">11</span><span class="funsTotal">20</span><span class="funsPercentage funLow">55.0 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
 </div>
@@ -24,7 +24,7 @@
 <div class="line"><span id="3" class="lineNum"><a href="#3">3</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="4" class="lineNum"><a href="#4">4</a></span><span class="counterUnCov"></span><span class="lineUnCov">use std::net::SocketAddr;</span></div>
 <div class="line"><span id="5" class="lineNum"><a href="#5">5</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="6" class="lineNum"><a href="#6">6</a></span><span class="counterUnCov"></span><span class="lineUnCov">use quinn::{crypto::rustls::HandshakeData, NewConnection};</span></div>
+<div class="line"><span id="6" class="lineNum"><a href="#6">6</a></span><span class="counterUnCov"></span><span class="lineUnCov">use quinn::crypto::rustls::HandshakeData;</span></div>
 <div class="line"><span id="7" class="lineNum"><a href="#7">7</a></span><span class="counterUnCov"></span><span class="lineUnCov">use serde::{de::DeserializeOwned, Serialize};</span></div>
 <div class="line"><span id="8" class="lineNum"><a href="#8">8</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="9" class="lineNum"><a href="#9">9</a></span><span class="counterUnCov"></span><span class="lineUnCov">use crate::{error, Connection};</span></div>
@@ -73,16 +73,10 @@
 <div class="line"><span id="52" class="lineNum"><a href="#52">52</a></span><span class="counterCov">226</span><span class="lineCov">	) -&gt; Result&lt;Connection&lt;T&gt;, error::Connecting&gt; {</span></div>
 <div class="line"><span id="53" class="lineNum"><a href="#53">53</a></span><span class="counterCov">226</span><span class="lineCov">		self.0</span></div>
 <div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterCov">225</span><span class="lineCov">			.await</span></div>
-<div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterCov">226</span><span class="lineCov">			.map(</span></div>
-<div class="line"><span id="56" class="lineNum"><a href="#56">56</a></span><span class="counterCov">226</span><span class="lineCov">				|NewConnection {</span></div>
-<div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterUnCov"></span><span class="lineUnCov">				     connection,</span></div>
-<div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterUnCov"></span><span class="lineUnCov">				     bi_streams,</span></div>
-<div class="line"><span id="59" class="lineNum"><a href="#59">59</a></span><span class="counterUnCov"></span><span class="lineUnCov">				     ..</span></div>
-<div class="line"><span id="60" class="lineNum"><a href="#60">60</a></span><span class="counterCov">226</span><span class="lineCov">				 }| Connection::new(connection, bi_streams),</span></div>
-<div class="line"><span id="61" class="lineNum"><a href="#61">61</a></span><span class="counterCov">226</span><span class="lineCov">			)</span></div>
-<div class="line"><span id="62" class="lineNum"><a href="#62">62</a></span><span class="counterCov">226</span><span class="lineCov">			.map_err(error::Connecting::from)</span></div>
-<div class="line"><span id="63" class="lineNum"><a href="#63">63</a></span><span class="counterCov">226</span><span class="lineCov">	}</span></div>
-<div class="line"><span id="64" class="lineNum"><a href="#64">64</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
+<div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterCov">226</span><span class="lineCov">			.map(Connection::new)</span></div>
+<div class="line"><span id="56" class="lineNum"><a href="#56">56</a></span><span class="counterCov">226</span><span class="lineCov">			.map_err(error::Connecting::from)</span></div>
+<div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterCov">226</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 </div>
 </body>
 </html>
