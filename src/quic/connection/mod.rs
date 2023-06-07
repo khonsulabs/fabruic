@@ -24,13 +24,14 @@ use std::{
 
 pub use connecting::Connecting;
 use flume::r#async::RecvStream;
+use futures_channel::oneshot;
 use futures_util::{
 	stream::{self, FusedStream},
 	FutureExt, StreamExt,
 };
 pub use incoming::Incoming;
 use pin_project::pin_project;
-use quinn::{crypto::rustls::HandshakeData, VarInt};
+use quinn::{crypto::rustls::HandshakeData, AcceptBi, VarInt};
 pub use receiver::Receiver;
 use receiver_stream::ReceiverStream;
 pub use sender::Sender;
@@ -75,25 +76,17 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 		let receiver = receiver.into_stream();
 
 		// `Task` handling incoming streams
-		let task = Task::new(|mut shutdown| {
+		let task = Task::new(|shutdown| {
 			let connection = connection.clone();
 			async move {
-				loop {
-					let mut accepting = pin!(connection.accept_bi().fuse());
-					while let Some(connecting) = futures_util::select_biased! {
-						connecting = accepting => Some(connecting),
-						_ = shutdown => return,
-						complete => None,
-					} {
-						let incoming = connecting.map_err(error::Connection);
-
-						if sender.send(incoming).is_err() {
-							// if there is no receiver, it means that we dropped the last
-							// `Connection`
-							return;
-						}
-					}
+				IncomingStreams {
+					connection: &connection,
+					accept: None,
+					shutdown,
+					sender,
+					complete: false,
 				}
+				.await;
 			}
 		});
 
@@ -197,5 +190,58 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Stream for Connection<T> 
 impl<T: DeserializeOwned + Serialize + Send + 'static> FusedStream for Connection<T> {
 	fn is_terminated(&self) -> bool {
 		self.receiver.is_terminated()
+	}
+}
+
+struct IncomingStreams<'a> {
+	connection: &'a quinn::Connection,
+	accept: Option<Pin<Box<AcceptBi<'a>>>>,
+	shutdown: oneshot::Receiver<()>,
+	sender: flume::Sender<Result<(quinn::SendStream, quinn::RecvStream), error::Connection>>,
+	complete: bool,
+}
+
+impl std::future::Future for IncomingStreams<'_> {
+	type Output = ();
+
+	fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+		if self.complete || self.connection.close_reason().is_some() {
+			return Poll::Ready(());
+		}
+
+		match self.shutdown.poll_unpin(cx) {
+			Poll::Ready(_) => {
+				self.complete = true;
+				self.accept = None;
+				Poll::Ready(())
+			}
+			Poll::Pending => {
+				loop {
+					let mut accept = self
+						.accept
+						.take()
+						.unwrap_or_else(|| Box::pin(self.connection.accept_bi()));
+					match accept.poll_unpin(cx) {
+						Poll::Ready(incoming) => {
+							// if there is no receiver, it means that we dropped the last
+							// `Endpoint`
+							if self
+								.sender
+								.send(incoming.map_err(error::Connection))
+								.is_err()
+							{
+								self.complete = true;
+								return Poll::Ready(());
+							}
+						}
+						Poll::Pending => {
+							// Restore the same accept future to our state.
+							self.accept = Some(accept);
+							return Poll::Pending;
+						}
+					}
+				}
+			}
+		}
 	}
 }

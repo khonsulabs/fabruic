@@ -6,7 +6,7 @@ use std::{
 	fmt::{self, Debug, Formatter},
 	io::Error,
 	net::{SocketAddr, ToSocketAddrs, UdpSocket},
-	pin::{pin, Pin},
+	pin::Pin,
 	slice,
 	sync::Arc,
 	task::{Context, Poll},
@@ -22,7 +22,7 @@ use futures_util::{
 	FutureExt, StreamExt,
 };
 use parking_lot::Mutex;
-use quinn::{ClientConfig, EndpointConfig, ServerConfig, TokioRuntime, VarInt};
+use quinn::{Accept, ClientConfig, EndpointConfig, ServerConfig, TokioRuntime, VarInt};
 use socket2::{Domain, Protocol, Type};
 use url::{Host, Url};
 
@@ -207,21 +207,16 @@ impl Endpoint {
 	async fn incoming(
 		endpoint: quinn::Endpoint,
 		sender: Sender<Connecting>,
-		mut shutdown: Receiver<()>,
+		shutdown: Receiver<()>,
 	) {
-		loop {
-			let mut incoming = pin!(endpoint.accept().fuse());
-			while let Some(connecting) = futures_util::select_biased! {
-				connecting = incoming => connecting,
-				_ = shutdown => return,
-				complete => None,
-			} {
-				// if there is no receiver, it means that we dropped the last `Endpoint`
-				if sender.send(Connecting::new(connecting)).is_err() {
-					return;
-				}
-			}
+		IncomingConnections {
+			endpoint: &endpoint,
+			accept: None,
+			shutdown,
+			sender,
+			complete: false,
 		}
+		.await;
 	}
 
 	/// Establishes a new [`Connection`](crate::Connection) to a server. The
@@ -533,6 +528,59 @@ impl Endpoint {
 	/// ```
 	pub async fn wait_idle(&self) {
 		self.endpoint.wait_idle().await;
+	}
+}
+
+struct IncomingConnections<'a> {
+	endpoint: &'a quinn::Endpoint,
+	accept: Option<Pin<Box<Accept<'a>>>>,
+	shutdown: Receiver<()>,
+	sender: Sender<Connecting>,
+	complete: bool,
+}
+
+impl std::future::Future for IncomingConnections<'_> {
+	type Output = ();
+
+	fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+		if self.complete {
+			return Poll::Ready(());
+		}
+
+		match self.shutdown.poll_unpin(cx) {
+			Poll::Ready(_) => {
+				self.complete = true;
+				self.accept = None;
+				Poll::Ready(())
+			}
+			Poll::Pending => {
+				loop {
+					let mut accept = self
+						.accept
+						.take()
+						.unwrap_or_else(|| Box::pin(self.endpoint.accept()));
+					match accept.poll_unpin(cx) {
+						Poll::Ready(Some(connecting)) => {
+							// if there is no receiver, it means that we dropped the last
+							// `Endpoint`
+							if self.sender.send(Connecting::new(connecting)).is_err() {
+								self.complete = true;
+								return Poll::Ready(());
+							}
+						}
+						Poll::Ready(None) => {
+							self.complete = true;
+							return Poll::Ready(());
+						}
+						Poll::Pending => {
+							// Restore the same accept future to our state.
+							self.accept = Some(accept);
+							return Poll::Pending;
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
