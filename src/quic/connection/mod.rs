@@ -18,7 +18,7 @@ use std::{
 	fmt::{self, Debug, Formatter},
 	marker::PhantomData,
 	net::SocketAddr,
-	pin::Pin,
+	pin::{pin, Pin},
 	task::{Context, Poll},
 };
 
@@ -79,19 +79,19 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 			let connection = connection.clone();
 			async move {
 				loop {
-					let mut accepting = connection.accept_bi().fuse();
-					let Some(connecting) = futures_util::select_biased! {
-						connecting = std::pin::pin!(accepting) => Some(connecting),
-						_ = shutdown => None,
+					let mut accepting = pin!(connection.accept_bi().fuse());
+					while let Some(connecting) = futures_util::select_biased! {
+						connecting = accepting => Some(connecting),
+						_ = shutdown => return,
 						complete => None,
-					} else { break };
+					} {
+						let incoming = connecting.map_err(error::Connection);
 
-					let incoming = connecting.map_err(error::Connection);
-
-					if sender.send(incoming).is_err() {
-						// if there is no receiver, it means that we dropped the last
-						// `Connection`
-						break;
+						if sender.send(incoming).is_err() {
+							// if there is no receiver, it means that we dropped the last
+							// `Connection`
+							return;
+						}
 					}
 				}
 			}

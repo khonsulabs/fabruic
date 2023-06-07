@@ -211,15 +211,15 @@ impl Endpoint {
 	) {
 		loop {
 			let mut incoming = pin!(endpoint.accept().fuse());
-			let Some(connecting) = futures_util::select_biased! {
+			while let Some(connecting) = futures_util::select_biased! {
 				connecting = incoming => connecting,
-				_ = shutdown => None,
+				_ = shutdown => return,
 				complete => None,
-			} else { break };
-
-			// if there is no receiver, it means that we dropped the last `Endpoint`
-			if sender.send(Connecting::new(connecting)).is_err() {
-				break;
+			} {
+				// if there is no receiver, it means that we dropped the last `Endpoint`
+				if sender.send(Connecting::new(connecting)).is_err() {
+					return;
+				}
 			}
 		}
 	}
@@ -484,9 +484,9 @@ impl Endpoint {
 	/// ```
 	pub async fn close(&self) {
 		self.endpoint.close(VarInt::from_u32(0), &[]);
-		// we only want to wait until it's actually closed, it might already be closed
-		// by `close_incoming` or by starting as a client
-		let _result = (&self.task).await;
+		// Close the ability for incoming connections, and wait for the incoming
+		// connection task to exit.
+		let _result = self.close_incoming().await;
 	}
 
 	/// Prevents any new incoming connections. Already incoming connections will
@@ -513,7 +513,8 @@ impl Endpoint {
 			let _config = server.concurrent_connections(0);
 			self.endpoint.set_server_config(Some(server.clone()));
 		}
-		self.task.close(()).await
+		self.task.close(()).await?;
+		Ok(())
 	}
 
 	/// Wait for all [`Connection`](crate::Connection)s to the [`Endpoint`] to
