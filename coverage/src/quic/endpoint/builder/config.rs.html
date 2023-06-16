@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint/builder</a> - config.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-06-07 04:41:14</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-06-16 07:27:12</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -231,16 +231,16 @@
 <div class="line"><span id="210" class="lineNum"><a href="#210">210</a></span><span class="counterCov">1</span><span class="lineCov">					store.roots = rustls_native_certs::load_native_certs()</span></div>
 <div class="line"><span id="211" class="lineNum"><a href="#211">211</a></span><span class="counterCov">1</span><span class="lineCov">						.map_err(error::OsStore::Aquire)?</span></div>
 <div class="line"><span id="212" class="lineNum"><a href="#212">212</a></span><span class="counterCov">1</span><span class="lineCov">						.into_iter()</span></div>
-<div class="line"><span id="213" class="lineNum"><a href="#213">213</a></span><span class="counterCov">124</span><span class="lineCov">						.map(|certificate| {</span></div>
-<div class="line"><span id="214" class="lineNum"><a href="#214">214</a></span><span class="counterCov">124</span><span class="lineCov">							let ta = TrustAnchor::try_from_cert_der(&amp;certificate.0)</span></div>
-<div class="line"><span id="215" class="lineNum"><a href="#215">215</a></span><span class="counterCov">124</span><span class="lineCov">								.map_err(error::OsStore::Parse)?;</span></div>
+<div class="line"><span id="213" class="lineNum"><a href="#213">213</a></span><span class="counterCov">137</span><span class="lineCov">						.map(|certificate| {</span></div>
+<div class="line"><span id="214" class="lineNum"><a href="#214">214</a></span><span class="counterCov">137</span><span class="lineCov">							let ta = TrustAnchor::try_from_cert_der(&amp;certificate.0)</span></div>
+<div class="line"><span id="215" class="lineNum"><a href="#215">215</a></span><span class="counterCov">137</span><span class="lineCov">								.map_err(error::OsStore::Parse)?;</span></div>
 <div class="line"><span id="216" class="lineNum"><a href="#216">216</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="217" class="lineNum"><a href="#217">217</a></span><span class="counterCov">124</span><span class="lineCov">							Ok(OwnedTrustAnchor::from_subject_spki_name_constraints(</span></div>
-<div class="line"><span id="218" class="lineNum"><a href="#218">218</a></span><span class="counterCov">124</span><span class="lineCov">								ta.subject,</span></div>
-<div class="line"><span id="219" class="lineNum"><a href="#219">219</a></span><span class="counterCov">124</span><span class="lineCov">								ta.spki,</span></div>
-<div class="line"><span id="220" class="lineNum"><a href="#220">220</a></span><span class="counterCov">124</span><span class="lineCov">								ta.name_constraints,</span></div>
-<div class="line"><span id="221" class="lineNum"><a href="#221">221</a></span><span class="counterCov">124</span><span class="lineCov">							))</span></div>
-<div class="line"><span id="222" class="lineNum"><a href="#222">222</a></span><span class="counterCov">124</span><span class="lineCov">						})</span></div>
+<div class="line"><span id="217" class="lineNum"><a href="#217">217</a></span><span class="counterCov">137</span><span class="lineCov">							Ok(OwnedTrustAnchor::from_subject_spki_name_constraints(</span></div>
+<div class="line"><span id="218" class="lineNum"><a href="#218">218</a></span><span class="counterCov">137</span><span class="lineCov">								ta.subject,</span></div>
+<div class="line"><span id="219" class="lineNum"><a href="#219">219</a></span><span class="counterCov">137</span><span class="lineCov">								ta.spki,</span></div>
+<div class="line"><span id="220" class="lineNum"><a href="#220">220</a></span><span class="counterCov">137</span><span class="lineCov">								ta.name_constraints,</span></div>
+<div class="line"><span id="221" class="lineNum"><a href="#221">221</a></span><span class="counterCov">137</span><span class="lineCov">							))</span></div>
+<div class="line"><span id="222" class="lineNum"><a href="#222">222</a></span><span class="counterCov">137</span><span class="lineCov">						})</span></div>
 <div class="line"><span id="223" class="lineNum"><a href="#223">223</a></span><span class="counterCov">1</span><span class="lineCov">						.collect::&lt;Result&lt;_, _&gt;&gt;()?;</span></div>
 <div class="line"><span id="224" class="lineNum"><a href="#224">224</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="225" class="lineNum"><a href="#225">225</a></span><span class="counterCov">1</span><span class="lineCov">					store</span></div>
