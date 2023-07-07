@@ -9,11 +9,11 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../index.html">top level</a> - <a href="index.html">src</a> - error.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-06-16 07:27:12</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-07-07 10:30:44</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">9</span><span class="linesTotal">31</span><span class="linesPercentage lineLow">29.0 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">9</span><span class="linesTotal">39</span><span class="linesPercentage lineLow">23.1 %</span></div>
 <div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">2</span><span class="funsTotal">164</span><span class="funsPercentage funLow">1.2 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
@@ -121,7 +121,7 @@
 <div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Error during construction of [`Endpoint`](crate::Endpoint)</span></div>
 <div class="line"><span id="101" class="lineNum"><a href="#101">101</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// with [`Builder::build`](crate::Builder::build).</span></div>
 <div class="line"><span id="102" class="lineNum"><a href="#102">102</a></span><span class="counterNoCov">0</span><span class="lineNoCov">#[derive(Debug, Error)]</span></div>
-<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterUnCov"></span><span class="lineUnCov">#[error(&quot;Error constructing `Endpoint` with `Builder`: {error}&quot;)]</span></div>
+<div class="line"><span id="103" class="lineNum"><a href="#103">103</a></span><span class="counterNoCov">0</span><span class="lineNoCov">#[error(&quot;Error constructing `Endpoint` with `Builder`: {error}&quot;)]</span></div>
 <div class="line"><span id="104" class="lineNum"><a href="#104">104</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub struct Builder {</span></div>
 <div class="line"><span id="105" class="lineNum"><a href="#105">105</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Configuration error.</span></div>
 <div class="line"><span id="106" class="lineNum"><a href="#106">106</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[source]</span></div>
@@ -132,7 +132,7 @@
 <div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Configuration error.</span></div>
 <div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterNoCov">0</span><span class="lineNoCov">#[derive(Debug, Error)]</span></div>
-<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub enum Config {</span></div>
+<div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterNoCov">0</span><span class="lineNoCov">pub enum Config {</span></div>
 <div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// The error binding [`Endpoint`](crate::Endpoint).</span></div>
 <div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error binding socket during construction of `Endpoint`: {0}&quot;)]</span></div>
 <div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Bind(io::Error),</span></div>
@@ -146,7 +146,7 @@
 <div class="line"><span id="125" class="lineNum"><a href="#125">125</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="126" class="lineNum"><a href="#126">126</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Error aquiring or parsing root certs from OS.</span></div>
 <div class="line"><span id="127" class="lineNum"><a href="#127">127</a></span><span class="counterNoCov">0</span><span class="lineNoCov">#[derive(Debug, Error)]</span></div>
-<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterUnCov"></span><span class="lineUnCov">#[allow(variant_size_differences)]</span></div>
+<div class="line"><span id="128" class="lineNum"><a href="#128">128</a></span><span class="counterNoCov">0</span><span class="lineNoCov">#[allow(variant_size_differences)]</span></div>
 <div class="line"><span id="129" class="lineNum"><a href="#129">129</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub enum OsStore {</span></div>
 <div class="line"><span id="130" class="lineNum"><a href="#130">130</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Failed to aquire root certs from OS.</span></div>
 <div class="line"><span id="131" class="lineNum"><a href="#131">131</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error aquiring root certificates from the OS: {0}&quot;)]</span></div>
@@ -159,7 +159,7 @@
 <div class="line"><span id="138" class="lineNum"><a href="#138">138</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Error connecting to a server with</span></div>
 <div class="line"><span id="139" class="lineNum"><a href="#139">139</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// [`Endpoint::connect`](crate::Endpoint::connect).</span></div>
 <div class="line"><span id="140" class="lineNum"><a href="#140">140</a></span><span class="counterNoCov">0</span><span class="lineNoCov">#[derive(Debug, Error)]</span></div>
-<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub enum Connect {</span></div>
+<div class="line"><span id="141" class="lineNum"><a href="#141">141</a></span><span class="counterNoCov">0</span><span class="lineNoCov">pub enum Connect {</span></div>
 <div class="line"><span id="142" class="lineNum"><a href="#142">142</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// The passed [`Certificate`](crate::Certificate) has multiple domains,</span></div>
 <div class="line"><span id="143" class="lineNum"><a href="#143">143</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// this is not supported with</span></div>
 <div class="line"><span id="144" class="lineNum"><a href="#144">144</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Endpoint::connect_pinned`](crate::Endpoint::connect_pinned).</span></div>
@@ -237,7 +237,7 @@
 <div class="line"><span id="216" class="lineNum"><a href="#216">216</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Error opening a new stream to peer with</span></div>
 <div class="line"><span id="217" class="lineNum"><a href="#217">217</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// [`Connection::open_stream`](crate::Connection::open_stream).</span></div>
 <div class="line"><span id="218" class="lineNum"><a href="#218">218</a></span><span class="counterNoCov">0</span><span class="lineNoCov">#[derive(Debug, Error)]</span></div>
-<div class="line"><span id="219" class="lineNum"><a href="#219">219</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub enum Stream {</span></div>
+<div class="line"><span id="219" class="lineNum"><a href="#219">219</a></span><span class="counterNoCov">0</span><span class="lineNoCov">pub enum Stream {</span></div>
 <div class="line"><span id="220" class="lineNum"><a href="#220">220</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Opening a new stream with</span></div>
 <div class="line"><span id="221" class="lineNum"><a href="#221">221</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Connection::open_stream`](crate::Connection::open_stream) failed.</span></div>
 <div class="line"><span id="222" class="lineNum"><a href="#222">222</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error opening a new stream to peer: {0}&quot;)]</span></div>
@@ -249,7 +249,7 @@
 <div class="line"><span id="228" class="lineNum"><a href="#228">228</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="229" class="lineNum"><a href="#229">229</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Error receiving type information from [`Incoming`](crate::Incoming) stream.</span></div>
 <div class="line"><span id="230" class="lineNum"><a href="#230">230</a></span><span class="counterNoCov">0</span><span class="lineNoCov">#[derive(Debug, Error)]</span></div>
-<div class="line"><span id="231" class="lineNum"><a href="#231">231</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub enum Incoming {</span></div>
+<div class="line"><span id="231" class="lineNum"><a href="#231">231</a></span><span class="counterNoCov">0</span><span class="lineNoCov">pub enum Incoming {</span></div>
 <div class="line"><span id="232" class="lineNum"><a href="#232">232</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Failed receiving type information from [`Incoming`](crate::Incoming)</span></div>
 <div class="line"><span id="233" class="lineNum"><a href="#233">233</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// stream.</span></div>
 <div class="line"><span id="234" class="lineNum"><a href="#234">234</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error receiving type information from `Incoming` stream: {0}&quot;)]</span></div>
@@ -262,7 +262,7 @@
 <div class="line"><span id="241" class="lineNum"><a href="#241">241</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="242" class="lineNum"><a href="#242">242</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Error receiving a message from a [`Receiver`](crate::Receiver).</span></div>
 <div class="line"><span id="243" class="lineNum"><a href="#243">243</a></span><span class="counterNoCov">0</span><span class="lineNoCov">#[derive(Debug, Error)]</span></div>
-<div class="line"><span id="244" class="lineNum"><a href="#244">244</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub enum Receiver {</span></div>
+<div class="line"><span id="244" class="lineNum"><a href="#244">244</a></span><span class="counterNoCov">0</span><span class="lineNoCov">pub enum Receiver {</span></div>
 <div class="line"><span id="245" class="lineNum"><a href="#245">245</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Failed to read from a [`Receiver`](crate::Receiver).</span></div>
 <div class="line"><span id="246" class="lineNum"><a href="#246">246</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error reading from `Receiver`: {0}&quot;)]</span></div>
 <div class="line"><span id="247" class="lineNum"><a href="#247">247</a></span><span class="counterUnCov"></span><span class="lineUnCov">	Read(#[from] ReadError),</span></div>
@@ -274,7 +274,7 @@
 <div class="line"><span id="253" class="lineNum"><a href="#253">253</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="254" class="lineNum"><a href="#254">254</a></span><span class="counterUnCov"></span><span class="lineUnCov">/// Error sending a message to a [`Sender`](crate::Sender).</span></div>
 <div class="line"><span id="255" class="lineNum"><a href="#255">255</a></span><span class="counterNoCov">0</span><span class="lineNoCov">#[derive(Debug, Error)]</span></div>
-<div class="line"><span id="256" class="lineNum"><a href="#256">256</a></span><span class="counterUnCov"></span><span class="lineUnCov">pub enum Sender {</span></div>
+<div class="line"><span id="256" class="lineNum"><a href="#256">256</a></span><span class="counterNoCov">0</span><span class="lineNoCov">pub enum Sender {</span></div>
 <div class="line"><span id="257" class="lineNum"><a href="#257">257</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// Failed to [`Serialize`](serde::Serialize) a message for a</span></div>
 <div class="line"><span id="258" class="lineNum"><a href="#258">258</a></span><span class="counterUnCov"></span><span class="lineUnCov">	/// [`Sender`](crate::Sender).</span></div>
 <div class="line"><span id="259" class="lineNum"><a href="#259">259</a></span><span class="counterUnCov"></span><span class="lineUnCov">	#[error(&quot;Error serializing a message to `Sender`: {0}&quot;)]</span></div>
