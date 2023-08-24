@@ -1091,8 +1091,11 @@ mod test {
 		let Err(error::Connecting::Connection(ConnectionError::TransportError(TransportError {
 			code,
 			frame: None,
-			reason
-		}))) = result else { unreachable!("expected TransportError") };
+			reason,
+		}))) = result
+		else {
+			unreachable!("expected TransportError")
+		};
 		assert_eq!(reason, "invalid peer certificate: UnknownIssuer");
 		assert_eq!(
 			code.to_string(),

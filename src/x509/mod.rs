@@ -36,6 +36,7 @@ impl KeyPair {
 	/// Generate a self signed certificate.
 	#[cfg(feature = "rcgen")]
 	#[cfg_attr(doc, doc(cfg(feature = "rcgen")))]
+	#[allow(clippy::missing_panics_doc)]
 	pub fn new_self_signed<S: Into<String>>(domain: S) -> Self {
 		let key_pair = rcgen::generate_simple_self_signed([domain.into()])
 			.expect("`rcgen` failed generating a self-signed certificate");

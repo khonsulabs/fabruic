@@ -51,6 +51,7 @@ impl<T: DeserializeOwned> Incoming<T> {
 	#[allow(unused_lifetimes)]
 	// TODO: return different state, because error can't be cloned and state is
 	// unusable anyway
+	#[allow(clippy::missing_panics_doc)]
 	pub async fn r#type(&mut self) -> Result<&T, &error::Incoming> {
 		if let Some(ref r#type) = self.r#type {
 			r#type.as_ref()

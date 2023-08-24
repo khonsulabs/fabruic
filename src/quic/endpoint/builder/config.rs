@@ -227,7 +227,7 @@ impl Config {
 				Store::Embedded => {
 					let mut store = RootCertStore::empty();
 
-					store.add_server_trust_anchors(webpki_roots::TLS_SERVER_ROOTS.0.iter().map(
+					store.add_server_trust_anchors(webpki_roots::TLS_SERVER_ROOTS.iter().map(
 						|ta| {
 							OwnedTrustAnchor::from_subject_spki_name_constraints(
 								ta.subject,
@@ -261,7 +261,7 @@ impl Config {
 					ct_logs::LOGS,
 					// Add one year to last release.
 					PrimitiveDateTime::new(
-						#[allow(clippy::integer_arithmetic)]
+						#[allow(clippy::arithmetic_side_effects)]
 						Date::from_calendar_date(2021 + 1, Month::April, 10).expect("invalid date"),
 						Time::MIDNIGHT,
 					)

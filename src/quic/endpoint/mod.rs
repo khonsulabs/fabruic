@@ -56,7 +56,7 @@ impl Debug for Endpoint {
 			.field("receiver", &"RecvStream")
 			.field("task", &self.task)
 			.field("config", &self.config)
-			.finish()
+			.finish_non_exhaustive()
 	}
 }
 
@@ -412,8 +412,7 @@ impl Endpoint {
 			opts.try_tcp_on_error = true;
 
 			// build the `Resolver`
-			let resolver = TokioAsyncResolver::tokio(ResolverConfig::cloudflare_https(), opts)
-				.map_err(Box::new)?;
+			let resolver = TokioAsyncResolver::tokio(ResolverConfig::cloudflare_https(), opts);
 			// query the IP
 			let ip = resolver.lookup_ip(domain.clone()).await.map_err(Box::new)?;
 
@@ -818,7 +817,7 @@ mod test {
 		));
 
 		// waiting for a new connection on a closed server shouldn't work
-		assert!(matches!(server.next().await, None));
+		assert!(server.next().await.is_none());
 
 		client.wait_idle().await;
 		server.wait_idle().await;
@@ -869,7 +868,7 @@ mod test {
 		));
 
 		// waiting for a new connection on a closed server shouldn't work
-		assert!(matches!(server.next().await, None));
+		assert!(server.next().await.is_none());
 
 		client.wait_idle().await;
 		server.wait_idle().await;
@@ -948,7 +947,7 @@ mod test {
 
 		// waiting for a new connection on a server that refuses new `Connection`s
 		// shouldn't work
-		assert!(matches!(server.next().await, None));
+		assert!(server.next().await.is_none());
 
 		{
 			let (sender, _) = client_connection.open_stream::<(), ()>(&()).await?;
