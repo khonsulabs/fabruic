@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/quic/endpoint/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-2fcac8296ac587d8.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="fabruic" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0-nightly (101fa903b 2023-06-04)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../static.files/main-48600a9606eff342.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../fabruic/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/quic/endpoint/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="fabruic" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (58eefc33a 2023-08-24)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-b2d31d2efc7e9b67.css" data-theme-dark-css="dark-3388a2fb2ef8066b.css" data-theme-ayu-css="ayu-8c3c66a6cf12cb2f.css" ><script src="../../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-b2d31d2efc7e9b67.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-3388a2fb2ef8066b.css"><link rel="stylesheet" href="../../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../fabruic/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -939,6 +939,68 @@
 <a href="#939" id="939">939</a>
 <a href="#940" id="940">940</a>
 <a href="#941" id="941">941</a>
+<a href="#942" id="942">942</a>
+<a href="#943" id="943">943</a>
+<a href="#944" id="944">944</a>
+<a href="#945" id="945">945</a>
+<a href="#946" id="946">946</a>
+<a href="#947" id="947">947</a>
+<a href="#948" id="948">948</a>
+<a href="#949" id="949">949</a>
+<a href="#950" id="950">950</a>
+<a href="#951" id="951">951</a>
+<a href="#952" id="952">952</a>
+<a href="#953" id="953">953</a>
+<a href="#954" id="954">954</a>
+<a href="#955" id="955">955</a>
+<a href="#956" id="956">956</a>
+<a href="#957" id="957">957</a>
+<a href="#958" id="958">958</a>
+<a href="#959" id="959">959</a>
+<a href="#960" id="960">960</a>
+<a href="#961" id="961">961</a>
+<a href="#962" id="962">962</a>
+<a href="#963" id="963">963</a>
+<a href="#964" id="964">964</a>
+<a href="#965" id="965">965</a>
+<a href="#966" id="966">966</a>
+<a href="#967" id="967">967</a>
+<a href="#968" id="968">968</a>
+<a href="#969" id="969">969</a>
+<a href="#970" id="970">970</a>
+<a href="#971" id="971">971</a>
+<a href="#972" id="972">972</a>
+<a href="#973" id="973">973</a>
+<a href="#974" id="974">974</a>
+<a href="#975" id="975">975</a>
+<a href="#976" id="976">976</a>
+<a href="#977" id="977">977</a>
+<a href="#978" id="978">978</a>
+<a href="#979" id="979">979</a>
+<a href="#980" id="980">980</a>
+<a href="#981" id="981">981</a>
+<a href="#982" id="982">982</a>
+<a href="#983" id="983">983</a>
+<a href="#984" id="984">984</a>
+<a href="#985" id="985">985</a>
+<a href="#986" id="986">986</a>
+<a href="#987" id="987">987</a>
+<a href="#988" id="988">988</a>
+<a href="#989" id="989">989</a>
+<a href="#990" id="990">990</a>
+<a href="#991" id="991">991</a>
+<a href="#992" id="992">992</a>
+<a href="#993" id="993">993</a>
+<a href="#994" id="994">994</a>
+<a href="#995" id="995">995</a>
+<a href="#996" id="996">996</a>
+<a href="#997" id="997">997</a>
+<a href="#998" id="998">998</a>
+<a href="#999" id="999">999</a>
+<a href="#1000" id="1000">1000</a>
+<a href="#1001" id="1001">1001</a>
+<a href="#1002" id="1002">1002</a>
+<a href="#1003" id="1003">1003</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Starting point to create a QUIC enabled network socket.
 
 </span><span class="kw">mod </span>builder;
@@ -950,7 +1012,7 @@
 	pin::Pin,
 	slice,
 	sync::Arc,
-	task::{Context, Poll},
+	task::{Context, Poll}, future::Future,
 };
 
 <span class="kw">use </span>async_trait::async_trait;
@@ -960,9 +1022,10 @@
 <span class="kw">use </span>futures_channel::oneshot::Receiver;
 <span class="kw">use </span>futures_util::{
 	stream::{FusedStream, Stream},
-	StreamExt,
+	FutureExt, StreamExt,
 };
-<span class="kw">use </span>quinn::{ClientConfig, EndpointConfig, ServerConfig, VarInt};
+<span class="kw">use </span>parking_lot::Mutex;
+<span class="kw">use </span>quinn::{Accept, ClientConfig, EndpointConfig, ServerConfig, TokioRuntime, VarInt};
 <span class="kw">use </span>socket2::{Domain, Protocol, Type};
 <span class="kw">use </span>url::{Host, Url};
 
@@ -986,16 +1049,18 @@
 	<span class="doccomment">/// Persistent configuration from [`Builder`] to build new [`ClientConfig`]s
 	/// and [`trust-dns`](trust_dns_resolver) queries.
 	</span>config: Arc&lt;Config&gt;,
+	server: <span class="prelude-ty">Option</span>&lt;Arc&lt;Mutex&lt;ServerConfig&gt;&gt;&gt;,
 }
 
 <span class="kw">impl </span>Debug <span class="kw">for </span>Endpoint {
-	<span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
-		f.debug_struct(<span class="string">&quot;Server&quot;</span>)
+	<span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+		formatter
+			.debug_struct(<span class="string">&quot;Server&quot;</span>)
 			.field(<span class="string">&quot;endpoint&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.endpoint)
 			.field(<span class="string">&quot;receiver&quot;</span>, <span class="kw-2">&amp;</span><span class="string">&quot;RecvStream&quot;</span>)
 			.field(<span class="string">&quot;task&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.task)
 			.field(<span class="string">&quot;config&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.config)
-			.finish()
+			.finish_non_exhaustive()
 	}
 }
 
@@ -1049,10 +1114,12 @@
 
 		<span class="comment">// configure endpoint for server and client
 		</span><span class="kw">let </span>is_server = server.is_some();
-		<span class="kw">let </span>(<span class="kw-2">mut </span>endpoint, incoming) =
-			quinn::Endpoint::new(EndpointConfig::default(), server, socket)<span class="question-mark">?</span>;
-		<span class="comment">// If we aren&#39;t the server, we don&#39;t use the incoming stream.
-		</span><span class="kw">let </span>incoming = is_server.then_some(incoming);
+		<span class="kw">let </span><span class="kw-2">mut </span>endpoint = quinn::Endpoint::new(
+			EndpointConfig::default(),
+			server.clone(),
+			socket,
+			Arc::new(TokioRuntime),
+		)<span class="question-mark">?</span>;
 
 		endpoint.set_default_client_config(client);
 
@@ -1060,15 +1127,18 @@
 		</span><span class="kw">let </span>(sender, receiver) = flume::unbounded();
 		<span class="kw">let </span>receiver = receiver.into_stream();
 
-		<span class="kw">let </span>task = incoming.map_or_else(Task::empty, |incoming| {
-			Task::new(|shutdown| <span class="self">Self</span>::incoming(incoming, sender, shutdown))
-		});
+		<span class="kw">let </span>task = <span class="kw">if </span>is_server {
+			Task::new(|shutdown| <span class="self">Self</span>::incoming(endpoint.clone(), sender, shutdown))
+		} <span class="kw">else </span>{
+			Task::empty()
+		};
 
 		<span class="prelude-val">Ok</span>(<span class="self">Self </span>{
 			endpoint,
 			receiver,
 			task,
 			config: Arc::new(config),
+			server: server.map(|server| Arc::new(Mutex::new(server))),
 		})
 	}
 
@@ -1139,21 +1209,18 @@
 	<span class="doccomment">/// Handle incoming connections. Accessed through [`Stream`] in
 	/// [`Endpoint`].
 	</span><span class="kw">async fn </span>incoming(
-		incoming: quinn::Incoming,
+		endpoint: quinn::Endpoint,
 		sender: Sender&lt;Connecting&gt;,
-		<span class="kw-2">mut </span>shutdown: Receiver&lt;()&gt;,
+		shutdown: Receiver&lt;()&gt;,
 	) {
-		<span class="kw">let </span><span class="kw-2">mut </span>incoming = incoming.fuse();
-		<span class="kw">while let </span><span class="prelude-val">Some</span>(connecting) = <span class="macro">futures_util::select_biased! </span>{
-			connecting = incoming.next() =&gt; connecting,
-			<span class="kw">_ </span>= shutdown =&gt; <span class="prelude-val">None</span>,
-			complete =&gt; <span class="prelude-val">None</span>,
-		} {
-			<span class="comment">// if there is no receiver, it means that we dropped the last `Endpoint`
-			</span><span class="kw">if </span>sender.send(Connecting::new(connecting)).is_err() {
-				<span class="kw">break</span>;
-			}
+		IncomingConnections {
+			endpoint: <span class="kw-2">&amp;</span>endpoint,
+			accept: <span class="prelude-val">None</span>,
+			shutdown,
+			sender,
+			complete: <span class="bool-val">false</span>,
 		}
+		.<span class="kw">await</span>;
 	}
 
 	<span class="doccomment">/// Establishes a new [`Connection`](crate::Connection) to a server. The
@@ -1258,7 +1325,6 @@
 	/// 	.await?;
 	/// # Ok(()) }
 	/// ```
-	</span><span class="attr">#[allow(clippy::unwrap_in_result)]
 	</span><span class="kw">pub async fn </span>connect_pinned&lt;U: AsRef&lt;str&gt;&gt;(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		url: U,
@@ -1349,8 +1415,7 @@
 			opts.try_tcp_on_error = <span class="bool-val">true</span>;
 
 			<span class="comment">// build the `Resolver`
-			</span><span class="kw">let </span>resolver = TokioAsyncResolver::tokio(ResolverConfig::cloudflare_https(), opts)
-				.map_err(Box::new)<span class="question-mark">?</span>;
+			</span><span class="kw">let </span>resolver = TokioAsyncResolver::tokio(ResolverConfig::cloudflare_https(), opts);
 			<span class="comment">// query the IP
 			</span><span class="kw">let </span>ip = resolver.lookup_ip(domain.clone()).<span class="kw">await</span>.map_err(Box::new)<span class="question-mark">?</span>;
 
@@ -1364,7 +1429,7 @@
 		<span class="comment">// TODO: configurable executor
 		</span><span class="kw">let </span>address = {
 			<span class="comment">// `ToSocketAddrs` needs a port
-			</span><span class="kw">let </span>domain = <span class="macro">format!</span>(<span class="string">&quot;{}:{}&quot;</span>, domain, port);
+			</span><span class="kw">let </span>domain = <span class="macro">format!</span>(<span class="string">&quot;{domain}:{port}&quot;</span>);
 			tokio::task::spawn_blocking(<span class="kw">move </span>|| {
 				domain
 					.to_socket_addrs()
@@ -1416,9 +1481,9 @@
 	/// ```
 	</span><span class="kw">pub async fn </span>close(<span class="kw-2">&amp;</span><span class="self">self</span>) {
 		<span class="self">self</span>.endpoint.close(VarInt::from_u32(<span class="number">0</span>), <span class="kw-2">&amp;</span>[]);
-		<span class="comment">// we only want to wait until it&#39;s actually closed, it might already be closed
-		// by `close_incoming` or by starting as a client
-		</span><span class="kw">let </span>_result = (<span class="kw-2">&amp;</span><span class="self">self</span>.task).<span class="kw">await</span>;
+		<span class="comment">// Close the ability for incoming connections, and wait for the incoming
+		// connection task to exit.
+		</span><span class="kw">let </span>_result = <span class="self">self</span>.close_incoming().<span class="kw">await</span>;
 	}
 
 	<span class="doccomment">/// Prevents any new incoming connections. Already incoming connections will
@@ -1440,8 +1505,14 @@
 	/// # Ok(()) }
 	/// ```
 	</span><span class="kw">pub async fn </span>close_incoming(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), error::AlreadyClosed&gt; {
-		<span class="self">self</span>.task.close(()).<span class="kw">await
-	</span>}
+		<span class="kw">if let </span><span class="prelude-val">Some</span>(server) = <span class="kw-2">&amp;</span><span class="self">self</span>.server {
+			<span class="kw">let </span><span class="kw-2">mut </span>server = server.lock();
+			<span class="kw">let </span>_config = server.concurrent_connections(<span class="number">0</span>);
+			<span class="self">self</span>.endpoint.set_server_config(<span class="prelude-val">Some</span>(server.clone()));
+		}
+		<span class="self">self</span>.task.close(()).<span class="kw">await</span><span class="question-mark">?</span>;
+		<span class="prelude-val">Ok</span>(())
+	}
 
 	<span class="doccomment">/// Wait for all [`Connection`](crate::Connection)s to the [`Endpoint`] to
 	/// be cleanly shut down. Does not close existing connections or cause
@@ -1459,6 +1530,59 @@
 	/// ```
 	</span><span class="kw">pub async fn </span>wait_idle(<span class="kw-2">&amp;</span><span class="self">self</span>) {
 		<span class="self">self</span>.endpoint.wait_idle().<span class="kw">await</span>;
+	}
+}
+
+<span class="kw">struct </span>IncomingConnections&lt;<span class="lifetime">&#39;connection</span>&gt; {
+	endpoint: <span class="kw-2">&amp;</span><span class="lifetime">&#39;connection </span>quinn::Endpoint,
+	accept: <span class="prelude-ty">Option</span>&lt;Pin&lt;Box&lt;Accept&lt;<span class="lifetime">&#39;connection</span>&gt;&gt;&gt;&gt;,
+	shutdown: Receiver&lt;()&gt;,
+	sender: Sender&lt;Connecting&gt;,
+	complete: bool,
+}
+
+<span class="kw">impl </span>Future <span class="kw">for </span>IncomingConnections&lt;<span class="lifetime">&#39;_</span>&gt; {
+	<span class="kw">type </span>Output = ();
+
+	<span class="kw">fn </span>poll(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="self">Self</span>::Output&gt; {
+		<span class="kw">if </span><span class="self">self</span>.complete {
+			<span class="kw">return </span>Poll::Ready(());
+		}
+
+		<span class="kw">match </span><span class="self">self</span>.shutdown.poll_unpin(cx) {
+			Poll::Ready(<span class="kw">_</span>) =&gt; {
+				<span class="self">self</span>.complete = <span class="bool-val">true</span>;
+				<span class="self">self</span>.accept = <span class="prelude-val">None</span>;
+				Poll::Ready(())
+			}
+			Poll::Pending =&gt; {
+				<span class="kw">loop </span>{
+					<span class="kw">let </span><span class="kw-2">mut </span>accept = <span class="self">self
+						</span>.accept
+						.take()
+						.unwrap_or_else(|| Box::pin(<span class="self">self</span>.endpoint.accept()));
+					<span class="kw">match </span>accept.poll_unpin(cx) {
+						Poll::Ready(<span class="prelude-val">Some</span>(connecting)) =&gt; {
+							<span class="comment">// if there is no receiver, it means that we dropped the last
+							// `Endpoint`
+							</span><span class="kw">if </span><span class="self">self</span>.sender.send(Connecting::new(connecting)).is_err() {
+								<span class="self">self</span>.complete = <span class="bool-val">true</span>;
+								<span class="kw">return </span>Poll::Ready(());
+							}
+						}
+						Poll::Ready(<span class="prelude-val">None</span>) =&gt; {
+							<span class="self">self</span>.complete = <span class="bool-val">true</span>;
+							<span class="kw">return </span>Poll::Ready(());
+						}
+						Poll::Pending =&gt; {
+							<span class="comment">// Restore the same accept future to our state.
+							</span><span class="self">self</span>.accept = <span class="prelude-val">Some</span>(accept);
+							<span class="kw">return </span>Poll::Pending;
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -1579,7 +1703,7 @@
 
 	<span class="attr">#[test]
 	</span><span class="kw">fn </span>builder() {
-		<span class="kw">let </span>_builder: Builder = Endpoint::builder();
+		<span class="kw">let </span>_builder = Endpoint::builder();
 	}
 
 	<span class="attr">#[tokio::test]
@@ -1696,7 +1820,7 @@
 		));
 
 		<span class="comment">// waiting for a new connection on a closed server shouldn&#39;t work
-		</span><span class="macro">assert!</span>(<span class="macro">matches!</span>(server.next().<span class="kw">await</span>, <span class="prelude-val">None</span>));
+		</span><span class="macro">assert!</span>(server.next().<span class="kw">await</span>.is_none());
 
 		client.wait_idle().<span class="kw">await</span>;
 		server.wait_idle().<span class="kw">await</span>;
@@ -1747,7 +1871,7 @@
 		));
 
 		<span class="comment">// waiting for a new connection on a closed server shouldn&#39;t work
-		</span><span class="macro">assert!</span>(<span class="macro">matches!</span>(server.next().<span class="kw">await</span>, <span class="prelude-val">None</span>));
+		</span><span class="macro">assert!</span>(server.next().<span class="kw">await</span>.is_none());
 
 		client.wait_idle().<span class="kw">await</span>;
 		server.wait_idle().<span class="kw">await</span>;
@@ -1826,7 +1950,7 @@
 
 		<span class="comment">// waiting for a new connection on a server that refuses new `Connection`s
 		// shouldn&#39;t work
-		</span><span class="macro">assert!</span>(<span class="macro">matches!</span>(server.next().<span class="kw">await</span>, <span class="prelude-val">None</span>));
+		</span><span class="macro">assert!</span>(server.next().<span class="kw">await</span>.is_none());
 
 		{
 			<span class="kw">let </span>(sender, <span class="kw">_</span>) = client_connection.open_stream::&lt;(), ()&gt;(<span class="kw-2">&amp;</span>()).<span class="kw">await</span><span class="question-mark">?</span>;
