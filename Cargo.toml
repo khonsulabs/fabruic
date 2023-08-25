@@ -7,7 +7,7 @@ repository = "https://github.com/khonsulabs/fabruic"
 keywords = ["quic"]
 categories = ["network-programming"]
 edition = "2021"
-rust-version = "1.68.2"
+rust-version = "1.72"
 
 [features]
 dangerous = []
@@ -24,12 +24,10 @@ flume = { version = "0.11" }
 futures-channel = "0.3"
 futures-executor = "0.3"
 futures-util = "0.3"
-if_chain = "1"
 parking_lot = { version = "0.12", features = ["send_guard"] }
 pin-project = "1"
 quinn = "0.10.1"
 rcgen = { version = "0.11.0", default-features = false, optional = true }
-ring = "0.16"
 rustls = { version = "0.21.1", default-features = false, features = [
 	"dangerous_configuration",
 ] }
@@ -65,4 +63,5 @@ lto = true
 
 [package.metadata.docs.rs]
 features = ["dangerous", "rcgen", "trust-dns"]
+rustdoc-args = ["--cfg", "docsrs"]
 targets = []

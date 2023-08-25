@@ -2,7 +2,7 @@
 
 mod certificate;
 mod certificate_chain;
-pub mod private_key;
+pub(crate) mod private_key;
 
 pub use certificate::Certificate;
 pub use certificate_chain::CertificateChain;
@@ -35,7 +35,6 @@ impl TryFrom<(CertificateChain, PrivateKey)> for KeyPair {
 impl KeyPair {
 	/// Generate a self signed certificate.
 	#[cfg(feature = "rcgen")]
-	#[cfg_attr(doc, doc(cfg(feature = "rcgen")))]
 	#[allow(clippy::missing_panics_doc)]
 	pub fn new_self_signed<S: Into<String>>(domain: S) -> Self {
 		let key_pair = rcgen::generate_simple_self_signed([domain.into()])
@@ -115,7 +114,6 @@ impl KeyPair {
 
 	/// Destructure [`KeyPair`] into it's owned parts.
 	#[must_use]
-	#[allow(clippy::missing_const_for_fn)]
 	pub fn into_parts(self) -> (CertificateChain, PrivateKey) {
 		(self.certificate_chain, self.private_key)
 	}
@@ -171,7 +169,6 @@ impl Dangerous for KeyPair {
 ///
 /// We [`Serialize`](serde::Serialize) [`PrivateKey`] in [`KeyPair`] not
 /// directly, we have to correspondingly do the same when [`Deserialize`]ing.
-#[allow(single_use_lifetimes)]
 fn deserialize_private_key<'de, D>(deserializer: D) -> Result<PrivateKey, D::Error>
 where
 	D: Deserializer<'de>,

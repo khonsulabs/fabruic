@@ -33,15 +33,12 @@ pub(in crate::quic::endpoint) struct Config {
 	max_idle_timeout: Option<Duration>,
 	/// Enable [`trust-dns`](trust_dns_resolver).
 	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	trust_dns: bool,
 	/// Enables DNSSEC validation for [`trust-dns`](trust_dns_resolver).
 	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	dnssec: bool,
 	/// Enables `/etc/hosts` file support for [`trust-dns`](trust_dns_resolver).
 	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	hosts_file: bool,
 }
 
@@ -96,7 +93,6 @@ impl Config {
 	/// Controls the use of [`trust-dns`](trust_dns_resolver) for
 	/// [`Endpoint::connect`](crate::Endpoint::connect).
 	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	pub(super) fn set_trust_dns(&mut self, enable: bool) {
 		self.trust_dns = enable;
 	}
@@ -104,10 +100,7 @@ impl Config {
 	/// Disables the use of [`trust-dns`](trust_dns_resolver) for
 	/// [`Endpoint::connect`](crate::Endpoint::connect) despite the activates
 	/// crate features.
-	#[cfg_attr(
-		not(feature = "trust-dns"),
-		allow(clippy::unused_self, unused_variables)
-	)]
+	#[cfg_attr(not(feature = "trust-dns"), allow(clippy::unused_self))]
 	pub(super) fn disable_trust_dns(&mut self) {
 		#[cfg(feature = "trust-dns")]
 		{
@@ -126,14 +119,12 @@ impl Config {
 
 	/// Controls DNSSEC validation for [`trust-dns`](trust_dns_resolver).
 	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	pub(super) fn set_dnssec(&mut self, enable: bool) {
 		self.dnssec = enable;
 	}
 
 	/// Returns if DNSSEC is enabled for [`trust-dns`](trust_dns_resolver).
 	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	pub(in crate::quic::endpoint) const fn dnssec(&self) -> bool {
 		self.dnssec
 	}
@@ -141,7 +132,6 @@ impl Config {
 	/// Controls `/etc/hosts` file support for
 	/// [`trust-dns`](trust_dns_resolver).
 	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	pub(super) fn set_hosts_file(&mut self, enable: bool) {
 		self.hosts_file = enable;
 	}
@@ -149,7 +139,6 @@ impl Config {
 	/// Returns if `/etc/hosts` file support is enabled for
 	/// [`trust-dns`](trust_dns_resolver).
 	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	pub(in crate::quic::endpoint) const fn hosts_file(&self) -> bool {
 		self.hosts_file
 	}
@@ -189,7 +178,6 @@ impl Config {
 	/// Panics if the given [`KeyPair`] or [`Certificate`]s are invalid. Can't
 	/// happen if they were properly validated through [`KeyPair::from_parts`]
 	/// or [`Certificate::from_der`].
-	#[allow(clippy::unwrap_in_result)]
 	pub(in crate::quic::endpoint) fn new_client(
 		&self,
 		certificates: &[Certificate],
@@ -259,7 +247,6 @@ impl Config {
 					ct_logs::LOGS,
 					// Add one year to last release.
 					PrimitiveDateTime::new(
-						#[allow(clippy::arithmetic_side_effects)]
 						Date::from_calendar_date(2021 + 1, Month::April, 10).expect("invalid date"),
 						Time::MIDNIGHT,
 					)

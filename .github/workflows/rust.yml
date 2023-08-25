@@ -30,8 +30,7 @@ jobs:
 
       - name: Run doc tests
         run: |
-          rustup toolchain install nightly --profile minimal --allow-downgrade
-          cargo +nightly test --workspace --doc --all-features
+          cargo test --workspace --doc --all-features
 
   msrv:
     runs-on: ubuntu-latest
@@ -43,7 +42,7 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: "1.68.2"
+          toolchain: "1.72"
 
       - name: Run unit tests
         run: |
@@ -63,6 +62,12 @@ jobs:
         run: |
           cargo clippy --workspace --all-targets --all-features -- -D warnings
 
+      - name: Run Rustdoc
+        run: |
+          cargo doc --no-deps --workspace --all-features
+        env:
+          RUSTDOCFLAGS: -D warnings
+
   docs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
@@ -79,7 +84,7 @@ jobs:
           rustup install nightly --profile minimal
           cargo +nightly doc --no-deps --workspace --all-features
         env:
-          RUSTDOCFLAGS: -D warnings
+          RUSTDOCFLAGS: --cfg docsrs
 
       - name: Deploy Docs
         uses: JamesIves/github-pages-deploy-action@releases/v4

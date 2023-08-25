@@ -23,8 +23,9 @@ pub struct Receiver<T: 'static> {
 }
 
 impl<T> Debug for Receiver<T> {
-	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-		f.debug_struct("Receiver")
+	fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
+		formatter
+			.debug_struct("Receiver")
 			.field("receiver", &"RecvStream")
 			.field("task", &self.task)
 			.finish()
@@ -34,7 +35,6 @@ impl<T> Debug for Receiver<T> {
 impl<T> Receiver<T> {
 	/// Builds a new [`Receiver`] from a raw [`quinn`] type. Spawns a task that
 	/// receives data from the stream.
-	#[allow(clippy::mut_mut)] // futures_util::select_biased internal usage
 	pub(super) fn new(mut stream: ReceiverStream<T>) -> Self
 	where
 		T: DeserializeOwned + Send,

@@ -272,7 +272,6 @@ impl Builder {
 	/// builder.set_trust_dns(false);
 	/// ```
 	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	pub fn set_trust_dns(&mut self, enable: bool) {
 		self.config.set_trust_dns(enable);
 	}
@@ -334,7 +333,6 @@ impl Builder {
 	/// builder.set_dnssec(false);
 	/// ```
 	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	pub fn set_dnssec(&mut self, enable: bool) {
 		self.config.set_dnssec(enable);
 	}
@@ -354,7 +352,6 @@ impl Builder {
 	/// ```
 	#[must_use]
 	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	pub const fn dnssec(&self) -> bool {
 		self.config.dnssec()
 	}
@@ -374,7 +371,6 @@ impl Builder {
 	/// builder.set_hosts_file(false);
 	/// ```
 	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	pub fn set_hosts_file(&mut self, enable: bool) {
 		self.config.set_hosts_file(enable);
 	}
@@ -395,7 +391,6 @@ impl Builder {
 	/// ```
 	#[must_use]
 	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	pub const fn hosts_file(&self) -> bool {
 		self.config.hosts_file()
 	}
@@ -461,7 +456,6 @@ impl Builder {
 	/// # Errors
 	/// [`Config::MaxIdleTimeout`](error::Config::MaxIdleTimeout) if time
 	/// exceeds 2^62 ms.
-	#[allow(clippy::unwrap_in_result)]
 	pub fn set_max_idle_timeout(&mut self, time: Option<Duration>) -> Result<(), error::Config> {
 		self.config.set_max_idle_timeout(time)
 	}
@@ -689,8 +683,6 @@ mod test {
 	use futures_util::StreamExt;
 	use quinn::ConnectionError;
 	use quinn_proto::TransportError;
-	use trust_dns_proto::error::ProtoErrorKind;
-	use trust_dns_resolver::error::ResolveErrorKind;
 
 	use super::*;
 
@@ -907,6 +899,7 @@ mod test {
 	}
 
 	#[test]
+	#[cfg(feature = "trust-dns")]
 	fn trust_dns() {
 		let mut builder = Builder::new();
 
@@ -930,7 +923,7 @@ mod test {
 		let endpoint = builder.build()?;
 
 		// TODO: find a better target without DNSSEC support then Google
-		assert!(endpoint.connect("https://google.com").await.is_ok());
+		let _ = endpoint.connect("https://google.com").await.unwrap();
 
 		Ok(())
 	}
@@ -942,13 +935,17 @@ mod test {
 		let endpoint = builder.build()?;
 
 		// TODO: find a better target with DNSSEC support then Cloudflare
-		assert!(endpoint.connect("https://cloudflare.com").await.is_ok());
+		let _ = endpoint.connect("https://cloudflare.com").await.unwrap();
 
 		Ok(())
 	}
 
 	#[tokio::test]
+	#[cfg(feature = "trust-dns")]
 	async fn trust_dns_fail() -> Result<()> {
+		use trust_dns_proto::error::ProtoErrorKind;
+		use trust_dns_resolver::error::ResolveErrorKind;
+
 		let endpoint = Builder::new().build()?;
 
 		// TODO: find a better target without DNSSEC support then Google
@@ -968,6 +965,7 @@ mod test {
 	}
 
 	#[test]
+	#[cfg(feature = "trust-dns")]
 	fn dnssec() {
 		let mut builder = Builder::new();
 
@@ -982,18 +980,20 @@ mod test {
 	}
 
 	#[tokio::test]
+	#[cfg(feature = "trust-dns")]
 	async fn dnssec_disabled() -> Result<()> {
 		let mut builder = Builder::new();
 		builder.set_dnssec(false);
 		let endpoint = builder.build()?;
 
 		// TODO: find a better target without DNSSEC support then Google
-		assert!(endpoint.connect("https://google.com").await.is_ok());
+		let _ = endpoint.connect("https://google.com").await.unwrap();
 
 		Ok(())
 	}
 
 	#[test]
+	#[cfg(feature = "trust-dns")]
 	fn hosts_file() {
 		let mut builder = Builder::new();
 
@@ -1014,8 +1014,9 @@ mod test {
 		// connection, for some reason IPv6 `[::]` doesn't work on GitHub Actions
 		builder.set_address(([0, 0, 0, 0], 0).into());
 		// QUIC is comptaible with HTTP/3 to establish a connection only
-		builder.set_protocols([b"h3-29".to_vec()]);
+		builder.set_protocols([b"h3".to_vec()]);
 		// `cloudflare-quic` doesn't support DNSSEC
+		#[cfg(feature = "trust-dns")]
 		builder.set_dnssec(false);
 
 		// default
@@ -1027,12 +1028,12 @@ mod test {
 		let endpoint = builder.build()?;
 
 		// TODO: find a better target to test our root certificate store against
-		assert!(endpoint
+		let _ = endpoint
 			.connect("https://cloudflare-quic.com:443")
 			.await?
 			.accept::<()>()
 			.await
-			.is_ok());
+			.unwrap();
 
 		Ok(())
 	}
@@ -1044,8 +1045,9 @@ mod test {
 		// connection, for some reason IPv6 `[::]` doesn't work on GitHub Actions
 		builder.set_address(([0, 0, 0, 0], 0).into());
 		// QUIC is comptaible with HTTP/3 to establish a connection only
-		builder.set_protocols([b"h3-29".to_vec()]);
+		builder.set_protocols([b"h3".to_vec()]);
 		// `cloudflare-quic` doesn't support DNSSEC
+		#[cfg(feature = "trust-dns")]
 		builder.set_dnssec(false);
 
 		builder.set_store(Store::Os);
@@ -1054,12 +1056,12 @@ mod test {
 		let endpoint = builder.build()?;
 
 		// TODO: find a better target to test our root certificate store against
-		assert!(endpoint
+		let _ = endpoint
 			.connect("https://cloudflare-quic.com:443")
 			.await?
 			.accept::<()>()
 			.await
-			.is_ok());
+			.unwrap();
 
 		Ok(())
 	}
@@ -1071,8 +1073,9 @@ mod test {
 		// connection, for some reason IPv6 `[::]` doesn't work on GitHub Actions
 		builder.set_address(([0, 0, 0, 0], 0).into());
 		// QUIC is comptaible with HTTP/3 to establish a connection only
-		builder.set_protocols([b"h3-29".to_vec()]);
+		builder.set_protocols([b"h3".to_vec()]);
 		// `cloudflare-quic` doesn't support DNSSEC
+		#[cfg(feature = "trust-dns")]
 		builder.set_dnssec(false);
 
 		builder.set_store(Store::Empty);

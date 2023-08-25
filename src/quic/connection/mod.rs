@@ -16,6 +16,7 @@ mod sender;
 
 use std::{
 	fmt::{self, Debug, Formatter},
+	future::Future,
 	marker::PhantomData,
 	net::SocketAddr,
 	pin::{pin, Pin},
@@ -23,7 +24,6 @@ use std::{
 };
 
 pub use connecting::Connecting;
-use flume::r#async::RecvStream;
 use futures_channel::oneshot;
 use futures_util::{
 	stream::{self, FusedStream},
@@ -31,7 +31,7 @@ use futures_util::{
 };
 pub use incoming::Incoming;
 use pin_project::pin_project;
-use quinn::{crypto::rustls::HandshakeData, AcceptBi, VarInt};
+use quinn::{crypto::rustls::HandshakeData, AcceptBi, RecvStream, SendStream, VarInt};
 pub use receiver::Receiver;
 use receiver_stream::ReceiverStream;
 pub use sender::Sender;
@@ -49,7 +49,7 @@ pub struct Connection<T: DeserializeOwned + Serialize + Send + 'static> {
 	connection: quinn::Connection,
 	/// Receive incoming streams.
 	receiver:
-		RecvStream<'static, Result<(quinn::SendStream, quinn::RecvStream), error::Connection>>,
+		flume::r#async::RecvStream<'static, Result<(SendStream, RecvStream), error::Connection>>,
 	/// [`Task`] handling new incoming streams.
 	task: Task<()>,
 	/// Type for type negotiation for new streams.
@@ -57,8 +57,9 @@ pub struct Connection<T: DeserializeOwned + Serialize + Send + 'static> {
 }
 
 impl<T: DeserializeOwned + Serialize + Send + 'static> Debug for Connection<T> {
-	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-		f.debug_struct("Connection")
+	fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
+		formatter
+			.debug_struct("Connection")
 			.field("connection", &self.connection)
 			.field("receiver", &"RecvStream")
 			.field("task", &self.task)
@@ -69,7 +70,6 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> Debug for Connection<T> {
 
 impl<T: DeserializeOwned + Serialize + Send + 'static> Connection<T> {
 	/// Builds a new [`Connection`] from raw [`quinn`] types.
-	#[allow(clippy::mut_mut)] // futures_util::select_biased internal usage
 	pub(super) fn new(connection: quinn::Connection) -> Self {
 		// channels for passing down new `Incoming` `Connection`s
 		let (sender, receiver) = flume::unbounded();
@@ -193,15 +193,15 @@ impl<T: DeserializeOwned + Serialize + Send + 'static> FusedStream for Connectio
 	}
 }
 
-struct IncomingStreams<'a> {
-	connection: &'a quinn::Connection,
-	accept: Option<Pin<Box<AcceptBi<'a>>>>,
+struct IncomingStreams<'connection> {
+	connection: &'connection quinn::Connection,
+	accept: Option<Pin<Box<AcceptBi<'connection>>>>,
 	shutdown: oneshot::Receiver<()>,
-	sender: flume::Sender<Result<(quinn::SendStream, quinn::RecvStream), error::Connection>>,
+	sender: flume::Sender<Result<(SendStream, RecvStream), error::Connection>>,
 	complete: bool,
 }
 
-impl std::future::Future for IncomingStreams<'_> {
+impl Future for IncomingStreams<'_> {
 	type Output = ();
 
 	fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
