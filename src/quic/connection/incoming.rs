@@ -22,8 +22,9 @@ pub struct Incoming<T: DeserializeOwned> {
 }
 
 impl<T: DeserializeOwned> Debug for Incoming<T> {
-	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-		f.debug_struct("Incoming")
+	fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
+		formatter
+			.debug_struct("Incoming")
 			.field("sender", &self.sender)
 			.field("receiver", &"ReceiverStream")
 			.field("type", &"Option<Result<T>>")
@@ -47,12 +48,11 @@ impl<T: DeserializeOwned> Incoming<T> {
 	/// - [`error::Incoming::Receiver`] if receiving the type information to the
 	///   peer failed, see [`error::Receiver`] for more details
 	/// - [`error::Incoming::Closed`] if the stream was closed
-	// TODO: fix lint
-	#[allow(unused_lifetimes)]
 	// TODO: return different state, because error can't be cloned and state is
 	// unusable anyway
 	#[allow(clippy::missing_panics_doc)]
 	pub async fn r#type(&mut self) -> Result<&T, &error::Incoming> {
+		#[allow(clippy::ref_patterns)]
 		if let Some(ref r#type) = self.r#type {
 			r#type.as_ref()
 		} else {
@@ -63,12 +63,7 @@ impl<T: DeserializeOwned> Incoming<T> {
 				.map_or(Err(error::Incoming::Closed), |result| {
 					result.map_err(error::Incoming::Receiver)
 				});
-			// TODO: replace with `Option::insert`
-			self.r#type = Some(r#type);
-			self.r#type
-				.as_ref()
-				.expect("`type` just inserted missing")
-				.as_ref()
+			self.r#type.insert(r#type).as_ref()
 		}
 	}
 

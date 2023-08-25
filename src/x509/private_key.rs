@@ -20,8 +20,11 @@ use crate::error;
 pub struct PrivateKey(Option<Vec<u8>>);
 
 impl Debug for PrivateKey {
-	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-		f.debug_tuple("PrivateKey").field(&"[[redacted]]").finish()
+	fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
+		formatter
+			.debug_tuple("PrivateKey")
+			.field(&"[[redacted]]")
+			.finish()
 	}
 }
 

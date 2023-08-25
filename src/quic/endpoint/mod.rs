@@ -9,7 +9,7 @@ use std::{
 	pin::Pin,
 	slice,
 	sync::Arc,
-	task::{Context, Poll},
+	task::{Context, Poll}, future::Future,
 };
 
 use async_trait::async_trait;
@@ -50,8 +50,9 @@ pub struct Endpoint {
 }
 
 impl Debug for Endpoint {
-	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-		f.debug_struct("Server")
+	fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
+		formatter
+			.debug_struct("Server")
 			.field("endpoint", &self.endpoint)
 			.field("receiver", &"RecvStream")
 			.field("task", &self.task)
@@ -321,7 +322,6 @@ impl Endpoint {
 	/// 	.await?;
 	/// # Ok(()) }
 	/// ```
-	#[allow(clippy::unwrap_in_result)]
 	pub async fn connect_pinned<U: AsRef<str>>(
 		&self,
 		url: U,
@@ -530,15 +530,15 @@ impl Endpoint {
 	}
 }
 
-struct IncomingConnections<'a> {
-	endpoint: &'a quinn::Endpoint,
-	accept: Option<Pin<Box<Accept<'a>>>>,
+struct IncomingConnections<'connection> {
+	endpoint: &'connection quinn::Endpoint,
+	accept: Option<Pin<Box<Accept<'connection>>>>,
 	shutdown: Receiver<()>,
 	sender: Sender<Connecting>,
 	complete: bool,
 }
 
-impl std::future::Future for IncomingConnections<'_> {
+impl Future for IncomingConnections<'_> {
 	type Output = ();
 
 	fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
@@ -700,7 +700,7 @@ mod test {
 
 	#[test]
 	fn builder() {
-		let _builder: Builder = Endpoint::builder();
+		let _builder = Endpoint::builder();
 	}
 
 	#[tokio::test]

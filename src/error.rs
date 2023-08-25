@@ -1,8 +1,4 @@
-#![allow(
-	box_pointers,
-	clippy::module_name_repetitions,
-	clippy::exhaustive_structs
-)]
+#![allow(clippy::module_name_repetitions)]
 
 //! [`Error`](std::error::Error) for this [`crate`].
 // TODO: error type is becoming too big, split it up
@@ -17,7 +13,6 @@ use quinn::ConnectionClose;
 pub use quinn::{ConnectError, ConnectionError, ReadError, WriteError};
 use thiserror::Error;
 #[cfg(feature = "trust-dns")]
-#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 pub use trust_dns_resolver::error::ResolveError;
 pub use url::ParseError;
 pub use webpki::Error;
@@ -38,7 +33,6 @@ pub struct Certificate {
 
 /// Error constructing [`Certificate`](crate::Certificate) with
 /// [`Certificate::from_der`](crate::Certificate::from_der).
-#[allow(clippy::module_name_repetitions)]
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum CertificateError {
 	/// [`Error`](std::error::Error) returned by [`webpki`].
@@ -66,8 +60,11 @@ pub enum CertificateError {
 pub struct PrivateKey(pub Vec<u8>);
 
 impl Debug for PrivateKey {
-	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-		f.debug_tuple("PrivateKey").field(&"[[redacted]]").finish()
+	fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
+		formatter
+			.debug_tuple("PrivateKey")
+			.field(&"[[redacted]]")
+			.finish()
 	}
 }
 
@@ -125,7 +122,6 @@ pub enum Config {
 
 /// Error aquiring or parsing root certs from OS.
 #[derive(Debug, Error)]
-#[allow(variant_size_differences)]
 pub enum OsStore {
 	/// Failed to aquire root certs from OS.
 	#[error("Error aquiring root certificates from the OS: {0}")]
@@ -161,7 +157,6 @@ pub enum Connect {
 	ParseDomain(ParseError),
 	/// Failed to resolve domain with [`trust-dns`](trust_dns_resolver).
 	#[cfg(feature = "trust-dns")]
-	#[cfg_attr(doc, doc(cfg(feature = "trust-dns")))]
 	#[error("Error resolving domain with trust-dns: {0}")]
 	TrustDns(#[from] Box<ResolveError>),
 	/// Failed to resolve domain with

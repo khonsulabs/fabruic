@@ -1,10 +1,14 @@
+//! TODO
+
 use anyhow::{Error, Result};
 use fabruic::{Endpoint, KeyPair};
 use futures_util::{future, StreamExt, TryFutureExt};
 
+/// Used in the certificate.
 const SERVER_NAME: &str = "test";
 /// Some random port.
 const SERVER_PORT: u16 = 34857;
+/// Number of clients to simulate.
 const CLIENTS: usize = 100;
 
 #[tokio::main]
@@ -55,7 +59,7 @@ async fn main() -> Result<()> {
 				);
 
 				// send message
-				sender.send(&format!("hello from client {}", index))?;
+				sender.send(&format!("hello from client {index}"))?;
 
 				// start listening to new incoming messages
 				// in this example we know there is only 1 incoming message, so we will

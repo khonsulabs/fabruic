@@ -92,7 +92,6 @@ impl<T: Serialize> Sender<T> {
 	/// - [`error::Sender::Write`] if the [`Sender`] failed to to write to the
 	///   stream
 	/// - [`error::Sender::Closed`] if the [`Sender`] is closed
-	#[allow(clippy::panic_in_result_fn, clippy::unwrap_in_result)]
 	pub(super) fn send_any<A: Serialize>(&self, data: &A) -> Result<(), error::Sender> {
 		let mut bytes = BytesMut::new();
 
