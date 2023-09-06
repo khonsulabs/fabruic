@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - receiver.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-08-25 14:34:34</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-09-06 12:16:40</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -74,11 +74,11 @@
 <div class="line"><span id="53" class="lineNum"><a href="#53">53</a></span><span class="counterUnCov"></span><span class="lineUnCov">				Close,</span></div>
 <div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterUnCov"></span><span class="lineUnCov">			}</span></div>
 <div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="56" class="lineNum"><a href="#56">56</a></span><span class="counterCov">49736</span><span class="lineCov">			while let Some(message) = futures_util::select_biased! {</span></div>
-<div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterCov">31664</span><span class="lineCov">				message = stream.next() =&gt; message.map(Message::Data),</span></div>
-<div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterCov">31664</span><span class="lineCov">				shutdown = shutdown =&gt; shutdown.ok().map(|_| Message::Close),</span></div>
-<div class="line"><span id="59" class="lineNum"><a href="#59">59</a></span><span class="counterCov">31664</span><span class="lineCov">				complete =&gt; None,</span></div>
-<div class="line"><span id="60" class="lineNum"><a href="#60">60</a></span><span class="counterCov">31664</span><span class="lineCov">			} {</span></div>
+<div class="line"><span id="56" class="lineNum"><a href="#56">56</a></span><span class="counterCov">49637</span><span class="lineCov">			while let Some(message) = futures_util::select_biased! {</span></div>
+<div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterCov">31466</span><span class="lineCov">				message = stream.next() =&gt; message.map(Message::Data),</span></div>
+<div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterCov">31466</span><span class="lineCov">				shutdown = shutdown =&gt; shutdown.ok().map(|_| Message::Close),</span></div>
+<div class="line"><span id="59" class="lineNum"><a href="#59">59</a></span><span class="counterCov">31466</span><span class="lineCov">				complete =&gt; None,</span></div>
+<div class="line"><span id="60" class="lineNum"><a href="#60">60</a></span><span class="counterCov">31466</span><span class="lineCov">			} {</span></div>
 <div class="line"><span id="61" class="lineNum"><a href="#61">61</a></span><span class="counterCov">20401</span><span class="lineCov">				match message {</span></div>
 <div class="line"><span id="62" class="lineNum"><a href="#62">62</a></span><span class="counterCov">20401</span><span class="lineCov">					Message::Data(message) =&gt; {</span></div>
 <div class="line"><span id="63" class="lineNum"><a href="#63">63</a></span><span class="counterCov">20401</span><span class="lineCov">						let failed = message.is_err();</span></div>
@@ -129,9 +129,9 @@
 <div class="line"><span id="108" class="lineNum"><a href="#108">108</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;T&gt; Stream for Receiver&lt;T&gt; {</span></div>
 <div class="line"><span id="109" class="lineNum"><a href="#109">109</a></span><span class="counterUnCov"></span><span class="lineUnCov">	type Item = Result&lt;T, error::Receiver&gt;;</span></div>
 <div class="line"><span id="110" class="lineNum"><a href="#110">110</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterCov">38870</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
-<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterCov">38870</span><span class="lineCov">		self.receiver.poll_next_unpin(cx)</span></div>
-<div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterCov">38870</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="111" class="lineNum"><a href="#111">111</a></span><span class="counterCov">34352</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
+<div class="line"><span id="112" class="lineNum"><a href="#112">112</a></span><span class="counterCov">34352</span><span class="lineCov">		self.receiver.poll_next_unpin(cx)</span></div>
+<div class="line"><span id="113" class="lineNum"><a href="#113">113</a></span><span class="counterCov">34352</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="114" class="lineNum"><a href="#114">114</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 </div>
 </body>

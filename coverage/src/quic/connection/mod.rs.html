@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../index.html">top level</a> - <a href="index.html">src/quic/connection</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-08-25 14:34:34</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-09-06 12:16:40</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -107,7 +107,7 @@
 <div class="line"><span id="86" class="lineNum"><a href="#86">86</a></span><span class="counterCov">217</span><span class="lineCov">					sender,</span></div>
 <div class="line"><span id="87" class="lineNum"><a href="#87">87</a></span><span class="counterCov">217</span><span class="lineCov">					complete: false,</span></div>
 <div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterCov">217</span><span class="lineCov">				}</span></div>
-<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterCov">299</span><span class="lineCov">				.await;</span></div>
+<div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterCov">294</span><span class="lineCov">				.await;</span></div>
 <div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterCov">212</span><span class="lineCov">			}</span></div>
 <div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterCov">225</span><span class="lineCov">		});</span></div>
 <div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterCov">225</span><span class="lineCov"></span></div>
@@ -136,7 +136,7 @@
 <div class="line"><span id="115" class="lineNum"><a href="#115">115</a></span><span class="counterCov">1102</span><span class="lineCov">		&amp;self,</span></div>
 <div class="line"><span id="116" class="lineNum"><a href="#116">116</a></span><span class="counterCov">1102</span><span class="lineCov">		r#type: &amp;T,</span></div>
 <div class="line"><span id="117" class="lineNum"><a href="#117">117</a></span><span class="counterCov">1102</span><span class="lineCov">	) -&gt; Result&lt;(Sender&lt;S&gt;, Receiver&lt;R&gt;), error::Stream&gt; {</span></div>
-<div class="line"><span id="118" class="lineNum"><a href="#118">118</a></span><span class="counterCov">4950</span><span class="lineCov">		let (sender, receiver) = self.connection.open_bi().await?;</span></div>
+<div class="line"><span id="118" class="lineNum"><a href="#118">118</a></span><span class="counterCov">6502</span><span class="lineCov">		let (sender, receiver) = self.connection.open_bi().await?;</span></div>
 <div class="line"><span id="119" class="lineNum"><a href="#119">119</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="120" class="lineNum"><a href="#120">120</a></span><span class="counterCov">1102</span><span class="lineCov">		let sender = Sender::new(sender);</span></div>
 <div class="line"><span id="121" class="lineNum"><a href="#121">121</a></span><span class="counterCov">1102</span><span class="lineCov">		let receiver = Receiver::new(ReceiverStream::new(receiver));</span></div>
@@ -197,15 +197,15 @@
 <div class="line"><span id="176" class="lineNum"><a href="#176">176</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;T: DeserializeOwned + Serialize + Send + &#39;static&gt; Stream for Connection&lt;T&gt; {</span></div>
 <div class="line"><span id="177" class="lineNum"><a href="#177">177</a></span><span class="counterUnCov"></span><span class="lineUnCov">	type Item = Result&lt;Incoming&lt;T&gt;, error::Connection&gt;;</span></div>
 <div class="line"><span id="178" class="lineNum"><a href="#178">178</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="179" class="lineNum"><a href="#179">179</a></span><span class="counterCov">1303</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
-<div class="line"><span id="180" class="lineNum"><a href="#180">180</a></span><span class="counterCov">1303</span><span class="lineCov">		if self.receiver.is_terminated() {</span></div>
+<div class="line"><span id="179" class="lineNum"><a href="#179">179</a></span><span class="counterCov">1298</span><span class="lineCov">	fn poll_next(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Option&lt;Self::Item&gt;&gt; {</span></div>
+<div class="line"><span id="180" class="lineNum"><a href="#180">180</a></span><span class="counterCov">1298</span><span class="lineCov">		if self.receiver.is_terminated() {</span></div>
 <div class="line"><span id="181" class="lineNum"><a href="#181">181</a></span><span class="counterCov">1</span><span class="lineCov">			Poll::Ready(None)</span></div>
 <div class="line"><span id="182" class="lineNum"><a href="#182">182</a></span><span class="counterUnCov"></span><span class="lineUnCov">		} else {</span></div>
-<div class="line"><span id="183" class="lineNum"><a href="#183">183</a></span><span class="counterCov">1302</span><span class="lineCov">			self.receiver</span></div>
-<div class="line"><span id="184" class="lineNum"><a href="#184">184</a></span><span class="counterCov">1302</span><span class="lineCov">				.poll_next_unpin(cx)</span></div>
-<div class="line"><span id="185" class="lineNum"><a href="#185">185</a></span><span class="counterCov">1302</span><span class="lineCov">				.map_ok(|(sender, receiver)| Incoming::new(sender, receiver))</span></div>
+<div class="line"><span id="183" class="lineNum"><a href="#183">183</a></span><span class="counterCov">1297</span><span class="lineCov">			self.receiver</span></div>
+<div class="line"><span id="184" class="lineNum"><a href="#184">184</a></span><span class="counterCov">1297</span><span class="lineCov">				.poll_next_unpin(cx)</span></div>
+<div class="line"><span id="185" class="lineNum"><a href="#185">185</a></span><span class="counterCov">1297</span><span class="lineCov">				.map_ok(|(sender, receiver)| Incoming::new(sender, receiver))</span></div>
 <div class="line"><span id="186" class="lineNum"><a href="#186">186</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="187" class="lineNum"><a href="#187">187</a></span><span class="counterCov">1303</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="187" class="lineNum"><a href="#187">187</a></span><span class="counterCov">1298</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="188" class="lineNum"><a href="#188">188</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 <div class="line"><span id="189" class="lineNum"><a href="#189">189</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="190" class="lineNum"><a href="#190">190</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl&lt;T: DeserializeOwned + Serialize + Send + &#39;static&gt; FusedStream for Connection&lt;T&gt; {</span></div>
@@ -225,24 +225,24 @@
 <div class="line"><span id="204" class="lineNum"><a href="#204">204</a></span><span class="counterUnCov"></span><span class="lineUnCov">impl Future for IncomingStreams&lt;&#39;_&gt; {</span></div>
 <div class="line"><span id="205" class="lineNum"><a href="#205">205</a></span><span class="counterUnCov"></span><span class="lineUnCov">	type Output = ();</span></div>
 <div class="line"><span id="206" class="lineNum"><a href="#206">206</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
-<div class="line"><span id="207" class="lineNum"><a href="#207">207</a></span><span class="counterCov">1506</span><span class="lineCov">	fn poll(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Self::Output&gt; {</span></div>
-<div class="line"><span id="208" class="lineNum"><a href="#208">208</a></span><span class="counterCov">1506</span><span class="lineCov">		if self.complete || self.connection.close_reason().is_some() {</span></div>
+<div class="line"><span id="207" class="lineNum"><a href="#207">207</a></span><span class="counterCov">1491</span><span class="lineCov">	fn poll(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;&#39;_&gt;) -&gt; Poll&lt;Self::Output&gt; {</span></div>
+<div class="line"><span id="208" class="lineNum"><a href="#208">208</a></span><span class="counterCov">1491</span><span class="lineCov">		if self.complete || self.connection.close_reason().is_some() {</span></div>
 <div class="line"><span id="209" class="lineNum"><a href="#209">209</a></span><span class="counterCov">7</span><span class="lineCov">			return Poll::Ready(());</span></div>
-<div class="line"><span id="210" class="lineNum"><a href="#210">210</a></span><span class="counterCov">1499</span><span class="lineCov">		}</span></div>
-<div class="line"><span id="211" class="lineNum"><a href="#211">211</a></span><span class="counterCov">1499</span><span class="lineCov"></span></div>
-<div class="line"><span id="212" class="lineNum"><a href="#212">212</a></span><span class="counterCov">1499</span><span class="lineCov">		match self.shutdown.poll_unpin(cx) {</span></div>
+<div class="line"><span id="210" class="lineNum"><a href="#210">210</a></span><span class="counterCov">1484</span><span class="lineCov">		}</span></div>
+<div class="line"><span id="211" class="lineNum"><a href="#211">211</a></span><span class="counterCov">1484</span><span class="lineCov"></span></div>
+<div class="line"><span id="212" class="lineNum"><a href="#212">212</a></span><span class="counterCov">1484</span><span class="lineCov">		match self.shutdown.poll_unpin(cx) {</span></div>
 <div class="line"><span id="213" class="lineNum"><a href="#213">213</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Poll::Ready(_) =&gt; {</span></div>
 <div class="line"><span id="214" class="lineNum"><a href="#214">214</a></span><span class="counterCov">613</span><span class="lineCov">				self.complete = true;</span></div>
 <div class="line"><span id="215" class="lineNum"><a href="#215">215</a></span><span class="counterCov">613</span><span class="lineCov">				self.accept = None;</span></div>
 <div class="line"><span id="216" class="lineNum"><a href="#216">216</a></span><span class="counterCov">613</span><span class="lineCov">				Poll::Ready(())</span></div>
 <div class="line"><span id="217" class="lineNum"><a href="#217">217</a></span><span class="counterUnCov"></span><span class="lineUnCov">			}</span></div>
 <div class="line"><span id="218" class="lineNum"><a href="#218">218</a></span><span class="counterUnCov"></span><span class="lineUnCov">			Poll::Pending =&gt; {</span></div>
-<div class="line"><span id="219" class="lineNum"><a href="#219">219</a></span><span class="counterCov">4190</span><span class="lineCov">				loop {</span></div>
-<div class="line"><span id="220" class="lineNum"><a href="#220">220</a></span><span class="counterCov">4190</span><span class="lineCov">					let mut accept = self</span></div>
-<div class="line"><span id="221" class="lineNum"><a href="#221">221</a></span><span class="counterCov">4190</span><span class="lineCov">						.accept</span></div>
-<div class="line"><span id="222" class="lineNum"><a href="#222">222</a></span><span class="counterCov">4190</span><span class="lineCov">						.take()</span></div>
-<div class="line"><span id="223" class="lineNum"><a href="#223">223</a></span><span class="counterCov">4190</span><span class="lineCov">						.unwrap_or_else(|| Box::pin(self.connection.accept_bi()));</span></div>
-<div class="line"><span id="224" class="lineNum"><a href="#224">224</a></span><span class="counterCov">4190</span><span class="lineCov">					match accept.poll_unpin(cx) {</span></div>
+<div class="line"><span id="219" class="lineNum"><a href="#219">219</a></span><span class="counterCov">4175</span><span class="lineCov">				loop {</span></div>
+<div class="line"><span id="220" class="lineNum"><a href="#220">220</a></span><span class="counterCov">4175</span><span class="lineCov">					let mut accept = self</span></div>
+<div class="line"><span id="221" class="lineNum"><a href="#221">221</a></span><span class="counterCov">4175</span><span class="lineCov">						.accept</span></div>
+<div class="line"><span id="222" class="lineNum"><a href="#222">222</a></span><span class="counterCov">4175</span><span class="lineCov">						.take()</span></div>
+<div class="line"><span id="223" class="lineNum"><a href="#223">223</a></span><span class="counterCov">4175</span><span class="lineCov">						.unwrap_or_else(|| Box::pin(self.connection.accept_bi()));</span></div>
+<div class="line"><span id="224" class="lineNum"><a href="#224">224</a></span><span class="counterCov">4175</span><span class="lineCov">					match accept.poll_unpin(cx) {</span></div>
 <div class="line"><span id="225" class="lineNum"><a href="#225">225</a></span><span class="counterCov">3304</span><span class="lineCov">						Poll::Ready(incoming) =&gt; {</span></div>
 <div class="line"><span id="226" class="lineNum"><a href="#226">226</a></span><span class="counterCov">3304</span><span class="lineCov">							// if there is no receiver, it means that we dropped the last</span></div>
 <div class="line"><span id="227" class="lineNum"><a href="#227">227</a></span><span class="counterCov">3304</span><span class="lineCov">							// `Endpoint`</span></div>
@@ -257,14 +257,14 @@
 <div class="line"><span id="236" class="lineNum"><a href="#236">236</a></span><span class="counterUnCov"></span><span class="lineUnCov">						}</span></div>
 <div class="line"><span id="237" class="lineNum"><a href="#237">237</a></span><span class="counterUnCov"></span><span class="lineUnCov">						Poll::Pending =&gt; {</span></div>
 <div class="line"><span id="238" class="lineNum"><a href="#238">238</a></span><span class="counterUnCov"></span><span class="lineUnCov">							// Restore the same accept future to our state.</span></div>
-<div class="line"><span id="239" class="lineNum"><a href="#239">239</a></span><span class="counterCov">886</span><span class="lineCov">							self.accept = Some(accept);</span></div>
-<div class="line"><span id="240" class="lineNum"><a href="#240">240</a></span><span class="counterCov">886</span><span class="lineCov">							return Poll::Pending;</span></div>
+<div class="line"><span id="239" class="lineNum"><a href="#239">239</a></span><span class="counterCov">871</span><span class="lineCov">							self.accept = Some(accept);</span></div>
+<div class="line"><span id="240" class="lineNum"><a href="#240">240</a></span><span class="counterCov">871</span><span class="lineCov">							return Poll::Pending;</span></div>
 <div class="line"><span id="241" class="lineNum"><a href="#241">241</a></span><span class="counterUnCov"></span><span class="lineUnCov">						}</span></div>
 <div class="line"><span id="242" class="lineNum"><a href="#242">242</a></span><span class="counterUnCov"></span><span class="lineUnCov">					}</span></div>
 <div class="line"><span id="243" class="lineNum"><a href="#243">243</a></span><span class="counterUnCov"></span><span class="lineUnCov">				}</span></div>
 <div class="line"><span id="244" class="lineNum"><a href="#244">244</a></span><span class="counterUnCov"></span><span class="lineUnCov">			}</span></div>
 <div class="line"><span id="245" class="lineNum"><a href="#245">245</a></span><span class="counterUnCov"></span><span class="lineUnCov">		}</span></div>
-<div class="line"><span id="246" class="lineNum"><a href="#246">246</a></span><span class="counterCov">1506</span><span class="lineCov">	}</span></div>
+<div class="line"><span id="246" class="lineNum"><a href="#246">246</a></span><span class="counterCov">1491</span><span class="lineCov">	}</span></div>
 <div class="line"><span id="247" class="lineNum"><a href="#247">247</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
 </div>
 </body>

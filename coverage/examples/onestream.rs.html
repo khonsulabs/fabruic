@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../index.html">top level</a> - <a href="index.html">examples</a> - onestream.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-08-25 14:34:34</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-09-06 12:16:40</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -62,7 +62,7 @@
 <div class="line"><span id="41" class="lineNum"><a href="#41">41</a></span><span class="counterCov">100</span><span class="lineCov">			let mut receiver = receiver.clone();</span></div>
 <div class="line"><span id="42" class="lineNum"><a href="#42">42</a></span><span class="counterUnCov"></span><span class="lineUnCov">			async move {</span></div>
 <div class="line"><span id="43" class="lineNum"><a href="#43">43</a></span><span class="counterCov">100</span><span class="lineCov">				sender.send(&amp;String::from(&quot;test&quot;))?;</span></div>
-<div class="line"><span id="44" class="lineNum"><a href="#44">44</a></span><span class="counterCov">4194</span><span class="lineCov">				let value = receiver.next().await.expect(&quot;didn&#39;t get a response&quot;)?;</span></div>
+<div class="line"><span id="44" class="lineNum"><a href="#44">44</a></span><span class="counterCov">117</span><span class="lineCov">				let value = receiver.next().await.expect(&quot;didn&#39;t get a response&quot;)?;</span></div>
 <div class="line"><span id="45" class="lineNum"><a href="#45">45</a></span><span class="counterCov">100</span><span class="lineCov">				assert_eq!(value, &quot;test&quot;);</span></div>
 <div class="line"><span id="46" class="lineNum"><a href="#46">46</a></span><span class="counterCov">100</span><span class="lineCov">				Ok(())</span></div>
 <div class="line"><span id="47" class="lineNum"><a href="#47">47</a></span><span class="counterCov">100</span><span class="lineCov">			}</span></div>
@@ -70,7 +70,7 @@
 <div class="line"><span id="49" class="lineNum"><a href="#49">49</a></span><span class="counterCov">1</span><span class="lineCov">		.collect::&lt;Vec&lt;_&gt;&gt;();</span></div>
 <div class="line"><span id="50" class="lineNum"><a href="#50">50</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
 <div class="line"><span id="51" class="lineNum"><a href="#51">51</a></span><span class="counterCov">1</span><span class="lineCov">	futures_util::future::join_all(tasks)</span></div>
-<div class="line"><span id="52" class="lineNum"><a href="#52">52</a></span><span class="counterCov">118</span><span class="lineCov">		.await</span></div>
+<div class="line"><span id="52" class="lineNum"><a href="#52">52</a></span><span class="counterCov">2</span><span class="lineCov">		.await</span></div>
 <div class="line"><span id="53" class="lineNum"><a href="#53">53</a></span><span class="counterCov">1</span><span class="lineCov">		.into_iter()</span></div>
 <div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterCov">1</span><span class="lineCov">		.collect::&lt;Result&lt;Vec&lt;()&gt;, Error&gt;&gt;()?;</span></div>
 <div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
