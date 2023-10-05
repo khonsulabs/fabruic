@@ -1,6 +1,6 @@
 [package]
 name = "fabruic"
-version = "0.0.1-dev.6"
+version = "0.1.0"
 description = "A simple QUIC-based protocol using quinn. Written for BonsaiDb."
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/khonsulabs/fabruic"
