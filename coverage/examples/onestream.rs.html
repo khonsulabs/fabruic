@@ -9,11 +9,11 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../index.html">top level</a> - <a href="index.html">examples</a> - onestream.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-09-06 12:16:40</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-10-05 14:45:07</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
-<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">51</span><span class="linesTotal">56</span><span class="linesPercentage lineHi">91.1 %</span></div>
+<div class="statsRow"><span class="statsLine">Lines</span><span class="linesHit">52</span><span class="linesTotal">56</span><span class="linesPercentage lineHi">92.9 %</span></div>
 <div class="statsRow"><span class="statsFun">Functions</span><span class="funsHit">7</span><span class="funsTotal">7</span><span class="funsPercentage funHi">100.0 %</span></div>
 <div class="statsRow"><span class="statsBranches">Branches</span><span class="branchesHit">0</span><span class="branchesTotal">0</span><span class="branchesPercentage branchLow">0.0 %</span></div>
 </div>
@@ -62,7 +62,7 @@
 <div class="line"><span id="41" class="lineNum"><a href="#41">41</a></span><span class="counterCov">100</span><span class="lineCov">			let mut receiver = receiver.clone();</span></div>
 <div class="line"><span id="42" class="lineNum"><a href="#42">42</a></span><span class="counterUnCov"></span><span class="lineUnCov">			async move {</span></div>
 <div class="line"><span id="43" class="lineNum"><a href="#43">43</a></span><span class="counterCov">100</span><span class="lineCov">				sender.send(&amp;String::from(&quot;test&quot;))?;</span></div>
-<div class="line"><span id="44" class="lineNum"><a href="#44">44</a></span><span class="counterCov">117</span><span class="lineCov">				let value = receiver.next().await.expect(&quot;didn&#39;t get a response&quot;)?;</span></div>
+<div class="line"><span id="44" class="lineNum"><a href="#44">44</a></span><span class="counterCov">100</span><span class="lineCov">				let value = receiver.next().await.expect(&quot;didn&#39;t get a response&quot;)?;</span></div>
 <div class="line"><span id="45" class="lineNum"><a href="#45">45</a></span><span class="counterCov">100</span><span class="lineCov">				assert_eq!(value, &quot;test&quot;);</span></div>
 <div class="line"><span id="46" class="lineNum"><a href="#46">46</a></span><span class="counterCov">100</span><span class="lineCov">				Ok(())</span></div>
 <div class="line"><span id="47" class="lineNum"><a href="#47">47</a></span><span class="counterCov">100</span><span class="lineCov">			}</span></div>
@@ -75,7 +75,7 @@
 <div class="line"><span id="54" class="lineNum"><a href="#54">54</a></span><span class="counterCov">1</span><span class="lineCov">		.collect::&lt;Result&lt;Vec&lt;()&gt;, Error&gt;&gt;()?;</span></div>
 <div class="line"><span id="55" class="lineNum"><a href="#55">55</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="56" class="lineNum"><a href="#56">56</a></span><span class="counterUnCov"></span><span class="lineUnCov">	// wait for client to finish cleanly</span></div>
-<div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterCov">2</span><span class="lineCov">	client.wait_idle().await;</span></div>
+<div class="line"><span id="57" class="lineNum"><a href="#57">57</a></span><span class="counterCov">1</span><span class="lineCov">	client.wait_idle().await;</span></div>
 <div class="line"><span id="58" class="lineNum"><a href="#58">58</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="59" class="lineNum"><a href="#59">59</a></span><span class="counterCov">1</span><span class="lineCov">	Ok(())</span></div>
 <div class="line"><span id="60" class="lineNum"><a href="#60">60</a></span><span class="counterUnCov"></span><span class="lineUnCov">}</span></div>
@@ -109,7 +109,7 @@
 <div class="line"><span id="88" class="lineNum"><a href="#88">88</a></span><span class="counterUnCov"></span><span class="lineUnCov">	// in this example we know there is only 1 incoming message, so we will not wait</span></div>
 <div class="line"><span id="89" class="lineNum"><a href="#89">89</a></span><span class="counterUnCov"></span><span class="lineUnCov">	// for more</span></div>
 <div class="line"><span id="90" class="lineNum"><a href="#90">90</a></span><span class="counterCov">101</span><span class="lineCov">	while let Some(message) = receiver.next().await {</span></div>
-<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterCov">100</span><span class="lineCov">		let message = message?;</span></div>
+<div class="line"><span id="91" class="lineNum"><a href="#91">91</a></span><span class="counterCov">101</span><span class="lineCov">		let message = message?;</span></div>
 <div class="line"><span id="92" class="lineNum"><a href="#92">92</a></span><span class="counterCov">100</span><span class="lineCov">		sender.send(&amp;message)?;</span></div>
 <div class="line"><span id="93" class="lineNum"><a href="#93">93</a></span><span class="counterUnCov"></span><span class="lineUnCov">	}</span></div>
 <div class="line"><span id="94" class="lineNum"><a href="#94">94</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
@@ -118,7 +118,7 @@
 <div class="line"><span id="97" class="lineNum"><a href="#97">97</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	receiver.finish().await?;</span></div>
 <div class="line"><span id="98" class="lineNum"><a href="#98">98</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="99" class="lineNum"><a href="#99">99</a></span><span class="counterNoCov">0</span><span class="lineNoCov">	Ok(())</span></div>
-<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterNoCov">0</span><span class="lineNoCov">}</span></div>
+<div class="line"><span id="100" class="lineNum"><a href="#100">100</a></span><span class="counterCov">1</span><span class="lineCov">}</span></div>
 </div>
 </body>
 </html>
