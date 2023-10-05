@@ -9,7 +9,7 @@
 <div class="header">
 <div class="view">
 <div class="viewRow"><span class="viewItem">Current view:</span><span class="viewValue"><a href="../../../../index.html">top level</a> - <a href="index.html">src/quic/endpoint/builder</a> - mod.rs</span></div>
-<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-10-05 14:45:07</span></div>
+<div class="viewRow"><span class="viewItem">Date:</span><span class="viewValue">2023-10-05 14:50:26</span></div>
 </div>
 <div class="stats">
 <div class="statsRow"><span></span><span class="statsHit">Hit</span><span class="statsTotal">Total</span><span class="statsCoverage">Coverage</span></div>
@@ -1008,7 +1008,7 @@
 <div class="line"><span id="987" class="lineNum"><a href="#987">987</a></span><span class="counterCov">1</span><span class="lineCov">		let endpoint = builder.build()?;</span></div>
 <div class="line"><span id="988" class="lineNum"><a href="#988">988</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
 <div class="line"><span id="989" class="lineNum"><a href="#989">989</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// TODO: find a better target without DNSSEC support then Google</span></div>
-<div class="line"><span id="990" class="lineNum"><a href="#990">990</a></span><span class="counterCov">7</span><span class="lineCov">		let _ = endpoint.connect(&quot;https://google.com&quot;).await.unwrap();</span></div>
+<div class="line"><span id="990" class="lineNum"><a href="#990">990</a></span><span class="counterCov">8</span><span class="lineCov">		let _ = endpoint.connect(&quot;https://google.com&quot;).await.unwrap();</span></div>
 <div class="line"><span id="991" class="lineNum"><a href="#991">991</a></span><span class="counterCov">1</span><span class="lineCov"></span></div>
 <div class="line"><span id="992" class="lineNum"><a href="#992">992</a></span><span class="counterCov">1</span><span class="lineCov">		Ok(())</span></div>
 <div class="line"><span id="993" class="lineNum"><a href="#993">993</a></span><span class="counterUnCov"></span><span class="lineUnCov">	}</span></div>
@@ -1051,7 +1051,7 @@
 <div class="line"><span id="1030" class="lineNum"><a href="#1030">1030</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// TODO: find a better target to test our root certificate store against</span></div>
 <div class="line"><span id="1031" class="lineNum"><a href="#1031">1031</a></span><span class="counterCov">1</span><span class="lineCov">		let _ = endpoint</span></div>
 <div class="line"><span id="1032" class="lineNum"><a href="#1032">1032</a></span><span class="counterCov">1</span><span class="lineCov">			.connect(&quot;https://cloudflare-quic.com:443&quot;)</span></div>
-<div class="line"><span id="1033" class="lineNum"><a href="#1033">1033</a></span><span class="counterCov">7</span><span class="lineCov">			.await?</span></div>
+<div class="line"><span id="1033" class="lineNum"><a href="#1033">1033</a></span><span class="counterCov">6</span><span class="lineCov">			.await?</span></div>
 <div class="line"><span id="1034" class="lineNum"><a href="#1034">1034</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
 <div class="line"><span id="1035" class="lineNum"><a href="#1035">1035</a></span><span class="counterCov">1</span><span class="lineCov">			.await</span></div>
 <div class="line"><span id="1036" class="lineNum"><a href="#1036">1036</a></span><span class="counterCov">1</span><span class="lineCov">			.unwrap();</span></div>
@@ -1079,7 +1079,7 @@
 <div class="line"><span id="1058" class="lineNum"><a href="#1058">1058</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// TODO: find a better target to test our root certificate store against</span></div>
 <div class="line"><span id="1059" class="lineNum"><a href="#1059">1059</a></span><span class="counterCov">1</span><span class="lineCov">		let _ = endpoint</span></div>
 <div class="line"><span id="1060" class="lineNum"><a href="#1060">1060</a></span><span class="counterCov">1</span><span class="lineCov">			.connect(&quot;https://cloudflare-quic.com:443&quot;)</span></div>
-<div class="line"><span id="1061" class="lineNum"><a href="#1061">1061</a></span><span class="counterCov">7</span><span class="lineCov">			.await?</span></div>
+<div class="line"><span id="1061" class="lineNum"><a href="#1061">1061</a></span><span class="counterCov">8</span><span class="lineCov">			.await?</span></div>
 <div class="line"><span id="1062" class="lineNum"><a href="#1062">1062</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
 <div class="line"><span id="1063" class="lineNum"><a href="#1063">1063</a></span><span class="counterCov">1</span><span class="lineCov">			.await</span></div>
 <div class="line"><span id="1064" class="lineNum"><a href="#1064">1064</a></span><span class="counterCov">1</span><span class="lineCov">			.unwrap();</span></div>
@@ -1107,7 +1107,7 @@
 <div class="line"><span id="1086" class="lineNum"><a href="#1086">1086</a></span><span class="counterUnCov"></span><span class="lineUnCov">		// TODO: find a better target to test our root certificate store against</span></div>
 <div class="line"><span id="1087" class="lineNum"><a href="#1087">1087</a></span><span class="counterCov">1</span><span class="lineCov">		let result = endpoint</span></div>
 <div class="line"><span id="1088" class="lineNum"><a href="#1088">1088</a></span><span class="counterCov">1</span><span class="lineCov">			.connect(&quot;https://cloudflare-quic.com:443&quot;)</span></div>
-<div class="line"><span id="1089" class="lineNum"><a href="#1089">1089</a></span><span class="counterCov">7</span><span class="lineCov">			.await?</span></div>
+<div class="line"><span id="1089" class="lineNum"><a href="#1089">1089</a></span><span class="counterCov">6</span><span class="lineCov">			.await?</span></div>
 <div class="line"><span id="1090" class="lineNum"><a href="#1090">1090</a></span><span class="counterCov">1</span><span class="lineCov">			.accept::&lt;()&gt;()</span></div>
 <div class="line"><span id="1091" class="lineNum"><a href="#1091">1091</a></span><span class="counterCov">1</span><span class="lineCov">			.await;</span></div>
 <div class="line"><span id="1092" class="lineNum"><a href="#1092">1092</a></span><span class="counterUnCov"></span><span class="lineUnCov"></span></div>
