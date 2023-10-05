@@ -4,12 +4,13 @@ mod builder;
 
 use std::{
 	fmt::{self, Debug, Formatter},
+	future::Future,
 	io::Error,
 	net::{SocketAddr, ToSocketAddrs, UdpSocket},
 	pin::Pin,
 	slice,
 	sync::Arc,
-	task::{Context, Poll}, future::Future,
+	task::{Context, Poll},
 };
 
 use async_trait::async_trait;
