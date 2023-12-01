@@ -41,7 +41,7 @@ trust-dns-resolver = { version = "0.23.0", default-features = false, optional = 
 	"tokio-runtime",
 ] }
 url = "2"
-rustls-webpki = { version = "0.101.4", default-features = false, features = [
+rustls-webpki = { version = "0.102.0", default-features = false, features = [
 	"std",
 ] }
 webpki-roots = "0.25.2"
